@@ -11,7 +11,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "deploy": "vite build && wrangler deploy",
-    "lint": "eslint src tests worker.js vite.config.js vitest.config.js eslint.config.js",
+    "lint": "eslint src tests worker.js worker-api.js durable-objects scripts vite.config.js vitest.config.js eslint.config.js",
     "lint:arch": "madge --circular --extensions js,jsx src/",
     "test": "vitest run",
     "test:watch": "vitest",
