@@ -1,7 +1,7 @@
 // app/App.jsx — shell de l'application (~100 L) : providers + flags URL + routes.
 // Toute la logique d'état vit dans les hooks (useNavigation, useCelebration) et
 // les contexts (session, prefs, thèmes). Les composants d'écran sont dans routes.js.
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 
 import AppProviders from './AppProviders.jsx';
 import { ROUTES } from './routes.js';
@@ -23,7 +23,21 @@ import { telechargerJSON } from '@shared/utils/telechargerJSON.js';
 export default function App() {
   return (
     <AppProviders>
-      <Shell />
+      {/* Les écrans de routes.js sont en React.lazy : pendant le chargement d'un
+          chunk, on affiche un écran de chargement sobre (mêmes classNames que les
+          autres écrans centrés). Grâce aux startTransition de useNavigation, à la
+          navigation suivante c'est l'écran précédent qui reste visible à la place. */}
+      <Suspense
+        fallback={
+          <div className="app">
+            <div className="ecran-centre">
+              <p className="vide">Chargement…</p>
+            </div>
+          </div>
+        }
+      >
+        <Shell />
+      </Suspense>
     </AppProviders>
   );
 }
