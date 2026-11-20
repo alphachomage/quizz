@@ -1,7 +1,7 @@
-// Tests du scoring arcade et des manches (src/lib/logique.js).
+// Tests du scoring arcade et des manches (src/lib (modules)).
 import { describe, expect, it } from 'vitest';
 
-import { infoManche, pointsPour, TEMPS_PAR_QUESTION } from '@/lib/logique.js';
+import { infoManche, pointsPour, TEMPS_PAR_QUESTION } from '@lib/index.js';
 
 describe('pointsPour', () => {
   it('vaut 20 pts pour une bonne réponse instantanée', () => {

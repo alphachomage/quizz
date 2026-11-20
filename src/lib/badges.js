@@ -3,15 +3,11 @@
 // Chaque badge = { id, nom, desc (condition), icone, test(stats) -> bool }.
 // Pas de design par badge : on réutilise les icônes SVG existantes (Icone.jsx).
 
-import {
-  chargerParties,
-  chargerRecords,
-  chargerXP,
-  niveauTheme,
-  chargerValidees,
-  chargerSoumissions,
-  streakJourActuelle,
-} from './logique.js';
+import { chargerParties } from './parties-historique.js';
+import { chargerRecords } from './records.js';
+import { chargerXP, niveauTheme } from './xp.js';
+import { chargerValidees, chargerSoumissions } from './soumissions.js';
+import { streakJourActuelle } from './streak.js';
 
 // Statistiques agrégées servant aux conditions des badges.
 export function statsBadges() {
@@ -69,7 +65,7 @@ export function statsBadges() {
 }
 
 // Offset des compteurs de soumissions enregistré lors d'un reset de progression
-// (clé posée dans logique.js — literal ici pour éviter l'import circulaire).
+// (clé posée dans storage.js — literal ici pour éviter l'import circulaire).
 function resetSoumissions() {
   try {
     const o = JSON.parse(localStorage.getItem('voltquiz_reset_soumissions') || '{}');

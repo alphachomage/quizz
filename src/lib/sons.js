@@ -1,6 +1,6 @@
 // Sons générés en direct par le navigateur (Web Audio API) : aucun fichier externe.
 // + vibrations (API Vibration, sur mobile surtout).
-// Tout est piloté par les préférences utilisateur (voir chargerPrefs dans logique.js).
+// Tout est piloté par les préférences utilisateur (voir chargerPrefs dans lib/prefs.js).
 
 let contexte = null;
 

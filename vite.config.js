@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url';
+
 import { defineConfig } from 'vite';
 
 import react from '@vitejs/plugin-react';
@@ -13,6 +15,16 @@ import { VitePWA } from 'vite-plugin-pwa';
 // vite-plugin-pwa = ce qui transforme le site en "WPA" (appli installable, hors-ligne).
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@app': fileURLToPath(new URL('./src/app', import.meta.url)),
+      '@lib': fileURLToPath(new URL('./src/lib', import.meta.url)),
+      '@shared': fileURLToPath(new URL('./src/shared', import.meta.url)),
+      '@features': fileURLToPath(new URL('./src/features', import.meta.url)),
+      '@data': fileURLToPath(new URL('./src/data', import.meta.url)),
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
   plugins: [
     cloudflare(),
     react(),

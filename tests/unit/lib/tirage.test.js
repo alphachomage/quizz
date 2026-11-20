@@ -1,4 +1,4 @@
-// Tests du tirage diversifié (src/lib/logique.js) : max 2 questions du même sujet,
+// Tests du tirage diversifié (src/lib (modules)) : max 2 questions du même sujet,
 // plafond par thème, anti-répétition de la série précédente, mélange déterministe.
 import { describe, expect, it } from 'vitest';
 
@@ -13,7 +13,7 @@ import {
   chargerSerie,
   sujetDe,
   tirerSerie,
-} from '@/lib/logique.js';
+} from '@lib/index.js';
 
 import { makeQuestion, mulberry32 } from '../../fixtures/questions.fixture.js';
 

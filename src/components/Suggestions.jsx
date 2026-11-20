@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import Icone from './Icone.jsx';
 
-import { ajouterSuggestion } from '../lib/logique.js';
+import { ajouterSuggestion } from '@lib/index.js';
 
 // Fenêtre "Suggestions" côté joueur : une remontée (idée, bug, amélioration)
 // part dans localStorage (voltquiz_suggestions) et n'est visible QUE dans la

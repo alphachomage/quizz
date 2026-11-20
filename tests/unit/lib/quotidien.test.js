@@ -1,8 +1,8 @@
-// Tests du quizz du jour (src/lib/logique.js) : tirage seedé identique pour tous
+// Tests du quizz du jour (src/lib (modules)) : tirage seedé identique pour tous
 // le même jour, diversifié (max 2 par sujet, max 2 par thème), et qui change de jour.
 import { describe, expect, it } from 'vitest';
 
-import { QUESTIONS_QUOTIDIEN, dateAujourdhui, questionsQuotidien, sujetDe } from '@/lib/logique.js';
+import { QUESTIONS_QUOTIDIEN, dateAujourdhui, questionsQuotidien, sujetDe } from '@lib/index.js';
 
 import { makeThemes } from '../../fixtures/questions.fixture.js';
 

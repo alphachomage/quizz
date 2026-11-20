@@ -4,7 +4,7 @@
 // Le joueur choisit SON titre affiché sous la barre d'XP du profil (persisté en localStorage).
 // Titre verrouillé = affiché « ??? » dans l'onglet (nom caché).
 
-import { chargerXP, niveauTheme } from './logique.js';
+import { chargerXP, niveauTheme } from './xp.js';
 import { statsBadges } from './badges.js';
 
 // [niveau 3, niveau 5, niveau 10] pour chaque thème (id du thème -> 3 titres)

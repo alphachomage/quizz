@@ -3,7 +3,7 @@
 // question et compte les doublons exacts connus (hérités des premiers lots).
 import { describe, expect, it } from 'vitest';
 
-import { NIVEAUX } from '@/lib/logique.js';
+import { NIVEAUX } from '@lib/index.js';
 import { THEMES } from '@/data/questions.js';
 
 const NIVEAUX_VALIDES = NIVEAUX.map((n) => n.id);

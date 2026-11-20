@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 
 import Icone from './Icone.jsx';
 
-import { chargerXP, niveauTheme, xpPourNiveau } from '../lib/logique.js';
+import { chargerXP, niveauTheme, xpPourNiveau } from '@lib/index.js';
 import { calculerBadges, badgeFavori, definirBadgeFavori } from '../lib/badges.js';
 import { titreAffiche } from '../lib/titres.js';
 

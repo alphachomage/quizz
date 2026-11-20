@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import Icone, { Barres } from './Icone.jsx';
-import { NIVEAUX, chargerXP, niveauTheme, SEUIL_SOUMISSION_NIVEAU } from '../lib/logique.js';
+import { NIVEAUX, chargerXP, niveauTheme, SEUIL_SOUMISSION_NIVEAU } from '@lib/index.js';
 import { trouverSimilaires, SEUIL_SIMILAIRE, SEUIL_IDENTIQUE } from '../lib/similarite.js';
 
 // Formulaire « Proposer une question ».
