@@ -33,7 +33,7 @@ function pctNiveau(xp) {
   return Math.min(100, Math.max(0, Math.round(((xp - base) / (next - base)) * 100)));
 }
 
-export default function Resultat({ resultat, prefs, themes, onRejouer, onAccueil }) {
+export default function Resultat({ resultat, prefs, themes, estInvite, onRejouer, onAccueil }) {
   const { mode, niveau, theme, joueurs, scores, bonnes, total, details } = resultat;
   const cle = cleRecord(mode, niveau, theme.id);
   const [record, setRecord] = useState(0);
@@ -56,7 +56,8 @@ export default function Resultat({ resultat, prefs, themes, onRejouer, onAccueil
     if (estRecord) { jouerSon('record', prefs); vibrer([60, 60, 120], prefs); }
     else jouerSon('fin', prefs);
     // Historique de la partie (alimente le leaderboard ET les statistiques perso)
-    ajouterPartie({
+    // Mode invité : rien n'est enregistré (pas de leaderboard, pas de stats, pas de "déjà joué" du jour).
+    if (!estInvite) ajouterPartie({
       mode,
       niveau,
       themeId: theme.id,
@@ -68,6 +69,8 @@ export default function Resultat({ resultat, prefs, themes, onRejouer, onAccueil
 
     // XP gagnée : par thème grâce au détail question par question,
     // sinon le score total est crédité au thème de la partie.
+    // Mode invité : aucune XP (ni compte ni thème) n'est enregistrée.
+    if (!estInvite) {
     const xpAvant = chargerXP();
     const parTheme = {};
     if (details && details.length > 0) {
@@ -93,9 +96,12 @@ export default function Resultat({ resultat, prefs, themes, onRejouer, onAccueil
     const globAvant = Object.values(xpAvant).reduce((a, b) => a + (b || 0), 0);
     const gainTotal = lignes.reduce((a, l) => a + l.gain, 0);
     setXpGlobal({ avant: globAvant, apres: globAvant + gainTotal, gain: gainTotal });
+    }
 
     // Position au leaderboard du mode (top 20 affiché dans Classement) :
     // on compte combien de scores sont strictement meilleurs que le nôtre.
+    // Mode invité : pas de leaderboard.
+    if (!estInvite) {
     const lignesLB = [];
     for (const p of chargerParties()) {
       if (p.mode !== mode) continue;
@@ -104,6 +110,7 @@ export default function Resultat({ resultat, prefs, themes, onRejouer, onAccueil
     }
     lignesLB.sort((a, b) => b - a);
     if (valeur > 0) setRang(lignesLB.filter((s) => s > valeur).length + 1);
+    }
 
     // Série de jours du quizz du jour (logo éclair, façon Snapchat)
     if (mode === 'quotidien') setStreakJour(enregistrerStreakJour().compte);
@@ -259,12 +266,13 @@ export default function Resultat({ resultat, prefs, themes, onRejouer, onAccueil
           )}
         </div>
 
-        {rang !== null && rang <= 10 && (
+        {!estInvite && rang !== null && rang <= 10 && (
           <div className="record top10">
             <Icone nom="podium" taille={16} /> Top 10 ! Tu es #{rang} au classement {labelClassement}
           </div>
         )}
 
+        {!estInvite && (
         <div className="xp-bloc">
           <h3 className="titre-section"><Icone nom="star" taille={18} /> XP gagnée</h3>
           <div className="xp-globale">
@@ -303,6 +311,14 @@ export default function Resultat({ resultat, prefs, themes, onRejouer, onAccueil
             </ul>
           )}
         </div>
+        )}
+
+        {estInvite && (
+          <p className="info-mix">
+            <Icone nom="user" taille={15} /> Mode invité : aucune XP, aucun badge, aucun titre et aucun classement n'est enregistré.
+            Crée un compte pour tout conserver entre tes parties.
+          </p>
+        )}
 
         <div className="actions">
           {mode !== 'quotidien' && (

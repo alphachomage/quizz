@@ -423,3 +423,18 @@ tous les `questions-*.js`, compter par thème) ou visu admin `?admin=1`.
 4. ⏳ V2 : duel en ligne à distance (serveur WebSocket) + comptes joueurs + leaderboard en ligne.
 4. ⏳ V3 : appli mobile Android/iOS via **Capacitor**.
 5. ⏳ V4 : badges, classements hebdo, plus de thèmes.
+
+## Mode invite (sans compte)
+
+- Bouton « Jouer en invité » sur l'écran de compte (`Compte.jsx`) : pseudo auto `user-xxxxxxx`
+  (7 caractères, `demarrerInvite()` dans `src/lib/comptes.js`), session `{ pseudo, invite: true, avatar: null }`.
+- Un invité n'a **rien de persistant** : pas d'XP compte ni themes, pas de badges, pas de titres,
+  pas de leaderboard, pas de statistiques, pas d'historique de parties (Resultat.jsx n'appelle ni
+  `ajouterPartie` ni `ajouterXP` si `estInvite`), et la partie du quizz du jour d'un invité ne bloque
+  pas la tentative du jour du compte. Les records locaux (par mode/niveau/theme) restent enregistrés.
+- UI : pastille « Invité » à côté du pseudo (`chip-invite`), barre d'XP/titre/niveau masquées,
+  boutons profil/stats/badges et leaderboard masqués sur l'accueil, bannière « prochain badge » masquée,
+  bloc XP et top-10 masqués sur l'écran de résultats (avec une note explicative), tuto avec une ligne
+  dédiée (clé de tuto fixe `invite` pour ne l'ouvrir qu'une fois, pseudo étant aléatoire).
+- `estInvite` est propagé depuis `App.jsx` vers `Accueil`, `Resultat`, `Tuto` ; la célébration de
+  déblocage (badges/titres) est désactivée pour un invité.

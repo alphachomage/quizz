@@ -79,6 +79,22 @@ export function sessionActuelle() {
   }
 }
 
+// Mode invité : pseudo automatique "user-xxxxxxx", session marquée invite:true.
+// Un invité joue tout de suite, mais SANS XP (compte ni thèmes), badges, titres ni leaderboard.
+export function demarrerInvite() {
+  const caracteres = 'abcdefghjkmnpqrstuvwxyz23456789';
+  let alea = '';
+  for (let i = 0; i < 7; i++) alea += caracteres[Math.floor(Math.random() * caracteres.length)];
+  const pseudo = `user-${alea}`;
+  localStorage.setItem(CLE_SESSION, JSON.stringify({ pseudo, invite: true, avatar: null }));
+  return pseudo;
+}
+
+export function estInvite() {
+  const s = sessionActuelle();
+  return !!(s && s.invite);
+}
+
 // Avatar du compte connecté (dataURL stockée dans le compte).
 export function avatarActuel() {
   const s = sessionActuelle();

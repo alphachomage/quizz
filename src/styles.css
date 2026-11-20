@@ -2807,3 +2807,17 @@ h1, h2, h3 {
   border-radius: 999px;
   transition: width 0.3s ease;
 }
+
+/* Pastille "Invite" (mode invite : pas d'XP, badges, titres ni leaderboard) */
+.chip-invite {
+  background: var(--accent1);
+  color: #141414;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 9px;
+  border-radius: 999px;
+  margin-left: 6px;
+  vertical-align: middle;
+}

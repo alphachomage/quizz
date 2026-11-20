@@ -2,7 +2,7 @@ import Icone from './Icone.jsx';
 
 // Tuto de bienvenue : ouvert UNE SEULE FOIS par compte (première connexion).
 // Court et concis : principe du jeu, points, série (streak), modes de jeu.
-export default function Tuto({ onFermer }) {
+export default function Tuto({ onFermer, estInvite }) {
   return (
     <div className="modal-overlay" onClick={onFermer}>
       <div className="modal tuto" onClick={(e) => e.stopPropagation()}>
@@ -48,6 +48,16 @@ export default function Tuto({ onFermer }) {
               </ul>
             </div>
           </li>
+          {estInvite && (
+            <li>
+              <span className="tuto-icone"><Icone nom="user" taille={20} /></span>
+              <div>
+                <strong>Tu joues en invité</strong> (pseudo automatique) : aucune XP de compte ni de thème,
+                pas de badges, pas de titres et pas de leaderboard ne sont enregistrés.
+                <strong> Crée un compte</strong> pour tout conserver entre tes parties.
+              </div>
+            </li>
+          )}
         </ul>
 
         <button className="btn-principal tuto-bouton" onClick={onFermer}>

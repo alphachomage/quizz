@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Icone from './Icone.jsx';
-import { creerCompte, connecter, listePseudos } from '../lib/comptes.js';
+import { creerCompte, connecter, listePseudos, demarrerInvite } from '../lib/comptes.js';
 
 // Écran de compte : connexion ou création (pseudo + e-mail + mot de passe).
 // 100 % local : les comptes vivent dans le navigateur de ce PC uniquement.
@@ -121,6 +121,14 @@ export default function Compte({ onConnexion }) {
         <button className="btn-principal" disabled={enCours} onClick={soumettre}>
           {enCours ? 'Un instant…' : onglet === 'creation' ? 'Créer mon compte' : 'Se connecter'}
         </button>
+
+        <button className="btn-secondaire" onClick={() => onConnexion(demarrerInvite())}>
+          <Icone nom="user" taille={17} /> Jouer en invité (pseudo auto, ex. user-a3f9k2d)
+        </button>
+        <p className="note-local">
+          En mode invité tu joues tout de suite, mais <strong>sans XP de compte ni de thèmes, sans badges,
+          sans titres et sans leaderboard</strong> — crée un compte pour débloquer tout ça et tout garder.
+        </p>
 
         {onglet === 'creation' && (
           <p className="note-local">

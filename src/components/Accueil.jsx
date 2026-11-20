@@ -26,7 +26,7 @@ const THEME_TOUS = { id: 'tous', nom: 'Tous les thèmes', icone: 'globe', couleu
 
 // Écran d'accueil : choix du mode, du niveau (solo), des joueurs (duel), du thème,
 // lancement, accès au formulaire de proposition de question, et gestion des propositions.
-export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion, onDemarrer, onProposer, onClassement, onStats, onBadges, onChangerPrefs, onTuto }) {
+export default function Accueil({ themes, pseudo, prefs, estAdmin, estInvite, onDeconnexion, onDemarrer, onProposer, onClassement, onStats, onBadges, onChangerPrefs, onTuto }) {
   const [mode, setMode] = useState('solo');
   const [niveau, setNiveau] = useState('moyen');
   const [themeId, setThemeId] = useState(null);
@@ -92,36 +92,46 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
     <div className="accueil">
       <div className="barre-user">
         <div className="user-bloc">
-          <button
-            className="avatar-btn"
-            onClick={() => setProfilOuvert(true)}
-            title="Voir ma carte profil (changer ma photo : Paramètres)"
-          >
-            {avatar ? (
-              <img src={avatar} alt="" className="avatar-img" />
-            ) : (
-              <span className="avatar-defaut"><Icone nom="user" taille={18} /></span>
-            )}
-          </button>
+          {!estInvite && (
+            <button
+              className="avatar-btn"
+              onClick={() => setProfilOuvert(true)}
+              title="Voir ma carte profil (changer ma photo : Paramètres)"
+            >
+              {avatar ? (
+                <img src={avatar} alt="" className="avatar-img" />
+              ) : (
+                <span className="avatar-defaut"><Icone nom="user" taille={18} /></span>
+              )}
+            </button>
+          )}
           <div className="user-infos">
             <span className="user-nom">
-              {pseudo} <span className="user-niv">Niv. {nivGlobal}</span>
+              {pseudo} {estInvite ? <span className="chip-invite">Invité</span> : <span className="user-niv">Niv. {nivGlobal}</span>}
             </span>
-            <span className="user-xpbar" title={`${xpTotal} XP au total — niveau ${nivGlobal + 1} à ${xpNext} XP`}>
-              <i style={{ width: `${pctXpGlobal}%` }} />
-            </span>
-            {titreProfil && <span className="user-titre" title="Ton titre (choisi dans l'onglet Badges & titres)">{titreProfil}</span>}
+            {!estInvite && (
+              <>
+                <span className="user-xpbar" title={`${xpTotal} XP au total — niveau ${nivGlobal + 1} à ${xpNext} XP`}>
+                  <i style={{ width: `${pctXpGlobal}%` }} />
+                </span>
+                {titreProfil && <span className="user-titre" title="Ton titre (choisi dans l'onglet Badges & titres)">{titreProfil}</span>}
+              </>
+            )}
           </div>
         </div>
-        <button className="btn-icone" title="Mes badges" onClick={onBadges}>
-          <Icone nom="star" taille={17} />
-        </button>
+        {!estInvite && (
+          <button className="btn-icone" title="Mes badges" onClick={onBadges}>
+            <Icone nom="star" taille={17} />
+          </button>
+        )}
         <button className="btn-icone" title="Revoir le tutoriel" onClick={onTuto}>
           <Icone nom="question" taille={17} />
         </button>
-        <button className="btn-icone" title="Mes statistiques" onClick={onStats}>
-          <Icone nom="chart" taille={17} />
-        </button>
+        {!estInvite && (
+          <button className="btn-icone" title="Mes statistiques" onClick={onStats}>
+            <Icone nom="chart" taille={17} />
+          </button>
+        )}
         <button className="btn-icone" title="Paramètres (sons, animations, vibrations)" onClick={() => setShowParametres(true)}>
           <Icone nom="sliders" taille={17} />
         </button>
@@ -195,7 +205,7 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
         )}
       </p>
 
-      {badgeSuivant && (
+      {!estInvite && badgeSuivant && (
         <div className="prochain-badge" title={`${badgeSuivant.desc} — débloque ce badge en continuant à jouer !`}>
           <span className="pb-icone"><Icone nom={badgeSuivant.icone} taille={14} /></span>
           <span className="pb-texte">
@@ -258,13 +268,15 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
                 <span className="theme-nom">{t.nom}</span>
               </span>
               <span className="theme-meta">
-                <span className="theme-niv">Niv. {niv}</span>
+                {!estInvite && <span className="theme-niv">Niv. {niv}</span>}
                 {record > 0 && <span className="theme-record">Record {record} pts</span>}
                 {estAdmin && <span className="theme-nb">{t.questions.length} q.</span>}
               </span>
-              <span className="theme-xpbar" title={`XP ${xp[t.id] || 0} — niveau ${niv + 1} à ${xpNext} XP`}>
-                <i style={{ width: `${pctXp}%`, background: t.couleur }} />
-              </span>
+              {!estInvite && (
+                <span className="theme-xpbar" title={`XP ${xp[t.id] || 0} — niveau ${niv + 1} à ${xpNext} XP`}>
+                  <i style={{ width: `${pctXp}%`, background: t.couleur }} />
+                </span>
+              )}
             </button>
           );
         })}
@@ -272,9 +284,11 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
       </>
       )}
 
-      <button className="btn-secondaire" onClick={onClassement}>
-        <Icone nom="podium" taille={18} /> Voir le leaderboard
-      </button>
+      {!estInvite && (
+        <button className="btn-secondaire" onClick={onClassement}>
+          <Icone nom="podium" taille={18} /> Voir le leaderboard
+        </button>
+      )}
 
       <button className="btn-secondaire" onClick={onProposer}>
         <Icone nom="plus" taille={18} /> Proposer une question

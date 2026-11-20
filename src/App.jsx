@@ -33,7 +33,8 @@ export default function App() {
   const [themesBase, setThemesBase] = useState(QUESTIONS_BASE); // base + fichier perso
   const [soumissions, setSoumissions] = useState(() => chargerSoumissions()); // en attente de validation
   const [validees, setValidees] = useState(() => chargerValidees()); // validées = jouables
-  const [session, setSession] = useState(() => sessionActuelle()); // compte local connecté
+  const [session, setSession] = useState(() => sessionActuelle()); // compte local connecté (ou invité)
+  const estInvite = !!(session && session.invite); // mode invité : pas d'XP, badges, titres ni leaderboard
   const [prefs, setPrefs] = useState(() => chargerPrefs()); // sons / animations / vibrations
   const [tutoOuvert, setTutoOuvert] = useState(false); // tuto de bienvenue (1ere connexion seulement)
   // Animation de déblocage (badge/titre nouveau) affichée sur l'accueil après un quizz :
@@ -67,13 +68,15 @@ export default function App() {
 
   // Tuto de bienvenue : ouvert UNE SEULE FOIS par compte, à la première connexion.
   // On peut aussi le rouvrir à volonté avec ?tuto=1 ou le bouton "?" de la barre utilisateur.
+  // Mode invité : pseudo aléatoire à chaque session → clé fixe "invite" pour ne l'ouvrir qu'une fois.
+  const cleTuto = session ? (session.invite ? 'invite' : session.pseudo) : null;
   useEffect(() => {
     const force = new URLSearchParams(window.location.search).get('tuto') === '1';
-    if (!estAdmin && (force || (session && !aVuTuto(session.pseudo)))) setTutoOuvert(true);
+    if (!estAdmin && (force || (cleTuto && !aVuTuto(cleTuto)))) setTutoOuvert(true);
   }, [session, estAdmin]);
 
   function fermerTuto() {
-    if (session) marquerTutoVu(session.pseudo);
+    if (cleTuto) marquerTutoVu(cleTuto);
     setTutoOuvert(false);
   }
 
@@ -159,7 +162,7 @@ export default function App() {
     const snap = snapshotRef.current || { badges: new Set(), titres: new Set() };
     const nouveauxBadges = calculerBadges().filter((b) => b.debloque && !snap.badges.has(b.id));
     const nouveauxTitres = calculerTitres().filter((t) => t.debloque && !snap.titres.has(t.id));
-    if (nouveauxBadges.length || nouveauxTitres.length) {
+    if (!estInvite && (nouveauxBadges.length || nouveauxTitres.length)) {
       setCelebration({ badges: nouveauxBadges, titres: nouveauxTitres });
       jouerSon('tonnerre', prefs); // grondement d'éclair doux au déblocage
       vibrer([70, 50, 130], prefs);
@@ -207,21 +210,22 @@ export default function App() {
   if (!session) {
     return (
       <div className={prefs.animations === false ? 'app sans-animations' : 'app'}>
-        {tutoOuvert && <Tuto onFermer={fermerTuto} />}
-        <Compte onConnexion={(pseudo) => setSession({ pseudo })} />
+        {tutoOuvert && <Tuto onFermer={fermerTuto} estInvite={false} />}
+        <Compte onConnexion={() => setSession(sessionActuelle())} />
       </div>
     );
   }
 
   return (
     <div className={prefs.animations === false ? 'app sans-animations' : 'app'}>
-      {tutoOuvert && !estAdmin && <Tuto onFermer={fermerTuto} />}
+      {tutoOuvert && !estAdmin && <Tuto onFermer={fermerTuto} estInvite={estInvite} />}
       {ecran === 'accueil' && (
         <Accueil
           themes={themes}
           pseudo={session.pseudo}
           prefs={prefs}
           estAdmin={estAdmin}
+          estInvite={estInvite}
           onDeconnexion={() => { deconnecter(); setSession(null); setEcran('accueil'); }}
           onDemarrer={demarrer}
           onProposer={() => setEcran('formulaire')}
@@ -243,6 +247,7 @@ export default function App() {
           resultat={resultat}
           prefs={prefs}
           themes={themes}
+          estInvite={estInvite}
           onRejouer={() => setEcran('partie')}
           onAccueil={() => setEcran('accueil')}
         />
