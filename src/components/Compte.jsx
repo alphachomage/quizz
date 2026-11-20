@@ -45,9 +45,7 @@ export default function Compte({ onConnexion }) {
             </span>
             VoltQuiz
           </div>
-          <p className="tagline">
-            Crée ton compte local (pseudo + e-mail + mot de passe). Tout reste sur ce PC, rien n'est envoyé sur internet.
-          </p>
+          <p className="tagline">Réponds vite, réponds juste.</p>
         </div>
 
         <div className="onglets">
