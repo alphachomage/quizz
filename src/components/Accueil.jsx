@@ -140,7 +140,7 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
       <section className="modes-tabs">
         {[
           { id: 'solo', icone: 'timer', nom: 'Solo' },
-          { id: 'duel', icone: 'swords', nom: 'Duel 1v1', badge: 'en ligne · à venir' },
+          { id: 'duel', icone: 'swords', nom: 'Duel 1v1 en ligne', badge: 'à venir' },
           { id: 'survie', icone: 'skull', nom: 'Survie' },
           { id: 'quotidien', icone: 'calendar', nom: 'Quizz du jour' },
         ].map((m) => (
@@ -161,8 +161,7 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
         {mode === 'solo' && '10 questions contre la montre dans le thème choisi.'}
         {mode === 'duel' && (
           <>
-            2 joueurs sur ce PC, chacun son tour, les mêmes questions. Un mode <strong>en ligne</strong> pour
-            affronter d'autres joueurs (pas en local) : <span className="a-venir">à venir</span>
+            Affronte d'autres joueurs <strong>en ligne</strong>, pas en local : <span className="a-venir">à venir</span>
           </>
         )}
         {mode === 'survie' && (
