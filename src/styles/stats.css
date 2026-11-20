@@ -1,0 +1,177 @@
+/* VoltQuiz — stats (extrait de l'ancien styles.css, ordre conservé) */
+/* --- �cran statistiques --- */
+
+.stats-ecran {
+  overflow-y: auto;
+  padding: 20px;
+  align-items: flex-start;
+}
+
+.stats {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+
+.stats-titre {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stats-titre h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.stats-cartes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.stat-carte {
+  background: var(--carte);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 16px 12px;
+  text-align: center;
+}
+
+.stat-valeur {
+  font-size: 1.7rem;
+  font-weight: 800;
+  background: var(--accent1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.stat-label {
+  color: #a79ecb;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.stats section {
+  margin-bottom: 22px;
+}
+
+.xp-globale {
+  background: var(--carte);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.xp-globale-haut {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #cfc8ee;
+  margin-bottom: 8px;
+}
+
+.user-xpbar.grosse {
+  width: 100%;
+  max-width: none;
+  height: 10px;
+}
+
+.stats-themes,
+.stats-liste {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stats-theme {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--carte);
+  border: 1px solid var(--bordure);
+  border-radius: 12px;
+  padding: 9px 12px;
+}
+
+.stats-theme-nom {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--couleur, #cfc8ee);
+  min-width: 130px;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.stats-theme-barre {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(128, 128, 128, 0.3);
+  overflow: hidden;
+}
+
+.stats-theme-barre i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+}
+
+.stats-theme-niv {
+  font-size: 0.82rem;
+  color: #a79ecb;
+  white-space: nowrap;
+}
+
+.stats-ligne {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--carte);
+  border: 1px solid var(--bordure);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.stats-ligne-nom {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.stats-ligne-val {
+  color: #a79ecb;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+/* Nombre de questions affich� EN DESSOUS du nom du th�me (visu admin) */
+.stats-ligne-col {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 3px;
+}
+
+.stats-ligne-col .stats-theme-nb {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--texte-doux, #a79ecb);
+  text-align: left;
+}

@@ -1,0 +1,85 @@
+/* VoltQuiz — badges (extrait de l'ancien styles.css, ordre conservé) */
+/* --- �cran Badges --- */
+.badges-grille {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  background: var(--carte);
+  border: 1px solid var(--bordure);
+  border-radius: 16px;
+  padding: 16px 12px;
+  color: var(--texte-carte);
+}
+
+.badge.verrouille {
+  opacity: 0.55;
+}
+
+.badge.verrouille .badge-icone {
+  background: rgba(128, 128, 128, 0.35);
+  color: var(--texte-carte);
+  filter: grayscale(1);
+}
+
+.badge.debloque {
+  border-color: var(--accent1);
+}
+
+.badge.debloque .badge-icone {
+  background: var(--accent1);
+  color: #141414;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.badge-icone {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(128, 128, 128, 0.25);
+  color: var(--texte-carte);
+}
+
+.badge-nom {
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.badge-desc {
+  font-size: 0.78rem;
+  color: var(--texte-doux-carte);
+  line-height: 1.4;
+}
+
+.badge-statut {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(128, 128, 128, 0.3);
+  color: var(--texte-carte);
+}
+
+.badge.debloque .badge-statut {
+  background: var(--accent1);
+  color: #141414;
+}

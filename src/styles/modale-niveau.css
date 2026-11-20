@@ -1,0 +1,34 @@
+/* VoltQuiz — modale-niveau (extrait de l'ancien styles.css, ordre conservé) */
+/* --- Modale de difficulté (solo, au clic sur un thème) --- */
+.niveaux-modal {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 14px 0 8px;
+}
+
+.niveau-modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 18px 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--texte);
+  background: var(--carte);
+  border: 1px solid var(--bordure);
+  border-radius: 22px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+.niveau-modal:hover {
+  background: var(--carte-2);
+}
+
+.niveau-modal.actif {
+  border-color: var(--couleur);
+  background: var(--carte-2);
+  transform: scale(1.04);
+}

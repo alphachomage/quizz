@@ -1,0 +1,181 @@
+/* VoltQuiz — resultat (extrait de l'ancien styles.css, ordre conservé) */
+/* --- �cran de r�sultats : XP gagn�e (globale + par th�me) et top 10 --- */
+.record.top10 {
+  margin-top: 8px;
+  background: var(--accent1);
+  border: 1px solid var(--accent1);
+  color: #fff;
+}
+
+.xp-bloc {
+  margin-top: 16px;
+  text-align: left;
+}
+
+.xp-globale {
+  background: var(--carte);
+  border: 1px solid var(--bordure);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.xp-globale-titre {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.xp-globale-val {
+  color: var(--or, #fbbf24);
+}
+
+.xp-globale-sous {
+  margin-top: 4px;
+  font-size: 0.78rem;
+  color: var(--texte-doux, #a79ecb);
+}
+
+.xp-barre {
+  margin-top: 6px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(128, 128, 128, 0.3);
+  overflow: hidden;
+}
+
+.xp-barre i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent1);
+  transition: width 0.6s ease;
+}
+
+.xp-barre.petite {
+  height: 6px;
+  margin-top: 4px;
+}
+
+.xp-themes {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.xp-theme {
+  background: var(--carte);
+  border: 1px solid var(--bordure);
+  border-radius: 12px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.xp-theme-nom {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  flex: 1;
+  min-width: 110px;
+}
+
+.xp-theme-gain {
+  color: var(--or, #fbbf24);
+  font-weight: 800;
+  font-size: 0.88rem;
+}
+
+.xp-theme-niv {
+  font-size: 0.78rem;
+  color: var(--texte-doux, #a79ecb);
+}
+
+.xp-theme .xp-barre {
+  flex-basis: 100%;
+  margin-top: 2px;
+}
+
+.reglages {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reglage {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--carte);
+  color: #ece8ff;
+  cursor: pointer;
+  text-align: left;
+}
+
+.reglage:hover {
+  background: rgba(128, 128, 128, 0.14);
+}
+
+.reglage-icone {
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent1);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.reglage-texte {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.reglage-texte small {
+  color: #a79ecb;
+}
+
+.switch {
+  width: 46px;
+  height: 26px;
+  border-radius: 999px;
+  background: rgba(128, 128, 128, 0.35);
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+
+.switch i {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  transition: left 0.2s ease;
+}
+
+.switch.on {
+  background: var(--accent1);
+}
+
+.switch.on i {
+  left: 23px;
+}

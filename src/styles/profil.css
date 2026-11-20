@@ -1,0 +1,164 @@
+/* VoltQuiz — profil (extrait de l'ancien styles.css, ordre conservé) */
+/* --- Titre du profil sous la barre d'XP --- */
+.user-titre {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--accent1);
+  letter-spacing: 0.4px;
+}
+
+.badge-choisir {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* --- Carte profil (clic sur l'avatar) --- */
+.profil {
+  max-width: 460px;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+
+.profil-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+.profil-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 3px solid var(--accent1);
+  background: var(--accent1);
+  color: #141414;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profil-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profil-id {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
+}
+
+.profil-pseudo {
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+/* Jolie place pour le titre : pastille jaune PEPS avec �toile */
+.profil-titre {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  align-self: flex-start;
+  background: var(--accent1);
+  color: #141414;
+  font-weight: 900;
+  font-size: 0.82rem;
+  padding: 4px 12px;
+  border-radius: 999px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+
+.profil-theme .rang {
+  width: 22px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.profil-badge-favori {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(128, 128, 128, 0.18);
+  border: 1px dashed var(--bordure);
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  color: var(--texte-carte);
+}
+
+.profil-badge-favori .badge-icone.favori {
+  background: var(--accent1);
+  color: #141414;
+  width: 52px;
+  height: 52px;
+}
+
+.profil-badge-favori strong {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.badges-grille.petite {
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  margin-bottom: 10px;
+}
+
+.badge-choisir-li {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  background: var(--carte);
+  color: var(--texte-carte);
+  border: 1px solid var(--bordure);
+  border-radius: 12px;
+  padding: 10px 6px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.badge-choisir-li:hover {
+  border-color: var(--accent1);
+}
+
+/* --- Avatar dans les param�tres --- */
+.avatar-reglage {
+  cursor: default;
+}
+
+.avatar-preview {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid var(--accent1);
+  background: var(--accent1);
+  color: #141414;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.btn-secondaire.petit {
+  width: auto;
+  margin-top: 0;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}

@@ -1,0 +1,332 @@
+/* VoltQuiz — partie (extrait de l'ancien styles.css, ordre conservé) */
+/* ===== Partie ===== */
+
+.barre-haut {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: var(--carte);
+  border: 1px solid var(--bordure);
+  border-radius: 999px;
+}
+
+.theme-chip {
+  color: #fff;
+  border: none;
+}
+
+.niveau-chip i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.score {
+  margin-left: auto;
+  color: var(--or);
+}
+
+.score.actif {
+  outline: 2px solid var(--or);
+}
+
+.tour {
+  text-align: center;
+  color: var(--texte-doux);
+  margin-bottom: 10px;
+}
+
+.minuteur-ligne {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.minuteur {
+  flex: 1;
+  height: 10px;
+  background: var(--carte);
+  border: 1px solid var(--bordure);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.minuteur-rempli {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 1s linear, background 0.3s ease; /* 1 setState/s côté JS, lissé ici */
+}
+
+.minuteur-pts {
+  flex-shrink: 0;
+  background: var(--accent1);
+  color: #141414;
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+
+.minuteur-ligne.danger .minuteur-rempli {
+  animation: minuteur-pulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes minuteur-pulse {
+  from { filter: brightness(1); }
+  to { filter: brightness(1.45); }
+}
+
+.question {
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+  text-align: center;
+  margin-bottom: 26px;
+  animation: pop 0.25s ease;
+}
+
+.reponses {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.reponse {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  min-height: 62px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--couleur, var(--accent1));
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+  transition: transform 0.1s ease, filter 0.15s ease, opacity 0.15s ease;
+}
+
+.reponse:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.12);
+}
+
+.reponse:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+}
+
+.reponse:disabled {
+  cursor: default;
+}
+
+.reponse .lettre {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  font-size: 0.9rem;
+}
+
+.reponse.bonne {
+  background: #16a34a !important;
+  outline: 3px solid #4ade80;
+}
+
+.reponse.mauvaise {
+  background: #7f1d1d !important;
+  outline: 3px solid #f87171;
+  animation: shake 0.3s ease;
+}
+
+.reponse.estompee {
+  opacity: 0.3;
+  filter: grayscale(0.6);
+}
+
+.coche {
+  margin-left: auto;
+}
+
+.feedback {
+  margin-top: 22px;
+  text-align: center;
+  animation: pop 0.25s ease;
+}
+
+.gain {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #4ade80;
+}
+
+.rate {
+  font-size: 1.02rem;
+  color: var(--texte-doux);
+}
+
+.rate strong {
+  color: #4ade80;
+}
+
+.info {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: var(--carte);
+  border: 1px solid var(--bordure);
+  border-radius: 14px;
+  color: var(--texte-doux);
+  font-size: 0.93rem;
+  line-height: 1.5;
+}
+
+/* ===== Écrans centrés (passe l'appareil / résultats) ===== */
+
+.ecran-centre {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.passe-appareil,
+.resultat {
+  width: 100%;
+  max-width: 460px;
+  text-align: center;
+  background: var(--carte);
+  border: 1px solid var(--bordure);
+  border-radius: 26px;
+  padding: 34px 24px;
+  backdrop-filter: blur(12px);
+  animation: pop 0.3s ease;
+}
+
+.gros-icone {
+  display: flex;
+  justify-content: center;
+  color: var(--accent2);
+  margin-bottom: 14px;
+}
+
+.passe-appareil h2,
+.resultat h2 {
+  font-size: 1.4rem;
+  margin-bottom: 16px;
+}
+
+.nom-joueur {
+  display: inline-block;
+  padding: 12px 28px;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #fff;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.indice {
+  color: var(--texte-doux);
+  margin-bottom: 8px;
+}
+
+.gros-score {
+  font-size: 3.2rem;
+  font-weight: 900;
+  color: var(--or);
+  margin: 8px 0;
+}
+
+.gros-score span {
+  font-size: 1.3rem;
+  color: var(--texte-doux);
+}
+
+.sous-score {
+  color: var(--texte-doux);
+}
+
+.scores-duel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.score-joueur {
+  padding: 18px 10px;
+  background: var(--carte-2);
+  border: 2px solid transparent;
+  border-radius: 18px;
+}
+
+.score-joueur.gagnant {
+  border-color: var(--or) !important;
+  background: rgba(253, 224, 71, 0.08);
+}
+
+.score-joueur .nom {
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.score-joueur .points {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--or);
+}
+
+.score-joueur .detail {
+  font-size: 0.8rem;
+  color: var(--texte-doux);
+  margin-top: 4px;
+}
+
+.record {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  font-weight: 800;
+  color: var(--accent2);
+}
+
+.record-actuel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+  color: var(--texte-doux);
+  font-size: 0.88rem;
+}
+
+.actions {
+  margin-top: 8px;
+}

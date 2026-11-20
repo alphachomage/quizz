@@ -1,0 +1,33 @@
+/* VoltQuiz — signaler (extrait de l'ancien styles.css, ordre conservé) */
+/* --- Bouton "signaler la question" (pouce rouge) --- */
+
+.signaler {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.btn-signaler {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--bordure);
+  background: transparent;
+  color: #8f87b3;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.btn-signaler:hover {
+  border-color: rgba(255, 93, 115, 0.5);
+  color: #ff8fa3;
+}
+
+.btn-signaler.actif {
+  border-color: #ff5d73;
+  background: rgba(255, 93, 115, 0.14);
+  color: #ff8fa3;
+  font-weight: 600;
+}
