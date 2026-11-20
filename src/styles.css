@@ -2716,3 +2716,14 @@ h1, h2, h3 {
   padding: 1px 9px;
   font-size: 0.78rem;
 }
+
+/* --- Onglet de mode verrouillé (duel local désactivé, mode en ligne à venir) --- */
+.mode-tab:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.mode-tab:disabled:hover {
+  background: var(--carte);
+  color: var(--texte-doux);
+}

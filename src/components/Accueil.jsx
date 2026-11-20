@@ -147,6 +147,8 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
           <button
             key={m.id}
             className={mode === m.id ? 'mode-tab actif' : 'mode-tab'}
+            disabled={m.id === 'duel'} // duel local verrouillé : le mode en ligne arrive plus tard
+            title={m.id === 'duel' ? 'Mode en ligne à venir — le duel local est désactivé pour l’instant' : undefined}
             onClick={() => setMode(m.id)}
           >
             <Icone nom={m.icone} taille={19} />
