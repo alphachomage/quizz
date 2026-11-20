@@ -61,9 +61,22 @@ export function statsBadges() {
     maxNiveauTheme: niveaux.length ? Math.max(...niveaux) : 0,
     nbThemesNiv3: niveaux.filter((n) => n >= 3).length,
     streakJour: streakJourActuelle().compte,
-    nbProposees: chargerSoumissions().length,
-    nbValidees: chargerValidees().length,
+    // Offset posé par ?resetcompte=1 : les questions perso restent dans le pool,
+    // mais les badges de soumission repartent de zéro.
+    nbProposees: Math.max(0, chargerSoumissions().length - resetSoumissions().proposees),
+    nbValidees: Math.max(0, chargerValidees().length - resetSoumissions().validees),
   };
+}
+
+// Offset des compteurs de soumissions enregistré lors d'un reset de progression
+// (clé posée dans logique.js — literal ici pour éviter l'import circulaire).
+function resetSoumissions() {
+  try {
+    const o = JSON.parse(localStorage.getItem('voltquiz_reset_soumissions') || '{}');
+    return { proposees: o.proposees || 0, validees: o.validees || 0 };
+  } catch {
+    return { proposees: 0, validees: 0 };
+  }
 }
 
 // Les 30 premiers badges. test(s) reçoit les stats agrégées.

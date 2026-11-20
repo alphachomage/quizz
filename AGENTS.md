@@ -438,3 +438,14 @@ tous les `questions-*.js`, compter par thème) ou visu admin `?admin=1`.
   dédiée (clé de tuto fixe `invite` pour ne l'ouvrir qu'une fois, pseudo étant aléatoire).
 - `estInvite` est propagé depuis `App.jsx` vers `Accueil`, `Resultat`, `Tuto` ; la célébration de
   déblocage (badges/titres) est désactivée pour un invité.
+
+## Reset de progression du compte (version d'essai)
+
+- Ouvrir l'app une fois avec **`?resetcompte=1`** (aucun bouton) : `reinitialiserProgression()`
+  (dans `logique.js`) vide records, historique des parties, XP (niveau global retombe à 1,
+  XP de chaque thème à 0), séries mémorisées, streak du quizz du jour, badge favori et titre actif
+  → **tous les badges et titres redeviennent verrouillés** (ils sont recalculés à la volée).
+- Les questions perso (soumissions / validées) sont **conservées** dans le pool : un offset
+  (`voltquiz_reset_soumissions`) est posé pour que les badges « proposer/valider » repartent de 0
+  (voir `statsBadges()` dans `badges.js`).
+- `?reset=1` existe toujours : reset simple scores/leaderboard/XP uniquement.

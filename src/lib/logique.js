@@ -555,6 +555,27 @@ export function reinitialiserScores() {
   localStorage.removeItem(CLE_SERIES);
 }
 
+// Offset des compteurs de soumissions au moment d'un reset de progression :
+// les questions perso (soumissions/validées) sont CONSERVÉES dans le pool,
+// mais les badges "proposer/valider" repartent de zéro (voir statsBadges).
+const CLE_RESET_SOUM = 'voltquiz_reset_soumissions';
+
+// Réinitialise TOUTE la progression : niveau global 1, XP des thèmes à 0,
+// records, historique (leaderboard/stats), streak du quizz du jour,
+// badge favori et titre actif re-verrouillés.
+// Utilisé uniquement via ?resetcompte=1 sur la version d'essai (aucun bouton).
+export function reinitialiserProgression() {
+  reinitialiserScores();
+  localStorage.removeItem(CLE_STREAK_JOUR);
+  // clés définies dans badges.js / titres.js (literal pour éviter l'import circulaire)
+  localStorage.removeItem('voltquiz_badge_favori');
+  localStorage.removeItem('voltquiz_titre_actif');
+  localStorage.setItem(
+    CLE_RESET_SOUM,
+    JSON.stringify({ proposees: chargerSoumissions().length, validees: chargerValidees().length })
+  );
+}
+
 // --- Historique des parties (pour le leaderboard) ---
 // Chaque partie terminée est enregistrée localement : { date, mode, niveau, themeId, themeNom, total, joueurs: [{ nom, score, bonnes }] }
 const CLE_PARTIES = 'voltquiz_parties';

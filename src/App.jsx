@@ -19,7 +19,7 @@ import { calculerTitres } from './lib/titres.js';
 
 import { jouerSon, vibrer } from './lib/sons.js';
 import { sessionActuelle, deconnecter, aVuTuto, marquerTutoVu } from './lib/comptes.js';
-import { reinitialiserScores, chargerPrefs, sauverPrefs } from './lib/logique.js';
+import { reinitialiserScores, reinitialiserProgression, chargerPrefs, sauverPrefs } from './lib/logique.js';
 import { THEMES as QUESTIONS_BASE } from './data/questions.js';
 import { chargerSoumissions, ajouterSoumission, supprimerSoumission, chargerValidees, validerSoumission, exporterSoumissionsJSON } from './lib/logique.js';
 
@@ -83,11 +83,21 @@ export default function App() {
   // Reset manuel sur la version d'essai : ouvrir l'app avec ?reset=1
   // vide records + leaderboards (historique des parties) + XP + séries mémorisées,
   // UNE fois, puis nettoie l'URL (aucun bouton ajouté).
+  // ?resetcompte=1 : reset TOTAL de la progression (niveau 1, XP thèmes à 0,
+  // badges + titres re-verrouillés, streak du jour à 0) — questions perso conservées.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('reset') === '1') {
+    const faireReset = params.get('reset') === '1';
+    const faireResetCompte = params.get('resetcompte') === '1';
+    if (faireReset) {
       reinitialiserScores();
       params.delete('reset');
+    }
+    if (faireResetCompte) {
+      reinitialiserProgression();
+      params.delete('resetcompte');
+    }
+    if (faireReset || faireResetCompte) {
       const qs = params.toString();
       window.history.replaceState(null, '', window.location.pathname + (qs ? `?${qs}` : ''));
     }
