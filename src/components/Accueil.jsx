@@ -140,7 +140,7 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
       <section className="modes-tabs">
         {[
           { id: 'solo', icone: 'timer', nom: 'Solo' },
-          { id: 'duel', icone: 'swords', nom: 'Duel 1v1 en ligne', badge: 'à venir' },
+          { id: 'duel', icone: 'swords', nom: 'Duel en ligne', badge: 'à venir' },
           { id: 'survie', icone: 'skull', nom: 'Survie' },
           { id: 'quotidien', icone: 'calendar', nom: 'Quizz du jour' },
         ].map((m) => (
