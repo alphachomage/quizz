@@ -5,7 +5,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import Partie from '@/components/Partie.jsx';
+import Partie from '@features/partie/Partie.jsx';
 
 import { makeTheme, mulberry32, PREFS_TEST } from '../fixtures/questions.fixture.js';
 

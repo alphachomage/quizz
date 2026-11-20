@@ -6,7 +6,7 @@ import Badges from '../components/Badges.jsx';
 import Classement from '../components/Classement.jsx';
 import Compte from '../components/Compte.jsx';
 import FormulaireQuestion from '../components/FormulaireQuestion.jsx';
-import Partie from '../components/Partie.jsx';
+import Partie from '@features/partie/Partie.jsx';
 import Resultat from '../components/Resultat.jsx';
 import Stats from '../components/Stats.jsx';
 
