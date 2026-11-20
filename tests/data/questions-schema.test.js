@@ -4,7 +4,10 @@
 import { describe, expect, it } from 'vitest';
 
 import { NIVEAUX } from '@lib/index.js';
-import { THEMES } from '@/data/questions.js';
+import { chargerThemes } from '@/data/questions.js';
+
+// Charge le vrai corpus (chunks lazy) une fois pour toute la suite.
+const THEMES = await chargerThemes();
 
 const NIVEAUX_VALIDES = NIVEAUX.map((n) => n.id);
 

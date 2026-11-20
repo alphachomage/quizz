@@ -2,7 +2,7 @@
 // + questions validées (localStorage), et la liste plate pour la détection de similarité.
 import { createContext, createElement, useContext, useEffect, useMemo, useState } from 'react';
 
-import { THEMES as QUESTIONS_BASE } from '@data/questions.js';
+import { chargerThemes } from '@data/questions.js';
 import {
   chargerSoumissions,
   ajouterSoumission,
@@ -16,29 +16,41 @@ import { fusionThemes } from '@shared/utils/fusionThemes.js';
 const ThemesContext = createContext(null);
 
 export function ThemesProvider({ children }) {
-  const [themesBase, setThemesBase] = useState(QUESTIONS_BASE); // base + fichier perso
+  const [themesBase, setThemesBase] = useState(null); // null = questions en cours de chargement (chunks lazy)
   const [soumissions, setSoumissions] = useState(() => chargerSoumissions()); // en attente de validation
   const [validees, setValidees] = useState(() => chargerValidees()); // validées = jouables
 
-  // Au chargement : on fusionne la base intégrée avec le fichier questions-utilisateur.json
+  // Au chargement : on charge les questions (chunks lazy) puis on fusionne le
+  // fichier questions-utilisateur.json par-dessus la base intégrée.
   useEffect(() => {
+    let actif = true;
     const controleur = new AbortController();
-    fetch('/questions-utilisateur.json', { signal: controleur.signal })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (data && Array.isArray(data.themes) && data.themes.length > 0) {
-          setThemesBase(fusionThemes(QUESTIONS_BASE, data.themes));
-        }
-      })
-      .catch(() => {
-        // pas de fichier perso (ou chargement interrompu) : on garde la base intégrée
-      });
-    return () => controleur.abort();
+    (async () => {
+      try {
+        const base = await chargerThemes();
+        const perso = await fetch('/questions-utilisateur.json', { signal: controleur.signal })
+          .then((r) => (r.ok ? r.json() : null))
+          .catch(() => null);
+        if (!actif) return;
+        setThemesBase(
+          perso && Array.isArray(perso.themes) && perso.themes.length > 0
+            ? fusionThemes(base, perso.themes)
+            : base
+        );
+      } catch {
+        if (actif) setThemesBase([]); // échec de chargement : catalogue vide plutôt que crash
+      }
+    })();
+    return () => {
+      actif = false;
+      controleur.abort();
+    };
   }, []);
 
   // Thèmes finaux = base/fichier + questions VALIDÉES manuellement (localStorage).
   // Les questions merely « proposées » (en attente) ne sont PAS jouables.
   const themes = useMemo(() => {
+    if (!themesBase) return null; // chargement en cours
     const map = new Map(themesBase.map((t) => [t.id, { ...t, questions: [...t.questions] }]));
     for (const s of validees) {
       const question = { q: s.q, reponses: s.reponses, bonne: s.bonne, niveau: s.niveau };
@@ -61,6 +73,7 @@ export function ThemesProvider({ children }) {
   // Liste plate de toutes les questions connues (base + validées + en attente)
   // pour la détection de similarité lors d'une proposition.
   const toutesQuestions = useMemo(() => {
+    if (!themes) return [];
     const depuisThemes = themes.flatMap((t) =>
       t.questions.map((q) => ({ ...q, themeId: t.id, themeNom: t.nom, themeCouleur: t.couleur }))
     );
