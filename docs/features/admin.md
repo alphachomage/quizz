@@ -1,6 +1,6 @@
 # Admin (`?admin=1`)
 
-`src/components/AdminSignales.jsx`, prioritaire sur tout (même sans compte).
+`src/features/admin/AdminSignales.jsx`, prioritaire sur tout (même sans compte).
 
 - **Signalements** (`voltquiz_signales`, pouce rouge en partie) : triés par nombre,
   « Garder » / « Retirer du pool » -> exclusion `voltquiz_exclues` (appliquée dans

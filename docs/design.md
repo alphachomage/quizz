@@ -3,7 +3,7 @@
 ## Règles absolues
 
 - **Aucun emoji** nulle part (UI ni doc). Toutes les icônes sont des SVG 24x24 dans
-  `src/components/Icone.jsx` (duotone : forme pleine `currentColor` + détails découpés
+  `src/shared/ui/Icone.jsx` (duotone : forme pleine `currentColor` + détails découpés
   via `--couleur` du parent).
 - **Palette 60-30-10, AUCUN dégradé** (`linear-gradient` interdit, vérifié par grep en review).
   60 % fond, 30 % cartes, 10 % accent. Texte foncé `#141414` sur les fonds accent.

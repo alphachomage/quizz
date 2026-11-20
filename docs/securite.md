@@ -40,6 +40,15 @@ Rate limiting 30 req/min/IP -> 429 (`/api/*`). Validation des entrées sur chaqu
 - **Avatars** (`src/lib/avatar.js`) : JPEG/PNG/WebP <= 3 Mo, recadré 128 px, heuristique
   de nudité + hash perceptuel aHash comparé à `public/avatars-bloques.json`.
 
+## Règles d'architecture (ESLint, en ERREUR)
+
+`eslint.config.js` applique R1-R5 en `error` (vérifié par tests négatifs) :
+`no-restricted-imports` (R1 lib/ pur, R2 data/ -> lib/ only, R3 shared/ -> lib/+react,
+R4 features/X jamais features/Y, seuls @app/urlFlags.js + @app/contexts/ autorisés depuis
+features/) et `no-restricted-globals` localStorage/sessionStorage + `no-restricted-properties`
+window.location/window.history/document.location (R5 : autorisés UNIQUEMENT dans
+`src/lib/**` et `src/app/urlFlags.js`). Madge vérifie l'absence d'imports circulaires
+(`npm run lint:arch`).
 ## Limites connues (version locale volontaire)
 
 Pas de vérification d'e-mail réelle, un PC = une « base » locale, localStorage ~5-10 Mo.

@@ -15,13 +15,13 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, déjà préparés), V3 = mob
 ## Règles absolues (non négociables)
 
 1. **UI et contenus en français. AUCUN emoji** (ni UI ni doc) : icônes SVG uniquement
-   dans `src/components/Icone.jsx`.
+   dans `src/shared/ui/Icone.jsx`.
 2. **Palette 60-30-10, AUCUN dégradé** : voir `docs/design.md` (palette « sobre » active,
    couleurs des 12 thèmes à respecter, ne jamais inventer de couleur).
 3. **1 responsabilité par fichier** (plafond indicatif 200 L) ; logique en hooks `useX.js`,
    fonctions pures dans `src/lib/` (zéro import React/DOM hors `sons.js`).
 4. **Aucun composant ne touche `localStorage`/`document`/`window.location` directement** :
-   passer par `src/lib/storage.js` (lire/ecrire/useStockage) et `src/app/urlFlags.js`.
+   passer par `src/lib/storage.js` (lire/ecrire/useStockage), `src/lib/nav.js` (origine/reload/param URL) et `src/app/urlFlags.js` (flags URL) — règle R5 appliquée en erreur par ESLint.
 5. **Ne JAMAIS toucher** à `node_modules/`, `dist/`, `backups/`, `.wrangler/`, et ne jamais
    modifier les 263 fichiers `src/data/questions-*.js` (ajout uniquement).
 6. **Avant chaque merge** : `npm run lint` + `npm run lint:arch` + `npm test` +
@@ -39,7 +39,7 @@ npm run build          # build prod (dist/) + génère le manifeste des thèmes
 npm run preview        # sert la prod -> http://localhost:4173
 npm run deploy         # publie sur Cloudflare Workers
 npm run lint           # eslint (0 erreur toléré) ; npm run lint:arch = pas d'import circulaire
-npm test               # 81 tests Vitest ; npm run test:partie = le flux solo seul (~2 s)
+npm test               # 104 tests Vitest ; npm run test:partie = le flux solo seul (~2 s)
 npm run test:legacy    # 26 tests historiques (node test-unitaire.mjs)
 npx wrangler deploy --dry-run   # valide worker.js + wrangler.toml sans déployer
 npm run gen:manifest   # régénère src/data/manifest-themes.js (auto via predev/prebuild)
