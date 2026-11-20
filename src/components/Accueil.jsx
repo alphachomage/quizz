@@ -17,7 +17,8 @@ import Profil from './Profil.jsx';
 import Suggestions from './Suggestions.jsx';
 
 import { dateAujourdhui, streakJourActuelle } from '../lib/logique.js';
-import { titreAffiche } from '../lib/titres.js';
+import { titreAffiche, prochainTitre } from '../lib/titres.js';
+import { prochainBadge } from '../lib/badges.js';
 // NIVEAUX sert au sélecteur de difficulté (solo + survie).
 
 // Thème fictif utilisé pour les modes "tous thèmes mélangés" (survie, quizz du jour).
@@ -70,6 +71,8 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
   // XP globale du joueur = somme de l'XP de tous les thèmes
   // Record du quizz du jour (clé = date du jour) pour afficher "déjà joué" sur la carte.
   const recordJour = records[cleRecord('quotidien', dateAujourdhui(), 'tous')] || 0;
+  // Prochain badge/titre à portée (effet « reviens-y » sur l'accueil)
+  const badgeSuivant = useMemo(() => prochainBadge(), []);
   // Série de jours du quizz du jour (logo éclair), façon Snapchat
   const streakJour = streakJourActuelle().compte;
   // Titre choisi dans l'onglet Badges & titres, affiché sous la barre d'XP
@@ -177,7 +180,7 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
         )}
         {mode === 'quotidien' && (
           <>
-            10 questions identiques pour tous aujourd'hui
+            10 questions identiques pour tous aujourd'hui (points ×1,5 si ta série fait 3 jours ou plus)
             {recordJour ? ` · ton score : ${recordJour} pts` : ''}
             {streakJour > 0 ? (
               <span className="streak-jour gros" title="Série de jours consécutifs sur le quizz du jour — joue chaque jour pour la faire monter !">
@@ -191,6 +194,17 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
           </>
         )}
       </p>
+
+      {badgeSuivant && (
+        <div className="prochain-badge" title="Débloque ce badge en continuant à jouer — encore un petit effort !">
+          <span className="pb-icone"><Icone nom={badgeSuivant.icone} taille={18} /></span>
+          <div className="pb-corps">
+            <strong>Prochain badge : {badgeSuivant.nom}</strong>
+            <span className="pb-sous">{badgeSuivant.desc} — {badgeSuivant.actuel}/{badgeSuivant.cible}</span>
+            <span className="pb-barre"><i style={{ width: `${Math.round(badgeSuivant.pct * 100)}%` }} /></span>
+          </div>
+        </div>
+      )}
 
       {mode === 'duel' && (
         <section className="noms">

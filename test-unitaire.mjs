@@ -120,5 +120,11 @@ check('semaine en cours : il y a 10 jours dehors', L.dansSemaineEnCours(ilYa10j.
 check('semaine en cours : lundi prochain dehors', L.dansSemaineEnCours(lundiProchain.toISOString()) === false);
 check('cleJourLocal format AAAA-MM-JJ', /^\d{4}-\d{2}-\d{2}$/.test(L.cleJourLocal(maintenant)));
 
+// --- 9) dopamine : prochain badge / titre ---
+const pb = B.prochainBadge();
+check('prochainBadge : un badge verrouillé proposé (attendu parties-1 0/1 au départ)', pb && pb.id === 'parties-1' && pb.actuel === 0 && pb.cible === 1);
+const pt = T.prochainTitre();
+check('prochainTitre : un titre verrouillé proposé (palier 3, niveau actuel 1)', pt && pt.cible === 3 && pt.actuel === 1);
+
 console.log('\n==== RESULTAT : ' + ok + ' PASS / ' + ko + ' FAIL ====');
 process.exit(ko === 0 ? 0 : 1);

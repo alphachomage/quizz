@@ -74,6 +74,24 @@ export function calculerTitres() {
   return liste;
 }
 
+// Le titre verrouillé le PLUS PROCHE de son déblocage (niveau de thème le plus avancé).
+export function prochainTitre() {
+  const xp = chargerXP();
+  let best = null;
+  for (const [themeId, noms] of Object.entries(TITRES_PAR_THEME)) {
+    const niv = niveauTheme(xp[themeId] || 0);
+    for (let i = 0; i < PALIERS_TITRE.length; i++) {
+      const palier = PALIERS_TITRE[i];
+      if (niv >= palier) continue;
+      const pct = niv / palier;
+      if (!best || pct > best.pct) {
+        best = { id: `titre-${themeId}-${palier}`, nom: noms[i], themeId, actuel: niv, cible: palier, pct };
+      }
+    }
+  }
+  return best;
+}
+
 // --- Titre affiché sous la barre d'XP du profil ---
 const CLE_TITRE = 'voltquiz_titre_actif';
 

@@ -106,6 +106,53 @@ export function calculerBadges() {
   return BADGES.map((b) => ({ ...b, debloque: !!b.test(s) }));
 }
 
+// Progression vers chaque badge à seuil numérique (pour l'affichage « prochain badge »).
+const PROGRES_BADGES = {
+  'parties-1': (s) => [s.parties, 1],
+  'parties-10': (s) => [s.parties, 10],
+  'parties-50': (s) => [s.parties, 50],
+  'parties-100': (s) => [s.parties, 100],
+  'questions-100': (s) => [s.repondues, 100],
+  'questions-500': (s) => [s.repondues, 500],
+  'questions-1000': (s) => [s.repondues, 1000],
+  'solo-100': (s) => [s.recordSolo, 100],
+  'solo-200': (s) => [s.recordSolo, 200],
+  'solo-240': (s) => [s.recordSolo, 240],
+  'survie-5': (s) => [s.recordSurvie, 5],
+  'survie-10': (s) => [s.recordSurvie, 10],
+  'survie-15': (s) => [s.recordSurvie, 15],
+  'duel-1': (s) => [s.duelGagnes, 1],
+  'duel-3': (s) => [s.duelGagnes, 3],
+  'points-1000': (s) => [s.points, 1000],
+  'points-5000': (s) => [s.points, 5000],
+  'streak-3': (s) => [s.streakJour, 3],
+  'streak-7': (s) => [s.streakJour, 7],
+  'streak-30': (s) => [s.streakJour, 30],
+  'niveau-3': (s) => [s.maxNiveauTheme, 3],
+  'niveau-5': (s) => [s.maxNiveauTheme, 5],
+  'niveau-10': (s) => [s.maxNiveauTheme, 10],
+  'themes-5': (s) => [s.themesJoues, 5],
+  'themes-12': (s) => [s.themesJoues, 12],
+  'propose-1': (s) => [s.nbProposees + s.nbValidees, 1],
+  'validees-3': (s) => [s.nbValidees, 3],
+};
+
+// Le badge verrouillé le PLUS PROCHE de son déblocage (effet « reviens-y » sur l'accueil).
+export function prochainBadge() {
+  const s = statsBadges();
+  let best = null;
+  for (const b of calculerBadges()) {
+    if (b.debloque) continue;
+    const p = PROGRES_BADGES[b.id];
+    const [actuel, cible] = p ? p(s) : [0, 1];
+    const pct = cible > 0 ? Math.min(1, actuel / cible) : 0;
+    if (!best || pct > best.pct) {
+      best = { id: b.id, nom: b.nom, desc: b.desc, icone: b.icone, actuel, cible, pct };
+    }
+  }
+  return best;
+}
+
 // --- Badge favori affiché sur la carte profil (1 badge choisi parmi les débloqués) ---
 const CLE_BADGE_FAVORI = 'voltquiz_badge_favori';
 

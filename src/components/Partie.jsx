@@ -14,6 +14,7 @@ import {
   couleurNiveau,
   questionsQuotidien,
   dateAujourdhui,
+  streakJourActuelle,
   chargerSignales,
   ajouterSignalement,
   cleSerie,
@@ -157,7 +158,9 @@ export default function Partie({ config, prefs, onTerminer }) {
     // (bonus = n° de la série − 1, plafonné à +10)
     const nouveauStreak = correct ? streaks[joueurActuel] + 1 : 0;
     const bonusStreak = correct ? Math.min(10, nouveauStreak - 1) : 0;
-    const gain = pointsPour(correct, secondesEcoulees, bonus) + bonusStreak;
+    let gain = pointsPour(correct, secondesEcoulees, bonus) + bonusStreak;
+    // Quizz du jour boosté par la série de jours (≥ 3 jours = points ×1,5)
+    if (mode === 'quotidien' && streakJourActuelle().compte >= 3) gain = Math.round(gain * 1.5);
     setSelection(i);
     setDernierGain(gain);
     setDernierBonus(bonusStreak);
@@ -360,6 +363,9 @@ export default function Partie({ config, prefs, onTerminer }) {
         )}
         {mode === 'quotidien' && (
           <span className="chip manche bonus"><Icone nom="calendar" taille={13} /> Quizz du {niveau}</span>
+        )}
+        {mode === 'quotidien' && streakJourActuelle().compte >= 3 && (
+          <span className="chip manche bonus"><Icone nom="bolt" taille={13} /> série {streakJourActuelle().compte} j · pts ×1,5</span>
         )}
         {avecManches && (
           <span className={bonus ? 'chip manche bonus' : 'chip manche'}>

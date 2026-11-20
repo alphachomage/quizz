@@ -58,6 +58,10 @@ VoltQuiz est un **quiz web rapide façon QuizUp** :
   `chargerSuggestions`/`supprimerSuggestion` dans `logique.js`), **affiché UNIQUEMENT dans la vue admin
   `?admin=1`** (section « Suggestions des joueurs » avec pseudo + date + bouton supprimer). Le joueur ne
   voit qu'un message de confirmation, jamais la liste.
+- **Dopamine « reviens-y »** : bannière « Prochain badge » sur l'accueil (`prochainBadge()` dans
+  `badges.js` + `prochainTitre()` dans `titres.js` — badge/titre verrouillé le plus proche, avec
+  progression actuel/cible et barre) ; **quizz du jour boosté** : si la série de jours ≥ 3, les points
+  de la partie sont ×1,5 (chip « série N j · pts ×1,5 » dans `Partie.jsx`).
 - **Animation de déblocage badge/titre** (`Deblocage.jsx`, affiché sur l'ACCUEIL au retour d'une
   partie) : `App.jsx` prend un snapshot des badges/titres débloqués au lancement (`calculerBadges`/
   `calculerTitres`) et calcule le diff à la fin ; si nouveautés → carte animée (pop + halo, items en
