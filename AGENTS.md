@@ -147,6 +147,10 @@ taux de réussite par thème, XP globale + niveaux par thème, top 5 des records
   large (`.app` 36px, sections aérées), titres fins (`h1-h3` weight 400, logo en serif Georgia weight 400,
   éclair plat `currentColor`), boutons du bas de l'accueil transparents. Palette sobre active (voir
   `PALETTES.md` pour l'ancienne palette « vivante »).
+- **GitHub** : après CHAQUE amélioration terminée (et testée : `npm run build` + `node test-unitaire.mjs`),
+  commiter et pousser sur `origin main` (repo `github.com/alphachomage/quizz`) :
+  `git add -A && git commit -m "..." && git push origin main` (ne JAMAIS toucher à `node_modules/`,
+  `dist/`, `backups/` — déjà dans `.gitignore`).
 - UI et contenus **en français**, JavaScript (JSX) uniquement — le client n'est pas développeur.
 
 ## 🧰 Stack technique (et pourquoi)
