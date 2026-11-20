@@ -14,3 +14,12 @@ directory = "./public"             # assets servis tels quels en dev (icônes, J
 binding = "ASSETS"                 # utilisé dans worker.js via env.ASSETS
 run_worker_first = true            # CHAQUE requête passe d'abord par worker.js
                                    # (sinon Cloudflare sert les fichiers directement)
+
+# Variables d'environnement du Worker (lue dans worker.js via env.*)
+[vars]
+ENVIRONMENT = "production"
+APP_VERSION = "0.1.0"
+# CSP d'abord en Report-Only (48 h d'observation, rapports reçus sur /api/csp-report),
+# puis passer à "false" pour appliquer la CSP.
+CSP_REPORT_ONLY = "true"
+ALLOWED_ORIGINS = "https://voltquiz.joris-leo81.workers.dev"
