@@ -9,9 +9,15 @@ import './styles.css';
 
 import { registerSW } from 'virtual:pwa-register';
 
+import { prechargerDepuisServeur } from '@lib/storage.js';
+
 // registerSW = enregistre le "service worker" : c'est le morceau de code
 // qui permet à l'appli de s'installer (WPA) et de fonctionner hors-ligne.
 registerSW({ immediate: true });
+
+// En mode stockage 'd1' (?stockage=d1) : pré-charge les clés depuis le serveur
+// dans le cache local AVANT le rendu (en 'local', c'est un no-op).
+prechargerDepuisServeur();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

@@ -1,13 +1,13 @@
 // exclusions.js — questions retirées du pool par l'admin (signalées puis validées
 // comme mauvaises). Le filtre est appliqué au chargement des questions.
-import { CLES, lire, ecrire } from './storage.js';
+import { ExcluesRepo } from './repositories.js';
 
 export function chargerExclues() {
-  return lire(CLES.exclues, []) || [];
+  return ExcluesRepo.tout();
 }
 
 function sauverExclues(liste) {
-  ecrire(CLES.exclues, liste);
+  ExcluesRepo.sauver(liste);
 }
 
 export function ajouterExclusion(texteNormalise) {

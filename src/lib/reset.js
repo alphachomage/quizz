@@ -3,22 +3,22 @@
 // - ?resetcompte=1  : reset TOTAL de la progression (streak du jour, badge favori,
 //   titre actif en plus). Les questions perso sont CONSERVÉES : un offset est posé
 //   pour que les badges « proposer/valider » repartent de zéro (voir statsBadges).
-import { CLES, supprimer, ecrire } from './storage.js';
+import { RecordsRepo, PartiesRepo, XpRepo, SeriesRepo, StreakJourRepo, BadgeFavoriRepo, TitreActifRepo, ResetSoumRepo } from './repositories.js';
 import { chargerSoumissions, chargerValidees } from './soumissions.js';
 
 export function reinitialiserScores() {
-  supprimer(CLES.records);
-  supprimer(CLES.parties);
-  supprimer(CLES.xp);
-  supprimer(CLES.series);
+  RecordsRepo.vider();
+  PartiesRepo.vider();
+  XpRepo.vider();
+  SeriesRepo.vider();
 }
 
 export function reinitialiserProgression() {
   reinitialiserScores();
-  supprimer(CLES.streakJour);
-  supprimer(CLES.badgeFavori);
-  supprimer(CLES.titreActif);
-  ecrire(CLES.resetSoum, {
+  StreakJourRepo.vider();
+  BadgeFavoriRepo.vider();
+  TitreActifRepo.vider();
+  ResetSoumRepo.sauver({
     proposees: chargerSoumissions().length,
     validees: chargerValidees().length,
   });

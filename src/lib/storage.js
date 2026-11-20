@@ -8,6 +8,17 @@
 //   dans shared/hooks/useStockage.js.
 // - lire() tolère l'ancien format "chaîne brute" (non JSON) pour rester compatible
 //   avec les données écrites avant cette couche.
+//
+// - MODE STOCKAGE : 'local' (défaut, 100 % hors-ligne) ou 'd1' (V2 : synchro serveur
+//   via /api/kv). En 'd1', lire() sert le cache localStorage (rempli au démarrage par
+//   prechargerDepuisServeur()) et ecrire() pousse aussi au serveur en arrière-plan :
+//   l'appli reste utilisable hors-ligne, la synchro est best-effort.
+//   Flag : ?stockage=d1 dans l'URL (test), sinon 'local'.
+
+import { lireParamUrl } from './nav.js';
+import { kvGet, kvSet } from './api.js';
+
+export const MODE_STOCKAGE = lireParamUrl('stockage') === 'd1' ? 'd1' : 'local';
 
 // Registre de TOUTES les clés de stockage de l'application.
 export const CLES = {
@@ -59,12 +70,37 @@ export function lire(cle, defaut = null) {
 }
 
 // Écrit une valeur (JSON) et prévient les abonnés.
+// En mode 'd1', pousse aussi au serveur en arrière-plan (best-effort, jamais bloquant).
 export function ecrire(cle, valeur) {
   try {
     localStorage.setItem(cle, JSON.stringify(valeur));
   } catch {
     // stockage indisponible (quota dépassé, navigation privée) : on ignore
   }
+  if (MODE_STOCKAGE === 'd1') {
+    kvSet(cle, valeur).catch(() => {
+      // serveur injoignable : la valeur reste en local, la synchro reprendra au prochain write
+    });
+  }
+  notifier();
+}
+
+// En mode 'd1' : pré-charge TOUTES les clés depuis le serveur (/api/kv) dans le cache
+// local, puis notifie. Appelé UNE FOIS au démarrage de l'appli (main.jsx).
+export async function prechargerDepuisServeur() {
+  if (MODE_STOCKAGE !== 'd1') return;
+  await Promise.all(
+    Object.values(CLES).map(async (cle) => {
+      try {
+        const r = await kvGet(cle);
+        if (r && r.valeur !== undefined && r.valeur !== null) {
+          localStorage.setItem(cle, JSON.stringify(r.valeur));
+        }
+      } catch {
+        // clé absente côté serveur ou réseau coupé : on garde le local
+      }
+    })
+  );
   notifier();
 }
 

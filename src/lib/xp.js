@@ -1,15 +1,15 @@
 // xp.js — XP et niveaux par thème (courbe racine). Stockée via lib/storage.js.
-import { CLES, lire, ecrire } from './storage.js';
+import { XpRepo } from './repositories.js';
 
 export function chargerXP() {
-  return lire(CLES.xp, {}) || {};
+  return XpRepo.tout();
 }
 
 // Ajoute de l'XP à un thème (appelé à chaque partie terminée). Retourne le nouveau total.
 export function ajouterXP(themeId, montant) {
   const xp = chargerXP();
   xp[themeId] = (xp[themeId] || 0) + montant;
-  ecrire(CLES.xp, xp);
+  XpRepo.sauver(xp);
   return xp[themeId];
 }
 

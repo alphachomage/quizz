@@ -1,6 +1,6 @@
 // series.js — anti-répétition : la dernière série de questions jouée est mémorisée
 // par mode/niveau/thème, pour que « Rejouer » ne retombe JAMAIS sur la même série.
-import { CLES, lire, ecrire } from './storage.js';
+import { SeriesRepo } from './repositories.js';
 import { normaliserTexteQuestion } from './texte.js';
 
 export function cleSerie(mode, niveau, themeId) {
@@ -8,14 +8,14 @@ export function cleSerie(mode, niveau, themeId) {
 }
 
 export function chargerSerie(cle) {
-  const m = lire(CLES.series, {}) || {};
+  const m = SeriesRepo.tout();
   return Array.isArray(m[cle]) ? m[cle] : [];
 }
 
 export function sauverSerie(cle, questions) {
-  const m = lire(CLES.series, {}) || {};
+  const m = SeriesRepo.tout();
   m[cle] = questions.map((q) => normaliserTexteQuestion(q.q));
-  ecrire(CLES.series, m);
+  SeriesRepo.sauver(m);
 }
 
 // Retire du pool les questions de la dernière série jouée (si ça laisse assez de questions).
