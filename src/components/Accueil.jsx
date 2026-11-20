@@ -286,7 +286,7 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, estInvite, on
 
       {!estInvite && (
         <button className="btn-secondaire" onClick={onClassement}>
-          <Icone nom="podium" taille={18} /> Voir le leaderboard
+          <Icone nom="podium" taille={18} /> Voir le classement
         </button>
       )}
 

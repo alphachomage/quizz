@@ -125,7 +125,7 @@ export default function Compte({ onConnexion }) {
         </button>
         <p className="note-local">
           En mode invité tu joues tout de suite, mais <strong>sans XP de compte ni de thèmes, sans badges,
-          sans titres et sans leaderboard</strong> — crée un compte pour débloquer tout ça et tout garder.
+          sans titres et sans classement</strong> — crée un compte pour débloquer tout ça et tout garder.
         </p>
 
         {onglet === 'creation' && (

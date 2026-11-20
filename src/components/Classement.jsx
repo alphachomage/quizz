@@ -77,7 +77,7 @@ export default function Classement({ themes, onAccueil, onStats }) {
           <span className="logo-marque" style={{ width: 46, height: 46, borderRadius: 14 }}>
             <Icone nom="podium" taille={26} />
           </span>
-          Leaderboard
+          Classement
         </div>
         <p className="tagline">Un classement par mode de jeu, enregistré localement sur ce PC.</p>
       </header>

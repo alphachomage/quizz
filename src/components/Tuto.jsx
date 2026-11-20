@@ -53,7 +53,7 @@ export default function Tuto({ onFermer, estInvite }) {
               <span className="tuto-icone"><Icone nom="user" taille={20} /></span>
               <div>
                 <strong>Tu joues en invité</strong> (pseudo automatique) : aucune XP de compte ni de thème,
-                pas de badges, pas de titres et pas de leaderboard ne sont enregistrés.
+                pas de badges, pas de titres et pas de classement ne sont enregistrés.
                 <strong> Crée un compte</strong> pour tout conserver entre tes parties.
               </div>
             </li>
