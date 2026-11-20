@@ -1,3 +1,4 @@
+/* global WebSocketPair */
 // durable-objects/DuelRoom.js — Durable Object "room de duel" (V2).
 // Une room = 2 joueurs + état de la partie, persisté par Cloudflare.
 // Le duel temps réel passe par WebSocket : /api/duel/<roomId> -> ce DO.

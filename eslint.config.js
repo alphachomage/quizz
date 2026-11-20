@@ -23,7 +23,12 @@ export default [
     ],
   },
   {
-    files: ['src/**/*.{js,jsx}', 'worker.js', 'worker-api.js', 'durable-objects/**/*.js', 'vite.config.js', 'vitest.config.js', 'eslint.config.js', 'scripts/**/*.mjs'],
+    // Scripts Node (build) : console autorisé (ce ne sont pas des écrans).
+    files: ['scripts/**/*.mjs'],
+    rules: { 'no-console': 'off' },
+  },
+  {
+    files: ['src/**/*.{js,jsx}', 'worker.js', 'worker-api.js', 'durable-objects/**/*.js', 'vite.config.js', 'vitest.config.js', 'eslint.config.js'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
