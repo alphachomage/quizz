@@ -44,8 +44,9 @@ class AudioContextFactice {
   resume() { return Promise.resolve(); }
   close() { return Promise.resolve(); }
 }
-if (!window.AudioContext) window.AudioContext = AudioContextFactice;
-if (!window.webkitAudioContext) window.webkitAudioContext = AudioContextFactice;
+// On remplace systématiquement (jsdom peut définir un AudioContext partiel).
+window.AudioContext = AudioContextFactice;
+window.webkitAudioContext = AudioContextFactice;
 
 // --- Vibrations ---
 Object.defineProperty(window.navigator, 'vibrate', {
