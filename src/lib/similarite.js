@@ -45,27 +45,52 @@ function jaccard(a, b) {
   return inter / (a.size + b.size - inter);
 }
 
+// Pré-calcul d'un texte : normalisation + mots significatifs + bigrammes.
+// Sert à l'index (construireIndex) pour ne calculer ça qu'UNE fois par question.
+function prep(texte) {
+  const n = normaliser(texte);
+  return { n, setMots: new Set(tokens(texte)), setBigrams: bigrams(texte) };
+}
+
+// Score entre deux textes PRÉ-CALCULÉS (prep), entre 0 et 1.
+function scorePrep(pa, pb) {
+  if (!pa.n || !pb.n) return 0;
+  if (pa.n === pb.n) return 1; // texte strictement identique
+  const sMots = jaccard(pa.setMots, pb.setMots);
+  const sBigrammes = jaccard(pa.setBigrams, pb.setBigrams);
+  return 0.65 * sMots + 0.35 * sBigrammes;
+}
+
 // Score de similarité entre deux textes, entre 0 et 1.
 export function scoreSimilarite(a, b) {
-  const na = normaliser(a);
-  const nb = normaliser(b);
-  if (!na || !nb) return 0;
-  if (na === nb) return 1; // texte strictement identique
-  const sMots = jaccard(new Set(tokens(a)), new Set(tokens(b)));
-  const sBigrammes = jaccard(bigrams(a), bigrams(b));
-  return 0.65 * sMots + 0.35 * sBigrammes;
+  return scorePrep(prep(a), prep(b));
 }
 
 export const SEUIL_SIMILAIRE = 0.4; // à partir de là, on avertit l'utilisateur
 export const SEUIL_IDENTIQUE = 0.85; // à partir de là, on dit « quasi identique »
 
-// Cherche les questions les plus proches d'un texte donné.
-// `questions` : liste d'objets contenant au moins { q, themeNom, themeCouleur }
+// Index pré-calculé des questions (normalisation + mots + bigrammes de CHAQUE
+// question calculés UNE SEULE FOIS) : indispensable avec 13 000+ questions,
+// sinon chaque frappe recalculerait tout. Interroger ensuite avec
+// trouverSimilairesIndex(texte, index, ...).
+export function construireIndex(questions) {
+  return questions.map((q) => ({ question: q, prep: prep(q.q) }));
+}
+
+// Cherche dans un INDEX (voir construireIndex) les questions les plus proches.
 // Retourne [{ question, score }] triés du plus au moins similaire.
-export function trouverSimilaires(texte, questions, seuil = SEUIL_SIMILAIRE, max = 5) {
-  return questions
-    .map((q) => ({ question: q, score: scoreSimilarite(texte, q.q) }))
+export function trouverSimilairesIndex(texte, index, seuil = SEUIL_SIMILAIRE, max = 5) {
+  const p = prep(texte);
+  return index
+    .map((e) => ({ question: e.question, score: scorePrep(p, e.prep) }))
     .filter((x) => x.score >= seuil)
     .sort((a, b) => b.score - a.score)
     .slice(0, max);
+}
+
+// Cherche les questions les plus proches d'un texte donné (construit l'index à
+// la volée : pour un usage ponctuel, ex. la validation du formulaire).
+// `questions` : liste d'objets contenant au moins { q, themeNom, themeCouleur }
+export function trouverSimilaires(texte, questions, seuil = SEUIL_SIMILAIRE, max = 5) {
+  return trouverSimilairesIndex(texte, construireIndex(questions), seuil, max);
 }

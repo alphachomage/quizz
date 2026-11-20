@@ -1,7 +1,12 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Icone, { Barres } from '@shared/ui/Icone.jsx';
 import { NIVEAUX, chargerXP, niveauTheme, SEUIL_SOUMISSION_NIVEAU } from '@lib/index.js';
-import { trouverSimilaires, SEUIL_SIMILAIRE, SEUIL_IDENTIQUE } from '@lib/similarite.js';
+import {
+  construireIndex,
+  trouverSimilairesIndex,
+  SEUIL_SIMILAIRE,
+  SEUIL_IDENTIQUE,
+} from '@lib/similarite.js';
 
 // Formulaire « Proposer une question ».
 // À la validation, on compare la question à TOUTES les questions connues
@@ -20,12 +25,22 @@ export default function FormulaireQuestion({ themes, toutesQuestions, onAjouter,
   const [erreur, setErreur] = useState('');
   const [avertissement, setAvertissement] = useState(null); // [{ question, score }]
 
-  // Indicateur en direct pendant la saisie (le meilleur match actuel).
+  // Index de similarité pré-calculé UNE FOIS pour les 13 000+ questions connues :
+  // recalculer la normalisation de tout le corpus à chaque frappe serait trop lent.
+  const indexSim = useMemo(() => construireIndex(toutesQuestions), [toutesQuestions]);
+
+  // Indicateur en direct pendant la saisie (le meilleur match actuel), avec debounce
+  // de 300 ms : on ne recalcule pas la similarité à chaque touche.
+  const [texteLive, setTexteLive] = useState('');
+  useEffect(() => {
+    const t = setTimeout(() => setTexteLive(texte), 300);
+    return () => clearTimeout(t);
+  }, [texte]);
   const topLive = useMemo(() => {
-    if (texte.trim().length < 8) return null;
-    const res = trouverSimilaires(texte, toutesQuestions, SEUIL_SIMILAIRE, 1);
+    if (texteLive.trim().length < 8) return null;
+    const res = trouverSimilairesIndex(texteLive, indexSim, SEUIL_SIMILAIRE, 1);
     return res.length > 0 ? res[0] : null;
-  }, [texte, toutesQuestions]);
+  }, [texteLive, indexSim]);
 
   function setReponse(i, v) {
     setReponses((r) => r.map((x, j) => (j === i ? v : x)));
@@ -50,8 +65,8 @@ export default function FormulaireQuestion({ themes, toutesQuestions, onAjouter,
       return;
     }
     setErreur('');
-    // Vérification des similarités À LA REQUÊTE (comme demandé)
-    const sim = trouverSimilaires(texte, toutesQuestions, SEUIL_SIMILAIRE, 5);
+    // Vérification des similarités À LA REQUÊTE (comme demandé), via l'index pré-calculé
+    const sim = trouverSimilairesIndex(texte, indexSim, SEUIL_SIMILAIRE, 5);
     if (sim.length > 0) {
       setAvertissement(sim);
       return;

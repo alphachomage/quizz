@@ -8,6 +8,8 @@ import {
   SEUIL_IDENTIQUE,
   SEUIL_SIMILAIRE,
   trouverSimilaires,
+  construireIndex,
+  trouverSimilairesIndex,
 } from '@/lib/similarite.js';
 
 describe('normaliser', () => {
@@ -63,5 +65,37 @@ describe('trouverSimilaires', () => {
 
   it('le seuil quasi-identique est supérieur au seuil de similarité', () => {
     expect(SEUIL_IDENTIQUE).toBeGreaterThan(SEUIL_SIMILAIRE);
+  });
+});
+
+describe('index pré-calculé (construireIndex + trouverSimilairesIndex)', () => {
+  const pool = [
+    { q: 'Quelle est la capitale de la France ?', themeNom: 'Géographie' },
+    { q: 'Quelle est la capitale de la France en Europe ?', themeNom: 'Géographie' },
+    { q: 'Qui a peint la Joconde ?', themeNom: 'Cinéma' },
+    { q: 'En quelle année a eu lieu la Révolution française ?', themeNom: 'Histoire' },
+  ];
+
+  it('donne exactement les mêmes résultats que trouverSimilaires', () => {
+    const textes = [
+      'Quelle est la capitale de la France ?',
+      'capitale de la france',
+      'Qui a peint la Joconde',
+      'révolution française 1789',
+      'une question sans aucun rapport xyz',
+    ];
+    const index = construireIndex(pool);
+    for (const t of textes) {
+      const a = trouverSimilaires(t, pool, 0, 10);
+      const b = trouverSimilairesIndex(t, index, 0, 10);
+      expect(b.map((x) => [x.question.q, x.score])).toEqual(a.map((x) => [x.question.q, x.score]));
+    }
+  });
+
+  it('respecte le seuil et la limite max', () => {
+    const index = construireIndex(pool);
+    const res = trouverSimilairesIndex('capitale de la France', index, 0.4, 1);
+    expect(res).toHaveLength(1);
+    expect(res[0].score).toBeGreaterThanOrEqual(0.4);
   });
 });
