@@ -38,7 +38,7 @@ body {
 .app {
   max-width: 720px;
   margin: 0 auto;
-  /* padding-bottom réserve la place de la barre d'action fixe (bouton "C'est parti") */
+  /* padding-bottom rï¿½serve la place de la barre d'action fixe (bouton "C'est parti") */
   padding: 36px 20px calc(110px + env(safe-area-inset-bottom));
   min-height: 100vh;
   display: flex;
@@ -267,7 +267,7 @@ body {
   margin-right: auto;
 }
 
-/* Sélecteur de mode en onglets (UX : un seul endroit compact pour choisir le mode) */
+/* Sï¿½lecteur de mode en onglets (UX : un seul endroit compact pour choisir le mode) */
 .modes-tabs {
   display: flex;
   gap: 8px;
@@ -571,7 +571,7 @@ body {
 .minuteur-rempli {
   height: 100%;
   border-radius: 999px;
-  transition: width 0.1s linear, background 0.3s ease;
+  transition: width 1s linear, background 0.3s ease; // 1 setState/s cÃ´tÃ© JS, lissÃ© ici
 }
 
 .minuteur-pts {
@@ -2113,7 +2113,7 @@ body.theme-clair {
   color: var(--texte-doux-carte);
 }
 
-/* Accent sable (#D9D0B8) en fond -> texte et icônes foncés pour le contraste */
+/* Accent sable (#D9D0B8) en fond -> texte et icï¿½nes foncï¿½s pour le contraste */
 .btn-principal, .onglet.actif, .filtre.actif, .record.top10, .avatar-defaut, .logo-marque, .tuto-icone {
   color: #141414;
 }
@@ -2121,7 +2121,7 @@ body.theme-clair {
   background: #141414;
 }
 
-/* --- Série de jours du quizz du jour : logo éclair jaune PEPS --- */
+/* --- Sï¿½rie de jours du quizz du jour : logo ï¿½clair jaune PEPS --- */
 .streak-jour {
   display: inline-flex;
   align-items: center;
@@ -2142,7 +2142,7 @@ body.theme-clair {
   margin: 10px auto 0;
 }
 
-/* --- Écran Badges --- */
+/* --- ï¿½cran Badges --- */
 .badges-grille {
   list-style: none;
   margin: 16px 0 0;
@@ -2288,7 +2288,7 @@ body.theme-clair {
   font-size: 1.1rem;
 }
 
-/* Jolie place pour le titre : pastille jaune PEPS avec étoile */
+/* Jolie place pour le titre : pastille jaune PEPS avec ï¿½toile */
 .profil-titre {
   display: inline-flex;
   align-items: center;
@@ -2358,7 +2358,7 @@ body.theme-clair {
   border-color: var(--accent1);
 }
 
-/* --- Avatar dans les paramètres --- */
+/* --- Avatar dans les paramï¿½tres --- */
 .avatar-reglage {
   cursor: default;
 }
@@ -2391,7 +2391,7 @@ body.theme-clair {
   flex-shrink: 0;
 }
 
-/* --- Fenêtre de partage --- */
+/* --- Fenï¿½tre de partage --- */
 .partage-liste {
   display: flex;
   flex-direction: column;
@@ -2405,7 +2405,7 @@ body.theme-clair {
   padding-left: 16px;
 }
 
-/* ===== Design épuré : titres fins et élégants, boutons du bas de l'accueil discrets ===== */
+/* ===== Design ï¿½purï¿½ : titres fins et ï¿½lï¿½gants, boutons du bas de l'accueil discrets ===== */
 h1, h2, h3 {
   font-weight: 400;
   letter-spacing: 0.02em;
@@ -2424,7 +2424,7 @@ h1, h2, h3 {
   transform: none;
 }
 
-/* --- Fenêtre Suggestions --- */
+/* --- Fenï¿½tre Suggestions --- */
 .champ-suggestion {
   width: 100%;
   resize: vertical;
@@ -2449,7 +2449,7 @@ h1, h2, h3 {
   line-height: 1.5;
 }
 
-/* --- Animation de déblocage (badge / titre) sur l'accueil --- */
+/* --- Animation de dï¿½blocage (badge / titre) sur l'accueil --- */
 .deblocage-carte {
   max-width: 420px;
   width: calc(100% - 32px);
@@ -2569,7 +2569,7 @@ h1, h2, h3 {
   margin-top: 0;
 }
 
-/* --- Stats avancées : calendrier du mois en cours (grille alignée L..D) + courbe des points --- */
+/* --- Stats avancï¿½es : calendrier du mois en cours (grille alignï¿½e L..D) + courbe des points --- */
 .calendrier {
   display: flex;
   flex-direction: column;
@@ -2645,7 +2645,7 @@ h1, h2, h3 {
   pointer-events: none;
 }
 
-/* --- Écran de fin : stats de la partie --- */
+/* --- ï¿½cran de fin : stats de la partie --- */
 .stats-partie {
   display: flex;
   flex-wrap: wrap;
