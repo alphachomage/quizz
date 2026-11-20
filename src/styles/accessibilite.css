@@ -40,3 +40,33 @@ body.dys .reponse .texte {
 }
 body.dys .question { font-size: 1.35rem; line-height: 1.6 !important; }
 body.dys .reponse { min-height: 70px; }
+
+/* --- Focus clavier bien visible (WCAG 2.4.7) : halo autour de l'élément actif au Tab --- */
+:focus-visible {
+  outline: 3px solid var(--accent1);
+  outline-offset: 2px;
+}
+/* Sur les éléments dont le fond EST la couleur d'accent (boutons/onglets actifs sable),
+   on prend la couleur du texte (foncée) pour que le halo reste visible. */
+.btn-principal:focus-visible, .btn-petit:focus-visible, .mode-tab:focus-visible,
+.theme.actif:focus-visible, .niveau-modal.actif:focus-visible, .onglet.actif:focus-visible,
+.filtre.actif:focus-visible, .tab-streak:focus-visible {
+  outline-color: currentColor;
+}
+/* Thème clair : halo gris foncé (le sable serait invisible sur fond blanc). */
+body.theme-clair :focus-visible { outline-color: #3A3A3A; }
+body.theme-clair .btn-principal:focus-visible, body.theme-clair .btn-petit:focus-visible,
+body.theme-clair .mode-tab:focus-visible, body.theme-clair .theme.actif:focus-visible,
+body.theme-clair .niveau-modal.actif:focus-visible, body.theme-clair .onglet.actif:focus-visible,
+body.theme-clair .filtre.actif:focus-visible { outline-color: #141414; }
+
+/* --- prefers-reduced-motion : si l'OS demande moins d'animations, on les coupe --- */
+/* (complète le réglage manuel "Animations OFF" de l'appli) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
