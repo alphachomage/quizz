@@ -4,9 +4,9 @@
 import Icone from '@shared/ui/Icone.jsx';
 import { definirAvatar } from '@lib/comptes.js';
 
-import Parametres from '@features/parametres/Parametres.jsx';
-import Profil from '@features/profil/Profil.jsx';
-import Suggestions from '@features/suggestions/Suggestions.jsx';
+import Parametres from '@shared/modales/Parametres.jsx';
+import Profil from '@shared/modales/Profil.jsx';
+import Suggestions from '@shared/modales/Suggestions.jsx';
 
 import { useAccueil } from './useAccueil.js';
 import BarreUser from './composants/BarreUser.jsx';

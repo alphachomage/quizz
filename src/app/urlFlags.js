@@ -30,6 +30,11 @@ export function urlSansFlagAdmin() {
   return window.location.pathname + (qs ? `?${qs}` : '');
 }
 
+// Recharge la page vers une URL donnée (ex. quitter la vue admin).
+export function redirigerVers(url) {
+  window.location.assign(url);
+}
+
 // Lit UN paramètre de l'URL actuelle (ex. ?jour=libre) sans recharger.
 export function lireParamUrl(nom) {
   return new URLSearchParams(window.location.search).get(nom);

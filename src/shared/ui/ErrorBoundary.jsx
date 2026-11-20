@@ -3,6 +3,8 @@
 // en français (palette sobre, aucun emoji) au lieu d'un écran noir.
 import { Component } from 'react';
 
+import { rechargerPage } from '@lib/nav.js';
+
 export default class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
@@ -51,7 +53,7 @@ export default class ErrorBoundary extends Component {
               recharge simplement l'application.
             </p>
             <button
-              onClick={() => window.location.reload()}
+              onClick={() => rechargerPage()}
               style={{
                 background: '#D9D0B8',
                 color: '#141414',

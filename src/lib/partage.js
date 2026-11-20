@@ -3,6 +3,8 @@
 // partage natif (navigator.share) et copie dans le presse-papiers.
 // 100 % local : aucun serveur, aucun tracking.
 
+import { origineActuelle } from './nav.js';
+
 // Texte du message de partage.
 export function textePartage({ pseudo, date, score, bonnes, total, streak }) {
   let t = `${pseudo || 'Quelqu\'un'} a marqué ${score} pts au Quizz du jour VoltQuiz du ${date} (${bonnes}/${total} bonnes réponses)`;
@@ -12,7 +14,7 @@ export function textePartage({ pseudo, date, score, bonnes, total, streak }) {
 }
 
 export function urlApp() {
-  return window.location.origin;
+  return origineActuelle();
 }
 
 // Liens directs des réseaux (texte + URL pré-remplis).
