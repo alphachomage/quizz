@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import Icone from './Icone.jsx';
+import Icone from '@shared/ui/Icone.jsx';
 
 import {
   chargerParties,

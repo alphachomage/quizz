@@ -4,7 +4,7 @@
 // plus aucun useEffect de persistance dans ce composant d'affichage.
 import { useMemo } from 'react';
 
-import Icone from '../../components/Icone.jsx';
+import Icone from '@shared/ui/Icone.jsx';
 
 import { nomNiveau } from '@lib/scoring.js';
 import { niveauTheme } from '@lib/xp.js';

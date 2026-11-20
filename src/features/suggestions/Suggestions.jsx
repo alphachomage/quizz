@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import Icone from './Icone.jsx';
+import Icone from '@shared/ui/Icone.jsx';
 
 import { ajouterSuggestion } from '@lib/index.js';
 

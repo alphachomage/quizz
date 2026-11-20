@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
 
-import Icone from './Icone.jsx';
+import Icone from '@shared/ui/Icone.jsx';
 
 import { chargerXP, niveauTheme, xpPourNiveau } from '@lib/index.js';
-import { calculerBadges, badgeFavori, definirBadgeFavori } from '../lib/badges.js';
-import { titreAffiche } from '../lib/titres.js';
+import { calculerBadges, badgeFavori, definirBadgeFavori } from '@lib/badges.js';
+import { titreAffiche } from '@lib/titres.js';
 
 // Carte profil (au clic sur l'avatar) : photo, pseudo, niveau global + barre d'XP,
 // TITRE dans un emplacement dédié, top 3 des thèmes par XP, progression badges

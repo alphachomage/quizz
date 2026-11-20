@@ -1,6 +1,6 @@
 // BarreHaut.jsx — chips d'en-tête de la partie : thème, niveau, manche, question,
 // scores des joueurs et série en cours.
-import Icone from '../../../components/Icone.jsx';
+import Icone from '@shared/ui/Icone.jsx';
 
 import { couleurNiveau, nomNiveau } from '@lib/scoring.js';
 import { streakJourActuelle } from '@lib/streak.js';

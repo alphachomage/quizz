@@ -1,14 +1,14 @@
 // routes.js — table écran -> composant. Les écrans lourds (partie, stats, admin)
 // passeront en React.lazy + Suspense en phase 4 ; ici, imports directs.
-import Accueil from '../components/Accueil.jsx';
-import AdminSignales from '../components/AdminSignales.jsx';
-import Badges from '../components/Badges.jsx';
-import Classement from '../components/Classement.jsx';
-import Compte from '../components/Compte.jsx';
-import FormulaireQuestion from '../components/FormulaireQuestion.jsx';
+import Accueil from '@features/accueil/Accueil.jsx';
+import AdminSignales from '@features/admin/AdminSignales.jsx';
+import Badges from '@features/badges/Badges.jsx';
+import Classement from '@features/classement/Classement.jsx';
+import Compte from '@features/compte/Compte.jsx';
+import FormulaireQuestion from '@features/formulaire/FormulaireQuestion.jsx';
 import Partie from '@features/partie/Partie.jsx';
 import Resultat from '@features/resultat/Resultat.jsx';
-import Stats from '../components/Stats.jsx';
+import Stats from '@features/stats/Stats.jsx';
 
 export const ROUTES = {
   accueil: Accueil,

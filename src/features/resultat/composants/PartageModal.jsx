@@ -1,6 +1,6 @@
 // PartageModal.jsx — modale de partage du résultat du quizz du jour
 // (liens directs pré-remplis, image story, partage natif, copie).
-import Icone from '../../../components/Icone.jsx';
+import Icone from '@shared/ui/Icone.jsx';
 
 export default function PartageModal({ partage }) {
   return (

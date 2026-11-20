@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 
 import App from './app/App.jsx';
 
-import ErrorBoundary from './components/ErrorBoundary.jsx';
+import ErrorBoundary from './shared/ui/ErrorBoundary.jsx';
 
 import './styles.css';
 

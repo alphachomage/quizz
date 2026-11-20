@@ -1,6 +1,6 @@
 // SignalerBouton.jsx — pouce rouge : signaler la question courante (compteur admin,
 // jamais affiché côté joueur).
-import Icone from '../../../components/Icone.jsx';
+import Icone from '@shared/ui/Icone.jsx';
 
 export default function SignalerBouton({ estSignalee, onSignaler }) {
   return (

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
-import Icone, { Barres } from './Icone.jsx';
+import Icone, { Barres } from '@shared/ui/Icone.jsx';
 import { NIVEAUX, chargerXP, niveauTheme, SEUIL_SOUMISSION_NIVEAU } from '@lib/index.js';
-import { trouverSimilaires, SEUIL_SIMILAIRE, SEUIL_IDENTIQUE } from '../lib/similarite.js';
+import { trouverSimilaires, SEUIL_SIMILAIRE, SEUIL_IDENTIQUE } from '@lib/similarite.js';
 
 // Formulaire « Proposer une question ».
 // À la validation, on compare la question à TOUTES les questions connues

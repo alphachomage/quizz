@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import Icone from './Icone.jsx';
-import { creerCompte, connecter, listePseudos, demarrerInvite } from '../lib/comptes.js';
+import Icone from '@shared/ui/Icone.jsx';
+import { creerCompte, connecter, listePseudos, demarrerInvite } from '@lib/comptes.js';
 
 // Écran de compte : connexion ou création (pseudo + e-mail + mot de passe).
 // 100 % local : les comptes vivent dans le navigateur de ce PC uniquement.

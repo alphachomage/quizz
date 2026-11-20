@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
 
-import Icone from './Icone.jsx';
+import Icone from '@shared/ui/Icone.jsx';
 
-import { validerAvatar } from '../lib/avatar.js';
+import { validerAvatar } from '@lib/avatar.js';
 
 // Fenêtre de paramètres : photo de profil + activer/désactiver les sons,
 // animations, vibrations et les 3 modes d'accessibilité (thème clair, daltonien, dys).
