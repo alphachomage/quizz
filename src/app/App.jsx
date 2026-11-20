@@ -4,6 +4,7 @@
 import { Suspense, useEffect, useMemo, useState } from 'react';
 
 import AppProviders from './AppProviders.jsx';
+import Ecrans from './Ecrans.jsx';
 import { ROUTES } from './routes.js';
 import { useNavigation } from './useNavigation.js';
 import { useCelebration } from './useCelebration.js';
@@ -13,7 +14,7 @@ import { usePrefs } from './contexts/PrefsContext.js';
 import { useThemes } from './contexts/ThemesContext.js';
 
 import Tuto from '@features/tuto/Tuto.jsx';
-import Deblocage from '@features/deblocage/Deblocage.jsx';
+// Deblocage rendu dans app/Ecrans.jsx
 
 import { aVuTuto, marquerTutoVu, sessionActuelle } from '@lib/comptes.js';
 import { reinitialiserScores, reinitialiserProgression } from '@lib/reset.js';
@@ -121,9 +122,6 @@ function Shell() {
     );
   }
 
-  const Accueil = ROUTES.accueil;
-  const Partie = ROUTES.partie;
-  const Resultat = ROUTES.resultat;
 
   // Vue admin (?admin=1) : prioritaire, même sans compte connecté.
   if (estAdmin) {
@@ -156,53 +154,24 @@ function Shell() {
 
   return (
     <div className={classeApp}>
-      {tutoOuvert && <Tuto onFermer={fermerTuto} estInvite={estInvite} />}
-      {nav.ecran === 'accueil' && (
-        <Accueil
-          themes={themes}
-          pseudo={session.pseudo}
-          prefs={prefs}
-          estAdmin={estAdmin}
-          estInvite={estInvite}
-          onDeconnexion={() => { deconnexion(); nav.allerVers('accueil'); }}
-          onDemarrer={demarrer}
-          onProposer={() => nav.allerVers('formulaire')}
-          onClassement={() => nav.allerVers('classement')}
-          onStats={() => nav.allerVers('stats')}
-          onBadges={() => nav.allerVers('badges')}
-          onChangerPrefs={changerPrefs}
-          onTuto={() => setTutoOuvert(true)}
-        />
-      )}
-      {nav.ecran === 'classement' && <ROUTES.classement themes={themes} onAccueil={() => nav.allerVers('accueil')} onStats={() => nav.allerVers('stats')} />}
-      {nav.ecran === 'stats' && <ROUTES.stats themes={themes} pseudo={session.pseudo} onAccueil={() => nav.allerVers('accueil')} />}
-      {nav.ecran === 'badges' && <ROUTES.badges themes={themes} onAccueil={() => nav.allerVers('accueil')} />}
-      {nav.ecran === 'partie' && nav.config && <Partie config={nav.config} prefs={prefs} onTerminer={terminer} />}
-      {nav.ecran === 'resultat' && nav.resultat && nav.config && (
-        <Resultat
-          resultat={nav.resultat}
-          prefs={prefs}
-          themes={themes}
-          estInvite={estInvite}
-          onRejouer={() => nav.allerVers('partie')}
-          onAccueil={() => nav.allerVers('accueil')}
-        />
-      )}
-      {nav.ecran === 'formulaire' && (
-        <ROUTES.formulaire
-          themes={themes}
-          toutesQuestions={toutesQuestions}
-          onAjouter={(q) => { ajouterQuestion(q); nav.allerVers('accueil'); }}
-          onAnnuler={() => nav.allerVers('accueil')}
-        />
-      )}
-      {nav.ecran === 'accueil' && celebration && (
-        <Deblocage
-          celebration={celebration}
-          onFermer={fermerCelebration}
-          onVoirBadges={() => { fermerCelebration(); nav.allerVers('badges'); }}
-        />
-      )}
+      <Ecrans
+        nav={nav}
+        themes={themes}
+        session={session}
+        prefs={prefs}
+        estInvite={estInvite}
+        tutoOuvert={tutoOuvert}
+        fermerTuto={fermerTuto}
+        deconnexion={deconnexion}
+        demarrer={demarrer}
+        terminer={terminer}
+        changerPrefs={changerPrefs}
+        setTutoOuvert={setTutoOuvert}
+        toutesQuestions={toutesQuestions}
+        ajouterQuestion={ajouterQuestion}
+        celebration={celebration}
+        fermerCelebration={fermerCelebration}
+      />
     </div>
   );
 }
