@@ -140,7 +140,9 @@ taux de réussite par thème, XP globale + niveaux par thème, top 5 des records
   `theme-haut`, badge Niv., record, fine barre XP). Parcours : mode → thème → niveau (solo) →
   gros bouton « C'est parti » **fixé en bas de l'écran** (`.cta-fixe`, toujours visible sans scroller,
   `padding-bottom` réservé sur `.app`) ; libellé « Choisis d'abord un thème » tant qu'aucun thème n'est
-  sélectionné. Coins très arrondis (pilule `999px` sur boutons/niveaux/
+  sélectionné. En solo, les **pilules de difficulté n'apparaissent qu'après le choix du thème** et sont
+  compactes (`.niveau` en rangée horizontale, petites barres 15px). Coins très arrondis (pilule `999px`
+  sur boutons/niveaux/
   réponses, `26px` sur cartes modes/thèmes), cartes plates sans ombre ni `backdrop-filter`, espacement
   large (`.app` 36px, sections aérées), titres fins (`h1-h3` weight 400, logo en serif Georgia weight 400,
   éclair plat `currentColor`), boutons du bas de l'accueil transparents. Palette sobre active (voir

@@ -233,12 +233,9 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
           );
         })}
       </section>
-      </>
-      )}
 
-
-
-      {mode === 'solo' && (
+      {/* En solo, le choix du niveau arrive APRÈS le choix du thème, en petites pilules compactes */}
+      {mode === 'solo' && themeId && (
         <>
           <h2 className="titre-section">Niveau de difficulté</h2>
           <section className="niveaux">
@@ -249,12 +246,14 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
                 style={{ '--couleur': n.couleur }}
                 onClick={() => setNiveau(n.id)}
               >
-                <Barres actives={i + 1} couleur={n.couleur} />
+                <Barres actives={i + 1} couleur={n.couleur} taille={15} />
                 <span>{n.nom}</span>
               </button>
             ))}
           </section>
         </>
+      )}
+      </>
       )}
 
       <button className="btn-secondaire" onClick={onClassement}>
