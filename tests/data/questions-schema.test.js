@@ -1,0 +1,66 @@
+// tests/data/questions-schema.test.js — SEUL test qui charge le vrai corpus
+// (les 264 fichiers src/data/questions-*.js). Vérifie le schéma de chaque
+// question et compte les doublons exacts connus (hérités des premiers lots).
+import { describe, expect, it } from 'vitest';
+
+import { NIVEAUX } from '@/lib/logique.js';
+import { THEMES } from '@/data/questions.js';
+
+const NIVEAUX_VALIDES = NIVEAUX.map((n) => n.id);
+
+describe('corpus de questions intégré', () => {
+  it('contient 12 thèmes actifs', () => {
+    expect(THEMES.length).toBe(12);
+  });
+
+  it('chaque thème a un id, un nom, une icône et une couleur', () => {
+    for (const t of THEMES) {
+      expect(typeof t.id).toBe('string');
+      expect(t.id.length).toBeGreaterThan(0);
+      expect(typeof t.nom).toBe('string');
+      expect(typeof t.icone).toBe('string');
+      expect(t.couleur).toMatch(/^#[0-9a-f]{6}$/i);
+    }
+  });
+
+  it('chaque thème compte au moins 1000 questions', () => {
+    for (const t of THEMES) {
+      expect(t.questions.length).toBeGreaterThanOrEqual(1000);
+    }
+  });
+
+  it('chaque question respecte le schéma (q, 2-4 réponses, bonne valide, niveau connu)', () => {
+    const niveauxValides = new Set(NIVEAUX_VALIDES);
+    let total = 0;
+    for (const t of THEMES) {
+      for (const q of t.questions) {
+        total++;
+        expect(typeof q.q, `question dans ${t.id}`).toBe('string');
+        expect(q.q.trim().length).toBeGreaterThan(3);
+        expect(Array.isArray(q.reponses), q.q).toBe(true);
+        expect(q.reponses.length, q.q).toBeGreaterThanOrEqual(2);
+        expect(q.reponses.length, q.q).toBeLessThanOrEqual(4);
+        expect(Number.isInteger(q.bonne), q.q).toBe(true);
+        expect(q.bonne >= 0 && q.bonne < q.reponses.length, q.q).toBe(true);
+        expect(niveauxValides.has(q.niveau), `${q.q} (niveau ${q.niveau})`).toBe(true);
+        for (const r of q.reponses) expect(typeof r).toBe('string');
+      }
+    }
+    expect(total).toBeGreaterThan(12000);
+  });
+
+  it('compte les doublons exacts (héritage des premiers lots, < 150 tolérés)', () => {
+    const vus = new Set();
+    let doublons = 0;
+    for (const t of THEMES) {
+      for (const q of t.questions) {
+        const cle = `${t.id}|${q.q.trim().toLowerCase()}`;
+        if (vus.has(cle)) doublons++;
+        else vus.add(cle);
+      }
+    }
+    // Les tout premiers fichiers de base contiennent quelques doublons connus ;
+    // les lots rédigés ensuite sont garantis sans doublon.
+    expect(doublons).toBeLessThan(150);
+  });
+});
