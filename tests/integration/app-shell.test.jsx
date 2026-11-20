@@ -12,7 +12,7 @@ import { makeThemes, mulberry32 } from '../fixtures/questions.fixture.js';
 // Catalogue factice : 3 thèmes x 30 questions (au lieu du vrai corpus).
 vi.mock('@data/questions.js', async () => {
   const { makeThemes } = await import('../fixtures/questions.fixture.js');
-  return { THEMES: makeThemes(3, 10) };
+  return { chargerThemes: async () => makeThemes(3, 10), THEMES_META: makeThemes(3, 10) };
 });
 
 describe('shell de l\'application (app/)', () => {
@@ -32,16 +32,18 @@ describe('shell de l\'application (app/)', () => {
     vi.restoreAllMocks();
   });
 
-  it('parcours invité complet : accueil -> thème -> niveau -> partie -> réponse', () => {
+  it('parcours invité complet : accueil -> thème -> niveau -> partie -> réponse', async () => {
     render(<App />);
-
-    // Le tuto de bienvenue s'ouvre à la première connexion : on le ferme.
-    const boutonTuto = screen.queryByText("C'est parti");
-    if (boutonTuto) fireEvent.click(boutonTuto);
+    // Laisse résoudre le chargement async du catalogue (chunks lazy) : flush des micro-tâches.
+    await act(async () => {});
 
     // Accueil : les 3 thèmes factices sont affichés (mode solo par défaut).
     expect(screen.getByText('Thème 0')).toBeTruthy();
     expect(screen.getByText('Thème 1')).toBeTruthy();
+
+    // Le tuto de bienvenue s'ouvre à la première connexion : on le ferme.
+    const boutonTuto = screen.queryByText("C'est parti");
+    if (boutonTuto) fireEvent.click(boutonTuto);
 
     // Clic sur un thème -> modale de choix du niveau (solo).
     fireEvent.click(screen.getByText('Thème 0'));

@@ -95,6 +95,18 @@ function Shell() {
   }
 
   const classeApp = prefs.animations === false ? 'app sans-animations' : 'app';
+
+  // Écran de chargement tant que les questions (chunks lazy) ne sont pas prêtes.
+  if (themes === null && (estAdmin || session)) {
+    return (
+      <div className={classeApp}>
+        <div className="ecran-centre">
+          <p className="vide">Chargement des questions…</p>
+        </div>
+      </div>
+    );
+  }
+
   const Accueil = ROUTES.accueil;
   const Partie = ROUTES.partie;
   const Resultat = ROUTES.resultat;

@@ -56,10 +56,29 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,json}'],
+        // Repli SPA propre : toute URL sans extension renvoie index.html,
+        // sauf l'API (qui doit renvoyer sa vraie réponse, y compris les 404).
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api\//],
         // Le fichier de questions grossit à mesure que les thèmes atteignent 1000 questions :
         // on autorise le precache WPA à dépasser la limite par défaut de 2 Mo.
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
       },
     }),
   ],
+  build: {
+    target: 'es2022',
+    sourcemap: 'hidden',
+    chunkSizeWarningLimit: 1500,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+        },
+      },
+    },
+  },
+  define: {
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '0.1.0'),
+  },
 });
