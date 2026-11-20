@@ -6,6 +6,12 @@ import { normaliserPseudo, pseudoValide } from './moderation.js';
 const CLE_COMPTES = 'voltquiz_comptes';
 const CLE_SESSION = 'voltquiz_session';
 
+// Guard crypto : crypto.subtle n'existe que dans un contexte sécurisé (HTTPS ou
+// localhost). Sur HTTP non-local, on renvoie une erreur claire au lieu de planter.
+export function contexteSecurise() {
+  return !!(globalThis.crypto && globalThis.crypto.subtle && typeof globalThis.crypto.randomUUID === 'function');
+}
+
 export function chargerComptes() {
   try {
     return JSON.parse(localStorage.getItem(CLE_COMPTES)) || [];
@@ -38,6 +44,9 @@ async function hashMdp(mdp, sel) {
 
 // Crée un compte local. Retourne { ok: true, pseudo } ou { ok: false, erreur }.
 export async function creerCompte({ pseudo, email, mdp }) {
+  if (!contexteSecurise()) {
+    return { ok: false, erreur: "Contexte non sécurisé : ouvre l'appli en https ou sur localhost pour créer un compte." };
+  }
   const errPseudo = pseudoValide(pseudo);
   if (errPseudo) return { ok: false, erreur: errPseudo };
   if (!emailValide(email)) return { ok: false, erreur: "L'adresse e-mail semble invalide." };
@@ -62,6 +71,9 @@ export async function creerCompte({ pseudo, email, mdp }) {
 
 // Connexion : vérifie le hash du mot de passe. Retourne { ok, pseudo? , erreur? }.
 export async function connecter(pseudo, mdp) {
+  if (!contexteSecurise()) {
+    return { ok: false, erreur: "Contexte non sécurisé : la connexion nécessite https ou localhost." };
+  }
   const n = normaliserPseudo(pseudo);
   const compte = chargerComptes().find((c) => c.pseudoNormalise === n);
   if (!compte) return { ok: false, erreur: 'Aucun compte avec ce pseudo sur ce PC.' };

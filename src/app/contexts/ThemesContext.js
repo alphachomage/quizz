@@ -11,14 +11,15 @@ import {
   validerSoumission,
   exporterSoumissionsJSON,
 } from '@lib/soumissions.js';
+import { validerFichierPerso, validerSoumissions } from '@lib/schema.js';
 import { fusionThemes } from '@shared/utils/fusionThemes.js';
 
 const ThemesContext = createContext(null);
 
 export function ThemesProvider({ children }) {
   const [themesBase, setThemesBase] = useState(null); // null = questions en cours de chargement (chunks lazy)
-  const [soumissions, setSoumissions] = useState(() => chargerSoumissions()); // en attente de validation
-  const [validees, setValidees] = useState(() => chargerValidees()); // validées = jouables
+  const [soumissions, setSoumissions] = useState(() => validerSoumissions(chargerSoumissions())); // en attente de validation
+  const [validees, setValidees] = useState(() => validerSoumissions(chargerValidees())); // validées = jouables
 
   // Au chargement : on charge les questions (chunks lazy) puis on fusionne le
   // fichier questions-utilisateur.json par-dessus la base intégrée.
@@ -28,15 +29,13 @@ export function ThemesProvider({ children }) {
     (async () => {
       try {
         const base = await chargerThemes();
-        const perso = await fetch('/questions-utilisateur.json', { signal: controleur.signal })
+        const persoBrut = await fetch('/questions-utilisateur.json', { signal: controleur.signal })
           .then((r) => (r.ok ? r.json() : null))
           .catch(() => null);
         if (!actif) return;
-        setThemesBase(
-          perso && Array.isArray(perso.themes) && perso.themes.length > 0
-            ? fusionThemes(base, perso.themes)
-            : base
-        );
+        // Donnée externe (fetch) : validée par schéma zod avant usage.
+        const perso = validerFichierPerso(persoBrut);
+        setThemesBase(perso ? fusionThemes(base, perso.themes) : base);
       } catch {
         if (actif) setThemesBase([]); // échec de chargement : catalogue vide plutôt que crash
       }

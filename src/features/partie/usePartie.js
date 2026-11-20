@@ -1,6 +1,6 @@
 // features/partie/usePartie.js — TOUTE la logique d'une partie (états, actions,
 // effets), extraite de l'ancien god composant Partie.jsx. Testable hors React.
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { infoManche, pointsPour, TEMPS_PAR_QUESTION } from '@lib/scoring.js';
 import { ajouterSignalement, chargerSignales } from '@lib/signalements.js';
@@ -35,6 +35,17 @@ export function usePartie({ config, prefs, onTerminer }) {
 
   const questions = questionsParJoueur[joueurActuel]; // tirage du joueur courant
   const question = questions[Math.min(index, questions.length - 1)];
+
+  // Guard pool vide (thème sans question du niveau choisi, données invalides) :
+  // on termine la partie proprement au lieu de planter sur question undefined.
+  const finiVideRef = useRef(false);
+  useEffect(() => {
+    if (questions.length === 0 && !finiVideRef.current) {
+      finiVideRef.current = true;
+      finir();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [questions.length]);
 
   const { temps, setTemps } = useMinuteur(phase === 'question', TEMPS_PAR_QUESTION, () => repondre(null));
 
