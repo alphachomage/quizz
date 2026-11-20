@@ -1,23 +1,16 @@
-// routes.js — table écran -> composant. Les écrans lourds (partie, stats, admin)
-// passeront en React.lazy + Suspense en phase 4 ; ici, imports directs.
-import Accueil from '@features/accueil/Accueil.jsx';
-import AdminSignales from '@features/admin/AdminSignales.jsx';
-import Badges from '@features/badges/Badges.jsx';
-import Classement from '@features/classement/Classement.jsx';
-import Compte from '@features/compte/Compte.jsx';
-import FormulaireQuestion from '@features/formulaire/FormulaireQuestion.jsx';
-import Partie from '@features/partie/Partie.jsx';
-import Resultat from '@features/resultat/Resultat.jsx';
-import Stats from '@features/stats/Stats.jsx';
+// routes.js — table écran -> composant. Chaque écran est chargé À LA DEMANDE
+// (React.lazy) : le bundle initial ne contient plus que le shell, l'écran courant
+// part dans son propre chunk (voir le build : index ne fait plus que ~300 Ko).
+import { lazy } from 'react';
 
 export const ROUTES = {
-  accueil: Accueil,
-  admin: AdminSignales,
-  badges: Badges,
-  classement: Classement,
-  compte: Compte,
-  formulaire: FormulaireQuestion,
-  partie: Partie,
-  resultat: Resultat,
-  stats: Stats,
+  accueil: lazy(() => import('@features/accueil/Accueil.jsx')),
+  admin: lazy(() => import('@features/admin/AdminSignales.jsx')),
+  badges: lazy(() => import('@features/badges/Badges.jsx')),
+  classement: lazy(() => import('@features/classement/Classement.jsx')),
+  compte: lazy(() => import('@features/compte/Compte.jsx')),
+  formulaire: lazy(() => import('@features/formulaire/FormulaireQuestion.jsx')),
+  partie: lazy(() => import('@features/partie/Partie.jsx')),
+  resultat: lazy(() => import('@features/resultat/Resultat.jsx')),
+  stats: lazy(() => import('@features/stats/Stats.jsx')),
 };
