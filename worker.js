@@ -3,8 +3,8 @@
 // Avec `run_worker_first = true` (wrangler.toml), CHAQUE requête passe par ici :
 // le Worker sert les fichiers statiques via le binding ASSETS (dist/client),
 // pose les en-têtes de sécurité sur CHAQUE réponse (CSP d'abord en Report-Only,
-// voir CSP_REPORT_ONLY dans wrangler.toml), gère le cache, et laisse un endroit
-// propre pour l'API (V2 : duel en ligne, classements, sync D1 — voir le plan).
+// voir CSP_REPORT_ONLY dans wrangler.toml), gère le cache, et route l'API
+// (/api/*, voir worker-api.js : V2 = comptes D1, rooms de duel KV/DO).
 
 // --- En-têtes de sécurité appliqués à CHAQUE réponse ---
 // estProd = variable ENVIRONMENT + hôte non local (localhost = dev Vite/HMR).
@@ -67,44 +67,23 @@ function rateLimite(bee, ip) {
   return true;
 }
 
+import { routerApi } from './worker-api.js';
+
 export default {
   async fetch(request, env, _ctx) {
     const url = new URL(request.url);
     const ip = request.headers.get('cf-connecting-ip') || 'inconnu';
 
-    // --- API ---
+    // --- API : rate limiting (30 req/min/IP) puis routeur /api/* (worker-api.js) ---
     if (url.pathname.startsWith('/api/')) {
-      // Rate limiting : 30 requêtes/minute/IP, sinon 429.
       if (!rateLimite(env, ip)) {
         return new Response(JSON.stringify({ ok: false, erreur: 'Trop de requêtes, réessaie dans une minute.' }), {
           status: 429,
           headers: { ...Object.fromEntries(entetesSecurite(env, url.host)), 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
         });
       }
-
-      // Ping / health (monitoring).
-      if (url.pathname === '/api/ping' || url.pathname === '/api/health') {
-        return Response.json(
-          { ok: true, app: 'VoltQuiz', version: env.APP_VERSION || '0.1.0', heure: new Date().toISOString() },
-          { headers: { ...Object.fromEntries(entetesSecurite(env, url.host)), 'Cache-Control': 'no-store' } }
-        );
-      }
-
-      // Réception des rapports CSP (Report-Only) : on les accepte et on les ignore
-      // (visibles via `npx wrangler tail`).
-      if (url.pathname === '/api/csp-report' && request.method === 'POST') {
-        await request.text().catch(() => '');
-        return new Response(null, {
-          status: 204,
-          headers: { ...Object.fromEntries(entetesSecurite(env, url.host)), 'Cache-Control': 'no-store' },
-        });
-      }
-
-      // Toute autre route API : 404 JSON propre (les routes V2 arrivent ici).
-      return Response.json(
-        { ok: false, erreur: 'Route API inconnue.' },
-        { status: 404, headers: { ...Object.fromEntries(entetesSecurite(env, url.host)), 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } }
-      );
+      const reponseApi = await routerApi(request, env, url);
+      return securiser(reponseApi, env, 'no-store', url.host);
     }
 
     // --- Service worker de la WPA : ne jamais le mettre en cache ---
@@ -140,3 +119,6 @@ export default {
     return securiser(reponse, env, reponse.status === 200 ? 'public, max-age=3600' : undefined, url.host);
   },
 };
+
+// Classe Durable Object exportée (requise par wrangler pour le binding DUEL_ROOMS).
+export { DuelRoom } from './durable-objects/DuelRoom.js';

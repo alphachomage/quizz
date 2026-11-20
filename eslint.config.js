@@ -23,7 +23,7 @@ export default [
     ],
   },
   {
-    files: ['src/**/*.{js,jsx}', 'worker.js', 'vite.config.js', 'eslint.config.js'],
+    files: ['src/**/*.{js,jsx}', 'worker.js', 'worker-api.js', 'durable-objects/**/*.js', 'vite.config.js', 'vitest.config.js', 'eslint.config.js', 'scripts/**/*.mjs'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',

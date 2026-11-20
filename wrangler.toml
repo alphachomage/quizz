@@ -16,6 +16,34 @@ run_worker_first = true            # CHAQUE requête passe d'abord par worker.js
                                    # (sinon Cloudflare sert les fichiers directement)
 
 # Variables d'environnement du Worker (lue dans worker.js via env.*)
+
+# --- Bindings V2 (préparés, activés quand la V2 démarre) ---
+# D1 = base de données serveur (comptes, parties, records, XP, soumissions, kv).
+# database_id : à remplacer par celui créé avec "npx wrangler d1 create voltquiz".
+[[d1_databases]]
+binding = "DB"
+database_name = "voltquiz"
+database_id = "00000000-0000-0000-0000-000000000000"  # A_REMPLACER
+migrations_dir = "migrations"
+
+# KV = rooms de duel éphémères (V2).
+[[kv_namespaces]]
+binding = "ROOMS"
+id = "00000000000000000000000000000000"  # A_REMPLACER
+
+# Durable Object = room de duel temps réel (WebSocket /api/duel/<room>).
+[[durable_objects.bindings]]
+name = "DUEL_ROOMS"
+class_name = "DuelRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["DuelRoom"]
+
+[env.preview]
+ENVIRONMENT = "preview"
+CSP_REPORT_ONLY = "true"
+
 [vars]
 ENVIRONMENT = "production"
 APP_VERSION = "0.1.0"
