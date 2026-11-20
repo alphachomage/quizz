@@ -142,7 +142,7 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
           { id: 'solo', icone: 'timer', nom: 'Solo' },
           { id: 'duel', icone: 'swords', nom: 'Duel en ligne', badge: 'à venir' },
           { id: 'survie', icone: 'skull', nom: 'Survie' },
-          { id: 'quotidien', icone: 'calendar', nom: 'Quizz du jour' },
+          { id: 'quotidien', icone: 'calendar', nom: 'Quizz du jour', streak: true },
         ].map((m) => (
           <button
             key={m.id}
@@ -154,6 +154,11 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
             <Icone nom={m.icone} taille={19} />
             <span>{m.nom}</span>
             {m.badge && <span className="tab-badge">{m.badge}</span>}
+            {m.streak && streakJour > 0 && (
+              <span className="tab-streak" title={`Série de ${streakJour} jour${streakJour > 1 ? 's' : ''} consécutifs sur le quizz du jour`}>
+                <Icone nom="bolt" taille={12} /> ×{streakJour}
+              </span>
+            )}
           </button>
         ))}
       </section>
@@ -174,9 +179,15 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
           <>
             10 questions identiques pour tous aujourd'hui
             {recordJour ? ` · ton score : ${recordJour} pts` : ''}
-            <span className="streak-jour" title="Série de jours consécutifs sur le quizz du jour — joue chaque jour pour la faire monter !">
-              <Icone nom="bolt" taille={13} /> ×{streakJour}
-            </span>
+            {streakJour > 0 ? (
+              <span className="streak-jour gros" title="Série de jours consécutifs sur le quizz du jour — joue chaque jour pour la faire monter !">
+                <Icone nom="bolt" taille={17} /> Série de {streakJour} jour{streakJour > 1 ? 's' : ''} !
+              </span>
+            ) : (
+              <span className="streak-jour" title="Joue le quizz du jour chaque jour pour lancer ta série d'éclairs !">
+                <Icone nom="bolt" taille={13} /> aucune série en cours
+              </span>
+            )}
           </>
         )}
       </p>

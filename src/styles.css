@@ -2727,3 +2727,27 @@ h1, h2, h3 {
   background: var(--carte);
   color: var(--texte-doux);
 }
+
+/* --- Streak du quizz du jour plus visible : pastille éclair sur l'onglet + grosse pastille --- */
+.tab-streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--accent1);
+  color: #141414;
+  font-weight: 900;
+  font-size: 0.68rem;
+  border-radius: 999px;
+  padding: 2px 8px;
+  animation: bolt-pulse 1.6s ease-in-out infinite;
+}
+
+.streak-jour .icone,
+.tab-streak .icone {
+  animation: bolt-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes bolt-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.35); }
+}
