@@ -1,0 +1,311 @@
+import { useMemo, useState } from 'react';
+import Icone, { Barres } from './Icone.jsx';
+import {
+  chargerRecords,
+  cleRecord,
+  NIVEAUX,
+  nomNiveau,
+  chargerXP,
+  niveauTheme,
+  xpPourNiveau,
+  chargerParties,
+} from '../lib/logique.js';
+import { avatarActuel, definirAvatar } from '../lib/comptes.js';
+
+import Parametres from './Parametres.jsx';
+import Profil from './Profil.jsx';
+import Suggestions from './Suggestions.jsx';
+
+import { dateAujourdhui, streakJourActuelle } from '../lib/logique.js';
+import { titreAffiche } from '../lib/titres.js';
+// NIVEAUX sert au sélecteur de difficulté (solo + survie).
+
+// Thème fictif utilisé pour les modes "tous thèmes mélangés" (survie, quizz du jour).
+const THEME_TOUS = { id: 'tous', nom: 'Tous les thèmes', icone: 'globe', couleur: '#8b5cf6' };
+
+// Écran d'accueil : choix du mode, du niveau (solo), des joueurs (duel), du thème,
+// lancement, accès au formulaire de proposition de question, et gestion des propositions.
+export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion, onDemarrer, onProposer, onClassement, onStats, onBadges, onChangerPrefs, onTuto }) {
+  const [mode, setMode] = useState('solo');
+  const [niveau, setNiveau] = useState('moyen');
+  const [themeId, setThemeId] = useState(null);
+  const [showParametres, setShowParametres] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [nom1, setNom1] = useState(pseudo || '');
+  const [nom2, setNom2] = useState('');
+  const [avatar, setAvatar] = useState(() => avatarActuel());
+  const [profilOuvert, setProfilOuvert] = useState(false);
+  const records = chargerRecords();
+  const xp = chargerXP();
+  // Pseudos déjà rencontrés (suggestions dans le duel, façon "amis" en local)
+  const joueursConnus = [...new Set(chargerParties().flatMap((p) => (p.joueurs || []).map((j) => j.nom)))];
+  const theme = themes.find((t) => t.id === themeId);
+  const joueurs = [nom1.trim() || 'Joueur 1', nom2.trim() || 'Joueur 2'];
+  // Ordre des thèmes fixe (alphabétique par libellé) : jamais mélangé, même après un F5.
+  const themesAffiches = useMemo(
+    () => [...themes].sort((a, b) => a.nom.localeCompare(b.nom, 'fr')),
+    [themes]
+  );
+
+  function lancer() {
+    if (mode === 'solo' || mode === 'duel') {
+      if (!theme) return;
+      onDemarrer({
+        mode,
+        niveau: mode === 'solo' ? niveau : null,
+        theme,
+        joueurs: mode === 'solo' ? [pseudo || 'Toi'] : joueurs,
+        tousThemes: themes,
+      });
+    } else if (mode === 'survie') {
+      // survie : plus de niveau choisi, toutes les questions (tous niveaux) mélangées
+      onDemarrer({ mode: 'survie', niveau: 'mix', theme: THEME_TOUS, joueurs: [pseudo || 'Toi'], tousThemes: themes });
+    } else {
+      // quizz du jour : le niveau sert de "date du jour" pour le record et le tirage identique
+      onDemarrer({ mode: 'quotidien', niveau: dateAujourdhui(), theme: THEME_TOUS, joueurs: [pseudo || 'Toi'], tousThemes: themes });
+    }
+  }
+
+  // XP globale du joueur = somme de l'XP de tous les thèmes
+  // Record du quizz du jour (clé = date du jour) pour afficher "déjà joué" sur la carte.
+  const recordJour = records[cleRecord('quotidien', dateAujourdhui(), 'tous')] || 0;
+  // Série de jours du quizz du jour (logo éclair), façon Snapchat
+  const streakJour = streakJourActuelle().compte;
+  // Titre choisi dans l'onglet Badges & titres, affiché sous la barre d'XP
+  const titreProfil = titreAffiche();
+  // Une seule tentative par jour pour le quizz du jour : déjà joué si une partie du jour existe.
+  // Exception de test (une seule fois) : ouvrir l'app avec ?jour=libre pour débloquer le quizz du jour.
+  const debloqueTest = new URLSearchParams(window.location.search).get('jour') === 'libre';
+  const dejaJoueAujourdhui = !debloqueTest && chargerParties().some((p) => p.mode === 'quotidien' && p.niveau === dateAujourdhui());
+
+  const xpTotal = Object.values(xp).reduce((a, b) => a + b, 0);
+  const nivGlobal = niveauTheme(xpTotal);
+  const xpNiv = xpPourNiveau(nivGlobal);
+  const xpNext = xpPourNiveau(nivGlobal + 1);
+  const pctXpGlobal = Math.min(100, Math.round(((xpTotal - xpNiv) / (xpNext - xpNiv)) * 100));
+
+  return (
+    <div className="accueil">
+      <div className="barre-user">
+        <div className="user-bloc">
+          <button
+            className="avatar-btn"
+            onClick={() => setProfilOuvert(true)}
+            title="Voir ma carte profil (changer ma photo : Paramètres)"
+          >
+            {avatar ? (
+              <img src={avatar} alt="" className="avatar-img" />
+            ) : (
+              <span className="avatar-defaut"><Icone nom="user" taille={18} /></span>
+            )}
+          </button>
+          <div className="user-infos">
+            <span className="user-nom">
+              {pseudo} <span className="user-niv">Niv. {nivGlobal}</span>
+            </span>
+            <span className="user-xpbar" title={`${xpTotal} XP au total — niveau ${nivGlobal + 1} à ${xpNext} XP`}>
+              <i style={{ width: `${pctXpGlobal}%` }} />
+            </span>
+            {titreProfil && <span className="user-titre" title="Ton titre (choisi dans l'onglet Badges & titres)">{titreProfil}</span>}
+          </div>
+        </div>
+        <button className="btn-icone" title="Mes badges" onClick={onBadges}>
+          <Icone nom="star" taille={17} />
+        </button>
+        <button className="btn-icone" title="Revoir le tutoriel" onClick={onTuto}>
+          <Icone nom="question" taille={17} />
+        </button>
+        <button className="btn-icone" title="Mes statistiques" onClick={onStats}>
+          <Icone nom="chart" taille={17} />
+        </button>
+        <button className="btn-icone" title="Paramètres (sons, animations, vibrations)" onClick={() => setShowParametres(true)}>
+          <Icone nom="sliders" taille={17} />
+        </button>
+        <button className="btn-suppr" title="Se déconnecter" onClick={onDeconnexion}>
+          <Icone nom="logout" taille={16} />
+        </button>
+      </div>
+      <header className="hero">
+        <div className="logo">
+          <span className="logo-marque">
+            <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M13.6 1.5 4.2 13.6h5.6L8.6 22.5l9.4-12.1h-5.6l1.2-8.9z" />
+            </svg>
+          </span>
+          VoltQuiz
+        </div>
+      </header>
+
+      <section className="modes-tabs">
+        {[
+          { id: 'solo', icone: 'timer', nom: 'Solo' },
+          { id: 'duel', icone: 'swords', nom: 'Duel 1v1' },
+          { id: 'survie', icone: 'skull', nom: 'Survie' },
+          { id: 'quotidien', icone: 'calendar', nom: 'Quizz du jour' },
+        ].map((m) => (
+          <button
+            key={m.id}
+            className={mode === m.id ? 'mode-tab actif' : 'mode-tab'}
+            onClick={() => setMode(m.id)}
+          >
+            <Icone nom={m.icone} taille={19} />
+            <span>{m.nom}</span>
+          </button>
+        ))}
+      </section>
+      <p className="mode-desc-ligne">
+        {mode === 'solo' && '10 questions contre la montre dans le thème choisi.'}
+        {mode === 'duel' && '2 joueurs sur ce PC, chacun son tour, les mêmes questions.'}
+        {mode === 'survie' && (
+          <>
+            Tous thèmes et niveaux mélangés, 1 vie
+            {records[cleRecord('survie', 'mix', 'tous')] ? ` · record ${records[cleRecord('survie', 'mix', 'tous')]} pts` : ''}
+          </>
+        )}
+        {mode === 'quotidien' && (
+          <>
+            10 questions identiques pour tous aujourd'hui
+            {recordJour ? ` · ton score : ${recordJour} pts` : ''}
+            <span className="streak-jour" title="Série de jours consécutifs sur le quizz du jour — joue chaque jour pour la faire monter !">
+              <Icone nom="bolt" taille={13} /> ×{streakJour}
+            </span>
+          </>
+        )}
+      </p>
+
+      {mode === 'duel' && (
+        <section className="noms">
+          <datalist id="joueurs-connus">
+            {joueursConnus.map((n) => (
+              <option key={n} value={n} />
+            ))}
+          </datalist>
+          <input
+            value={nom1}
+            onChange={(e) => setNom1(e.target.value)}
+            placeholder="Nom du joueur 1"
+            maxLength={20}
+            list="joueurs-connus"
+          />
+          <span className="vs">VS</span>
+          <input
+            value={nom2}
+            onChange={(e) => setNom2(e.target.value)}
+            placeholder="Nom du joueur 2"
+            maxLength={20}
+            list="joueurs-connus"
+          />
+        </section>
+      )}
+
+      {['solo', 'duel'].includes(mode) && (
+      <>
+      <h2 className="titre-section">Choisis ton thème</h2>
+      <section className="themes">
+        {themesAffiches.map((t) => {
+          const record = records[cleRecord(mode, mode === 'solo' ? niveau : null, t.id)] || 0;
+          const niv = niveauTheme(xp[t.id] || 0);
+          const xpNiv = xpPourNiveau(niv);
+          const xpNext = xpPourNiveau(niv + 1);
+          const pctXp = Math.min(100, Math.round(((xp[t.id] || 0) - xpNiv) / (xpNext - xpNiv) * 100));
+          return (
+            <button
+              key={t.id}
+              className={themeId === t.id ? 'theme actif' : 'theme'}
+              style={{ '--couleur': t.couleur }}
+              onClick={() => setThemeId(t.id)}
+            >
+              <span className="theme-haut">
+                <span className="theme-icone">
+                  <Icone nom={t.icone} taille={22} />
+                </span>
+                <span className="theme-nom">{t.nom}</span>
+              </span>
+              <span className="theme-meta">
+                <span className="theme-niv">Niv. {niv}</span>
+                {record > 0 && <span className="theme-record">Record {record} pts</span>}
+                {estAdmin && <span className="theme-nb">{t.questions.length} q.</span>}
+              </span>
+              <span className="theme-xpbar" title={`XP ${xp[t.id] || 0} — niveau ${niv + 1} à ${xpNext} XP`}>
+                <i style={{ width: `${pctXp}%`, background: t.couleur }} />
+              </span>
+            </button>
+          );
+        })}
+      </section>
+      </>
+      )}
+
+
+
+      {mode === 'solo' && (
+        <>
+          <h2 className="titre-section">Niveau de difficulté</h2>
+          <section className="niveaux">
+            {NIVEAUX.map((n, i) => (
+              <button
+                key={n.id}
+                className={niveau === n.id ? 'niveau actif' : 'niveau'}
+                style={{ '--couleur': n.couleur }}
+                onClick={() => setNiveau(n.id)}
+              >
+                <Barres actives={i + 1} couleur={n.couleur} />
+                <span>{n.nom}</span>
+              </button>
+            ))}
+          </section>
+        </>
+      )}
+
+      <button className="btn-secondaire" onClick={onClassement}>
+        <Icone nom="podium" taille={18} /> Voir le leaderboard
+      </button>
+
+      <button className="btn-secondaire" onClick={onProposer}>
+        <Icone nom="plus" taille={18} /> Proposer une question
+      </button>
+
+      <button className="btn-secondaire" onClick={() => setShowSuggestions(true)}>
+        <Icone nom="pencil" taille={18} /> Une suggestion ? (idée, bug, amélioration)
+      </button>
+
+      {showParametres && (
+        <Parametres
+          prefs={prefs}
+          avatar={avatar}
+          onChangerAvatar={(dataUrl) => { definirAvatar(pseudo, dataUrl); setAvatar(dataUrl); }}
+          onChanger={onChangerPrefs}
+          onFermer={() => setShowParametres(false)}
+        />
+      )}
+      {showSuggestions && (
+        <Suggestions pseudo={pseudo} onFermer={() => setShowSuggestions(false)} />
+      )}
+      {profilOuvert && (
+        <Profil
+          pseudo={pseudo}
+          avatar={avatar}
+          themes={themes}
+          onFermer={() => setProfilOuvert(false)}
+          onBadges={() => { setProfilOuvert(false); onBadges(); }}
+        />
+      )}
+
+      {/* Barre d'action fixe en bas : le bouton pour lancer est TOUJOURS visible, sans scroller */}
+      <div className="cta-fixe">
+        <div className="cta-fixe-interieur">
+          <button
+            className="btn-principal"
+            disabled={(mode === 'solo' || mode === 'duel') && !theme || (mode === 'quotidien' && dejaJoueAujourdhui)}
+            onClick={lancer}
+          >
+            {mode === 'solo' && (theme ? `C'est parti — niveau ${nomNiveau(niveau)} !` : "Choisis d'abord un thème")}
+            {mode === 'duel' && (theme ? 'Lancer le duel !' : "Choisis d'abord un thème")}
+            {mode === 'survie' && "Mode Survie — c'est parti !"}
+            {mode === 'quotidien' && (dejaJoueAujourdhui ? `Déjà joué aujourd'hui (${recordJour} pts) — reviens demain !` : 'Jouer le quizz du jour !')}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

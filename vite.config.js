@@ -1,0 +1,53 @@
+import { defineConfig } from 'vite';
+
+import react from '@vitejs/plugin-react';
+
+import { cloudflare } from '@cloudflare/vite-plugin';
+
+import { VitePWA } from 'vite-plugin-pwa';
+
+// Vite = l'outil qui fait tourner le projet en local et fabrique la version finale.
+// @cloudflare/vite-plugin = adaptateur officiel Cloudflare : en développement,
+//   l'appli tourne dans le vrai runtime Workers (workerd) ; au build, il produit
+//   le Worker + les assets prêts pour `npx wrangler deploy` (config : wrangler.toml).
+// vite-plugin-pwa = ce qui transforme le site en "WPA" (appli installable, hors-ligne).
+
+export default defineConfig({
+  plugins: [
+    cloudflare(),
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      devOptions: {
+        // En développement, on désactive le service worker : un vieux SW du navigateur
+        // pouvait servir des fichiers périmés après un redémarrage du serveur (écran noir).
+        // La WPA (installable + hors-ligne) reste active en production (npm run build).
+        enabled: false,
+        type: 'module',
+      },
+      includeAssets: ['icons/icon-192.png', 'icons/icon-512.png'],
+
+      manifest: {
+        name: 'VoltQuiz',
+        short_name: 'VoltQuiz',
+        description: 'Le quiz rapide façon QuizUp : solo avec niveaux de difficulté, ou duel 1v1, directement dans ton navigateur.',
+        lang: 'fr',
+        theme_color: '#000000',
+        background_color: '#000000',
+        display: 'standalone',
+        start_url: '/',
+        icons: [
+          { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+        ],
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,png,json}'],
+        // Le fichier de questions grossit à mesure que les thèmes atteignent 1000 questions :
+        // on autorise le precache WPA à dépasser la limite par défaut de 2 Mo.
+        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
+      },
+    }),
+  ],
+});
