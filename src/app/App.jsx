@@ -7,7 +7,7 @@ import AppProviders from './AppProviders.jsx';
 import { ROUTES } from './routes.js';
 import { useNavigation } from './useNavigation.js';
 import { useCelebration } from './useCelebration.js';
-import { lireFlagsUrl, retirerFlagsUrl, urlSansFlagAdmin } from './urlFlags.js';
+import { lireFlagsUrl, retirerFlagsUrl, urlSansFlagAdmin, redirigerVers } from './urlFlags.js';
 import { useSession } from './contexts/SessionContext.js';
 import { usePrefs } from './contexts/PrefsContext.js';
 import { useThemes } from './contexts/ThemesContext.js';
@@ -105,7 +105,7 @@ function Shell() {
 
   function quitterAdmin() {
     // Recharge la page sans ?admin=1 : les exclusions admin sont alors retirées du pool.
-    window.location.assign(urlSansFlagAdmin());
+    redirigerVers(urlSansFlagAdmin());
   }
 
   const classeApp = prefs.animations === false ? 'app sans-animations' : 'app';
