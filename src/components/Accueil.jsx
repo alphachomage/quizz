@@ -31,6 +31,7 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
   const [themeId, setThemeId] = useState(null);
   const [showParametres, setShowParametres] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [modalNiveau, setModalNiveau] = useState(false); // modale difficulté (solo, au clic sur un thème)
   const [nom1, setNom1] = useState(pseudo || '');
   const [nom2, setNom2] = useState('');
   const [avatar, setAvatar] = useState(() => avatarActuel());
@@ -213,7 +214,11 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
               key={t.id}
               className={themeId === t.id ? 'theme actif' : 'theme'}
               style={{ '--couleur': t.couleur }}
-              onClick={() => setThemeId(t.id)}
+              onClick={() => {
+                setThemeId(t.id);
+                // En solo, le choix du niveau se fait dans une modale, sans scroll
+                if (mode === 'solo') setModalNiveau(true);
+              }}
             >
               <span className="theme-haut">
                 <span className="theme-icone">
@@ -233,26 +238,6 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
           );
         })}
       </section>
-
-      {/* En solo, le choix du niveau arrive APRÈS le choix du thème, en petites pilules compactes */}
-      {mode === 'solo' && themeId && (
-        <>
-          <h2 className="titre-section">Niveau de difficulté</h2>
-          <section className="niveaux">
-            {NIVEAUX.map((n, i) => (
-              <button
-                key={n.id}
-                className={niveau === n.id ? 'niveau actif' : 'niveau'}
-                style={{ '--couleur': n.couleur }}
-                onClick={() => setNiveau(n.id)}
-              >
-                <Barres actives={i + 1} couleur={n.couleur} taille={15} />
-                <span>{n.nom}</span>
-              </button>
-            ))}
-          </section>
-        </>
-      )}
       </>
       )}
 
@@ -279,6 +264,45 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
       )}
       {showSuggestions && (
         <Suggestions pseudo={pseudo} onFermer={() => setShowSuggestions(false)} />
+      )}
+
+      {/* Modale difficulté (solo) : s'ouvre au clic sur un thème, zéro scroll */}
+      {mode === 'solo' && themeId && modalNiveau && theme && (
+        <div className="modal-overlay" onClick={() => setModalNiveau(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-titre">
+              <h2>
+                <span className="theme-icone" style={{ '--couleur': theme.couleur, width: 34, height: 34, borderRadius: 10 }}>
+                  <Icone nom={theme.icone} taille={18} />
+                </span>
+                {theme.nom}
+              </h2>
+              <button className="btn-suppr" onClick={() => setModalNiveau(false)} title="Fermer">
+                <Icone nom="x" taille={18} />
+              </button>
+            </div>
+            <p className="vide">Choisis la difficulté :</p>
+            <div className="niveaux-modal">
+              {NIVEAUX.map((n, i) => (
+                <button
+                  key={n.id}
+                  className={niveau === n.id ? 'niveau-modal actif' : 'niveau-modal'}
+                  style={{ '--couleur': n.couleur }}
+                  onClick={() => setNiveau(n.id)}
+                >
+                  <Barres actives={i + 1} couleur={n.couleur} taille={18} />
+                  <span>{n.nom}</span>
+                </button>
+              ))}
+            </div>
+            <button
+              className="btn-principal"
+              onClick={() => { setModalNiveau(false); lancer(); }}
+            >
+              C'est parti — niveau {nomNiveau(niveau)} !
+            </button>
+          </div>
+        </div>
       )}
       {profilOuvert && (
         <Profil
