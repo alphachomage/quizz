@@ -1,9 +1,17 @@
 node_modules/
 dist/
 .wrangler/
-*.log
 backups/
-all_questions_tmp.txt
+coverage/
+.env*
+*.log
+
+# Fichiers de travail temporaires (scans et dumps de rédaction de questions)
+scan*.txt
+sciences-*.txt
+existing-q-all.txt
+mangas123-q.txt
 all-q-tmp.txt
+all_questions_tmp.txt
 tmp-*.mjs
 tmp-*.txt

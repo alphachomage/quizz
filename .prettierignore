@@ -1,0 +1,14 @@
+node_modules
+dist
+backups
+coverage
+.wrangler
+public
+package-lock.json
+
+# Données de questions : volumineuses, jamais reformatées
+src/data/**
+
+# Fichiers générés ou de travail
+CHANGELOG.md
+*.txt

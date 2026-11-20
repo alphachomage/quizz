@@ -217,8 +217,10 @@ export function demarrerMusique(prefs) {
         master.gain.cancelScheduledValues(ctx.currentTime);
         master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
         master.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
-        setTimeout(() => { try { master.disconnect(); } catch {} }, 700);
-      } catch {}
+        setTimeout(() => { try { master.disconnect(); } catch { /* nœud déjà déconnecté */ } }, 700);
+      } catch {
+        // le contexte audio était déjà fermé : rien à faire
+      }
     },
   };
 }
