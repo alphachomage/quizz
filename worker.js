@@ -6,7 +6,7 @@
 // brancher plus tard une vraie API (V2 : duel en ligne, classements, etc.).
 
 export default {
-  async fetch(request, env, ctx) {
+  async fetch(request, env, _ctx) {
     const url = new URL(request.url);
 
     // --- Service worker de la WPA : ne jamais le mettre en cache ---

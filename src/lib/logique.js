@@ -493,14 +493,18 @@ export function ajouterSuggestion(texte, pseudo) {
   liste.unshift(s); // plus récente en premier
   try {
     localStorage.setItem(CLE_SUGGESTIONS, JSON.stringify(liste.slice(0, 200)));
-  } catch {}
+  } catch {
+    // stockage indisponible (quota dépassé) : la suggestion reste en mémoire
+  }
   return s;
 }
 
 export function supprimerSuggestion(id) {
   try {
     localStorage.setItem(CLE_SUGGESTIONS, JSON.stringify(chargerSuggestions().filter((s) => s.id !== id)));
-  } catch {}
+  } catch {
+    // stockage indisponible : rien à faire
+  }
 }
 
 // Vérification admin d'un signalement : statut 'garder' (la question reste dans le pool)
