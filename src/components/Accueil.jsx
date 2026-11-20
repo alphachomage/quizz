@@ -148,7 +148,6 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, estInvite, on
           </span>
           VoltQuiz
         </div>
-        <p className="tagline">Réponds vite, réponds juste.</p>
       </header>
 
       <section className="modes-tabs">
@@ -176,6 +175,36 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, estInvite, on
           </button>
         ))}
       </section>
+      <p className="mode-desc-ligne">
+        {mode === 'solo' && '10 questions contre la montre dans le thème choisi.'}
+        {mode === 'duel' && (
+          <>
+            Affronte d'autres joueurs <strong>en ligne</strong>, pas en local : <span className="a-venir">à venir</span>
+          </>
+        )}
+        {mode === 'survie' && (
+          <>
+            Tous thèmes et niveaux mélangés, 1 vie
+            {records[cleRecord('survie', 'mix', 'tous')] ? ` · record ${records[cleRecord('survie', 'mix', 'tous')]} pts` : ''}
+          </>
+        )}
+        {mode === 'quotidien' && (
+          <>
+            10 questions identiques pour tous aujourd'hui (points ×1,5 si ta série fait 3 jours ou plus)
+            {recordJour ? ` · ton score : ${recordJour} pts` : ''}
+            {streakJour > 0 ? (
+              <span className="streak-jour gros" title="Série de jours consécutifs sur le quizz du jour — joue chaque jour pour la faire monter !">
+                <Icone nom="bolt" taille={17} /> Série de {streakJour} jour{streakJour > 1 ? 's' : ''} !
+              </span>
+            ) : (
+              <span className="streak-jour" title="Joue le quizz du jour chaque jour pour lancer ta série d'éclairs !">
+                <Icone nom="bolt" taille={13} /> aucune série en cours
+              </span>
+            )}
+          </>
+        )}
+      </p>
+
       {!estInvite && badgeSuivant && (
         <div className="prochain-badge" title={`${badgeSuivant.desc} — débloque ce badge en continuant à jouer !`}>
           <span className="pb-icone"><Icone nom={badgeSuivant.icone} taille={14} /></span>
