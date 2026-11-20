@@ -11,7 +11,7 @@ import {
   cleRecord,
   NIVEAUX,
   cleJourLocal,
-} from '../lib/logique.js';
+} from '@lib/index.js';
 
 // Écran « Mes statistiques » : bilan global, par mode, par thème, par difficulté, XP,
 // calendrier d'activité et courbe de progression.

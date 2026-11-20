@@ -21,7 +21,7 @@ import {
   sauverSerie,
   poolSansSeriePrecedente,
   tirerSerie,
-} from '../lib/logique.js';
+} from '@lib/index.js';
 
 import { jouerSon, vibrer, sonPourStreak, demarrerMusique, arreterMusique } from '../lib/sons.js';
 

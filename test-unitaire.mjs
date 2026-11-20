@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-// localStorage simulé pour les fonctions logique.js
+// localStorage simulé pour les fonctions de src/lib/
 const store = new Map();
 globalThis.localStorage = {
   getItem: (k) => (store.has(k) ? store.get(k) : null),
@@ -12,7 +12,7 @@ globalThis.localStorage = {
 };
 globalThis.window = { location: { search: '' } };
 
-const L = await import('./src/lib/logique.js');
+const L = await import('./src/lib/index.js');
 const B = await import('./src/lib/badges.js');
 const T = await import('./src/lib/titres.js');
 

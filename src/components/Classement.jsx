@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 
 import Icone from './Icone.jsx';
 
-import { chargerParties, nomNiveau, NIVEAUX, dansSemaineEnCours } from '../lib/logique.js';
+import { chargerParties, nomNiveau, NIVEAUX, dansSemaineEnCours } from '@lib/index.js';
 
 // Leaderboard local : UNIQUEMENT les classements par mode de jeu, avec pour chaque
 // ligne le thème, la difficulté et le nombre de points.

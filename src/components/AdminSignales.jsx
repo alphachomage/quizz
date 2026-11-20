@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 
 import Icone from './Icone.jsx';
 
-import { chargerSignales, supprimerSignalement, viderSignales, marquerSignalement, nomNiveau, chargerSuggestions, supprimerSuggestion } from '../lib/logique.js';
+import { chargerSignales, supprimerSignalement, viderSignales, marquerSignalement, nomNiveau, chargerSuggestions, supprimerSuggestion } from '@lib/index.js';
 
 // Vue ADMIN (questions signalées + questions proposées en attente de validation).
 // Accessible uniquement via l'URL : http://127.0.0.1:5173/?admin=1

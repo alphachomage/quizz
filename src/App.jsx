@@ -19,9 +19,9 @@ import { calculerTitres } from './lib/titres.js';
 
 import { jouerSon, vibrer } from './lib/sons.js';
 import { sessionActuelle, deconnecter, aVuTuto, marquerTutoVu } from './lib/comptes.js';
-import { reinitialiserScores, reinitialiserProgression, chargerPrefs, sauverPrefs } from './lib/logique.js';
+import { reinitialiserScores, reinitialiserProgression, chargerPrefs, sauverPrefs } from '@lib/index.js';
 import { THEMES as QUESTIONS_BASE } from './data/questions.js';
-import { chargerSoumissions, ajouterSoumission, supprimerSoumission, chargerValidees, validerSoumission, exporterSoumissionsJSON } from './lib/logique.js';
+import { chargerSoumissions, ajouterSoumission, supprimerSoumission, chargerValidees, validerSoumission, exporterSoumissionsJSON } from '@lib/index.js';
 
 // App = le chef d'orchestre : il garde en mémoire l'écran actuel
 // (accueil / partie / résultats / formulaire) et fusionne les 3 sources

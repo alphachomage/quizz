@@ -9,14 +9,14 @@ import {
   niveauTheme,
   xpPourNiveau,
   chargerParties,
-} from '../lib/logique.js';
+} from '@lib/index.js';
 import { avatarActuel, definirAvatar } from '../lib/comptes.js';
 
 import Parametres from './Parametres.jsx';
 import Profil from './Profil.jsx';
 import Suggestions from './Suggestions.jsx';
 
-import { dateAujourdhui, streakJourActuelle } from '../lib/logique.js';
+import { dateAujourdhui, streakJourActuelle } from '@lib/index.js';
 import { titreAffiche, prochainTitre } from '../lib/titres.js';
 import { prochainBadge } from '../lib/badges.js';
 // NIVEAUX sert au sélecteur de difficulté (solo + survie).

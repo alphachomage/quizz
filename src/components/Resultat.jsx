@@ -14,7 +14,7 @@ import {
   xpPourNiveau,
   chargerParties,
   enregistrerStreakJour,
-} from '../lib/logique.js';
+} from '@lib/index.js';
 
 import { jouerSon, vibrer } from '../lib/sons.js';
 

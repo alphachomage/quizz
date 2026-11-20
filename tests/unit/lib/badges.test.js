@@ -1,7 +1,7 @@
 // Tests des badges (src/lib/badges.js) : calcul depuis l'historique local.
 import { describe, expect, it } from 'vitest';
 
-import { ajouterPartie } from '@/lib/logique.js';
+import { ajouterPartie } from '@lib/index.js';
 
 import { BADGES, calculerBadges, prochainBadge } from '@/lib/badges.js';
 

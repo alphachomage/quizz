@@ -24,7 +24,7 @@ function fusionner(a, b) {
   return [...map.values()];
 }
 
-import { chargerExclues, normaliserTexteQuestion } from '../lib/logique.js';
+import { chargerExclues, normaliserTexteQuestion } from '@lib/index.js';
 
 const modules = import.meta.glob('./questions-*.js', { eager: true });
 
