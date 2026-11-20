@@ -1,12 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import Icone, { Barres } from '@shared/ui/Icone.jsx';
 import { NIVEAUX, chargerXP, niveauTheme, SEUIL_SOUMISSION_NIVEAU } from '@lib/index.js';
-import {
-  construireIndex,
-  trouverSimilairesIndex,
-  SEUIL_SIMILAIRE,
-  SEUIL_IDENTIQUE,
-} from '@lib/similarite.js';
+import { construireIndex, trouverSimilairesIndex, SEUIL_SIMILAIRE } from '@lib/similarite.js';
+
+import AlerteSimilarite from './composants/AlerteSimilarite.jsx';
+import ChampReponses from './composants/ChampReponses.jsx';
 
 // Formulaire « Proposer une question ».
 // À la validation, on compare la question à TOUTES les questions connues
@@ -88,9 +86,6 @@ export default function FormulaireQuestion({ themes, toutesQuestions, onAjouter,
     });
   }
 
-  function etiquette(score) {
-    return score >= SEUIL_IDENTIQUE ? 'quasi identique' : 'similaire';
-  }
 
   return (
     <div className="formulaire">
@@ -160,25 +155,7 @@ export default function FormulaireQuestion({ themes, toutesQuestions, onAjouter,
         )}
       </div>
 
-      <div className="champ">
-        <label>Les réponses (2 à 4) — coche la bonne</label>
-        {reponses.map((r, i) => (
-          <div key={i} className="ligne-reponse">
-            <input
-              type="radio"
-              name="bonne"
-              checked={bonne === i}
-              onChange={() => setBonne(i)}
-              title="Bonne réponse"
-            />
-            <input
-              value={r}
-              onChange={(e) => setReponse(i, e.target.value)}
-              placeholder={`Réponse ${i + 1}`}
-            />
-          </div>
-        ))}
-      </div>
+      <ChampReponses reponses={reponses} bonne={bonne} setReponse={setReponse} setBonne={setBonne} />
 
       <div className="champ">
         <label>Anecdote affichée après la réponse (optionnel)</label>
@@ -188,38 +165,11 @@ export default function FormulaireQuestion({ themes, toutesQuestions, onAjouter,
       {erreur && <p className="erreur"><Icone nom="alert" taille={15} /> {erreur}</p>}
 
       {avertissement && (
-        <div className="alerte">
-          <h3><Icone nom="alert" taille={20} /> {avertissement.length} question(s) similaire(s) trouvée(s)</h3>
-          <ul className="liste-similaires">
-            {avertissement.map((s, i) => (
-              <li key={i} className="sim-item">
-                <div className="sim-haut">
-                  <span className={`sim-score ${s.score >= SEUIL_IDENTIQUE ? 'identique' : ''}`}>
-                    {Math.round(s.score * 100)} % — {etiquette(s.score)}
-                  </span>
-                  <span className="sim-theme" style={{ background: s.question.themeCouleur || '#8b5cf6' }}>
-                    {s.question.themeNom}
-                  </span>
-                </div>
-                <div className="sim-texte">« {s.question.q} »</div>
-                <div className="barre-sim">
-                  <div
-                    className="barre-sim-rempli"
-                    style={{
-                      width: `${Math.round(s.score * 100)}%`,
-                      background: s.score >= SEUIL_IDENTIQUE ? '#ff5d73' : '#ffb020',
-                    }}
-                  />
-                </div>
-              </li>
-            ))}
-          </ul>
-          <p className="alerte-texte">Tu es sûr de vouloir ajouter cette question malgré les ressemblances ?</p>
-          <div className="alerte-actions">
-            <button className="btn-principal" onClick={ajouter}>Oui, ajouter quand même</button>
-            <button className="btn-secondaire" onClick={() => setAvertissement(null)}>Modifier ma question</button>
-          </div>
-        </div>
+        <AlerteSimilarite
+          avertissement={avertissement}
+          onAjouter={ajouter}
+          onAnnuler={() => setAvertissement(null)}
+        />
       )}
 
       {!avertissement && (
