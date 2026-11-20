@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import Icone from './Icone.jsx';
+import Icone from '@shared/ui/Icone.jsx';
 
 import { chargerSignales, supprimerSignalement, viderSignales, marquerSignalement, nomNiveau, chargerSuggestions, supprimerSuggestion } from '@lib/index.js';
 

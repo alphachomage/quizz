@@ -1,4 +1,4 @@
-import Icone from './Icone.jsx';
+import Icone from '@shared/ui/Icone.jsx';
 
 // Tuto de bienvenue : ouvert UNE SEULE FOIS par compte (première connexion).
 // Court et concis : principe du jeu, points, série (streak), modes de jeu.

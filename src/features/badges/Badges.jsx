@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 
-import Icone from './Icone.jsx';
+import Icone from '@shared/ui/Icone.jsx';
 
-import { calculerBadges } from '../lib/badges.js';
-import { calculerTitres, titreActifId, definirTitreActif } from '../lib/titres.js';
+import { calculerBadges } from '@lib/badges.js';
+import { calculerTitres, titreActifId, definirTitreActif } from '@lib/titres.js';
 
 // Écran « Mes badges & titres » : 2 onglets.
 // - Badges : 30 badges, verrouillé = grisé + condition exacte, débloqué = jaune PEPS.

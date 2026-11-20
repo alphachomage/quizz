@@ -1,6 +1,6 @@
 // PasseAppareil.jsx — écran « passe l'appareil » entre deux tours (mode duel uniquement :
 // clic obligatoire pour garder le secret entre les joueurs).
-import Icone from '../../../components/Icone.jsx';
+import Icone from '@shared/ui/Icone.jsx';
 
 export default function PasseAppareil({ joueur, couleurTheme, onPret }) {
   return (

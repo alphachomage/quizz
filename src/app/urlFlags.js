@@ -29,3 +29,8 @@ export function urlSansFlagAdmin() {
   const qs = params.toString();
   return window.location.pathname + (qs ? `?${qs}` : '');
 }
+
+// Lit UN paramètre de l'URL actuelle (ex. ?jour=libre) sans recharger.
+export function lireParamUrl(nom) {
+  return new URLSearchParams(window.location.search).get(nom);
+}

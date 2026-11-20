@@ -12,8 +12,8 @@ import { useSession } from './contexts/SessionContext.js';
 import { usePrefs } from './contexts/PrefsContext.js';
 import { useThemes } from './contexts/ThemesContext.js';
 
-import Tuto from '../components/Tuto.jsx';
-import Deblocage from '../components/Deblocage.jsx';
+import Tuto from '@features/tuto/Tuto.jsx';
+import Deblocage from '@features/deblocage/Deblocage.jsx';
 
 import { aVuTuto, marquerTutoVu, sessionActuelle } from '@lib/comptes.js';
 import { reinitialiserScores, reinitialiserProgression } from '@lib/reset.js';

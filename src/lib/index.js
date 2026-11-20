@@ -1,7 +1,7 @@
 // index.js — barrel de la couche lib/ (strangler fig).
 // Pendant la migration, les composants peuvent importer depuis '@lib' (ce fichier) ;
 // à terme chaque import pointe directement vers le module concerné.
-// R1 : lib/ n'importe JAMAIS react, components/, features/, shared/ ni app/.
+// R1 : lib/ n'importe JAMAIS react, features/, shared/ ni app/.
 export * from './storage.js';
 export * from './prefs.js';
 export * from './scoring.js';

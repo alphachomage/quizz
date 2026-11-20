@@ -1,6 +1,6 @@
 // Feedback.jsx — retour après une réponse : gain (ou bonne réponse affichée),
 // anecdote éventuelle, et le gros compteur central avec le bonus de série.
-import Icone from '../../../components/Icone.jsx';
+import Icone from '@shared/ui/Icone.jsx';
 
 export default function Feedback({ p }) {
   const { phase, selection, question, mode, dernierGain, dernierBonus, streaks, joueurActuel } = p;

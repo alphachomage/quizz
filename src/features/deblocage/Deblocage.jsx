@@ -1,4 +1,4 @@
-import Icone from './Icone.jsx';
+import Icone from '@shared/ui/Icone.jsx';
 
 // Animation de déblocage : affichée sur l'ACCUEIL juste après avoir terminé un quizz,
 // quand un badge ou un titre vient d'être débloqué. Liste ce qui est nouveau,

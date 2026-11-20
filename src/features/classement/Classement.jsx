@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import Icone from './Icone.jsx';
+import Icone from '@shared/ui/Icone.jsx';
 
 import { chargerParties, nomNiveau, NIVEAUX, dansSemaineEnCours } from '@lib/index.js';
 

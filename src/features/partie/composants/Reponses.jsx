@@ -1,6 +1,6 @@
 // Reponses.jsx — les 2 à 4 boutons de réponse. En phase 'reponse', la bonne est
 // marquée, la mauvaise sélectionnée aussi, les autres estompées.
-import Icone from '../../../components/Icone.jsx';
+import Icone from '@shared/ui/Icone.jsx';
 
 import { LETTRES } from '../constantes.js';
 
