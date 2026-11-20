@@ -1,0 +1,52 @@
+/* VoltQuiz — tuto (extrait de l'ancien styles.css, ordre conservé) */
+/* --- Tuto de bienvenue (1ere connexion uniquement) --- */
+.tuto {
+  max-width: 480px;
+}
+
+.tuto-liste {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tuto-liste > li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--texte, #ece7ff);
+}
+
+.tuto-liste strong {
+  color: #fff;
+}
+
+.tuto-icone {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: var(--accent1);
+}
+
+.tuto-liste ul {
+  margin: 4px 0 0;
+  padding-left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--texte-doux, #a79ecb);
+}
+
+.tuto-bouton {
+  width: 100%;
+}

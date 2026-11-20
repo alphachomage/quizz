@@ -1,0 +1,14 @@
+/* VoltQuiz — partage (extrait de l'ancien styles.css, ordre conservé) */
+/* --- Fen�tre de partage --- */
+.partage-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.partage-liste .btn-secondaire,
+.partage-liste .btn-principal {
+  margin-top: 0;
+  justify-content: flex-start;
+  padding-left: 16px;
+}

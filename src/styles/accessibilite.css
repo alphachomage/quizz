@@ -1,0 +1,42 @@
+/* VoltQuiz — accessibilite (extrait de l'ancien styles.css, ordre conservé) */
+/* ===== Accessibilit� ===== */
+
+/* --- Th�me clair --- */
+
+
+
+
+
+
+
+
+
+/* --- Mode daltonien : palette Okabe-Ito + lettres renforc�es + contours bonne/mauvaise --- */
+body.daltonien .reponse .lettre {
+  background: #ffffff;
+  color: #111111;
+  font-weight: 900;
+  border: 2px solid rgba(0, 0, 0, 0.4);
+}
+body.daltonien .reponse.bonne { background: #0072B2 !important; outline: 4px solid #56B4E9; }
+body.daltonien .reponse.mauvaise { background: #D55E00 !important; outline: 4px solid #E69F00; }
+body.daltonien .reponse.estompee { filter: grayscale(0.9); }
+
+/* --- Mode dyslexie : police lisible + espacements + interligne --- */
+body.dys,
+body.dys * {
+  font-family: Verdana, Tahoma, 'Comic Sans MS', 'Segoe UI', sans-serif !important;
+  letter-spacing: 0.045em !important;
+  word-spacing: 0.1em !important;
+}
+body.dys p,
+body.dys li,
+body.dys label,
+body.dys button,
+body.dys input,
+body.dys small,
+body.dys .reponse .texte {
+  line-height: 1.7 !important;
+}
+body.dys .question { font-size: 1.35rem; line-height: 1.6 !important; }
+body.dys .reponse { min-height: 70px; }

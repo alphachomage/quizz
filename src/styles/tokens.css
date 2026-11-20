@@ -1,0 +1,53 @@
+/* VoltQuiz — tokens (extrait de l'ancien styles.css, ordre conservé) */
+/* ===== VoltQuiz — feuille de style globale (thème sombre moderne, effet verre) ===== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* 60-30-10 SOMBRE sobre : 60% noir #000000, 30% gris ardoise #26262B, 10% sable #D9D0B8 */
+  /* (palette "vivante" violet/jaune #FFD60A sauvegardee dans PALETTES.md) */
+  --fond: #000000;
+  --carte: #26262B;
+  --carte-2: #1D1D23;
+  --bordure: rgba(255, 255, 255, 0.14);
+  --texte: #ECECEC;
+  --texte-doux: #9C9C94;
+  --texte-carte: #F4F4F2;
+  --texte-doux-carte: rgba(255, 255, 255, 0.62);
+  --accent1: #D9D0B8;
+  --accent2: #D9D0B8;
+  --or: #D9D0B8;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Segoe UI', 'Inter', 'Trebuchet MS', Verdana, sans-serif;
+  background: var(--fond);
+  background-attachment: fixed;
+  color: var(--texte);
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 720px;
+  margin: 0 auto;
+  /* padding-bottom r�serve la place de la barre d'action fixe (bouton "C'est parti") */
+  padding: 36px 20px calc(110px + env(safe-area-inset-bottom));
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.icone {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}

@@ -1,0 +1,93 @@
+/* VoltQuiz — stats-avancees (extrait de l'ancien styles.css, ordre conservé) */
+/* --- Stats avanc�es : calendrier du mois en cours (grille align�e L..D) + courbe des points --- */
+.calendrier {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.cal-ligne {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-entete {
+  text-align: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--texte-doux);
+  text-transform: uppercase;
+}
+
+.cal-case {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--texte-doux);
+  background: rgba(128, 128, 128, 0.15);
+}
+
+.cal-n1 { background: rgba(217, 208, 184, 0.35); }
+.cal-n2 { background: rgba(217, 208, 184, 0.65); color: #141414; }
+.cal-n3 { background: var(--accent1); color: #141414; }
+.cal-futur { background: transparent; opacity: 0.35; }
+.cal-vide { background: transparent; }
+
+.barres {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 80px;
+}
+
+.barres .barre {
+  position: relative;
+  flex: 1;
+  min-height: 2px;
+  background: var(--accent1);
+  border-radius: 3px 3px 0 0;
+  opacity: 0.85;
+}
+
+/* infobulle au survol d'une barre : le nombre de points est visible */
+.barres .barre:hover::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--carte);
+  color: var(--texte-carte);
+  border: 1px solid var(--bordure);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* --- �cran de fin : stats de la partie --- */
+.stats-partie {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 18px;
+  margin-top: 10px;
+  font-size: 0.88rem;
+  color: var(--texte-doux);
+}
+
+.stats-partie span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

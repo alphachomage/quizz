@@ -1,0 +1,141 @@
+/* VoltQuiz — propositions (extrait de l'ancien styles.css, ordre conservé) */
+/* ===== Section « Questions proposées » (accueil) ===== */
+
+.propositions {
+  margin-top: 34px;
+  padding-top: 6px;
+}
+
+.propositions-titre {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.propositions .titre-section {
+  margin: 0 0 12px;
+}
+
+.btn-petit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent1);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.btn-petit:hover {
+  transform: translateY(-2px);
+}
+
+.vide {
+  color: var(--texte-doux);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  background: var(--carte);
+  border: 1px dashed var(--bordure);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.liste-propositions {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.liste-propositions li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--carte);
+  border: 1px solid var(--bordure);
+  border-radius: 14px;
+}
+
+.prop-corps {
+  flex: 1;
+  min-width: 0;
+}
+
+.prop-corps strong {
+  display: block;
+  font-size: 0.95rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prop-meta {
+  font-size: 0.78rem;
+  color: var(--texte-doux);
+}
+
+.btn-suppr,
+.btn-valider {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.btn-suppr {
+  color: #ff8fa3;
+}
+
+.btn-suppr:hover {
+  background: rgba(255, 93, 115, 0.15);
+}
+
+.btn-valider {
+  color: #4ade80;
+}
+
+.btn-valider:hover {
+  background: rgba(74, 222, 128, 0.15);
+}
+
+.badge-compte {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--texte-doux);
+  background: var(--carte-2);
+  border-radius: 999px;
+  text-transform: none;
+  letter-spacing: 0.3px;
+}
+
+.badge-compte.valide {
+  color: #4ade80;
+}
+
+/* ===== Enchaînement auto ===== */
+
+.suite-auto {
+  margin-top: 14px;
+  color: var(--texte-doux);
+  font-size: 0.88rem;
+  animation: pop 0.25s ease;
+}

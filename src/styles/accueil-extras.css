@@ -1,0 +1,126 @@
+/* VoltQuiz — accueil-extras (extrait de l'ancien styles.css, ordre conservé) */
+/* --- Mention "à venir" sur un onglet de mode --- */
+.tab-badge {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  background: var(--accent1);
+  color: #141414;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.a-venir {
+  font-weight: 800;
+  background: var(--accent1);
+  color: #141414;
+  border-radius: 999px;
+  padding: 1px 9px;
+  font-size: 0.78rem;
+}
+
+/* --- Onglet de mode verrouillé (duel local désactivé, mode en ligne à venir) --- */
+.mode-tab:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.mode-tab:disabled:hover {
+  background: var(--carte);
+  color: var(--texte-doux);
+}
+
+/* --- Streak du quizz du jour plus visible : pastille éclair sur l'onglet + grosse pastille --- */
+.tab-streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--accent1);
+  color: #141414;
+  font-weight: 900;
+  font-size: 0.68rem;
+  border-radius: 999px;
+  padding: 2px 8px;
+  animation: bolt-pulse 1.6s ease-in-out infinite;
+}
+
+.streak-jour .icone,
+.tab-streak .icone {
+  animation: bolt-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes bolt-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.35); }
+}
+
+/* --- Bannière « prochain badge » (effet reviens-y sur l'accueil) --- */
+.prochain-badge {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 10px;
+  padding: 7px 12px;
+  background: var(--carte);
+  border: 1px solid var(--bordure);
+  border-radius: 999px;
+}
+
+.pb-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--accent1);
+  color: #141414;
+}
+
+.pb-texte {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.8rem;
+  color: var(--texte-doux);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pb-texte strong {
+  color: var(--texte);
+}
+
+.pb-barre {
+  display: block;
+  width: 80px;
+  height: 5px;
+  flex-shrink: 0;
+  background: rgba(128, 128, 128, 0.3);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.pb-barre i {
+  display: block;
+  height: 100%;
+  background: var(--accent1);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+/* Pastille "Invite" (mode invite : pas d'XP, badges, titres ni leaderboard) */
+.chip-invite {
+  background: var(--accent1);
+  color: #141414;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 9px;
+  border-radius: 999px;
+  margin-left: 6px;
+  vertical-align: middle;
+}

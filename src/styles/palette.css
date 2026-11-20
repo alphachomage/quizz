@@ -1,0 +1,38 @@
+/* VoltQuiz — palette (extrait de l'ancien styles.css, ordre conservé) */
+/* ===== 60-30-10, AUCUN dégradé ===== */
+/* Sombre (défaut, voir :root) : 60% noir #000000, 30% gris ardoise #26262B, 10% sable #D9D0B8 (vivante sauvegardee dans PALETTES.md) */
+/* Clair : 60% blanc #FFFFFF, 30% gris perle #ECECF1, 10% sable #D9D0B8 */
+body.theme-clair {
+  /* 60-30-10 CLAIR sobre : 60% blanc #FFFFFF, 30% gris perle #ECECF1, 10% sable #D9D0B8 */
+  --fond: #ffffff;
+  --carte: #ECECF1;
+  --carte-2: #E2E2E9;
+  --bordure: rgba(0, 0, 0, 0.14);
+  --texte: #1A1A1A;
+  --texte-doux: #6E6E6E;
+  --texte-carte: #1A1A1A;
+  --texte-doux-carte: rgba(0, 0, 0, 0.6);
+  --accent1: #D9D0B8;
+  --accent2: #D9D0B8;
+  --or: #D9D0B8;
+}
+
+/* 30% secondaire (cartes jaunes) : texte foncé par-dessus */
+.btn-secondaire, .mode, .theme, .niveau, .carte-compte, .stats-ligne, .ligne-classement,
+.filtre, .info, .stat-carte, .reglage, .stats-theme, .xp-theme, .xp-globale, .noms input,
+.modal, .passe-appareil, .resultat, .classement, .onglet, .btn-signaler, .tuto, .vide {
+  color: var(--texte-carte);
+}
+.theme .theme-meta, .mode .mode-desc, .lc-detail, .stat-label, .xp-globale-sous,
+.stats-ligne-val, .resultat .sous-score, .resultat .record-actuel, .modal .vide,
+.modal small, .modal .btn-suppr, .theme .theme-nb, .btn-signaler {
+  color: var(--texte-doux-carte);
+}
+
+/* Accent sable (#D9D0B8) en fond -> texte et ic�nes fonc�s pour le contraste */
+.btn-principal, .onglet.actif, .filtre.actif, .record.top10, .avatar-defaut, .logo-marque, .tuto-icone {
+  color: #141414;
+}
+.switch.on i {
+  background: #141414;
+}
