@@ -75,7 +75,7 @@ export default function Stats({ themes, pseudo, onAccueil }) {
       .map(([id, v]) => ({ id, ...v, pct: v.jouées ? Math.round((v.correctes / v.jouées) * 100) : 0 }))
       .sort((a, b) => b.jouées - a.jouées);
 
-    // Par difficulté, dans l'ordre Facile / Moyen / Dur
+    // Par difficulté, dans l'ordre Facile / Moyen / Difficile
     const parNiveauListe = NIVEAUX
       .map((n) => {
         const v = parNiveau[n.id] || { jouées: 0, correctes: 0 };

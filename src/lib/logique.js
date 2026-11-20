@@ -151,7 +151,7 @@ export function questionsQuotidien(themes, date = dateAujourdhui()) {
 export const NIVEAUX = [
   { id: 'facile', nom: 'Facile', couleur: '#4ade80' },
   { id: 'moyen', nom: 'Moyen', couleur: '#fbbf24' },
-  { id: 'dur', nom: 'Dur', couleur: '#fb7185' },
+  { id: 'dur', nom: 'Difficile', couleur: '#fb7185' },
 ];
 
 export function nomNiveau(id) {

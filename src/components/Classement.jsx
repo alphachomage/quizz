@@ -6,7 +6,7 @@ import { chargerParties, nomNiveau, NIVEAUX, dansSemaineEnCours } from '../lib/l
 
 // Leaderboard local : UNIQUEMENT les classements par mode de jeu, avec pour chaque
 // ligne le thème, la difficulté et le nombre de points.
-//  - Solo : filtre par niveau (Tous / Facile / Moyen / Dur)
+//  - Solo : filtre par niveau (Tous / Facile / Moyen / Difficile)
 //  - Duel 1v1, Survie, Quizz du jour : top scores de l'historique des parties
 // (les stats perso détaillées sont dans l'écran « Mes statistiques »)
 
