@@ -123,7 +123,7 @@ export default function Compte({ onConnexion }) {
         </button>
 
         <button className="btn-secondaire" onClick={() => onConnexion(demarrerInvite())}>
-          <Icone nom="user" taille={17} /> Jouer en invité (pseudo auto, ex. user-a3f9k2d)
+          <Icone nom="user" taille={17} /> Jouer en invité
         </button>
         <p className="note-local">
           En mode invité tu joues tout de suite, mais <strong>sans XP de compte ni de thèmes, sans badges,
