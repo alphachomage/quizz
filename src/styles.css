@@ -2695,3 +2695,24 @@ h1, h2, h3 {
   background: var(--carte-2);
   transform: scale(1.04);
 }
+
+/* --- Mention "à venir" sur un onglet de mode --- */
+.tab-badge {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  background: var(--accent1);
+  color: #141414;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.a-venir {
+  font-weight: 800;
+  background: var(--accent1);
+  color: #141414;
+  border-radius: 999px;
+  padding: 1px 9px;
+  font-size: 0.78rem;
+}
