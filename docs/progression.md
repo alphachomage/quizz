@@ -18,14 +18,14 @@ et dans le profil. XP globale = somme des thèmes.
   départ de la partie, diff à la fin -> carte animée + son « tonnerre » + vibration
   `[70, 50, 130]`, affiché sur l'accueil au retour.
 
-## Classement local (`src/components/Classement.jsx`)
+## Classement local (`src/features/classement/Classement.jsx`)
 
 Depuis `voltquiz_parties` (500 dernières parties max) : onglets par mode, filtre
 Facile/Moyen/Difficile en solo, sélecteur « Tout l'historique / Cette semaine »
 (`dansSemaineEnCours`, lundi->dimanche). Lignes : rang, joueur, badge thème coloré,
 difficulté, points.
 
-## Stats (`src/components/Stats.jsx`)
+## Stats (`src/features/stats/Stats.jsx`)
 
 Depuis l'historique : parties jouées, questions répondues, % réussite, points cumulés,
 meilleur score par mode, taux par thème, XP globale, top 5 records, calendrier d'activité

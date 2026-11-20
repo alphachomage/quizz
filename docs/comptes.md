@@ -20,7 +20,7 @@ classement, stats ni historique (`persisterResultat` saute tout si `estInvite`),
 partie du jour ne bloque pas la tentative du compte. Records locaux conservés.
 Pastille « Invité », barre d'XP/titre masquée, célébration de déblocage désactivée.
 
-## Tuto de bienvenue (`src/components/Tuto.jsx`)
+## Tuto de bienvenue (`src/features/tuto/Tuto.jsx`)
 
 4 points (10 s/question, points, streak, 4 modes), ouvert UNE fois par compte
 (`voltquiz_tuto_vu`, clé fixe `invite` pour les invités), rouvrable via `?tuto=1` ou le
