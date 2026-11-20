@@ -2,12 +2,12 @@
 // PAS affiché dans l'interface joueur : visible uniquement dans la vue admin (?admin=1).
 // Stocké via lib/storage.js : { q, themeId, themeNom, count, date, dernier }
 // « count » = nombre de signalements reçus pour cette question.
-import { CLES, lire, ecrire, supprimer } from './storage.js';
+import { SignalesRepo } from './repositories.js';
 import { normaliserTexteQuestion } from './texte.js';
 import { ajouterExclusion, retirerExclusion } from './exclusions.js';
 
 export function chargerSignales() {
-  return lire(CLES.signales, []) || [];
+  return SignalesRepo.tout();
 }
 
 export function ajouterSignalement(s) {
@@ -19,16 +19,16 @@ export function ajouterSignalement(s) {
   } else {
     liste.push({ id: `${Date.now()}-${Math.floor(Math.random() * 1e6)}`, date: new Date().toISOString(), count: 1, ...s });
   }
-  ecrire(CLES.signales, liste);
+  SignalesRepo.sauver(liste);
   return liste;
 }
 
 export function supprimerSignalement(q) {
-  ecrire(CLES.signales, chargerSignales().filter((x) => x.q !== q));
+  SignalesRepo.sauver(chargerSignales().filter((x) => x.q !== q));
 }
 
 export function viderSignales() {
-  supprimer(CLES.signales);
+  SignalesRepo.vider();
 }
 
 // Vérification admin d'un signalement : statut 'garder' (la question reste dans le pool)
@@ -39,7 +39,7 @@ export function marquerSignalement(q, statut) {
   if (s) {
     s.statut = statut;
     s.revuLe = new Date().toISOString();
-    ecrire(CLES.signales, liste);
+    SignalesRepo.sauver(liste);
   }
   const n = normaliserTexteQuestion(q);
   if (statut === 'retirer') ajouterExclusion(n);

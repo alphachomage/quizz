@@ -1,10 +1,10 @@
 // streak.js — série de jours du quizz du jour (façon Snapchat, mais avec un éclair).
 // { compte: N, dernierJour: 'AAAA-MM-JJ' } — +1 si joué hier, sinon recommence à 1.
-import { CLES, lire, ecrire } from './storage.js';
+import { StreakJourRepo } from './repositories.js';
 import { dateAujourdhui, dateJour } from './dates.js';
 
 export function chargerStreakJour() {
-  return lire(CLES.streakJour, { compte: 0, dernierJour: null }) || { compte: 0, dernierJour: null };
+  return StreakJourRepo.lire();
 }
 
 // Pour l'affichage : si le dernier jour joué est antérieur à hier, la série est rompue.
@@ -23,6 +23,6 @@ export function enregistrerStreakJour() {
   if (s.dernierJour === hier) compte = (s.compte || 0) + 1;
   else if (s.dernierJour === aujourdhui) compte = s.compte || 1;
   const nouveau = { compte, dernierJour: aujourdhui };
-  ecrire(CLES.streakJour, nouveau);
+  StreakJourRepo.sauver(nouveau);
   return nouveau;
 }

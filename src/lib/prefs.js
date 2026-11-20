@@ -1,10 +1,10 @@
 // prefs.js — préférences d'affichage (sons / musique / animations / vibrations)
 // et accessibilité (thème clair, daltonien, dys). Stockées via lib/storage.js.
-import { CLES, lire, ecrire } from './storage.js';
+import { PrefsRepo } from './repositories.js';
 
 // Toutes les préférences sont ACTIVÉES par défaut (sauf accessibilité, OFF).
 export function chargerPrefs() {
-  const p = lire(CLES.prefs, {}) || {};
+  const p = PrefsRepo.tout();
   return {
     sons: p.sons !== false,
     musique: p.musique !== false, // musique de fond (toggle séparé, ON par défaut)
@@ -18,7 +18,7 @@ export function chargerPrefs() {
 }
 
 export function sauverPrefs(prefs) {
-  ecrire(CLES.prefs, {
+  PrefsRepo.sauver({
     sons: prefs.sons !== false,
     musique: prefs.musique !== false,
     animations: prefs.animations !== false,

@@ -2,13 +2,13 @@
 // - « en attente » (CLES.soumissions) : visibles dans la vue admin, PAS jouables.
 // - « validées » (CLES.validees) : déplacées ici au clic sur valider -> jouables,
 //   exportables en JSON, et elles disparaissent de la liste des propositions.
-import { CLES, lire, ecrire } from './storage.js';
+import { SoumissionsRepo, ValideesRepo } from './repositories.js';
 
 // Proposer une question dans un thème demande d'y être niveau 3 (débloqueProgressif).
 export const SEUIL_SOUMISSION_NIVEAU = 3;
 
 export function chargerSoumissions() {
-  return lire(CLES.soumissions, []) || [];
+  return SoumissionsRepo.tout();
 }
 
 // Ajoute une question proposée. q = { themeId, q, reponses, bonne, niveau, info? }
@@ -20,16 +20,16 @@ export function ajouterSoumission(q) {
     ...q,
   };
   liste.push(soumission);
-  ecrire(CLES.soumissions, liste);
+  SoumissionsRepo.sauver(liste);
   return soumission;
 }
 
 export function supprimerSoumission(id) {
-  ecrire(CLES.soumissions, chargerSoumissions().filter((s) => s.id !== id));
+  SoumissionsRepo.sauver(chargerSoumissions().filter((s) => s.id !== id));
 }
 
 export function chargerValidees() {
-  return lire(CLES.validees, []) || [];
+  return ValideesRepo.tout();
 }
 
 export function validerSoumission(id) {
@@ -38,8 +38,8 @@ export function validerSoumission(id) {
   if (!aValider) return;
   const validees = chargerValidees();
   validees.push({ ...aValider, valideLe: new Date().toISOString() });
-  ecrire(CLES.validees, validees);
-  ecrire(CLES.soumissions, enAttente.filter((s) => s.id !== id));
+  ValideesRepo.sauver(validees);
+  SoumissionsRepo.sauver(enAttente.filter((s) => s.id !== id));
 }
 
 // Construit le contenu JSON exportable (même format que questions-utilisateur.json)

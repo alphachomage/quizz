@@ -36,6 +36,6 @@ export function redirigerVers(url) {
 }
 
 // Lit UN paramètre de l'URL actuelle (ex. ?jour=libre) sans recharger.
-export function lireParamUrl(nom) {
-  return new URLSearchParams(window.location.search).get(nom);
-}
+// Implémentation dans lib/nav.js (R1 : lib n'importe pas app, l'inverse est OK) :
+// on la réexporte ici pour garder le point d'entrée unique côté app.
+export { lireParamUrl } from '@lib/nav.js';

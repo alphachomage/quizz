@@ -1,10 +1,10 @@
 // suggestions.js — suggestions / remontées des joueurs.
 // Stockées via lib/storage.js et visibles UNIQUEMENT dans la vue admin (?admin=1) :
 // jamais affichées dans l'interface joueur.
-import { CLES, lire, ecrire } from './storage.js';
+import { SuggestionsRepo } from './repositories.js';
 
 export function chargerSuggestions() {
-  const l = lire(CLES.suggestions, []) || [];
+  const l = SuggestionsRepo.tout();
   return Array.isArray(l) ? l : [];
 }
 
@@ -19,10 +19,10 @@ export function ajouterSuggestion(texte, pseudo) {
   };
   const liste = chargerSuggestions();
   liste.unshift(s); // plus récente en premier
-  ecrire(CLES.suggestions, liste.slice(0, 200));
+  SuggestionsRepo.sauver(liste.slice(0, 200));
   return s;
 }
 
 export function supprimerSuggestion(id) {
-  ecrire(CLES.suggestions, chargerSuggestions().filter((s) => s.id !== id));
+  SuggestionsRepo.sauver(chargerSuggestions().filter((s) => s.id !== id));
 }
