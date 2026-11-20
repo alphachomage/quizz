@@ -196,13 +196,12 @@ export default function Accueil({ themes, pseudo, prefs, estAdmin, onDeconnexion
       </p>
 
       {badgeSuivant && (
-        <div className="prochain-badge" title="Débloque ce badge en continuant à jouer — encore un petit effort !">
-          <span className="pb-icone"><Icone nom={badgeSuivant.icone} taille={18} /></span>
-          <div className="pb-corps">
-            <strong>Prochain badge : {badgeSuivant.nom}</strong>
-            <span className="pb-sous">{badgeSuivant.desc} — {badgeSuivant.actuel}/{badgeSuivant.cible}</span>
-            <span className="pb-barre"><i style={{ width: `${Math.round(badgeSuivant.pct * 100)}%` }} /></span>
-          </div>
+        <div className="prochain-badge" title={`${badgeSuivant.desc} — débloque ce badge en continuant à jouer !`}>
+          <span className="pb-icone"><Icone nom={badgeSuivant.icone} taille={14} /></span>
+          <span className="pb-texte">
+            <strong>Prochain badge :</strong> {badgeSuivant.nom} · {badgeSuivant.actuel}/{badgeSuivant.cible}
+          </span>
+          <span className="pb-barre"><i style={{ width: `${Math.round(badgeSuivant.pct * 100)}%` }} /></span>
         </div>
       )}
 

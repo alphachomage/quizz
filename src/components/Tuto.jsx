@@ -42,9 +42,9 @@ export default function Tuto({ onFermer }) {
               <strong>Les modes de jeu :</strong>
               <ul>
                 <li><strong>Solo</strong> — 10 questions dans un thème, niveau facile / moyen / dur.</li>
-                <li><strong>Duel 1v1</strong> — 2 joueurs sur le même appareil, à tour de rôle.</li>
+                <li><strong>Duel en ligne</strong> — affronter d'autres joueurs à distance. <em>À venir.</em></li>
                 <li><strong>Survie</strong> — une seule vie, la première erreur termine la partie.</li>
-                <li><strong>Quizz du jour</strong> — 10 questions identiques pour tout le monde, une seule tentative par jour.</li>
+                <li><strong>Quizz du jour</strong> — 10 questions identiques pour tout le monde, une seule tentative par jour. Ta <strong>série de jours</strong> (éclair ×N) : à partir de <strong>3 jours</strong>, les points du quizz du jour sont <strong>×1,5</strong>.</li>
               </ul>
             </div>
           </li>
