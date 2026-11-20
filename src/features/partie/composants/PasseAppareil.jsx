@@ -8,7 +8,7 @@ export default function PasseAppareil({ joueur, couleurTheme, onPret }) {
       <div className="passe-appareil">
         <div className="gros-icone"><Icone nom="device" taille={56} /></div>
         <h2>Passe l'appareil à</h2>
-        <div className="nom-joueur" style={{ background: `linear-gradient(135deg, ${couleurTheme}, ${couleurTheme}b8)` }}>
+        <div className="nom-joueur" style={{ background: couleurTheme }}>
           {joueur}
         </div>
         <p className="indice">Les autres ne doivent pas regarder l'écran.</p>
