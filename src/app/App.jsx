@@ -17,6 +17,7 @@ import Deblocage from '../components/Deblocage.jsx';
 
 import { aVuTuto, marquerTutoVu, sessionActuelle } from '@lib/comptes.js';
 import { reinitialiserScores, reinitialiserProgression } from '@lib/reset.js';
+import { persisterResultat } from '@features/resultat/persistance.js';
 import { telechargerJSON } from '@shared/utils/telechargerJSON.js';
 
 export default function App() {
@@ -81,8 +82,11 @@ function Shell() {
   }
 
   function terminer(res) {
+    // Persistance de la partie UNE FOIS ici (record, historique, XP, classement,
+    // streak du jour) : le composant Resultat ne fait plus que lire res.persistance.
+    const persistance = persisterResultat(res, estInvite, prefs);
     revelerNouveautes(); // badges/titres débloqués PENDANT la partie -> animation au retour
-    nav.terminer(res);
+    nav.terminer({ ...res, persistance });
   }
 
   function quitterAdmin() {
