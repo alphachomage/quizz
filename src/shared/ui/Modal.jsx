@@ -6,7 +6,7 @@ import { useEffect, useRef } from 'react';
 
 const SELECTEUR_FOCUS = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
-export default function Modal({ titre, onFermer, children }) {
+export default function Modal({ titre, onFermer, classe, children }) {
   const ref = useRef(null);
   const focusAvant = useRef(null);
 
@@ -43,7 +43,7 @@ export default function Modal({ titre, onFermer, children }) {
   return (
     <div className="modal-overlay" onClick={onFermer} style={{ position: 'fixed' }}>
       <div
-        className="modal"
+        className={classe ? `modal ${classe}` : 'modal'}
         role="dialog"
         aria-modal="true"
         aria-label={typeof titre === 'string' ? titre : undefined}

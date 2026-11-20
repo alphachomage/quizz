@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 
 import Icone from '@shared/ui/Icone.jsx';
+import Modal from '@shared/ui/Modal.jsx';
 
 import { validerAvatar } from '@lib/avatar.js';
 
@@ -37,53 +38,51 @@ export default function Parametres({ prefs, avatar, onChangerAvatar, onChanger, 
   }
 
   return (
-    <div className="modal-overlay" onClick={onFermer}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-titre">
-          <h2><Icone nom="sliders" taille={22} /> Paramètres</h2>
-          <button className="btn-suppr" onClick={onFermer} title="Fermer">
-            <Icone nom="x" taille={18} />
-          </button>
-        </div>
-        <div className="reglages">
-          <div className="reglage avatar-reglage">
-            <span className="avatar-preview">
-              {avatar ? <img src={avatar} alt="" /> : <Icone nom="user" taille={20} />}
-            </span>
-            <span className="reglage-texte">
-              <strong>Photo de profil</strong>
-              <small>JPEG / PNG / WebP, 3 Mo max — contenu modéré automatiquement</small>
-              {erreurAvatar && <small className="avatar-erreur">{erreurAvatar}</small>}
-            </span>
-            <button className="btn-secondaire petit" onClick={() => fileRef.current?.click()}>
-              Changer
-            </button>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/png,image/jpeg,image/webp"
-              hidden
-              onChange={onFichierAvatar}
-            />
-          </div>
-          {REGLAGES.map((r) => (
-            <button
-              key={r.cle}
-              className="reglage"
-              onClick={() => onChanger({ ...prefs, [r.cle]: !prefs[r.cle] })}
-            >
-              <span className="reglage-icone"><Icone nom={r.icone} taille={20} /></span>
-              <span className="reglage-texte">
-                <strong>{r.label}</strong>
-                <small>{r.desc}</small>
-              </span>
-              <span className={prefs[r.cle] ? 'switch on' : 'switch'}>
-                <i />
-              </span>
-            </button>
-          ))}
-        </div>
+    <Modal titre="Paramètres" onFermer={onFermer}>
+      <div className="modal-titre">
+        <h2><Icone nom="sliders" taille={22} /> Paramètres</h2>
+        <button className="btn-suppr" onClick={onFermer} title="Fermer">
+          <Icone nom="x" taille={18} />
+        </button>
       </div>
-    </div>
+      <div className="reglages">
+        <div className="reglage avatar-reglage">
+          <span className="avatar-preview">
+            {avatar ? <img src={avatar} alt="" /> : <Icone nom="user" taille={20} />}
+          </span>
+          <span className="reglage-texte">
+            <strong>Photo de profil</strong>
+            <small>JPEG / PNG / WebP, 3 Mo max — contenu modéré automatiquement</small>
+            {erreurAvatar && <small className="avatar-erreur">{erreurAvatar}</small>}
+          </span>
+          <button className="btn-secondaire petit" onClick={() => fileRef.current?.click()}>
+            Changer
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            hidden
+            onChange={onFichierAvatar}
+          />
+        </div>
+        {REGLAGES.map((r) => (
+          <button
+            key={r.cle}
+            className="reglage"
+            onClick={() => onChanger({ ...prefs, [r.cle]: !prefs[r.cle] })}
+          >
+            <span className="reglage-icone"><Icone nom={r.icone} taille={20} /></span>
+            <span className="reglage-texte">
+              <strong>{r.label}</strong>
+              <small>{r.desc}</small>
+            </span>
+            <span className={prefs[r.cle] ? 'switch on' : 'switch'}>
+              <i />
+            </span>
+          </button>
+        ))}
+      </div>
+    </Modal>
   );
 }
