@@ -8,7 +8,8 @@ aucun composant ne touche au stockage directement.
 
 | Table | Rôle | Structure | Branchée côté client |
 |---|---|---|---|
-| `sync_client` | **Miroir serveur des 17 clés localStorage** (préfs, session, records/XP/parties bruts, streak, badges favoris…) | `cle TEXT PRIMARY KEY, valeur TEXT` (JSON) — blob store **volontaire** : ces données n'ont pas de schéma relationnel | ✅ auto via `storage.ts` (`/api/kv/*`) |
+| `sync_client` | **Miroir serveur des 17 clés localStorage**, namespacé par compte : la clé réelle est `<pseudo>:<cle>` (un client ne touche que son espace) | `cle TEXT PRIMARY KEY, valeur TEXT` (JSON) — blob store **volontaire** : ces données n'ont pas de schéma relationnel | ✅ auto via `storage.ts` (`/api/kv/*` + Bearer) |
+| `sessions` | Tokens de session Bearer (TTL 30 j, 1 par compte) | `token TEXT PK, pseudo, cree_le, expire_le` | ✅ émise par `/api/auth/*`, envoyée en header
 | `comptes` | Comptes serveur (auth PBKDF2 210 000 itérations, hash `hash_version = 2`) | relationnelle, `pseudo_normalise UNIQUE` | ✅ `accounts.ts` → `/api/auth/*` |
 | `parties` | Historique serveur des parties (multi-appareils, futur classement global) | relationnelle + **colonne `pseudo` indexée** | ✅ `game-history.ts` → `/api/parties` |
 | `records` | Records serveur par mode × niveau × thème | `cle TEXT PRIMARY KEY` | ✅ `records.ts` → `/api/records` |
@@ -94,10 +95,15 @@ puis `curl localhost:5173/api/kv/test` -> `{"ok":true,"key":"test","value":42}`.
   - records : `src/lib/records.ts` → `POST /api/records`.
   - XP : `src/lib/xp.ts` → `POST /api/xp`.
   - soumissions : `src/lib/submissions.ts` → `POST /api/soumissions`.
-- `src/lib/api.ts` — client fetch de **toutes** les routes (`kvGet/kvSet/kvDelete`,
-  `authSignup/authLogin`, `apiAddGame/apiGames`, `apiRecord/apiSaveRecord`,
+- `src/lib/api.ts` — client fetch de **toutes** les routes, avec `Authorization: Bearer
+  <token>` ajouté automatiquement à chaque appel (fournisseur enregistré par
+  `storage.ts` pour éviter un cycle) : `kvGet/kvSet/kvDelete`, `authSignup/authLogin`
+  (réponses avec `token`), `apiAddGame/apiGames`, `apiRecord/apiSaveRecord`,
   `apiXp/apiSaveXp`, `apiSubmissions/apiAddSubmission`, `apiAdminCheck`,
-  `apiCreateRoom/apiJoinRoom/apiRoom`, `apiDuelSocket`, `apiHealth/apiStats`).
+  `apiCreateRoom/apiJoinRoom/apiRoom`, `apiDuelSocket` (token en `?token=`),
+  `apiHealth/apiStats`. Le token est persisté par `storage.ts` en clé locale
+  `voltquiz_token_local` (hors `STORAGE_KEYS`, jamais synchronisé) ;
+  `accounts.ts` l'écrit à l'inscription/connexion et le supprime à la déconnexion.
 - R5 (lint en error) : aucun composant n'appelle le stockage ni `localStorage` directement.
 
 ## Côté serveur
@@ -110,17 +116,23 @@ puis `curl localhost:5173/api/kv/test` -> `{"ok":true,"key":"test","value":42}`.
   `migrations/0002_sync_client.sql` : renomme `kv` -> `sync_client`, ajoute
   `parties.pseudo` + index corrigés + index soumissions.
   `migrations/0003_admin_flag.sql` : colonne `comptes.admin` (flag admin en base).
+  `migrations/0004_sessions.sql` : table `sessions` (tokens Bearer).
   Appliquées en local ET en remote :
   `npx wrangler d1 migrations apply voltquiz --local` puis `--remote`.
-- `worker-api.ts` : routes `/api/kv/:cle` (GET/POST/DELETE -> `sync_client`),
-  `/api/auth/*` (PBKDF2 210k, comparaison timing-safe), `/api/parties` (GET avec filtre
-  `?pseudo=` sur colonne indexée, POST), `/api/records[/:cle]`, `/api/xp[/:pseudo/:themeId]`,
-  `/api/soumissions` (GET `?etat=`, POST), `/api/admin/check?pseudo=` (200 si le compte
-  a `admin = 1` en table `comptes`, sinon 403), `/api/room*` (KV), `/api/duel/:room`
-  (WebSocket -> DO), `/api/ping|health`, `/api/stats`, `/api/csp-report`. Toutes :
-  validation, `Cache-Control: no-store`, rate limit 30/min/IP (dans `worker.ts`).
-  Plafond de body : 64 Ko en général, **1 Mo pour `/api/kv/*`** (l'historique
-  `voltquiz_parties` — 500 parties avec détail — dépasse 64 Ko).
+- `worker-api.ts` : **toutes les routes de données exigent `Authorization: Bearer <token>`**
+  (table `sessions`, 401 sinon, 503 sans DB) ; le pseudo est forcé = celui du token sur
+  parties/records/xp/soumissions, et `/api/kv/:cle` est namespacé `<pseudo>:<cle>` en
+  `sync_client`. Routes : `/api/kv/:cle` (GET/POST/DELETE), `/api/auth/*` (PBKDF2 210k,
+  timing-safe, renvoie le token ; PBKDF2 factice si compte inconnu), `/api/parties`
+  (GET `?pseudo=` sur colonne indexée, POST), `/api/records[/:cle]`,
+  `/api/xp[/:pseudo/:themeId]`, `/api/soumissions` (POST session, GET admin `?etat=`),
+  `/api/admin/check` (admin requis, pseudo = token), `/api/room*` (KV, session),
+  `/api/duel/:room?token=` (WebSocket -> DO, token vérifié avant l'upgrade),
+  `/api/ping|health` (ouverts), `/api/stats` (session), `/api/csp-report` (ouvert).
+  Toutes : validation, `Cache-Control: no-store`, rate limit 30/min/IP + 5/min sur
+  `/api/auth/*` (dans `worker.ts`). Plafond de body : 64 Ko en général,
+  **1 Mo pour `/api/kv/*`** (l'historique `voltquiz_parties` — 500 parties avec
+  détail — dépasse 64 Ko).
 - `durable-objects/DuelRoom.ts` : room de duel temps réel (présence + relais d'actions).
   **Préparé mais pas encore branché côté UI** : le mode Duel reste 1v1 sur le même
   appareil ; le duel en ligne (rooms KV + WebSocket DO) est la roadmap V2.

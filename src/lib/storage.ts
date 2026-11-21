@@ -16,7 +16,37 @@
 //   l'appli reste utilisable hors-ligne, la synchro est best-effort.
 
 import { readUrlParam } from './nav.js';
-import { kvGet, kvSet, kvDelete } from './api.js';
+import { kvGet, kvSet, kvDelete, definirFournisseurToken } from './api.js';
+
+// --- Token de session serveur (Bearer) ---
+// Clé localStorage LOCALE (hors STORAGE_KEYS) : le token n'est JAMAIS poussé vers
+// /api/kv ni pré-chargé depuis le serveur (il ne quitte le client que dans le header
+// Authorization). api.ts le lit via le fournisseur enregistré ci-dessous (évite un
+// cycle storage <-> api).
+const TOKEN_KEY = 'voltquiz_token_local';
+export function lireTokenSession(): string | null {
+  try {
+    return localStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+export function ecrireTokenSession(token: string): void {
+  try {
+    localStorage.setItem(TOKEN_KEY, token);
+  } catch {
+    // stockage indisponible : le token reste en mémoire via le fournisseur ? non,
+    // il est relu à chaque appel — sans persistance, la session saute au reload.
+  }
+}
+export function supprimerTokenSession(): void {
+  try {
+    localStorage.removeItem(TOKEN_KEY);
+  } catch {
+    // idem
+  }
+}
+definirFournisseurToken(lireTokenSession);
 
 /** Mode de stockage actif : 'd1' (défaut, synchro serveur D1) ou 'local' (hors-ligne, via ?stockage=local). */
 export type StorageMode = 'local' | 'd1';

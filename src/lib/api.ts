@@ -6,6 +6,23 @@ import { currentOrigin } from './nav.js';
 
 const BASE = '/api';
 
+// --- Token de session (Bearer) ---
+// Le token est émis par /api/auth/* et persisté côté client en clé localStorage LOCALE
+// (hors STORAGE_KEYS, donc jamais synchronisée via /api/kv). Pour éviter un cycle
+// storage <-> api, storage.ts enregistre ici un fournisseur : api.ts lit le token à
+// chaque appel via ce fournisseur (aucun import de storage dans api).
+let fournisseurToken: (() => string | null) | null = null;
+export function definirFournisseurToken(f: () => string | null): void {
+  fournisseurToken = f;
+}
+function tokenActuel(): string | null {
+  try {
+    return fournisseurToken ? fournisseurToken() : null;
+  } catch {
+    return null;
+  }
+}
+
 // --- Formes des réponses JSON du worker (worker-api.ts) ---
 // Chaque route répond { ok: true, ... } ou { ok: false, error } (voir jsonError).
 
@@ -41,6 +58,8 @@ export interface KvSetResponse {
 export interface AuthResponse {
   ok: boolean;
   pseudo: string;
+  /** Token de session (Bearer) renvoyé par le serveur — à stocker côté client. */
+  token?: string;
 }
 
 export interface AddGameResponse {
@@ -140,14 +159,19 @@ interface AppelOptions {
   body?: string;
 }
 
-// Appel générique : JSON des deux côtés, lève une Error avec le message serveur si !r.ok.
+// Appel générique : JSON des deux côtés, header Authorization: Bearer <token> si une
+// session est active, lève une Error avec le message serveur si !r.ok.
 // Le corps est re-typé ici (r.json() renvoie Promise<any> côté lib DOM).
 async function appel<T = unknown>(chemin: string, options: AppelOptions = {}): Promise<T> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options.headers || {}),
+  };
+  const token = tokenActuel();
+  if (token) headers['Authorization'] = `Bearer ${token}`;
   const r = await fetch(`${BASE}${chemin}`, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
     ...options,
+    headers,
   });
   const data = (await r.json().catch(() => null)) as { error?: string } | null;
   if (!r.ok) throw new Error((data && data.error) || `Erreur API ${r.status}`);
@@ -171,9 +195,9 @@ export const kvDelete = (key: string): Promise<OkResponse> =>
 export const apiHealth = (): Promise<HealthResponse> => appel('/health');
 export const apiStats = (): Promise<StatsResponse> => appel('/stats');
 
-// Accès admin : 200 { admin: true } si le compte a admin=1 en table D1 comptes, 403 sinon.
-export const apiAdminCheck = (pseudo: string): Promise<AdminCheckResponse> =>
-  appel(`/admin/check?pseudo=${encodeURIComponent(pseudo)}`);
+// Accès admin : 200 { admin: true } si le compte DU TOKEN a admin=1 en table D1
+// comptes (le pseudo vient du token, pas d'un paramètre), 401 sans session, 403 sinon.
+export const apiAdminCheck = (): Promise<AdminCheckResponse> => appel('/admin/check');
 
 // Soumissions de questions (table D1 soumissions, modération admin cross-device).
 export const apiSubmissions = (etat?: string): Promise<SubmissionsResponse> =>
@@ -257,6 +281,11 @@ export const apiJoinRoom = (id: string, pseudo: string): Promise<RoomResponse> =
 export const apiRoom = (id: string): Promise<RoomResponse> => appel(`/room/${encodeURIComponent(id)}`);
 export function apiDuelSocket(roomId: string): WebSocket {
   // Origine ws déduite de l'origine courante (via nav.js, seul habilité à lire l'URL — R5).
+  // Un WebSocket navigateur ne peut pas poser de header Authorization custom : le token
+  // passe en query ?token= (vérifié côté worker AVANT l'upgrade 101).
   const wsOrigin = currentOrigin().replace(/^http/, 'ws');
-  return new WebSocket(`${wsOrigin}/api/duel/${encodeURIComponent(roomId)}`);
+  const token = tokenActuel() || '';
+  return new WebSocket(
+    `${wsOrigin}/api/duel/${encodeURIComponent(roomId)}?token=${encodeURIComponent(token)}`
+  );
 }

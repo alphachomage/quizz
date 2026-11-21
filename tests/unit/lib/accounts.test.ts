@@ -39,7 +39,7 @@ beforeEach(() => {
         return reponse(false, { ok: false, error: 'Ce pseudo est déjà pris.' }, 409);
       }
       comptesServeur.set(n, { pseudo: body.pseudo });
-      return reponse(true, { ok: true, pseudo: body.pseudo });
+      return reponse(true, { ok: true, pseudo: body.pseudo, token: 'tok-inscription' });
     }
     if (url.startsWith('/api/auth/connexion')) {
       const body = JSON.parse(String(init?.body)) as { pseudo: string; password: string };
@@ -48,7 +48,7 @@ beforeEach(() => {
       if (body.password !== 'secret123') {
         return reponse(false, { ok: false, error: 'Mot de passe incorrect.' }, 401);
       }
-      return reponse(true, { ok: true, pseudo: c.pseudo });
+      return reponse(true, { ok: true, pseudo: c.pseudo, token: 'tok-connexion' });
     }
     // /api/kv/* (push du stockage) et autres routes : succès générique.
     return reponse(true, { ok: true });
@@ -93,6 +93,8 @@ describe('comptes en mode d1 (serveur, défaut)', () => {
     expect(cache!.sel).toBeUndefined();
     expect(JSON.stringify(accounts.loadAccounts())).not.toContain('secret123');
     expect(accounts.currentSession()!.pseudo).toBe('testeur');
+    // le token de session serveur est persisté en clé locale (hors STORAGE_KEYS)
+    expect(window.localStorage.getItem('voltquiz_token_local')).toBe('tok-inscription');
   });
 
   it('refuse un pseudo déjà pris (409 serveur) et propage le message', async () => {
@@ -119,15 +121,17 @@ describe('comptes en mode d1 (serveur, défaut)', () => {
     if (!res.ok) expect(res.error).toContain('injoignable');
   });
 
-  it('connexion : bon mot de passe = session, mauvais = 401 propagé', async () => {
+  it('connexion : bon mot de passe = session + token stocké, mauvais = 401 propagé', async () => {
     const accounts = await importAccounts('d1');
     await accounts.createAccount({ pseudo: 'testeur', email: 't@example.com', password: 'secret123' });
     expect((await accounts.connect('testeur', 'mauvais')).ok).toBe(false);
     const res = await accounts.connect('testeur', 'secret123');
     expect(res.ok).toBe(true);
     expect(accounts.currentSession()!.pseudo).toBe('testeur');
+    expect(window.localStorage.getItem('voltquiz_token_local')).toBe('tok-connexion');
     accounts.disconnect();
     expect(accounts.currentSession()).toBe(null);
+    expect(window.localStorage.getItem('voltquiz_token_local')).toBe(null); // token révoqué côté client
   });
 });
 
@@ -147,6 +151,7 @@ describe('comptes en mode local (?stockage=local, hors-ligne)', () => {
     expect(JSON.stringify(accounts.loadAccounts())).not.toContain('secret123');
     expect(account!.hash).toMatch(/^[0-9a-f]{64}$/); // SHA-256 hex
     expect(account!.sel).toBeTruthy(); // sel présent, hash salé
+    expect(window.localStorage.getItem('voltquiz_token_local')).toBe(null); // pas de token serveur en local
   });
   it('refuse un e-mail invalide et un pseudo pris localement', async () => {
     const accounts = await importAccounts('local');

@@ -6,6 +6,13 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 ## Non publié
 
 ### Ajouté
+- **API authentifiée par token Bearer** (audit sécurité : avant, n'importe qui pouvait lire/écrire/supprimer n'importe quelle clé `/api/kv/*`, poster des parties/records/XP pour n'importe quel pseudo, et énumérer les pseudos par oracle de timing) :
+  - migration `0004_sessions.sql` (table `sessions`, TTL 30 j, 1 session par compte, révoquée à la reconnexion) ; `/api/auth/*` renvoie désormais un `token` ;
+  - toutes les routes de données exigent `Authorization: Bearer <token>` (401 sinon, 503 sans DB) ; `/api/kv/<cle>` est **namespacé `<pseudo>:<cle>`** en `sync_client` ; `parties`/`records`/`xp`/`soumissions` prennent le **pseudo du token** (jamais celui du body) ;
+  - `/api/admin/check` et `GET /api/soumissions` exigent `admin = 1` ; le pseudo vient du token (plus de paramètre `?pseudo=`, plus d'énumération) ;
+  - anti-énumération : PBKDF2 factice si le compte n'existe pas au login ; mot de passe > 72 caractères -> 400 ; rate-limit renforcé **5 req/min/IP sur `/api/auth/*`** (30/min ailleurs) ;
+  - WebSocket `/api/duel/:room?token=` : token vérifié avant l'upgrade 101 ;
+  - client : header Bearer automatique (`api.ts` + fournisseur enregistré par `storage.ts`, zéro cycle), token persisté en clé locale `voltquiz_token_local` (hors `STORAGE_KEYS`, jamais synchronisé), écrit/supprimé par `accounts.ts`.
 - **Base D1 branchée de bout en bout côté client** (audit : seule la table générique était alimentée) : en mode `d1` (défaut), les données métier partent désormais aussi dans leurs tables dédiées, en best-effort (un échec réseau ne bloque jamais le jeu) — comptes via `/api/auth/*` (PBKDF2 serveur, `src/lib/accounts.ts`, cache local sans secret), parties via `POST /api/parties` (`src/lib/game-history.ts`, avec colonne `pseudo`), records via `/api/records` (`src/lib/records.ts`), XP via `/api/xp` (`src/lib/xp.ts`), soumissions via la **nouvelle route** `POST/GET /api/soumissions` (`src/lib/submissions.ts`, modération admin cross-device).
 - **Table `kv` renommée `sync_client`** (migration `0002_sync_client.sql`) : nom limpide pour le miroir serveur des 17 clés localStorage (blob `cle/valeur` volontaire) ; les données métier structurées ont leurs tables relationnelles dédiées. Voir `docs/stockage-d1.md`.
 - **Index corrigés** (migration `0002`) : `parties.pseudo` = nouvelle colonne texte indexée (l'ancien index sur la colonne JSON `joueurs` était inutilisable avec `LIKE '%…%'`) + `GET /api/parties?pseudo=` filtre dessus ; index `soumissions(etat)` et `soumissions(theme_id)`. Migration `0003` : colonne `comptes.admin`.

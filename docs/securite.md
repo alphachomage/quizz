@@ -27,27 +27,43 @@ manifest, JSON ; `public, max-age=31536000, immutable` sur `/assets/*` (hashés)
 
 ## API (`worker.ts` -> `worker-api.ts`)
 
-- **Rate limiting** 30 req/min/IP en mémoire -> **429** (`rateLimite` dans `worker.ts`).
-- **Body cap 64 Ko** (`MAX_BODY` dans `worker-api.ts`) -> 400 au-delà.
+- **Rate limiting** en mémoire -> **429** (`rateLimite` dans `worker.ts`) : **30 req/min/IP**
+  sur `/api/*`, **5 req/min/IP sur `/api/auth/*`** (anti brute-force de mots de passe).
+- **Body cap 64 Ko** (`MAX_BODY` dans `worker-api.ts`) -> 400 au-delà (1 Mo pour
+  `/api/kv/*`, voir `docs/stockage-d1.md`).
 - **CORS** : `ALLOWED_ORIGINS` (wrangler.toml) + origine de la requête ; preflight
   `OPTIONS` -> 204 ; toute écriture cross-origin non autorisée -> **403**.
-- **Plus de porte `V2_ENABLED`** (supprimée) : la base D1 est le stockage par défaut.
-  Chaque route renvoie **503 « binding manquant »** si D1/KV/DO n'est pas configuré
-  (`worker-api.ts`) ; les routes de santé (`/api/ping`, `/api/health`, `/api/csp-report`)
-  répondent toujours.
+- **Sessions Bearer (migration `0004_sessions.sql`, table `sessions`)** : `/api/auth/*`
+  renvoie un `token` (une session par compte, TTL 30 j, la connexion révoque l'ancienne).
+  Toutes les routes de données exigent `Authorization: Bearer <token>` -> **401** sinon,
+  **503** si le binding DB manque. Le token est stocké côté client en clé localStorage
+  **locale** (`voltquiz_token_local`, hors `STORAGE_KEYS` : jamais synchronisé) et n'est
+  envoyé que dans le header (jamais en clair dans un body).
+- **Namespacing par compte** : `/api/kv/<cle>` stocke en réalité `<pseudo>:<cle>` en
+  table `sync_client` — un client ne lit/écrit que son propre espace. Idem pour
+  `parties`, `records`, `xp`, `soumissions` : le **pseudo est forcé = celui du token**
+  (jamais celui du body), un client ne peut pas usurper un autre compte.
+- **Routes ouvertes** (pas de session) : `/api/ping`, `/api/health`, `/api/csp-report`,
+  `/api/auth/*`. Toutes les autres (`/api/kv/*`, `/api/parties`, `/api/records`,
+  `/api/xp`, `/api/soumissions`, `/api/room*`, `/api/duel/*`, `/api/admin/check`,
+  `/api/stats`) exigent une session ; `/api/soumissions` GET et `/api/admin/check`
+  exigent en plus `admin = 1` sur le compte.
 - **Accès admin** : `?admin=1` exige une session compte (pas invité) avec **`admin = 1`
-  dans la table D1 `comptes`** (migration `0003_admin_flag.sql`), vérifié côté serveur via
-  `GET /api/admin/check?pseudo=...` (200 si admin, 403 sinon — compte inconnu ou flag à 0).
-  Le flag se promouvoit par SQL (`UPDATE comptes SET admin = 1 WHERE pseudo_normalise = …`),
-  aucun secret dans `wrangler.toml`. En mode `?stockage=local` (hors-ligne) l'admin est
-  indisponible. Côté client : `src/app/useAdminAccess.ts`.
-- Validation des entrées sur chaque route. WebSocket `/api/duel/:room` délégué au
-  Durable Object `DuelRoom` (passe intacte à travers `securiser()`, 101 préservé).
+  dans la table D1 `comptes`** (migration `0003_admin_flag.sql`), vérifié via
+  `GET /api/admin/check` (le pseudo vient du **token**, pas d'un paramètre — on ne peut
+  pas énumérer les pseudos des autres). Le flag se promouvoit par SQL
+  (`UPDATE comptes SET admin = 1 WHERE pseudo_normalise = …`), aucun secret dans
+  `wrangler.toml`. En mode `?stockage=local` (hors-ligne) l'admin est indisponible.
+  Côté client : `src/app/useAdminAccess.ts`.
+- **Anti-énumération** : connexion sur un pseudo inconnu -> PBKDF2 **factice** au même
+  coût avant le 404 (pas d'oracle de timing). Mot de passe > 72 caractères -> 400.
+- Validation des entrées sur chaque route. WebSocket `/api/duel/:room` : token en
+  `?token=` (un WebSocket navigateur ne pose pas de header custom), vérifié **avant**
+  l'upgrade 101, puis délégué au Durable Object `DuelRoom` (101 préservé).
 - **Hash timing-safe** : comparaison des hash en temps constant
-  (`crypto.subtle.timingSafeEqual` dans `hashEgaux`) pour éviter l'oracle de timing
-  au login. Mots de passe serveur (mode `d1`, défaut) : PBKDF2 210 000 itérations
-  SHA-256 (`hash_version = 2`, table `comptes`). En mode `?stockage=local` : SHA-256
-  salé local (`src/lib/accounts.ts`).
+  (`crypto.subtle.timingSafeEqual` dans `hashEgaux`). Mots de passe serveur (mode `d1`,
+  défaut) : PBKDF2 210 000 itérations SHA-256 (`hash_version = 2`, table `comptes`).
+  En mode `?stockage=local` : SHA-256 salé local (`src/lib/accounts.ts`).
 
 ## Données externes (client)
 
@@ -82,8 +98,11 @@ circulaires (`npm run lint:arch`).
 
 ## Limites connues
 
-Pas de vérification d'e-mail réelle, localStorage ~5-10 Mo (cache local). La synchro
-serveur est best-effort : en cas de conflit multi-appareils, le dernier écrivain gagne
-côté serveur et `preloadFromServer()` écrase le local au démarrage suivant (sauf clé en
-file d'attente `voltquiz_pending_writes`). Le duel en ligne (rooms KV + DO) est préparé
-côté serveur mais sans UI cliente pour l'instant.
+Pas de vérification d'e-mail réelle, pas de refresh token (le token Bearer vit 30 j,
+révoqué à la déconnexion côté client et à la reconnexion côté serveur), localStorage
+~5-10 Mo (cache local). La synchro serveur est best-effort : en cas de conflit
+multi-appareils, le dernier écrivain gagne côté serveur et `preloadFromServer()` écrase
+le local au démarrage suivant (sauf clé en file d'attente `voltquiz_pending_writes`).
+Le duel en ligne (rooms KV + DO) est préparé côté serveur mais sans UI cliente pour
+l'instant. Rate limiting en mémoire par isolate (contournable par changement d'IP, acceptable
+pour un POC).

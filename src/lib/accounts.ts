@@ -4,7 +4,15 @@
 // En mode 'local' (?stockage=local, hors-ligne) : hash SHA-256 salé 100 % local,
 // le mot de passe n'est JAMAIS stocké en clair.
 import { normalizePseudo, isValidPseudo } from './moderation.js';
-import { read, write, remove, STORAGE_KEYS, STORAGE_MODE } from './storage.js';
+import {
+  read,
+  write,
+  remove,
+  STORAGE_KEYS,
+  STORAGE_MODE,
+  ecrireTokenSession,
+  supprimerTokenSession,
+} from './storage.js';
 import { authSignup, authLogin } from './api.js';
 import type { Account, Session } from './types.js';
 
@@ -118,7 +126,8 @@ export async function createAccount({
     };
   if (STORAGE_MODE === 'd1') {
     try {
-      await authSignup(pseudo, email, password);
+      const r = await authSignup(pseudo, email, password);
+      ecrireTokenSession(r.token || ''); // session serveur (Bearer) pour /api/*
     } catch (e) {
       return {
         ok: false,
@@ -140,7 +149,8 @@ export async function createAccount({
       pseudo,
     };
   }
-  // --- mode 'local' (hors-ligne) ---
+  // --- mode 'local' (hors-ligne) : pas de session serveur ---
+  supprimerTokenSession();
   if (!secureContext()) {
     return {
       ok: false,
@@ -184,6 +194,7 @@ export async function connect(pseudo: string, password: string): Promise<Account
   if (STORAGE_MODE === 'd1') {
     try {
       const r = await authLogin(pseudo, password || '');
+      ecrireTokenSession(r.token || ''); // session serveur (Bearer) pour /api/*
       upsertCompteLocal({
         pseudo: r.pseudo,
         pseudoNormalise: n,
@@ -204,7 +215,8 @@ export async function connect(pseudo: string, password: string): Promise<Account
       };
     }
   }
-  // --- mode 'local' ---
+  // --- mode 'local' : pas de session serveur ---
+  supprimerTokenSession();
   if (!secureContext()) {
     return {
       ok: false,
@@ -292,6 +304,7 @@ export function setAvatar(pseudo: string, dataUrl: string): void {
 }
 export function disconnect(): void {
   remove(STORAGE_KEYS.session);
+  supprimerTokenSession(); // révoque le token côté client (30 j côté serveur sinon)
 }
 
 // Tuto de bienvenue : affiché UNE SEULE FOIS par compte (première connexion).

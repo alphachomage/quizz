@@ -33,7 +33,7 @@ export function useAdminAccess(flagAdmin: boolean, session: SessionStockee | nul
     }
     let actif = true;
     setEnCours(true);
-    apiAdminCheck(session.pseudo)
+    apiAdminCheck() // le pseudo vient du token Bearer, pas d'un paramètre
       .then((r) => {
         if (actif) setAutorise(r.admin === true);
       })
