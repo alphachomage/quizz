@@ -1,9 +1,18 @@
-// BarreHaut.jsx — chips d'en-tête de la partie : thème, niveau, manche, question,
+// BarreHaut.tsx — chips d'en-tête de la partie : thème, niveau, manche, question,
 // scores des joueurs et série en cours.
+import type { ReactElement } from 'react';
+import type { CSSProperties } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import { levelColor, levelName } from '@lib/scoring.js';
 import { currentDailyStreak } from '@lib/streak.js';
-export default function TopBar({ p }) {
+import type { GameViewState } from '../useGame.js';
+
+/** Props : état de la partie enrichi (manche, bonus, thème courant) construit dans Game.tsx. */
+interface TopBarProps {
+  p: GameViewState;
+}
+
+export default function TopBar({ p }: TopBarProps): ReactElement {
   const {
     mode,
     niveau,
@@ -14,20 +23,19 @@ export default function TopBar({ p }) {
     questions,
     scores,
     streaks,
-    currentPlayer: currentPlayer,
-    round: round,
+    currentPlayer,
+    round,
     bonus,
     currentTheme,
   } = p;
+  // '--couleur' est une propriété CSS custom : csstype ne la connaît pas, d'où le cast.
+  const themeChipStyle = {
+    background: currentTheme.couleur,
+    '--couleur': currentTheme.couleur,
+  } as CSSProperties;
   return (
     <div className="barre-haut">
-      <span
-        className="chip theme-chip"
-        style={{
-          background: currentTheme.couleur,
-          '--couleur': currentTheme.couleur,
-        }}
-      >
+      <span className="chip theme-chip" style={themeChipStyle}>
         <Icon nom={currentTheme.icone || theme.icone} taille={15} /> {currentTheme.nom}
       </span>
       {mode === 'solo' && (

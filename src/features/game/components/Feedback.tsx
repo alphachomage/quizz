@@ -1,16 +1,24 @@
-// Feedback.jsx — retour après une réponse : gain (ou bonne réponse affichée),
+// Feedback.tsx — retour après une réponse : gain (ou bonne réponse affichée),
 // anecdote éventuelle, et le gros compteur central avec le bonus de série.
+import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
-export default function Feedback({ p }) {
+import type { GameState } from '../useGame.js';
+
+/** Props : l'état de la partie (phase 'reponse' uniquement affichée). */
+interface FeedbackProps {
+  p: GameState;
+}
+
+export default function Feedback({ p }: FeedbackProps): ReactElement | null {
   const {
     phase,
     selection,
     question,
     mode,
-    lastGain: lastGain,
-    lastBonus: lastBonus,
+    lastGain,
+    lastBonus,
     streaks,
-    currentPlayer: currentPlayer,
+    currentPlayer,
   } = p;
   if (phase !== 'reponse') return null;
   const bonne = selection !== null && selection === question.bonne;

@@ -1,8 +1,12 @@
-// features/game/Game.jsx — écran de jeu, NE FAIT QUE RENDRE.
-// Toute la logique est dans useGame.js (testable hors React).
+// features/game/Game.tsx — écran de jeu, NE FAIT QUE RENDRE.
+// Toute la logique est dans useGame.ts (testable hors React).
 import { useMemo } from 'react';
+import type { ReactElement } from 'react';
 import { roundInfo, pointsFor, SECONDS_PER_QUESTION } from '@lib/scoring.js';
+import type { GameResult, Prefs } from '@lib/types.js';
 import { useGame } from './useGame.js';
+import type { GameViewState, ThemeBadge } from './useGame.js';
+import type { GameLaunchConfig } from './draw.js';
 import { COLORBLIND_COLORS, ANSWER_COLORS, COLORBLIND_TF } from './constants.js';
 import TopBar from './components/TopBar.jsx';
 import Confetti from './components/Confetti.jsx';
@@ -11,11 +15,19 @@ import TimerLine from './components/TimerLine.jsx';
 import PassDevice from './components/PassDevice.jsx';
 import Answers from './components/Answers.jsx';
 import ReportButton from './components/ReportButton.jsx';
-export default function Game({ config, prefs, onFinish: onFinish }) {
+
+/** Props de l'écran de jeu : config de lancement (depuis l'accueil), prefs et callback de fin. */
+export interface GameProps {
+  config: GameLaunchConfig;
+  prefs: Prefs;
+  onFinish: (result: GameResult) => void;
+}
+
+export default function Game({ config, prefs, onFinish }: GameProps): ReactElement {
   const p = useGame({
     config,
     prefs,
-    onFinish: onFinish,
+    onFinish,
   });
   const { mode, theme, players, question, phase, index, questions, time } = p;
 
@@ -27,7 +39,7 @@ export default function Game({ config, prefs, onFinish: onFinish }) {
     question.reponses.length === 2 &&
     question.reponses.every((r) => ['vrai', 'faux'].includes(String(r).trim().toLowerCase()));
   const daltonien = !!(prefs && prefs.daltonien);
-  const answerColor = (r, i) => {
+  const answerColor = (r: string, i: number): string => {
     if (isTrueFalse) {
       const v = String(r).trim().toLowerCase() === 'vrai';
       if (daltonien) return v ? COLORBLIND_TF.vrai : COLORBLIND_TF.faux;
@@ -37,7 +49,7 @@ export default function Game({ config, prefs, onFinish: onFinish }) {
     return palette[i % palette.length];
   };
   const withRounds = mode === 'solo' || mode === 'duel';
-  const { round: round, bonus } = withRounds
+  const { round, bonus } = withRounds
     ? roundInfo(index, questions.length)
     : {
         round: 1,
@@ -49,7 +61,7 @@ export default function Game({ config, prefs, onFinish: onFinish }) {
   const remainingPoints = pointsFor(true, SECONDS_PER_QUESTION - time, bonus);
   const barColor = basePoints >= 17 ? '#2fd27a' : basePoints >= 13 ? '#FFD60A' : '#ff5d73';
   // En mode « tous thèmes », chaque question affiche son propre thème.
-  const currentTheme = useMemo(
+  const currentTheme = useMemo<ThemeBadge>(
     () =>
       question.themeName
         ? {
@@ -60,12 +72,12 @@ export default function Game({ config, prefs, onFinish: onFinish }) {
         : theme,
     [question, theme]
   );
-  const pAvecManches = useMemo(
+  const pAvecManches = useMemo<GameViewState>(
     () => ({
       ...p,
-      round: round,
+      round,
       bonus,
-      withRounds: withRounds,
+      withRounds,
       currentTheme,
     }),
     [p, round, bonus, withRounds, currentTheme]
@@ -73,9 +85,7 @@ export default function Game({ config, prefs, onFinish: onFinish }) {
 
   // --- Écran « passe l'appareil » (mode duel uniquement) ---
   if (phase === 'attente') {
-    return (
-      <PassDevice joueur={players[p.currentPlayer]} themeColor={theme.couleur} onPret={p.pret} />
-    );
+    return <PassDevice joueur={players[p.currentPlayer]} themeColor={theme.couleur} onPret={p.pret} />;
   }
   return (
     <div className="partie">

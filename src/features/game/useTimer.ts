@@ -1,10 +1,18 @@
-// features/game/useTimer.js — minuteur de la question courante.
+// features/game/useTimer.ts — minuteur de la question courante.
 // Perf : 1 setState par SECONDE (et non 10/s) ; la barre est lissée en CSS
 // (transition linéaire sur la largeur). Appelle `onExpire` à 0.
-// Le parent remet le temps à zéro (setTemps) à chaque nouvelle question.
+// Le parent remet le temps à zéro (setTime) à chaque nouvelle question.
 import { useEffect, useRef, useState } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 import { SECONDS_PER_QUESTION } from '@lib/scoring.js';
-export function useTimer(active, duration = SECONDS_PER_QUESTION, onExpire) {
+
+/** Contrat du minuteur : temps restant (entier, secondes) + remise à zéro manuelle. */
+export interface Timer {
+  time: number;
+  setTime: Dispatch<SetStateAction<number>>;
+}
+
+export function useTimer(active: boolean, duration: number = SECONDS_PER_QUESTION, onExpire?: () => void): Timer {
   const [time, setTime] = useState(duration); // entier : secondes restantes
   const onExpireRef = useRef(onExpire);
   onExpireRef.current = onExpire;

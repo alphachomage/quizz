@@ -1,14 +1,30 @@
-// features/game/draw.js — tirage des questions d'une partie (fonction PURE, testable hors React).
-// testable hors React) : solo (niveau choisi), duel (6/joueur), survie (tous
+// features/game/draw.ts — tirage des questions d'une partie (fonction PURE, testable hors React).
+// solo (niveau choisi), duel (6/joueur), survie (tous
 // thèmes/niveaux, 1 vie), quizz du jour (tirage seedé par la date).
 import { todayDate } from '@lib/dates.js';
 import { DUEL_QUESTIONS, SOLO_QUESTIONS, SURVIVAL_MAX } from '@lib/scoring.js';
 import { seriesKey, poolWithoutPreviousSeries } from '@lib/series.js';
 import { shuffle, dailyQuestions, drawSeries } from '@lib/draw.js';
+import type { GameMode, LevelId, Question, TaggedQuestion, Theme } from '@lib/types.js';
+
+/** Config de lancement d'une partie (GameConfig élargi : `players` ajouté par l'accueil,
+    et `niveau` peut valoir 'mix' ou une date AAAA-MM-JJ pour survie / quizz du jour). */
+export interface GameLaunchConfig {
+  mode: GameMode;
+  niveau: LevelId | string | null;
+  theme: Theme;
+  players?: string[];
+  /** Survie / quizz du jour : tous les thèmes mélangés. */
+  allThemes?: Theme[];
+}
+
+/** Question tirée pour une partie : une Question, éventuellement taguée de son thème
+    d'origine (modes multi-thèmes : survie, quizz du jour). */
+export type DrawnQuestion = Question & Partial<TaggedQuestion>;
 
 // Mélange l'ordre des réponses d'une question ET recalcule l'index de la bonne
 // réponse : la position de la bonne réponse change à chaque partie.
-export function withShuffledAnswers(q) {
+export function withShuffledAnswers<T extends Question>(q: T): T {
   const ordre = shuffle(q.reponses.map((_, i) => i));
   return {
     ...q,
@@ -18,7 +34,7 @@ export function withShuffledAnswers(q) {
 }
 
 // Ajoute à chaque question son thème d'origine (utile en mode « tous thèmes »).
-function tagTheme(q, t) {
+function tagTheme(q: Question, t: Theme): TaggedQuestion {
   return {
     ...q,
     themeId: t.id,
@@ -30,11 +46,11 @@ function tagTheme(q, t) {
 
 // Tire les questions de chaque joueur pour la config donnée.
 export { tagTheme };
-export function drawGameQuestions(config) {
+export function drawGameQuestions(config: GameLaunchConfig): DrawnQuestion[][] {
   const { mode, niveau, theme } = config;
   const nbJoueurs = mode === 'duel' ? 2 : 1;
-  let pool;
-  let countN;
+  let pool: DrawnQuestion[];
+  let countN: number;
   if (mode === 'solo') {
     pool = theme.questions.filter((q) => q.niveau === niveau);
     countN = SOLO_QUESTIONS;
@@ -61,13 +77,9 @@ export function drawGameQuestions(config) {
   const randomPool = mode === 'quotidien' ? pool : pool.map(withShuffledAnswers);
   const themeCount = (config.allThemes || []).length || 1;
   const maxPerTheme = mode === 'survie' ? Math.max(2, Math.ceil(countN / themeCount) + 1) : 0;
-  return Array.from(
-    {
-      length: nbJoueurs,
-    },
-    () =>
-      mode === 'quotidien'
-        ? shuffle(randomPool).slice(0, countN)
-        : drawSeries(randomPool, countN, 2, maxPerTheme)
+  return Array.from({ length: nbJoueurs }, () =>
+    mode === 'quotidien'
+      ? shuffle(randomPool).slice(0, countN)
+      : drawSeries(randomPool, countN, 2, maxPerTheme)
   );
 }
