@@ -10,6 +10,7 @@ import { useNavigation } from './useNavigation.js';
 import type { NavConfig } from './useNavigation.js';
 import { useUnlock } from './useUnlock.js';
 import { readUrlFlags, clearUrlFlags, urlWithoutAdminFlag, redirigerVers } from './urlFlags.js';
+import { useAdminAccess } from './useAdminAccess.js';
 import { useSession } from './contexts/SessionContext.js';
 import { usePrefs } from './contexts/PrefsContext.js';
 import { useThemes } from './contexts/ThemesContext.js';
@@ -65,7 +66,9 @@ function Shell(): ReactElement {
 
   // Flags d'URL (lus UNE fois) : ?admin=1 ?reset=1 ?resetcompte=1 ?tuto=1
   const flags = useMemo(() => readUrlFlags(), []);
-  const [isAdmin] = useState(flags.admin);
+  // ?admin=1 ne suffit plus : le compte de la session doit avoir admin=1 en base
+  // (vérifié côté serveur via /api/admin/check) — voir useAdminAccess.ts.
+  const { isAdmin, enCours: adminEnCours } = useAdminAccess(flags.admin, session);
   const [tutoOuvert, setTutoOuvert] = useState(false);
 
   // Reset manuel sur la version d'essai (?reset=1 / ?resetcompte=1), une fois, puis
@@ -125,7 +128,18 @@ function Shell(): ReactElement {
     );
   }
 
-  // Vue admin (?admin=1) : prioritaire, même sans compte connecté.
+  // Vérification d'accès admin en cours (?admin=1 + appel /api/admin/check).
+  if (adminEnCours) {
+    return (
+      <div className={appClass}>
+        <div className="ecran-centre">
+          <p className="vide">Vérification de l'accès admin…</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Vue admin (?admin=1 + pseudo autorisé côté serveur) : prioritaire sur le reste.
   if (isAdmin) {
     const Admin = ROUTES.admin;
     return (

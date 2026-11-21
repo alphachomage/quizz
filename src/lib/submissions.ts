@@ -3,6 +3,9 @@
 // - « validées » (CLES.validees) : déplacées ici au clic sur valider -> jouables,
 //   exportables en JSON, et elles disparaissent de la liste des propositions.
 import { SubmissionsRepo, ApprovedRepo } from './repositories.js';
+import { STORAGE_MODE } from './storage.js';
+import { apiAddSubmission } from './api.js';
+import { currentSession } from './accounts.js';
 import type { Question, Submission, Theme } from './types.js';
 
 // Soumission validée par l'admin :rajoute la date de validation (valideLe).
@@ -26,6 +29,21 @@ export function addSubmission(q: Submission): Submission {
   };
   list.push(submission);
   SubmissionsRepo.save(list);
+  // Mode 'd1' : la soumission part aussi dans la table D1 « soumissions » (best-effort),
+  // pour la modération admin cross-device (GET /api/soumissions?etat=attente).
+  if (STORAGE_MODE === 'd1') {
+    void apiAddSubmission({
+      id: submission.id || '',
+      pseudo: currentSession()?.pseudo ?? null,
+      themeId: submission.themeId,
+      q: submission.q,
+      reponses: submission.reponses,
+      bonne: submission.bonne,
+      niveau: submission.niveau,
+      info: submission.info,
+      date: submission.date,
+    }).catch(() => {});
+  }
   return submission;
 }
 export function removeSubmission(id: string): void {

@@ -5,7 +5,8 @@
 // le Worker sert les fichiers statiques via le binding ASSETS (dist/client),
 // pose les en-têtes de sécurité sur CHAQUE réponse (CSP d'abord en Report-Only,
 // voir CSP_REPORT_ONLY dans wrangler.toml), gère le cache, et route l'API
-// (/api/*, voir worker-api.ts : V2 = comptes D1, rooms de duel KV/DO).
+// (/api/*, voir worker-api.ts : base D1 par défaut — sync_client, comptes, parties,
+// records, XP, soumissions — + rooms de duel KV/DO).
 // Les types du runtime (Env, Fetcher, D1Database...) sont déclarés localement dans
 // durable-objects/workers-env.d.ts (pas de @cloudflare/workers-types, règle 8).
 
@@ -75,13 +76,14 @@ function secure(answer: Response, env: Env, cacheControl?: string, hote = ''): R
   });
 }
 
-// --- Rate limiting simple en mémoire (30 req/min/IP sur /api/*) ---
+// --- Rate limiting simple en mémoire (30 req/min/IP sur /api/*, 5/min sur /api/auth/*
+// contre le brute-force de mots de passe) ---
 const fenetres = new Map<string, number[]>(); // ip -> [timestamps]
-function rateLimite(bee: Env, ip: string): boolean {
+function rateLimite(bee: Env, ip: string, limite = 30): boolean {
   const now = Date.now();
   const fenetre = 60000;
   const list = (fenetres.get(ip) || []).filter((t) => now - t < fenetre);
-  if (list.length >= 30) return false;
+  if (list.length >= limite) return false;
   list.push(now);
   fenetres.set(ip, list);
   if (fenetres.size > 5000) fenetres.clear(); // borne mémoire (redémarrage doux)
@@ -93,9 +95,10 @@ export default {
     const url = new URL(request.url);
     const ip = request.headers.get('cf-connecting-ip') || 'inconnu';
 
-    // --- API : rate limiting (30 req/min/IP) puis routeur /api/* (worker-api.ts) ---
+    // --- API : rate limiting (30 req/min/IP, 5/min sur /api/auth/*) puis routeur ---
     if (url.pathname.startsWith('/api/')) {
-      if (!rateLimite(env, ip)) {
+      const limite = url.pathname.startsWith('/api/auth/') ? 5 : 30;
+      if (!rateLimite(env, ip, limite)) {
         internalCounters.hits429 += 1; // exposé via /api/stats (tableau de bord admin)
         return new Response(
           JSON.stringify({

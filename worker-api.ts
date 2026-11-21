@@ -1,8 +1,10 @@
 /* global Env */
 // worker-api.ts — mini-routeur /api/* de VoltQuiz (zéro dépendance), importé par worker.ts.
-// Préparé pour la V2 (comptes serveur, parties, records, XP, rooms de duel) :
-// toutes les routes sont fonctionnelles si les bindings D1/KV/DO sont configurés.
-// En attendant, le client reste 100 % local (voir src/lib/api.ts + lib/storage.ts).
+// La base D1 est le stockage par défaut (plus de porte V2_ENABLED) : toutes les routes
+// répondent dès que les bindings sont présents ; une route renvoie 503 « binding
+// manquant » si D1/KV/DO n'est pas configuré (voir chaque handler).
+// Tables D1 (migrations/) : sync_client (miroir des clés localStorage), comptes,
+// parties, records, xp, soumissions. KV ROOMS + DO DUEL_ROOMS = duel en ligne (préparé).
 // Types du runtime (Env, D1Database, KVNamespace...) : durable-objects/workers-env.d.ts.
 
 // --- Helpers ---
@@ -25,9 +27,9 @@ function jsonError(error: string, status = 400): Response {
   );
 }
 const MAX_BODY = 64 * 1024; // 64 Ko max par body JSON (anti-gros payloads)
-// Les grosses clés kv (ex. voltquiz_parties = historique des 500 dernières parties avec
+// Les grosses clés sync (ex. voltquiz_parties = historique des 500 dernières parties avec
 // le détail des questions) dépassent 64 Ko : plafond spécifique pour /api/kv.
-const MAX_BODY_KV = 1024 * 1024; // 1 Mo max pour /api/kv
+const MAX_BODY_SYNC = 1024 * 1024; // 1 Mo max pour /api/kv (table sync_client)
 
 async function readBody(
   request: Request,
@@ -76,11 +78,17 @@ function hashesEqual(a: string, b: string): boolean {
   return crypto.subtle.timingSafeEqual(A, B);
 }
 
-// --- KV générique (sync du stockage local -> serveur) ---
+// --- Sync générique (miroir serveur du localStorage -> table D1 sync_client) ---
+// Session requise + NAMESPACING par compte : la clé réelle en base est
+// "<pseudo>:<cle>" — un client ne peut lire/écrire que SON espace, jamais celui
+// d'un autre (les clés voltquiz_* seules ne donnent accès à rien sans token valide).
 async function routeKv(request: Request, env: Env, key: string): Promise<Response> {
   if (!key) return jsonError('Clé manquante.', 400);
+  const s = await exigerSession(request, env);
+  if (s instanceof Response) return s;
+  const cleReelle = `${s.pseudo}:${key}`;
   if (request.method === 'GET') {
-    const brut = env.DB ? await kvViaD1Get(env, key) : null;
+    const brut = await syncViaD1Get(env, cleReelle);
     return json({
       ok: true,
       key,
@@ -88,16 +96,16 @@ async function routeKv(request: Request, env: Env, key: string): Promise<Respons
     });
   }
   if (request.method === 'POST') {
-    const body = await readBody(request, MAX_BODY_KV);
+    const body = await readBody(request, MAX_BODY_SYNC);
     if (!body || !('value' in body) || body.value === undefined) return jsonError('Valeur manquante.', 400);
-    if (env.DB) await kvViaD1Set(env, key, body.value);
+    await syncViaD1Set(env, cleReelle, body.value);
     return json({
       ok: true,
       key,
     });
   }
   if (request.method === 'DELETE') {
-    if (env.DB) await kvViaD1Delete(env, key);
+    await syncViaD1Delete(env, cleReelle);
     return json({
       ok: true,
       key,
@@ -106,26 +114,84 @@ async function routeKv(request: Request, env: Env, key: string): Promise<Respons
   return jsonError('Méthode non supportée.', 405);
 }
 
-// KV stocké dans D1 (table kv) si le binding DB existe.
-async function kvViaD1Get(env: Env, key: string): Promise<unknown> {
-  const row = await env.DB.prepare('SELECT valeur FROM kv WHERE cle = ?')
+// sync_client = table D1 cle/valeur (JSON) qui miroir les clés localStorage du client.
+async function syncViaD1Get(env: Env, key: string): Promise<unknown> {
+  const row = await env.DB.prepare('SELECT valeur FROM sync_client WHERE cle = ?')
     .bind(key)
     .first<{ valeur: string }>();
   return row ? JSON.parse(row.valeur) : null;
 }
-async function kvViaD1Set(env: Env, key: string, value: unknown): Promise<void> {
+async function syncViaD1Set(env: Env, key: string, value: unknown): Promise<void> {
   await env.DB.prepare(
-    'INSERT INTO kv (cle, valeur) VALUES (?, ?) ON CONFLICT(cle) DO UPDATE SET valeur = excluded.valeur'
+    'INSERT INTO sync_client (cle, valeur) VALUES (?, ?) ON CONFLICT(cle) DO UPDATE SET valeur = excluded.valeur'
   )
     .bind(key, JSON.stringify(value))
     .run();
 }
-async function kvViaD1Delete(env: Env, key: string): Promise<void> {
-  await env.DB.prepare('DELETE FROM kv WHERE cle = ?').bind(key).run();
+async function syncViaD1Delete(env: Env, key: string): Promise<void> {
+  await env.DB.prepare('DELETE FROM sync_client WHERE cle = ?').bind(key).run();
+}
+
+// --- Sessions serveur : token Bearer renvoyé par /api/auth/*, vérifié sur toutes les
+// routes de données. Une session par compte (la connexion révoque l'ancienne). ---
+const DUREE_SESSION_MS = 30 * 24 * 3600 * 1000; // 30 jours
+async function creerSession(env: Env, pseudo: string): Promise<string> {
+  const token = crypto.randomUUID() + crypto.randomUUID();
+  const now = Date.now();
+  await env.DB.prepare('DELETE FROM sessions WHERE pseudo = ?').bind(pseudo).run();
+  await env.DB.prepare(
+    'INSERT INTO sessions (token, pseudo, cree_le, expire_le) VALUES (?, ?, ?, ?)'
+  )
+    .bind(token, pseudo, new Date(now).toISOString(), new Date(now + DUREE_SESSION_MS).toISOString())
+    .run();
+  return token;
+}
+
+// Lit le token Bearer et renvoie le pseudo associé (ou null si absent/invalide/expiré).
+async function sessionValide(request: Request, env: Env): Promise<string | null> {
+  const m = /^Bearer (.+)$/.exec(request.headers.get('Authorization') || '');
+  if (!m || !env.DB) return null;
+  const row = await env.DB
+    .prepare('SELECT pseudo, expire_le FROM sessions WHERE token = ?')
+    .bind(m[1])
+    .first<{ pseudo: string; expire_le: string }>();
+  if (!row || new Date(row.expire_le).getTime() < Date.now()) return null;
+  return row.pseudo;
+}
+// Variante pour le WebSocket (pas de header custom en navigateur) : token en query ?token=.
+async function sessionValideParToken(token: string | null, env: Env): Promise<string | null> {
+  if (!token || !env.DB) return null;
+  const row = await env.DB
+    .prepare('SELECT pseudo, expire_le FROM sessions WHERE token = ?')
+    .bind(token)
+    .first<{ pseudo: string; expire_le: string }>();
+  if (!row || new Date(row.expire_le).getTime() < Date.now()) return null;
+  return row.pseudo;
+}
+
+/** Exige une session valide -> { pseudo } ou une réponse 503 (pas de DB) / 401. */
+async function exigerSession(request: Request, env: Env): Promise<{ pseudo: string } | Response> {
+  if (!env.DB) return jsonError('Base non configurée.', 503);
+  const pseudo = await sessionValide(request, env);
+  if (!pseudo) return jsonError('Session requise : connecte-toi d’abord.', 401);
+  return { pseudo };
+}
+/** Exige une session valide + admin = 1 sur le compte (table comptes). */
+async function exigerAdmin(request: Request, env: Env): Promise<{ pseudo: string } | Response> {
+  const s = await exigerSession(request, env);
+  if (s instanceof Response) return s;
+  if (!env.DB) return jsonError('Base non configurée.', 503);
+  const row = await env.DB
+    .prepare('SELECT admin FROM comptes WHERE pseudo_normalise = ?')
+    .bind(normalizePseudo(s.pseudo))
+    .first<{ admin: number }>();
+  if (!row || !row.admin) return jsonError('Accès admin refusé.', 403);
+  return s;
 }
 
 // --- Auth : inscription / connexion (PBKDF2 210 000 itérations côté serveur) ---
 const PBKDF2_ITERATIONS = 210000;
+const MAX_MDP = 72; // au-delà, 400 (évite un PBKDF2 sur un body énorme)
 async function pbkdf2(password: string, sel: string): Promise<string> {
   const data = new TextEncoder().encode(`${sel}::${password}`);
   const key = await crypto.subtle.importKey('raw', data, 'PBKDF2', false, ['deriveBits']);
@@ -148,7 +214,7 @@ function normalizePseudo(p: unknown): string {
     .replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9]/g, '');
 }
-// Ligne de la table D1 `comptes` (schéma : migrations/0001_init.sql).
+// Ligne de la table D1 `comptes` (schéma : migrations/0001_init.sql + 0003_admin_flag.sql).
 interface CompteRow {
   pseudo: string;
   pseudo_normalise: string;
@@ -158,6 +224,7 @@ interface CompteRow {
   hash_version: number;
   cree_le: string | null;
   dernier_login: string | null;
+  admin: number; // 0/1 — flag admin du compte (promu par UPDATE SQL, voir docs/features/admin.md)
 }
 async function routeAuth(
   request: Request,
@@ -170,17 +237,19 @@ async function routeAuth(
   if (!env.DB) return jsonError('Base non configurée (binding DB manquant).', 503);
   const pseudo = String(body.pseudo).slice(0, 20);
   const n = normalizePseudo(pseudo);
+  const password = String(body.password);
+  if (password.length > MAX_MDP) return jsonError(`Mot de passe trop long (${MAX_MDP} max).`, 400);
   if (action === 'inscription') {
     if (!body.email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(body.email)))
       return jsonError('E-mail invalide.', 400);
-    if (String(body.password).length < 8)
+    if (password.length < 8)
       return jsonError('Mot de passe : 8 caractères minimum.', 400);
     const exists = await env.DB.prepare('SELECT pseudo FROM comptes WHERE pseudo_normalise = ?')
       .bind(n)
       .first();
     if (exists) return jsonError('Ce pseudo est déjà pris.', 409);
     const sel = crypto.randomUUID();
-    const hash = await pbkdf2(String(body.password), sel);
+    const hash = await pbkdf2(password, sel);
     const now = new Date().toISOString();
     await env.DB.prepare(
       'INSERT INTO comptes (pseudo, pseudo_normalise, email, hash, sel, hash_version, cree_le, dernier_login) VALUES (?, ?, ?, ?, ?, 2, ?, ?)'
@@ -190,14 +259,19 @@ async function routeAuth(
     return json({
       ok: true,
       pseudo,
+      token: await creerSession(env, pseudo),
     });
   }
   if (action === 'connexion') {
     const account = await env.DB.prepare('SELECT * FROM comptes WHERE pseudo_normalise = ?')
       .bind(n)
       .first<CompteRow>();
-    if (!account) return jsonError('Aucun compte avec ce pseudo.', 404);
-    const hash = await pbkdf2(String(body.password), account.sel);
+    if (!account) {
+      // PBKDF2 factice au même coût : pas d'oracle de timing pour énumérer les pseudos.
+      await pbkdf2(password, 'sel-factice');
+      return jsonError('Aucun compte avec ce pseudo.', 404);
+    }
+    const hash = await pbkdf2(password, account.sel);
     if (!hashesEqual(hash, account.hash)) return jsonError('Mot de passe incorrect.', 401);
     await env.DB.prepare('UPDATE comptes SET dernier_login = ? WHERE pseudo = ?')
       .bind(new Date().toISOString(), account.pseudo)
@@ -205,20 +279,25 @@ async function routeAuth(
     return json({
       ok: true,
       pseudo: account.pseudo,
+      token: await creerSession(env, account.pseudo),
     });
   }
   return jsonError('Action inconnue.', 404);
 }
 
-// --- Parties / records / XP (D1) ---
+// --- Parties / records / XP (D1) — session requise, pseudo forcé = celui du token ---
 async function routeGames(request: Request, env: Env, url: URL): Promise<Response> {
   if (!env.DB) return jsonError('Base non configurée.', 503);
+  const s = await exigerSession(request, env);
+  if (s instanceof Response) return s;
   if (request.method === 'GET') {
     const pseudo = url.searchParams.get('pseudo');
+    // Filtre par colonne pseudo dédiée (index idx_parties_pseudo) — jamais de LIKE
+    // '%...%' sur la colonne JSON joueurs, l'index ne servirait à rien.
     const requete = pseudo
-      ? 'SELECT * FROM parties WHERE joueurs LIKE ? ORDER BY date DESC LIMIT 500'
+      ? 'SELECT * FROM parties WHERE pseudo = ? ORDER BY date DESC LIMIT 500'
       : 'SELECT * FROM parties ORDER BY date DESC LIMIT 500';
-    const params = pseudo ? [`%${normalizePseudo(pseudo)}%`] : [];
+    const params = pseudo ? [normalizePseudo(pseudo)] : [];
     const res = await env.DB.prepare(requete)
       .bind(...params)
       .all();
@@ -230,15 +309,19 @@ async function routeGames(request: Request, env: Env, url: URL): Promise<Respons
   if (request.method === 'POST') {
     const p = await readBody(request);
     if (!p || !p.mode) return jsonError('Partie invalide.', 400);
-    const id = crypto.randomUUID();
+    const id = typeof p.id === 'string' && p.id ? p.id : crypto.randomUUID();
+    // Colonne pseudo = compte du token (jamais celui du body : un client ne peut pas
+    // usurper un autre pseudo). Sert au filtre indexé GET /api/parties?pseudo=.
+    const pseudo = normalizePseudo(s.pseudo);
     await env.DB.prepare(
-      'INSERT INTO parties (id, mode, niveau, theme_id, joueurs, scores, bonnes, total, details, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      'INSERT INTO parties (id, mode, niveau, theme_id, pseudo, joueurs, scores, bonnes, total, details, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
     )
       .bind(
         id,
         p.mode,
         p.niveau || null,
         p.themeId || null,
+        pseudo,
         JSON.stringify(p.players || []),
         JSON.stringify(p.scores || []),
         JSON.stringify(p.bonnes || []),
@@ -261,8 +344,14 @@ async function routeRecords(
   key: string | null
 ): Promise<Response> {
   if (!env.DB) return jsonError('Base non configurée.', 503);
+  const s = await exigerSession(request, env);
+  if (s instanceof Response) return s;
   if (request.method === 'GET' && key) {
-    const row = await env.DB.prepare('SELECT * FROM records WHERE cle = ?').bind(key).first();
+    // Clé namespacée par compte (comme sync_client) : un joueur ne lit que SES records.
+    const row = await env.DB
+      .prepare('SELECT * FROM records WHERE cle = ?')
+      .bind(`${normalizePseudo(s.pseudo)}:${key}`)
+      .first();
     return json({
       ok: true,
       record: row || null,
@@ -275,7 +364,14 @@ async function routeRecords(
     await env.DB.prepare(
       'INSERT INTO records (cle, valeur, pseudo, date) VALUES (?, ?, ?, ?) ON CONFLICT(cle) DO UPDATE SET valeur = excluded.valeur, pseudo = excluded.pseudo, date = excluded.date'
     )
-      .bind(body.key, body.value, body.pseudo || null, new Date().toISOString())
+      // cle namespacée + pseudo forcé = compte du token (jamais celui du body :
+      // un client ne peut ni lire ni écraser les records d'un autre compte).
+      .bind(
+        `${normalizePseudo(s.pseudo)}:${body.key}`,
+        body.value,
+        normalizePseudo(s.pseudo),
+        new Date().toISOString()
+      )
       .run();
     return json({
       ok: true,
@@ -287,13 +383,16 @@ async function routeXp(
   request: Request,
   env: Env,
   url: URL,
-  pseudo: string | null,
   themeId: string | null
 ): Promise<Response> {
   if (!env.DB) return jsonError('Base non configurée.', 503);
-  if (request.method === 'GET' && pseudo && themeId) {
+  const s = await exigerSession(request, env);
+  if (s instanceof Response) return s;
+  if (request.method === 'GET' && themeId) {
+    // pseudo forcé = compte du token : le segment d'URL /api/xp/<pseudo>/... est
+    // conservé pour compatibilité client mais IGNORÉ (pas de lecture cross-joueurs).
     const row = await env.DB.prepare('SELECT xp FROM xp WHERE pseudo_theme = ?')
-      .bind(`${pseudo}:${themeId}`)
+      .bind(`${normalizePseudo(s.pseudo)}:${themeId}`)
       .first<{ xp: number }>();
     return json({
       ok: true,
@@ -302,12 +401,13 @@ async function routeXp(
   }
   if (request.method === 'POST') {
     const body = await readBody(request);
-    if (!body || !body.pseudo || !body.themeId || typeof body.xp !== 'number')
-      return jsonError('pseudo, themeId, xp requis.', 400);
+    if (!body || !body.themeId || typeof body.xp !== 'number')
+      return jsonError('themeId + xp requis.', 400);
+    // pseudo forcé = compte du token.
     await env.DB.prepare(
       'INSERT INTO xp (pseudo_theme, xp) VALUES (?, ?) ON CONFLICT(pseudo_theme) DO UPDATE SET xp = excluded.xp'
     )
-      .bind(`${body.pseudo}:${body.themeId}`, body.xp)
+      .bind(`${normalizePseudo(s.pseudo)}:${body.themeId}`, body.xp)
       .run();
     return json({
       ok: true,
@@ -316,7 +416,84 @@ async function routeXp(
   return jsonError('Méthode non supportée.', 405);
 }
 
-// --- Rooms de duel éphémères (KV) ---
+// --- Soumissions de questions des joueurs (D1, table soumissions) ---
+// POST (session requise, pseudo forcé = token) -> ajoute/remplace une soumission
+// (etat forcé à 'attente'). GET (admin requis) ?etat=attente -> liste de modération.
+async function routeSoumissions(request: Request, env: Env, url: URL): Promise<Response> {
+  if (!env.DB) return jsonError('Base non configurée.', 503);
+  if (request.method === 'GET') {
+    const a = await exigerAdmin(request, env);
+    if (a instanceof Response) return a;
+    const etat = url.searchParams.get('etat');
+    const requete = etat
+      ? 'SELECT * FROM soumissions WHERE etat = ? ORDER BY date DESC LIMIT 500'
+      : 'SELECT * FROM soumissions ORDER BY date DESC LIMIT 500';
+    const res = await env.DB.prepare(requete)
+      .bind(...(etat ? [etat] : []))
+      .all();
+    return json({
+      ok: true,
+      soumissions: res.results || [],
+    });
+  }
+  if (request.method === 'POST') {
+    const s = await exigerSession(request, env);
+    if (s instanceof Response) return s;
+    const body = await readBody(request);
+    if (
+      !body ||
+      typeof body.id !== 'string' ||
+      typeof body.q !== 'string' ||
+      !Array.isArray(body.reponses) ||
+      typeof body.bonne !== 'number' ||
+      body.bonne < 0 ||
+      body.bonne >= body.reponses.length
+    )
+      return jsonError('Soumission invalide.', 400);
+    await env.DB.prepare(
+      'INSERT INTO soumissions (id, pseudo, theme_id, q, reponses, bonne, niveau, info, etat, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET q = excluded.q, reponses = excluded.reponses, bonne = excluded.bonne, niveau = excluded.niveau, info = excluded.info, etat = excluded.etat, date = excluded.date'
+    )
+      .bind(
+        body.id,
+        normalizePseudo(s.pseudo), // pseudo forcé = compte du token
+        typeof body.themeId === 'string' ? body.themeId : null,
+        body.q.slice(0, 500),
+        JSON.stringify(body.reponses).slice(0, 2000),
+        body.bonne,
+        typeof body.niveau === 'string' ? body.niveau : 'facile',
+        typeof body.info === 'string' ? body.info.slice(0, 1000) : null,
+        'attente',
+        typeof body.date === 'string' ? body.date : new Date().toISOString()
+      )
+      .run();
+    return json({
+      ok: true,
+      id: body.id,
+    });
+  }
+  return jsonError('Méthode non supportée.', 405);
+}
+
+// --- Accès admin : GET /api/admin/check (header Authorization: Bearer <token>) ->
+// 200 { ok, admin: true } si le compte DU TOKEN a admin = 1 en table `comptes`,
+// 401 sans session valide, 403 si compte non admin. Le flag vit EN BASE (colonne
+// comptes.admin, migration 0003), pas dans une var d'env : aucun secret dans
+// wrangler.toml. Le pseudo n'est pas pris en paramètre : il vient du token, un client
+// ne peut pas tester les pseudos des autres.
+// Promotion d'un compte (bootstrap du 1er admin) :
+//   npx wrangler d1 execute voltquiz --remote --command \
+//     "UPDATE comptes SET admin = 1 WHERE pseudo_normalise = 'tonpseudo'" ---
+async function routeAdminCheck(request: Request, env: Env): Promise<Response> {
+  if (request.method !== 'GET') return jsonError('Méthode non supportée.', 405);
+  const a = await exigerAdmin(request, env);
+  if (a instanceof Response) return a;
+  return json({
+    ok: true,
+    admin: true,
+  });
+}
+
+// --- Rooms de duel éphémères (KV) — session requise ---
 async function routeRoom(
   request: Request,
   env: Env,
@@ -324,14 +501,15 @@ async function routeRoom(
   segment: string | null
 ): Promise<Response> {
   if (!env.ROOMS) return jsonError('KV ROOMS non configuré.', 503);
+  const s = await exigerSession(request, env);
+  if (s instanceof Response) return s;
   if (request.method === 'POST' && !segment) {
-    const body = await readBody(request);
     const id = crypto.randomUUID().slice(0, 8);
     await env.ROOMS.put(
       `room:${id}`,
       JSON.stringify({
         id,
-        createur: body?.pseudo || null,
+        createur: s.pseudo, // compte du token
         createdAt: new Date().toISOString(),
       }),
       {
@@ -393,18 +571,13 @@ export async function apiRouter(request: Request, env: Env, url: URL): Promise<R
     return jsonError('Origine non autorisée.', 403);
   }
 
-  // Portes V2 : tant que V2_ENABLED n'est pas "true", seules les routes de santé
-  // (ping/health/csp-report) répondent — les routes D1/KV/DO renvoient 503.
-  const ROUTES_OUVERTES = ['/api/ping', '/api/health', '/api/csp-report'];
-  if (env.V2_ENABLED !== 'true' && !ROUTES_OUVERTES.includes(p)) {
-    return jsonError('V2 non active sur ce déploiement.', 503);
-  }
+  // Plus de porte V2_ENABLED : la base D1 est le stockage par défaut. Les routes de
+  // santé répondent toujours ; chaque route métier renvoie 503 si son binding manque.
   if (p === '/api/ping' || p === '/api/health') {
     return json({
       ok: true,
       app: 'VoltQuiz',
       version: env.APP_VERSION || '0.1.0',
-      v2: env.V2_ENABLED === 'true',
       hour: new Date().toISOString(),
     });
   }
@@ -418,9 +591,11 @@ export async function apiRouter(request: Request, env: Env, url: URL): Promise<R
       },
     });
   }
-  // Stats V2 pour le tableau de bord admin (?admin=1) : gated V2 comme les autres
-  // routes -> 503 « V2 non active » si V2_ENABLED n'est pas "true".
+  // Stats pour le tableau de bord admin (?admin=1) : rooms KV, rapports CSP, hits 429.
+  // Session requise (n'importe quel compte connecté).
   if (p === '/api/stats' && request.method === 'GET') {
+    const s = await exigerSession(request, env);
+    if (s instanceof Response) return s;
     let rooms = 0;
     if (env.ROOMS) {
       try {
@@ -435,13 +610,14 @@ export async function apiRouter(request: Request, env: Env, url: URL): Promise<R
     }
     return json({
       ok: true,
-      v2: env.V2_ENABLED === 'true',
       rooms,
       rapportsCsp: internalCounters.rapportsCsp,
       hits429: internalCounters.hits429,
       hour: new Date().toISOString(),
     });
   }
+  if (p === '/api/admin/check') return routeAdminCheck(request, env);
+  if (p === '/api/soumissions') return routeSoumissions(request, env, url);
   if (p.startsWith('/api/kv/'))
     return routeKv(request, env, decodeURIComponent(p.slice('/api/kv/'.length)));
   if (p === '/api/auth/inscription' || p === '/api/auth/connexion') {
@@ -452,16 +628,12 @@ export async function apiRouter(request: Request, env: Env, url: URL): Promise<R
     return routeRecords(request, env, url, decodeURIComponent(p.slice('/api/records/'.length)));
   if (p === '/api/records') return routeRecords(request, env, url, null);
   if (p.startsWith('/api/xp/')) {
-    const [, , , pseudo, themeId] = p.split('/');
-    return routeXp(
-      request,
-      env,
-      url,
-      decodeURIComponent(pseudo || ''),
-      decodeURIComponent(themeId || '')
-    );
+    // /api/xp/<pseudo>/<themeId> : le segment <pseudo> est ignoré côté serveur
+    // (le pseudo vient du token Bearer dans routeXp — jamais de la confiance à l'URL).
+    const [, , , , themeId] = p.split('/');
+    return routeXp(request, env, url, decodeURIComponent(themeId || ''));
   }
-  if (p === '/api/xp') return routeXp(request, env, url, null, null);
+  if (p === '/api/xp') return routeXp(request, env, url, null);
   if (p === '/api/room' || p === '/api/room/rejoindre' || p.startsWith('/api/room/')) {
     const segment =
       p === '/api/room'
@@ -472,8 +644,12 @@ export async function apiRouter(request: Request, env: Env, url: URL): Promise<R
     return routeRoom(request, env, url, segment ? decodeURIComponent(segment) : null);
   }
   // WebSocket du duel : délégué au Durable Object DuelRoom (binding DUEL_ROOMS).
+  // Session requise via ?token= (un WebSocket navigateur ne peut pas poser de header
+  // Authorization custom) — vérifiée AVANT l'upgrade 101.
   if (p.startsWith('/api/duel/')) {
     const roomId = decodeURIComponent(p.slice('/api/duel/'.length));
+    const pseudo = await sessionValideParToken(url.searchParams.get('token'), env);
+    if (!pseudo) return jsonError('Session requise pour le duel.', 401);
     if (!env.DUEL_ROOMS) return jsonError('Durable Object DUEL_ROOMS non configuré.', 503);
     const id = env.DUEL_ROOMS.idFromName(roomId);
     return env.DUEL_ROOMS.get(id).fetch(request);

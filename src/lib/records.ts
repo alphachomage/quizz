@@ -1,6 +1,9 @@
-// records.ts — records locaux : un record par mode x niveau x thème.
-// Stockés via lib/storage.js (ils restent sur ce PC).
+// records.ts — records : un record par mode x niveau x thème.
+// Stockés en local (sync_client) et, en mode 'd1', aussi dans la table D1 « records ».
 import { RecordsRepo } from './repositories.js';
+import { STORAGE_MODE } from './storage.js';
+import { apiSaveRecord } from './api.js';
+import { currentSession } from './accounts.js';
 
 /** Records : recordKey(mode, niveau, themeId) -> meilleur score. */
 export type RecordsMap = Record<string, number>;
@@ -20,6 +23,11 @@ function saveRecord(key: string, value: number): number {
   if ((records[key] || 0) < value) {
     records[key] = value;
     RecordsRepo.save(records);
+    // Mode 'd1' : le record part aussi dans la table D1 « records » (best-effort).
+    if (STORAGE_MODE === 'd1') {
+      const pseudo = currentSession()?.pseudo;
+      void apiSaveRecord(key, value, pseudo ?? undefined).catch(() => {});
+    }
   }
   return records[key] || 0;
 }

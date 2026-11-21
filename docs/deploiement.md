@@ -1,11 +1,11 @@
 # Déploiement (Cloudflare Workers) — 4 environnements
 
-| Environnement | Commande | URL / vars | V2_ENABLED |
+| Environnement | Commande | URL / vars | Base D1 |
 |---|---|---|---|
-| dev local | `npm run dev` | http://localhost:5173 (predev = gen-manifest) | n/a (local) |
-| preview local | `npm run preview` | http://localhost:4173 (build prod servie) | n/a (local) |
-| preview Cloudflare | `npm run deploy:preview` | `wrangler deploy --env preview` (`ENVIRONMENT=preview`) | **true** |
-| prod | `npm run deploy` (ou auto par Cloudflare) | https://voltquiz.joris-leo81.workers.dev (`ENVIRONMENT=production`) | **true** |
+| dev local | `npm run dev` | http://localhost:5173 (predev = gen-manifest), D1 locale sqlite | locale (workerd) |
+| preview local | `npm run preview` | http://localhost:4173 (build prod servie, sans worker) | aucune (retombe sur le cache local) |
+| preview Cloudflare | `npm run deploy:preview` | `wrangler deploy --env preview` (`ENVIRONMENT=preview`) | distante (preview) |
+| prod | `npm run deploy` (ou auto par Cloudflare) | https://voltquiz.joris-leo81.workers.dev (`ENVIRONMENT=production`) | distante (prod) |
 
 Ne jamais déployer la prod depuis une branche non reviewée.
 
@@ -15,8 +15,8 @@ Ne jamais déployer la prod depuis une branche non reviewée.
 npm run dev             # DEV local -> http://localhost:5173
 npm run build           # build prod (dist/)
 npm run preview         # sert la prod en local -> http://localhost:4173
-npm run deploy:preview  # vite build + wrangler deploy --env preview (V2 activée)
-npm run deploy          # vite build + wrangler deploy (prod, V2 activée)
+npm run deploy:preview  # vite build + wrangler deploy --env preview (D1 preview)
+npm run deploy          # vite build + wrangler deploy (prod, D1 active)
 npx wrangler login      # première fois
 npx wrangler deploy --dry-run   # valide worker.ts + wrangler.toml sans déployer
 npm run tail            # wrangler tail --format pretty (logs temps réel)
@@ -48,8 +48,9 @@ production. Aucun secret Cloudflare n'est stocké dans GitHub.
 
 `[vars]` (prod) : `ENVIRONMENT`, `APP_VERSION`, `CSP_REPORT_ONLY` (true = CSP en
 observation 48 h avec rapports sur `/api/csp-report`, puis false pour appliquer),
-`V2_ENABLED = "true"`, `ALLOWED_ORIGINS`.
-`[env.preview]` : `ENVIRONMENT = "preview"`, `CSP_REPORT_ONLY = "true"`,
-`V2_ENABLED = "true"`.
+`ALLOWED_ORIGINS`.
+`[env.preview]` : `ENVIRONMENT = "preview"`, `CSP_REPORT_ONLY = "true"`.
+Accès admin : pas de var d'env — flag `admin = 1` sur le compte en table D1 `comptes`
+(promu par `wrangler d1 execute`, voir `docs/features/admin.md`).
 Bindings : `DB` (D1), `ROOMS` (KV), `DUEL_ROOMS` (Durable Object) — voir
-`docs/stockage-d1.md`.
+`docs/stockage-d1.md`. Plus de `V2_ENABLED` : la base D1 est le défaut.

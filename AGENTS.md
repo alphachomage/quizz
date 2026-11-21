@@ -12,8 +12,9 @@
 Quiz web rapide façon QuizUp, en **React 18 + Vite 6 + WPA (vite-plugin-pwa)**, déployé
 sur Cloudflare Workers (`https://voltquiz.joris-leo81.workers.dev`). 4 modes : Solo
 (3 niveaux), Duel 1v1 local, Survie (1 vie), Quizz du jour (tirage seedé + série de jours).
-Comptage réel des questions : `npm run count:questions`. Persistance : cache localStorage + synchro serveur **Cloudflare D1 active**
+Comptage réel des questions : `npm run count:questions`. Persistance : cache localStorage + base serveur **Cloudflare D1 par défaut**
 (mode `d1` par défaut, `?stockage=local` pour forcer le hors-ligne — voir `docs/stockage-d1.md`).
+Admin : `?admin=1` + flag `admin=1` sur le compte en D1 (`comptes.admin`, vérifié via `/api/admin/check` — `docs/features/admin.md`).
 Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Capacitor.
 
 ## Règles absolues (non négociables)
@@ -55,7 +56,7 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
    `vitest.config.ts` ne sont pas atteints (plancher actuel, à relever — ratchet).
    Tester UNE feature seule : `npm run test:game`, `test:game:duel`, `test:scoring`…
 10. **Environnements explicites** : `npm run dev` = local (5173) ; `npm run preview` = build
-    local servi (4173) ; `npm run deploy:preview` = Cloudflare **preview** (V2 activée) ;
+    local servi (4173) ; `npm run deploy:preview` = Cloudflare **preview** (D1 active) ;
     `npm run deploy` = Cloudflare **prod**. Ne jamais déployer la prod depuis une branche
     non reviewée.
 11. **Avant chaque merge** : `npm run lint` + `npm run typecheck` + `npm run lint:arch` +
@@ -67,7 +68,7 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
     - chiffres du corpus **jamais en dur** : régénérés via `npm run count:questions` ;
     - commandes citées **testées** (`npm run test:game`, `db:migrate:local`...) ;
     - extensions à jour (`.ts`/`.tsx`, sauf `questions-*.js`/`theme-manifest.js`) ;
-    - cohérence avec le code (ex. `V2_ENABLED`, modes de stockage, flags URL) ;
+    - cohérence avec le code (ex. flag `comptes.admin`, modes de stockage, flags URL) ;
     - `CHANGELOG.md` a une entrée, `docs/INDEX.md` reflète les docs courantes.
 13. Git : une branche `feature/<phase>-<slug>` par étape depuis `origin/main`, worktree
     dédié par sous-agent, review du diff (code + docs), merge sur `main`, push.
@@ -83,7 +84,7 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
 npm run dev              # DEV local -> http://localhost:5173
 npm run build            # build prod (dist/) + génère le manifeste des thèmes
 npm run preview          # PROD buildée servie en local -> http://localhost:4173
-npm run deploy:preview   # déploiement Cloudflare PREVIEW (env preview, V2_ENABLED=true)
+npm run deploy:preview   # déploiement Cloudflare PREVIEW (env preview, D1 active)
 npm run deploy           # déploiement Cloudflare PROD
 npm run lint             # eslint (0 erreur, 0 warning) ; lint:arch = pas de cycle
 npm run typecheck        # tsc --noEmit (strict sur les .ts/.tsx)
@@ -105,8 +106,8 @@ npx wrangler deploy --dry-run   # valide worker.ts + wrangler.toml sans déploye
 | Questions (format, ajout, similarité, corpus) | `docs/questions.md` |
 | Comptes, invité, modération, reset | `docs/comptes.md` |
 | XP, badges, titres, classement, stats | `docs/progression.md` |
-| Sécurité (headers, CSP, zod, hash, V2_ENABLED) | `docs/securite.md` |
-| Stockage local (POC) -> D1, décision mobile | `docs/stockage-d1.md` |
+| Sécurité (headers, CSP, zod, hash, gate admin `comptes.admin`) | `docs/securite.md` |
+| localStorage (cache) + D1 (base par défaut), décision mobile | `docs/stockage-d1.md` |
 | Déploiement Cloudflare + CI + envs dev/prod | `docs/deploiement.md` |
 | Tests (quoi, où, commandes, couverture) | `docs/tests.md` |
 | Méthodologie (branches, worktrees, review code+docs, décisions) | `docs/methodologie.md` |

@@ -92,6 +92,5 @@ interface Env {
   ENVIRONMENT: string;
   APP_VERSION: string;
   CSP_REPORT_ONLY: string;
-  V2_ENABLED: string;
   ALLOWED_ORIGINS: string;
 }

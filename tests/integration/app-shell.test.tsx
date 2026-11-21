@@ -63,11 +63,27 @@ describe("shell de l'application (app/)", () => {
         vibrations: false,
       })
     );
+    // API serveur factice : admin check OK, health/stats OK, kv OK.
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: unknown) => {
+        const url = String(input);
+        const data = url.startsWith('/api/admin/check')
+          ? { ok: true, admin: true }
+          : url.startsWith('/api/health')
+            ? { ok: true, app: 'VoltQuiz', version: '0.1.0', hour: new Date().toISOString() }
+            : url.startsWith('/api/stats')
+              ? { ok: true, rooms: 0, rapportsCsp: 0, hits429: 0 }
+              : { ok: true };
+        return { ok: true, status: 200, json: async () => data } as unknown as Response;
+      })
+    );
     startGuest(); // session invité posée avant le rendu
   });
   afterEach(() => {
     vi.useRealTimers();
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
   it('parcours invité complet : accueil -> thème -> niveau -> partie -> réponse', async () => {
     render(<App />);
@@ -108,18 +124,33 @@ describe("shell de l'application (app/)", () => {
     await waitForText(/invité/i);
     expect(screen.getAllByText(/invité/i).length).toBeGreaterThan(0);
   });
-  it('vue admin (?admin=1) : tableau de bord en haut + sections de modération', async () => {
+  it('vue admin (?admin=1 + session compte autorisée côté serveur) : tableau de bord + sections', async () => {
     window.history.replaceState(null, '', '/?admin=1');
+    // Session COMPTE (pas invité) : le gate appelle /api/admin/check (mocké OK ci-dessus).
+    window.localStorage.setItem(
+      'voltquiz_session',
+      JSON.stringify({ pseudo: 'testeur', avatar: null })
+    );
     try {
       render(<App />);
       // Le tableau de bord apparaît dès que les thèmes factices sont chargés.
       await waitForText('Tableau de bord');
       expect(screen.getByText('Parties jouées')).toBeTruthy();
-      expect(screen.getByText('Serveur (V2)')).toBeTruthy();
+      expect(screen.getByText('Serveur (API)')).toBeTruthy();
       expect(screen.getByText('Modération')).toBeTruthy();
       // Les sections existantes restent présentes sous le dashboard.
       expect(screen.getByText('Questions signalées')).toBeTruthy();
       expect(screen.getByText('Suggestions des joueurs')).toBeTruthy();
+    } finally {
+      window.history.replaceState(null, '', '/');
+    }
+  });
+  it('?admin=1 en mode invité : PAS de vue admin, l’accueil s’affiche', async () => {
+    window.history.replaceState(null, '', '/?admin=1');
+    try {
+      render(<App />); // beforeEach a posé une session invité (startGuest)
+      await waitForText('Thème 0'); // accueil normal
+      expect(screen.queryByText('Tableau de bord')).toBeNull();
     } finally {
       window.history.replaceState(null, '', '/');
     }

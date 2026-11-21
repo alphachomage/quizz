@@ -1,10 +1,29 @@
-# Admin (`?admin=1`)
+# Admin (`?admin=1` + flag `admin` sur le compte en base)
 
-Écran d'administration, prioritaire sur tout (même sans compte) : `src/app/App.tsx` lit le
-flag `admin` via `readUrlFlags()` (`src/app/urlFlags.ts`) et rend `ROUTES.admin` =
-`src/features/admin/AdminReports.tsx` (chargé en lazy, `src/app/routes.ts`).
-Quitter : recharge sans `?admin=1` (`urlWithoutAdminFlag()` + `redirigerVers()`,
-`src/app/urlFlags.ts`) — les exclusions sont alors retirées du pool au rechargement.
+Écran d'administration, prioritaire sur le reste. **Le flag `?admin=1` seul ne suffit
+plus** (n'importe qui avec le lien y avait accès) : `src/app/App.tsx` lit le flag via
+`readUrlFlags()` puis applique le gate `useAdminAccess` (`src/app/useAdminAccess.ts`) :
+
+1. session **compte** requise (un invité n'a jamais accès) ;
+2. le compte doit avoir **`admin = 1` dans la table D1 `comptes`** (colonne ajoutée par la
+   migration `0003_admin_flag.sql`), vérifié côté serveur via
+   `GET /api/admin/check?pseudo=...` (200 `{admin:true}` si `comptes.admin = 1`, 403
+   sinon) — le flag vit en base, aucun secret dans `wrangler.toml` ni dans le bundle ;
+3. mode de stockage `'d1'` requis (en `?stockage=local`, hors-ligne, aucune vérification
+   serveur possible -> l'admin est indisponible et l'appli retombe sur le flux normal).
+
+**Promouvoir un compte admin** (bootstrap du premier admin, puis à chaque nouveau) :
+
+```bash
+npx wrangler d1 execute voltquiz --remote --command \
+  "UPDATE comptes SET admin = 1 WHERE pseudo_normalise = 'tonpseudo'"
+# en local : ajoutez --local
+```
+
+Le composant rendu est `ROUTES.admin` = `src/features/admin/AdminReports.tsx` (lazy,
+`src/app/routes.ts`). Quitter : recharge sans `?admin=1` (`urlWithoutAdminFlag()` +
+`redirigerVers()`, `src/app/urlFlags.ts`) — les exclusions sont alors retirées du pool
+au rechargement.
 
 Rien de tout ça n'est visible dans l'interface joueur.
 
@@ -20,8 +39,8 @@ lit chaque clé avec `useStorage(STORAGE_KEYS.*)` (qui appelle `read()` de
 (`subscribe()` dans `src/lib/storage.ts`) : valider une soumission ou traiter un
 signalement met à jour le tableau de bord sans rechargement. Les métriques serveur
 passent par `src/lib/api.ts` (`apiHealth`, `apiStats`) via le hook
-`src/features/admin/useServerStats.ts`, avec gestion d'erreur gracieuse : V2 off ou
-réseau coupé -> « V2 inactive » / « API injoignable ». Styles dans
+`src/features/admin/useServerStats.ts`, avec gestion d'erreur gracieuse : réseau
+coupé -> « API injoignable ». Styles dans
 `src/styles/admin-dashboard.css` (palette sobre, aucun dégradé).
 
 Une responsabilité par carte, composants dans `src/features/admin/components/` :
@@ -34,7 +53,7 @@ Une responsabilité par carte, composants dans `src/features/admin/components/` 
 | `ModerationCard.tsx` | signalements en attente, soumissions en attente, questions validées, suggestions, exclusions |
 | `StreakCard.tsx` | série du quizz du jour (`currentDailyStreak()`) + parties jouées aujourd'hui |
 | `StorageCard.tsx` | mode de stockage actuel (`d1` par défaut, `local` via `?stockage=local`), clés présentes (n/17), comptes locaux |
-| `ServerCard.tsx` | V2 : `/api/health` (ok, version, heure, `v2`), `/api/stats` (rooms KV ouvertes, rapports CSP reçus, hits rate-limit 429), lien vers `/api/health` |
+| `ServerCard.tsx` | API : `/api/health` (ok, version, heure), `/api/stats` (rooms KV ouvertes, rapports CSP reçus, hits rate-limit 429), lien vers `/api/health` |
 | `ActionsCard.tsx` | actions globales (voir ci-dessous) |
 
 `MetricCard.tsx` = carte générique (icône + titre + valeur + sous-titre), réutilisée.
@@ -61,15 +80,14 @@ Dans `ActionsCard.tsx` (tableau de bord) :
   (`urlAvecParam` / `urlSansParam` de `src/app/urlFlags.ts` + `redirigerVers`) ;
   le mode courant est celui de `STORAGE_MODE` (`src/lib/storage.ts`).
 
-## Métriques serveur (V2)
+## Métriques serveur
 
-- `GET /api/health` (route ouverte) renvoie désormais aussi `v2` (`V2_ENABLED === 'true'`).
-- `GET /api/stats` (gated V2 comme les autres routes : 503 si V2 off, `worker-api.ts`) :
-  `v2`, `rooms` (clés `room:` du KV `ROOMS`), `rapportsCsp` et `hits429` (compteurs en
-  mémoire dans l'isolate, remis à zéro au redémarrage ; incrémentés dans `worker-api.ts`
-  pour les rapports CSP et dans `worker.ts` pour le rate-limit 30 req/min/IP).
+- `GET /api/health` (route de santé, toujours ouverte) : `ok`, `app`, `version`, `hour`.
+- `GET /api/stats` : `rooms` (clés `room:` du KV `ROOMS`), `rapportsCsp` et `hits429`
+  (compteurs en mémoire dans l'isolate, remis à zéro au redémarrage ; incrémentés dans
+  `worker-api.ts` pour les rapports CSP et dans `worker.ts` pour le rate-limit 30 req/min/IP).
 - Côté client : `apiHealth()` / `apiStats()` dans `src/lib/api.ts`, chargées par le hook
-  `src/features/admin/useServerStats.ts`.
+  `src/features/admin/useServerStats.ts` (carte « Serveur (API) »).
 
 ## Sections de modération (sous le tableau de bord)
 
@@ -86,5 +104,9 @@ Dans `ActionsCard.tsx` (tableau de bord) :
 - `tests/unit/features/admin-dashboard.test.ts` : métriques calculées depuis des fixtures
   (10 parties -> % de réussite global et par mode, top des records, soumissions/signalements
   en attente comptés, série du jour rompue ou non, corpus).
-- `tests/integration/app-shell.test.tsx` : test de fumée `?admin=1` (tableau de bord +
-  sections de modération rendus).
+- `tests/integration/app-shell.test.tsx` : test de fumée `?admin=1` avec session compte
+  autorisée (tableau de bord + sections rendus) **et** test négatif `?admin=1` en mode
+  invité (pas de vue admin, l'accueil s'affiche).
+- `tests/unit/worker/api-admin-soumissions.test.ts` : route `/api/admin/check`
+  (200/403/400, liste vide), `/api/soumissions` (POST/GET), filtre `?pseudo=` de
+  `/api/parties`.
