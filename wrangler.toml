@@ -43,7 +43,7 @@ new_sqlite_classes = ["DuelRoom"]
 [env.preview]
 ENVIRONMENT = "preview"
 CSP_REPORT_ONLY = "true"
-V2_ENABLED = "false"   # V2 (D1/KV/DO) désactivée en prod tant que non testée ; passer à "true" pour activer
+V2_ENABLED = "true"    # preview = V2 ACTIVÉE (D1/KV/DO testables sur l'env preview)
 
 [vars]
 ENVIRONMENT = "production"
@@ -51,4 +51,5 @@ APP_VERSION = "0.1.0"
 # CSP d'abord en Report-Only (48 h d'observation, rapports reçus sur /api/csp-report),
 # puis passer à "false" pour appliquer la CSP.
 CSP_REPORT_ONLY = "true"
+V2_ENABLED = "false"   # prod : V2 (D1/KV/DO) désactivée tant que non validée ; passer à "true" pour activer
 ALLOWED_ORIGINS = "https://voltquiz.joris-leo81.workers.dev"

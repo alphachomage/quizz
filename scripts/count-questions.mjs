@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'src', 'data');
+const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'src', 'data');
 const files = fs.readdirSync(dir).filter((f) => /^questions-.*\.js$/.test(f));
 
 function norm(s) {
