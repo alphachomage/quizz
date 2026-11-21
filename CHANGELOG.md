@@ -5,6 +5,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 
 ## Non publié
 
+### Corrigé
+- **Appli KO en prod (erreur React #185 « Maximum update depth exceeded »)** : `read()` (`src/lib/storage.ts`) renvoyait un `JSON.parse` neuf à chaque appel, donc un snapshot à référence instable pour `useSyncExternalStore` (hook `useStorage`) -> boucle de rendu infinie dès qu'une clé stockée contient un objet (records, XP, parties…), crash au chargement de l'accueil. `read()` renvoie désormais la MÊME référence tant que la chaîne brute ne change pas (cache invalidé par `write`/`remove`/`preloadFromServer`), et `useStorage` gèle la valeur par défaut dans une ref (un littéral inline `{}`/`[]` ne casse plus le snapshot). Test de régression : `tests/unit/shared/useStorage.test.tsx` (7 tests, dont le scénario exact du crash).
+- **Rapports CSP « eval bloqué » en prod** : zod 4 compilait ses schémas en JIT via `new Function()` (visible dans `index-*.js`), interdit par `script-src 'self'`. `z.config({ jitless: true })` posé à l'import dans `src/lib/schema.ts` : plus aucun eval, compatible CSP même appliquée (test dans `tests/unit/lib/schema.test.ts`).
+
 ### Modifié
 - Review doc renforcée : règle 12 d'`AGENTS.md` pointe désormais vers une sous-checklist doc détaillée dans `docs/methodologie.md` (chemins existants, chiffres via `count:questions`, commandes testées, extensions TS, cohérence flags/`V2_ENABLED`, CHANGELOG + INDEX à jour, grep des refs périmées). Dérive corrigée au passage : `docs/methodologie.md` disait encore `V2_ENABLED=false` en prod.
 

@@ -32,6 +32,7 @@ tests/
 │                                 # matchMedia, crypto.subtle (webcrypto), fetch, canvas
 ├── fixtures/questions.fixture.ts # makeQuestion/makeTheme/mulberry32 — JAMAIS les vrais fichiers
 ├── unit/lib/                     # scoring, draw, daily, similarity, accounts, suggestions, badges, titles, schema, repositories
+├── unit/shared/                  # useStorage : snapshots stables (régression React #185)
 ├── unit/features/                # game-draw, result-persist, stats-compute
 ├── integration/                  # game-solo, game-duel, game-survival, game-daily,
 │                                 # app-shell (parcours complet invité -> partie)

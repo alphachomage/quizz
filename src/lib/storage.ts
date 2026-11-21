@@ -57,21 +57,33 @@ export function notify(): void {
   for (const a of auditeurs) a();
 }
 
+// Cache de lecture : tant que la chaîne brute ne change pas, read() renvoie la MÊME
+// référence. Indispensable pour useSyncExternalStore (hook useStorage) : un snapshot
+// qui change de référence à chaque appel déclenche une boucle de rendu infinie
+// (erreur React #185 « Maximum update depth exceeded » en prod).
+const cacheLecture = new Map<string, { brut: string; valeur: unknown }>();
+
 // Lit une valeur JSON. Retourne `defaultValue` si absente ou illisible.
 // Compat : si la valeur stockée n'est pas du JSON (ancien format brut), on la renvoie telle quelle.
 // Le `string` dans le retour modélise justement ce cas de compatibilité.
 export function read<T = unknown>(key: string, defaultValue: T | null = null): T | string | null {
+  let brut: string | null;
   try {
-    const brut = localStorage.getItem(key);
-    if (brut === null) return defaultValue;
-    try {
-      return JSON.parse(brut) as T;
-    } catch {
-      return brut; // ancien format : chaîne brute
-    }
+    brut = localStorage.getItem(key);
   } catch {
     return defaultValue;
   }
+  if (brut === null) return defaultValue;
+  const enCache = cacheLecture.get(key);
+  if (enCache && enCache.brut === brut) return enCache.valeur as T | string;
+  let valeur: unknown;
+  try {
+    valeur = JSON.parse(brut);
+  } catch {
+    valeur = brut; // ancien format : chaîne brute
+  }
+  cacheLecture.set(key, { brut, valeur });
+  return valeur as T | string;
 }
 
 // Écrit une valeur (JSON) et prévient les abonnés.
@@ -82,6 +94,7 @@ export function write(key: string, value: unknown): void {
   } catch {
     // stockage indisponible (quota dépassé, navigation privée) : on ignore
   }
+  cacheLecture.delete(key); // la prochaine read() re-lira la nouvelle chaîne brute
   if (STORAGE_MODE === 'd1') {
     kvSet(key, value).catch(() => {
       // serveur injoignable : la valeur reste en local, la synchro reprendra au prochain write
@@ -100,6 +113,7 @@ export async function preloadFromServer(): Promise<void> {
         const r = await kvGet(key);
         if (r && r.value !== undefined && r.value !== null) {
           localStorage.setItem(key, JSON.stringify(r.value));
+          cacheLecture.delete(key);
         }
       } catch {
         // clé absente côté serveur ou réseau coupé : on garde le local
@@ -116,5 +130,6 @@ export function remove(key: string): void {
   } catch {
     // idem
   }
+  cacheLecture.delete(key);
   notify();
 }
