@@ -1,6 +1,6 @@
 // ModesTabs.jsx — les 4 onglets de mode + la ligne de description du mode choisi.
 import Icon from '@shared/ui/Icon.jsx';
-import { recordKey } from '@lib/index.js';
+import { recordKey } from '@lib/records.js';
 
 const MODES = [
   { id: 'solo', icone: 'timer', nom: 'Solo' },

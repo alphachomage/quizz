@@ -6,9 +6,9 @@
 // Limite connue : sans modèle d'IA, la détection de personnes précises repose sur cette liste de
 // hachés. La V2 (serveur) passera par une vraie API de modération d'images.
 
-export const AVATAR_SIZE = 128; // l'avatar stocké est recadré en carré et réduit à 128 px
-export const SKIN_THRESHOLD = 0.5; // ratio max de pixels "peau" accepté
-export const MAX_HASH_DISTANCE = 6; // distance de Hamming max pour un hash bloqué
+const AVATAR_SIZE = 128; // l'avatar stocké est recadré en carré et réduit à 128 px
+const SKIN_THRESHOLD = 0.5; // ratio max de pixels "peau" accepté
+const MAX_HASH_DISTANCE = 6; // distance de Hamming max pour un hash bloqué
 
 function loadImage(dataUrl) {
   return new Promise((resolve, reject) => {
@@ -20,7 +20,7 @@ function loadImage(dataUrl) {
 }
 
 // Recadre en carré centré et réduit à `taille` px (JPEG qualité 0.85) -> dataURL compact pour localStorage.
-export async function imageToResizedDataUrl(dataUrl, taille = AVATAR_SIZE) {
+async function imageToResizedDataUrl(dataUrl, taille = AVATAR_SIZE) {
   const img = await loadImage(dataUrl);
   const canvas = document.createElement('canvas');
   canvas.width = taille;
@@ -32,7 +32,7 @@ export async function imageToResizedDataUrl(dataUrl, taille = AVATAR_SIZE) {
 }
 
 // Ratio de pixels "couleur peau" (heuristique classique RGB).
-export async function ratioPeau(dataUrl, taille = 64) {
+async function ratioPeau(dataUrl, taille = 64) {
   const img = await loadImage(dataUrl);
   const canvas = document.createElement('canvas');
   canvas.width = taille;
@@ -53,7 +53,7 @@ export async function ratioPeau(dataUrl, taille = 64) {
 }
 
 // aHash 8×8 (64 bits) en hexadécimal.
-export async function aHash(dataUrl, taille = 8) {
+async function aHash(dataUrl, taille = 8) {
   const img = await loadImage(dataUrl);
   const canvas = document.createElement('canvas');
   canvas.width = taille;

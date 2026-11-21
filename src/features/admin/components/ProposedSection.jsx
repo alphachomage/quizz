@@ -1,7 +1,7 @@
 // SectionProposees.jsx — vue admin : questions proposées par les joueurs, en attente de
 // validation manuelle (elles deviennent jouables au clic sur valider).
 import Icon from '@shared/ui/Icon.jsx';
-import { levelName } from '@lib/index.js';
+import { levelName } from '@lib/scoring.js';
 
 export default function ProposedSection({ soumissions, nbValidees, themeName, onValider, onSupprimer, onExporterValidees }) {
   return (

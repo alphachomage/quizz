@@ -2,14 +2,8 @@ import { useMemo, useState } from 'react';
 
 import Icon from '@shared/ui/Icon.jsx';
 
-import {
-  loadReports,
-  removeReport,
-  clearReports,
-  markReport,
-  loadSuggestions,
-  removeSuggestion,
-} from '@lib/index.js';
+import { loadReports, removeReport, clearReports, markReport } from '@lib/reports.js';
+import { loadSuggestions, removeSuggestion } from '@lib/suggestions.js';
 
 import AdminDashboard from './AdminDashboard.jsx';
 import ThemesSection from './components/ThemesSection.jsx';

@@ -6,19 +6,16 @@ import { useMemo, useState } from 'react';
 import { currentAvatar } from '@lib/accounts.js';
 import { badgeStats, prochainBadge } from '@lib/badges.js';
 import { displayedTitle } from '@lib/titles.js';
-import {
-  recordKey,
-  todayDate,
-  themeLevel,
-  currentDailyStreak,
-  xpForLevel,
-} from '@lib/index.js';
+import { recordKey } from '@lib/records.js';
+import { todayDate } from '@lib/dates.js';
+import { themeLevel, xpForLevel } from '@lib/xp.js';
+import { currentDailyStreak } from '@lib/streak.js';
 import { STORAGE_KEYS } from '@lib/storage.js';
 import { readUrlParam } from '@app/urlFlags.js';
 import { useStorage } from '@shared/hooks/useStorage.js';
 
 // Thème fictif utilisé pour les modes « tous thèmes mélangés » (survie, quizz du jour).
-export const ALL_THEMES = { id: 'tous', nom: 'Tous les thèmes', icone: 'globe', couleur: '#8b5cf6' };
+const ALL_THEMES = { id: 'tous', nom: 'Tous les thèmes', icone: 'globe', couleur: '#8b5cf6' };
 
 export function useHome({ themes, pseudo, onDemarrer }) {
   const [mode, setMode] = useState('solo');

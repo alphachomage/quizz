@@ -1,6 +1,6 @@
 // ProgressionXp.jsx — niveau global + barre d'XP + thèmes classés par XP.
 import Icon from '@shared/ui/Icon.jsx';
-import { xpForLevel } from '@lib/index.js';
+import { xpForLevel } from '@lib/xp.js';
 
 export default function XpProgress({ totalXp, nivGlobal, xpNext, pctXp, themedLevels }) {
   return (

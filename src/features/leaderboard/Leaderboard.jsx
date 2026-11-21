@@ -2,7 +2,9 @@ import { useMemo, useState } from 'react';
 
 import Icon from '@shared/ui/Icon.jsx';
 
-import { loadGames, levelName, LEVELS, isThisWeek } from '@lib/index.js';
+import { loadGames } from '@lib/game-history.js';
+import { levelName, LEVELS } from '@lib/scoring.js';
+import { isThisWeek } from '@lib/dates.js';
 
 // Leaderboard local : UNIQUEMENT les classements par mode de jeu, avec pour chaque
 // ligne le thème, la difficulté et le nombre de points.

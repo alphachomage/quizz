@@ -6,7 +6,7 @@ import { localDayKey } from '@lib/dates.js';
 import { levelName } from '@lib/scoring.js';
 
 // Libellés + icônes des modes de jeu (clés de l'historique = ids internes).
-export const MODE_LABELS = {
+const MODE_LABELS = {
   solo: { nom: 'Solo', icone: 'timer' },
   duel: { nom: 'Duel 1v1', icone: 'swords' },
   survie: { nom: 'Survie', icone: 'skull' },

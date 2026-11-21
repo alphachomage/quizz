@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 
 import Icon from '@shared/ui/Icon.jsx';
 
-import { loadGames, loadXp } from '@lib/index.js';
+import { loadGames } from '@lib/game-history.js';
+import { loadXp } from '@lib/xp.js';
 
 import {
   computeStats,

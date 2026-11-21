@@ -4,7 +4,7 @@
 // La base intégrée (src/data) est validée par tests/data/questions-schema.test.js.
 import { z } from 'zod';
 
-export const LEVEL_IDS = ['facile', 'moyen', 'dur'];
+const LEVEL_IDS = ['facile', 'moyen', 'dur'];
 
 // Une question valide : texte non vide, 2 à 4 réponses non vides, bonne réponse
 // dans les limites, niveau connu, info optionnelle.
@@ -18,7 +18,7 @@ export const schemaQuestion = z.object({
   message: 'bonne réponse hors limites (bonne < reponses.length requis)',
 });
 
-export const schemaTheme = z.object({
+const schemaTheme = z.object({
   id: z.string().trim().min(1).max(60).regex(/^[a-z0-9-]+$/, 'id en minuscules, chiffres et tirets'),
   nom: z.string().trim().min(1).max(80).optional(),
   icone: z.string().trim().max(40).optional(),
@@ -27,12 +27,12 @@ export const schemaTheme = z.object({
 });
 
 // Fichier questions-utilisateur.json complet.
-export const schemaFichierPerso = z.object({
+const schemaFichierPerso = z.object({
   themes: z.array(schemaTheme).min(1),
 });
 
 // Une soumission stockée en localStorage (peut avoir été modifiée à la main).
-export const schemaSoumission = schemaQuestion.extend({
+const schemaSoumission = schemaQuestion.extend({
   themeId: z.string().trim().min(1).max(60),
   id: z.string().optional(),
   date: z.string().optional(),

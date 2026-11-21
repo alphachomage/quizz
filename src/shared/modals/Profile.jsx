@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import Modal from '@shared/ui/Modal.jsx';
 
-import { loadXp, themeLevel, xpForLevel } from '@lib/index.js';
+import { loadXp, themeLevel, xpForLevel } from '@lib/xp.js';
 import { computeBadges, favoriteBadge, setFavoriteBadge } from '@lib/badges.js';
 import { displayedTitle } from '@lib/titles.js';
 

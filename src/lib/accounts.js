@@ -6,7 +6,7 @@ import { read, write, remove, STORAGE_KEYS } from './storage.js';
 
 // Guard crypto : crypto.subtle n'existe que dans un contexte sécurisé (HTTPS ou
 // localhost). Sur HTTP non-local, on renvoie une erreur claire au lieu de planter.
-export function contexteSecurise() {
+function contexteSecurise() {
   return !!(globalThis.crypto && globalThis.crypto.subtle && typeof globalThis.crypto.randomUUID === 'function');
 }
 
@@ -27,7 +27,7 @@ export function pseudoExiste(pseudo) {
   return loadAccounts().some((c) => c.pseudoNormalise === n);
 }
 
-export function isValidEmail(email) {
+function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email || '');
 }
 

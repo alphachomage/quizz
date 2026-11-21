@@ -3,7 +3,8 @@
 import { memo } from 'react';
 
 import Icon from '@shared/ui/Icon.jsx';
-import { recordKey, themeLevel, xpForLevel } from '@lib/index.js';
+import { recordKey } from '@lib/records.js';
+import { themeLevel, xpForLevel } from '@lib/xp.js';
 
 const ThemeCard = memo(function ThemeCard({ t, mode, niveau, themeId, records, xp, estAdmin, estInvite, onSelect }) {
   const record = records[recordKey(mode, mode === 'solo' ? niveau : null, t.id)] || 0;

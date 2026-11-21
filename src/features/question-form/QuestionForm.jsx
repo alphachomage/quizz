@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import Icon, { Bars } from '@shared/ui/Icon.jsx';
-import { LEVELS, loadXp, themeLevel, SUBMISSION_LEVEL_THRESHOLD } from '@lib/index.js';
+import { LEVELS } from '@lib/scoring.js';
+import { loadXp, themeLevel } from '@lib/xp.js';
+import { SUBMISSION_LEVEL_THRESHOLD } from '@lib/submissions.js';
 import { buildIndex, trouverSimilairesIndex, THRESHOLD_SIMILAR } from '@lib/similarity.js';
 
 import SimilarityAlert from './components/SimilarityAlert.jsx';

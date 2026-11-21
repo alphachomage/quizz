@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import Modal from '@shared/ui/Modal.jsx';
 
-import { addSuggestion } from '@lib/index.js';
+import { addSuggestion } from '@lib/suggestions.js';
 
 // Fenêtre "Suggestions" côté joueur : une remontée (idée, bug, amélioration)
 // part dans localStorage (voltquiz_suggestions) et n'est visible QUE dans la

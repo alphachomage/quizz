@@ -2,7 +2,7 @@
 // thème. Utilise la modale accessible partagée (Échap, focus, aria).
 import Icon, { Bars } from '@shared/ui/Icon.jsx';
 import Modal from '@shared/ui/Modal.jsx';
-import { LEVELS, levelName } from '@lib/index.js';
+import { LEVELS, levelName } from '@lib/scoring.js';
 
 export default function LevelModal({ a }) {
   const theme = a.theme;

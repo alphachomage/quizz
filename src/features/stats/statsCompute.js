@@ -1,7 +1,9 @@
 // features/stats/statsCalculs.js — calculs de l'écran « Mes statistiques »,
 // extraits du composant en fonctions PURES (testables hors React).
 // Tout se calcule à partir de l'historique local des parties + de l'XP.
-import { LEVELS, localDayKey, themeLevel, xpForLevel } from '@lib/index.js';
+import { LEVELS } from '@lib/scoring.js';
+import { localDayKey } from '@lib/dates.js';
+import { themeLevel, xpForLevel } from '@lib/xp.js';
 
 // Bilan global + par mode + par thème + par difficulté.
 export function computeStats(games) {

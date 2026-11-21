@@ -164,7 +164,7 @@ export function prochainBadge(s = badgeStats()) {
 
 // --- Badge favori affiché sur la carte profil (1 badge choisi parmi les débloqués) ---
 
-export function favoriteBadgeId() {
+function favoriteBadgeId() {
   try {
     return read(STORAGE_KEYS.favoriteBadge, null);
   } catch {

@@ -55,8 +55,8 @@ src/
 │   │                       #   · Modal.jsx (role=dialog, Échap, focus trap) · ErrorBoundary.jsx
 │   ├── modals/             # Settings.jsx · Profile.jsx · Suggestions.jsx (modales transverses)
 │   ├── hooks/useStorage.js # useSyncExternalStore sur lib/storage.js
-│   └── utils/              # mergeThemes.js (fusionThemes) · downloadJson.js (telechargerJSON)
-├── lib/                    # PUR (pas de React) : 27 modules + index.js (barrel)
+│   └── utils/              # mergeThemes.js · downloadJson.js
+├── lib/                    # PUR (pas de React) : 27 modules, imports directs (pas de barrel)
 │   └── storage.js          # STORAGE_KEYS (17 clés voltquiz_*), STORAGE_MODE, read/write/remove,
 │                           #   sabonner/notifier, preloadFromServer
 │       repositories.js     # 1 repo par clé STORAGE_KEYS (RecordsRepo, XpRepo, GamesRepo...)

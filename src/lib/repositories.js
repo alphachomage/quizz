@@ -31,8 +31,6 @@ export const PrefsRepo = {
   charger: () => ({ sons: true, music: true, animations: true, vibrations: true, themeClair: false, daltonien: false, dys: false, ...(read(STORAGE_KEYS.prefs, {}) || {}) }),
 };
 
-export const SessionRepo = repoSimple(STORAGE_KEYS.session, null);
-export const AccountsRepo = repoSimple(STORAGE_KEYS.accounts, []);
 export const RecordsRepo = {
   ...repoSimple(STORAGE_KEYS.records, {}),
   meilleur: (recordKey) => (read(STORAGE_KEYS.records, {}) || {})[recordKey] || 0,
@@ -88,7 +86,6 @@ export const DailyStreakRepo = {
     return v || { account: 0, dernierJour: null };
   },
 };
-export const TutorialRepo = repoSimple(STORAGE_KEYS.tutorial, []);
 export const FavoriteBadgeRepo = repoSimple(STORAGE_KEYS.favoriteBadge, null);
 export const ActiveTitleRepo = repoSimple(STORAGE_KEYS.activeTitle, null);
 export const ResetSubmissionsRepo = repoSimple(STORAGE_KEYS.resetSubmissions, null);

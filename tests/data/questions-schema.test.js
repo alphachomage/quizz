@@ -3,7 +3,7 @@
 // question et compte les doublons exacts connus (hérités des premiers lots).
 import { describe, expect, it } from 'vitest';
 
-import { LEVELS } from '@lib/index.js';
+import { LEVELS } from '@lib/scoring.js';
 import { loadThemes } from '@/data/questions.js';
 
 // Charge le vrai corpus (chunks lazy) une fois pour toute la suite.

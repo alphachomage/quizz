@@ -2,18 +2,8 @@
 // plafond par thème, anti-répétition de la série précédente, mélange déterministe.
 import { describe, expect, it } from 'vitest';
 
-import {
-  seriesKey,
-  generateurGraine,
-  hashText,
-  shuffle,
-  shuffleSeeded,
-  poolWithoutPreviousSeries,
-  sauverSerie,
-  loadSeries,
-  sujetDe,
-  drawSeries,
-} from '@lib/index.js';
+import { seriesKey, poolWithoutPreviousSeries, sauverSerie, loadSeries } from '@lib/series.js';
+import { generateurGraine, hashText, shuffle, shuffleSeeded, sujetDe, drawSeries } from '@lib/draw.js';
 
 import { makeQuestion, mulberry32 } from '../../fixtures/questions.fixture.js';
 

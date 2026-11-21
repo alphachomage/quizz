@@ -2,7 +2,9 @@
 // le même jour, diversifié (max 2 par sujet, max 2 par thème), et qui change de jour.
 import { describe, expect, it } from 'vitest';
 
-import { DAILY_QUESTIONS, todayDate, dailyQuestions, sujetDe } from '@lib/index.js';
+import { DAILY_QUESTIONS } from '@lib/scoring.js';
+import { todayDate } from '@lib/dates.js';
+import { dailyQuestions, sujetDe } from '@lib/draw.js';
 
 import { makeThemes } from '../../fixtures/questions.fixture.js';
 

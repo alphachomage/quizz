@@ -10,7 +10,8 @@
 // Les thèmes "insolite" et "pop-culture" ont été retirés : leurs questions ont été
 // reclassées dans les autres thèmes via questions-redistribution.js.
 
-import { loadExcluded, normalizeQuestionText } from '@lib/index.js';
+import { loadExcluded } from '@lib/exclusions.js';
+import { normalizeQuestionText } from '@lib/texte.js';
 
 import { THEME_MANIFEST } from './theme-manifest.js';
 

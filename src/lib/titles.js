@@ -9,7 +9,7 @@ import { loadXp, themeLevel } from './xp.js';
 import { badgeStats } from './badges.js';
 
 // [niveau 3, niveau 5, niveau 10] pour chaque thème (id du thème -> 3 titres)
-export const TITLES_PER_THEME = {
+const TITLES_PER_THEME = {
   'culture-generale': ['Touche-à-tout', 'Érudit', 'Encyclopédie vivante'],
   'cinema-series': ['Fan de ciné', 'Cinéaste', 'Légende du 7e art'],
   'musique': ['Mélomane', 'Oreille absolue', 'Virtuose'],
@@ -24,10 +24,10 @@ export const TITLES_PER_THEME = {
   'mangas-animes': ['Otaku', 'Sensei', 'Légende du manga'],
 };
 
-export const PALIERS_TITRE = [3, 5, 10];
+const PALIERS_TITRE = [3, 5, 10];
 
 // 14 titres généraux (conditions sur les stats globales)
-export const GENERAL_TITLES = [
+const GENERAL_TITLES = [
   { id: 'gen-parties-1', nom: 'Bleu', test: (s) => s.games >= 1 },
   { id: 'gen-parties-25', nom: 'Habitué', test: (s) => s.games >= 25 },
   { id: 'gen-parties-100', nom: 'Marathonien', test: (s) => s.games >= 100 },

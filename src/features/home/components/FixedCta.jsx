@@ -1,6 +1,6 @@
 // CtaFixe.jsx — barre d'action fixe en bas de l'accueil : le bouton pour lancer est
 // TOUJOURS visible, sans scroller.
-import { levelName } from '@lib/index.js';
+import { levelName } from '@lib/scoring.js';
 
 export default function FixedCta({ a }) {
   const { mode, theme, dejaJoueAujourdhui, dailyRecord, niveau, lancer } = a;

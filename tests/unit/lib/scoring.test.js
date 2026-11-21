@@ -1,7 +1,7 @@
 // Tests du scoring arcade et des manches (src/lib (modules)).
 import { describe, expect, it } from 'vitest';
 
-import { roundInfo, pointsFor, SECONDS_PER_QUESTION } from '@lib/index.js';
+import { roundInfo, pointsFor, SECONDS_PER_QUESTION } from '@lib/scoring.js';
 
 describe('pointsPour', () => {
   it('vaut 20 pts pour une bonne réponse instantanée', () => {
