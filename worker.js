@@ -47,11 +47,11 @@ function entetesSecurite(env, hote = '') {
 }
 
 // Pose les en-têtes de sécurité + cache sur une réponse existante.
-function securiser(reponse, env, cacheControl, hote = '') {
-  const headers = new Headers(reponse.headers);
-  for (const [cle, valeur] of entetesSecurite(env, hote)) headers.set(cle, valeur);
+function securiser(answer, env, cacheControl, hote = '') {
+  const headers = new Headers(answer.headers);
+  for (const [key, valeur] of entetesSecurite(env, hote)) headers.set(key, valeur);
   if (cacheControl) headers.set('Cache-Control', cacheControl);
-  return new Response(reponse.body, { status: reponse.status, statusText: reponse.statusText, headers });
+  return new Response(answer.body, { status: answer.status, statusText: answer.statusText, headers });
 }
 
 // --- Rate limiting simple en mémoire (30 req/min/IP sur /api/*) ---
@@ -59,15 +59,15 @@ const fenetres = new Map(); // ip -> [timestamps]
 function rateLimite(bee, ip) {
   const maintenant = Date.now();
   const fenetre = 60000;
-  const liste = (fenetres.get(ip) || []).filter((t) => maintenant - t < fenetre);
-  if (liste.length >= 30) return false;
-  liste.push(maintenant);
-  fenetres.set(ip, liste);
+  const list = (fenetres.get(ip) || []).filter((t) => maintenant - t < fenetre);
+  if (list.length >= 30) return false;
+  list.push(maintenant);
+  fenetres.set(ip, list);
   if (fenetres.size > 5000) fenetres.clear(); // borne mémoire (redémarrage doux)
   return true;
 }
 
-import { routerApi } from './worker-api.js';
+import { apiRouter } from './worker-api.js';
 
 export default {
   async fetch(request, env, _ctx) {
@@ -82,8 +82,8 @@ export default {
           headers: { ...Object.fromEntries(entetesSecurite(env, url.host)), 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
         });
       }
-      const reponseApi = await routerApi(request, env, url);
-      return securiser(reponseApi, env, 'no-store', url.host);
+      const apiResponse = await apiRouter(request, env, url);
+      return securiser(apiResponse, env, 'no-store', url.host);
     }
 
     // --- Service worker de la WPA : ne jamais le mettre en cache ---
@@ -93,17 +93,17 @@ export default {
     }
 
     // --- Fichiers statiques (contenu du dossier dist/client) ---
-    const reponse = await env.ASSETS.fetch(request);
+    const answer = await env.ASSETS.fetch(request);
 
     // Les fichiers dans /assets/ ont un hash dans leur nom : leur contenu ne
     // change jamais, on autorise donc le cache navigateur 1 an.
-    if (reponse.status === 200 && url.pathname.startsWith('/assets/')) {
-      return securiser(reponse, env, 'public, max-age=31536000, immutable', url.host);
+    if (answer.status === 200 && url.pathname.startsWith('/assets/')) {
+      return securiser(answer, env, 'public, max-age=31536000, immutable', url.host);
     }
 
     // --- Repli SPA : une URL sans extension qui ne correspond à aucun fichier
     //     renvoie index.html (comportement d'une appli monopage) ---
-    if (reponse.status === 404 && request.method === 'GET') {
+    if (answer.status === 404 && request.method === 'GET') {
       const avecExtension = /\.[a-z0-9]{1,8}$/i.test(url.pathname);
       if (!avecExtension) {
         const index = await env.ASSETS.fetch(new URL('/index.html', url));
@@ -112,11 +112,11 @@ export default {
     }
 
     // index.html, manifest, JSON perso, icônes : jamais de cache agressif.
-    if (reponse.status === 200 && (url.pathname === '/' || url.pathname === '/index.html' || url.pathname.endsWith('.json') || url.pathname.endsWith('.webmanifest'))) {
-      return securiser(reponse, env, 'no-cache', url.host);
+    if (answer.status === 200 && (url.pathname === '/' || url.pathname === '/index.html' || url.pathname.endsWith('.json') || url.pathname.endsWith('.webmanifest'))) {
+      return securiser(answer, env, 'no-cache', url.host);
     }
 
-    return securiser(reponse, env, reponse.status === 200 ? 'public, max-age=3600' : undefined, url.host);
+    return securiser(answer, env, answer.status === 200 ? 'public, max-age=3600' : undefined, url.host);
   },
 };
 

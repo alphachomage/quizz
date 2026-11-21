@@ -9,10 +9,10 @@
 
 const LEET = {
   '0': 'o', '1': 'i', '3': 'e', '4': 'a', '5': 's', '6': 'g', '7': 't', '8': 'b', '9': 'g',
-  '@': 'a', '$': 's', '€': 'e', '!': 'i', '+': 't', '*': 'a', '£': 'l', '%': 'o',
+  './@': 'a', '$': 's', '€': 'e', '!': 'i', '+': 't', '*': 'a', '£': 'l', '%': 'o',
 };
 
-export function normaliserPseudo(p) {
+export function normalizePseudo(p) {
   return (p || '')
     .toLowerCase()
     .normalize('NFD')
@@ -25,7 +25,7 @@ export function normaliserPseudo(p) {
 
 // Liste de modération par catégorie. Les termes sont volontairement écrits tels quels :
 // c'est la liste qui permet de LES bloquer.
-const LISTE_BLOQUEE = [
+const BLOCKLIST = [
   // nazisme / suprémacisme / négationnisme
   { terme: 'nazi', categorie: 'contenu nazi' },
   { terme: 'hitler', categorie: 'contenu nazi' },
@@ -95,10 +95,10 @@ const LISTE_BLOQUEE = [
 
 // Retourne { terme, categorie } si le pseudo contient un terme bloqué, sinon null.
 export function trouverTermeBloque(pseudo) {
-  const n = normaliserPseudo(pseudo);
+  const n = normalizePseudo(pseudo);
   if (!n) return null;
-  for (const { terme, categorie } of LISTE_BLOQUEE) {
-    const t = normaliserPseudo(terme);
+  for (const { terme, categorie } of BLOCKLIST) {
+    const t = normalizePseudo(terme);
     if (!t) continue;
     if (t.length < 4) {
       if (n === t) return { terme, categorie };

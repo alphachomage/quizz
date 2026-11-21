@@ -4,7 +4,7 @@
 // La base intégrée (src/data) est validée par tests/data/questions-schema.test.js.
 import { z } from 'zod';
 
-export const NIVEAUX_IDS = ['facile', 'moyen', 'dur'];
+export const LEVEL_IDS = ['facile', 'moyen', 'dur'];
 
 // Une question valide : texte non vide, 2 à 4 réponses non vides, bonne réponse
 // dans les limites, niveau connu, info optionnelle.
@@ -12,7 +12,7 @@ export const schemaQuestion = z.object({
   q: z.string().trim().min(4).max(500),
   reponses: z.array(z.string().trim().min(1).max(200)).min(2).max(4),
   bonne: z.number().int().min(0),
-  niveau: z.enum(NIVEAUX_IDS),
+  niveau: z.enum(LEVEL_IDS),
   info: z.string().max(1000).optional(),
 }).refine((q) => q.bonne < q.reponses.length, {
   message: 'bonne réponse hors limites (bonne < reponses.length requis)',
@@ -40,14 +40,14 @@ export const schemaSoumission = schemaQuestion.extend({
 
 // Valide un fichier perso (fetch) : renvoie les thèmes valides, ou null si invalide.
 // Les thèmes invalides sont ignorés plutôt que de faire planter l'appli.
-export function validerFichierPerso(data) {
-  const resultat = schemaFichierPerso.safeParse(data);
-  if (!resultat.success) return null;
-  return resultat.data;
+export function validatePersonalFile(data) {
+  const result = schemaFichierPerso.safeParse(data);
+  if (!result.success) return null;
+  return result.data;
 }
 
 // Valide une liste de soumissions (localStorage) : ne garde que les valides.
-export function validerSoumissions(liste) {
-  if (!Array.isArray(liste)) return [];
-  return liste.filter((s) => schemaSoumission.safeParse(s).success);
+export function validateSubmissions(list) {
+  if (!Array.isArray(list)) return [];
+  return list.filter((s) => schemaSoumission.safeParse(s).success);
 }

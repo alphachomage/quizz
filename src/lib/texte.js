@@ -1,6 +1,6 @@
 // texte.js — normalisation des textes de questions (comparaisons, exclusions).
 // Module PUR.
-export function normaliserTexteQuestion(s) {
+export function normalizeQuestionText(s) {
   return (s || '')
     .toLowerCase()
     .normalize('NFD')

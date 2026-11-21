@@ -3,49 +3,49 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  normaliser,
-  scoreSimilarite,
-  SEUIL_IDENTIQUE,
-  SEUIL_SIMILAIRE,
+  normalize,
+  similarityScore,
+  THRESHOLD_IDENTICAL,
+  THRESHOLD_SIMILAR,
   trouverSimilaires,
-  construireIndex,
+  buildIndex,
   trouverSimilairesIndex,
-} from '@/lib/similarite.js';
+} from '@/lib/similarity.js';
 
 describe('normaliser', () => {
   it('met en minuscules, sans accents ni ponctuation', () => {
-    expect(normaliser('Élégant, l\'Été à Paris !')).toBe('elegant l ete a paris');
+    expect(normalize('Élégant, l\'Été à Paris !')).toBe('elegant l ete a paris');
   });
 
   it('renvoie une chaîne vide pour un texte vide', () => {
-    expect(normaliser('')).toBe('');
-    expect(normaliser(null)).toBe('');
+    expect(normalize('')).toBe('');
+    expect(normalize(null)).toBe('');
   });
 });
 
 describe('scoreSimilarite', () => {
   it('vaut 1 pour deux textes identiques', () => {
-    expect(scoreSimilarite('Quelle est la capitale de la France ?', 'Quelle est la capitale de la France ?')).toBe(1);
+    expect(similarityScore('Quelle est la capitale de la France ?', 'Quelle est la capitale de la France ?')).toBe(1);
   });
 
   it('vaut 1 même avec accents/ponctuation/casse différents', () => {
-    expect(scoreSimilarite('Quelle est la capitale de la France ?', 'quelle est la capitale de la france')).toBe(1);
+    expect(similarityScore('Quelle est la capitale de la France ?', 'quelle est la capitale de la france')).toBe(1);
   });
 
   it('dépasse le seuil de similarité pour une reformulation proche', () => {
     const a = 'En quelle année a eu lieu la Révolution française ?';
     const b = 'En quelle année la Révolution française a-t-elle eu lieu ?';
-    expect(scoreSimilarite(a, b)).toBeGreaterThan(SEUIL_SIMILAIRE);
+    expect(similarityScore(a, b)).toBeGreaterThan(THRESHOLD_SIMILAR);
   });
 
   it('reste sous le seuil pour deux sujets sans rapport', () => {
     const a = 'Quelle est la capitale du Japon ?';
     const b = 'Qui a peint la Joconde ?';
-    expect(scoreSimilarite(a, b)).toBeLessThan(SEUIL_SIMILAIRE);
+    expect(similarityScore(a, b)).toBeLessThan(THRESHOLD_SIMILAR);
   });
 
   it('vaut 0 si un texte est vide', () => {
-    expect(scoreSimilarite('', 'quelque chose')).toBe(0);
+    expect(similarityScore('', 'quelque chose')).toBe(0);
   });
 });
 
@@ -64,7 +64,7 @@ describe('trouverSimilaires', () => {
   });
 
   it('le seuil quasi-identique est supérieur au seuil de similarité', () => {
-    expect(SEUIL_IDENTIQUE).toBeGreaterThan(SEUIL_SIMILAIRE);
+    expect(THRESHOLD_IDENTICAL).toBeGreaterThan(THRESHOLD_SIMILAR);
   });
 });
 
@@ -84,7 +84,7 @@ describe('index pré-calculé (construireIndex + trouverSimilairesIndex)', () =>
       'révolution française 1789',
       'une question sans aucun rapport xyz',
     ];
-    const index = construireIndex(pool);
+    const index = buildIndex(pool);
     for (const t of textes) {
       const a = trouverSimilaires(t, pool, 0, 10);
       const b = trouverSimilairesIndex(t, index, 0, 10);
@@ -93,7 +93,7 @@ describe('index pré-calculé (construireIndex + trouverSimilairesIndex)', () =>
   });
 
   it('respecte le seuil et la limite max', () => {
-    const index = construireIndex(pool);
+    const index = buildIndex(pool);
     const res = trouverSimilairesIndex('capitale de la France', index, 0.4, 1);
     expect(res).toHaveLength(1);
     expect(res[0].score).toBeGreaterThanOrEqual(0.4);

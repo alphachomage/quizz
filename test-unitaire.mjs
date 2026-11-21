@@ -14,7 +14,7 @@ globalThis.window = { location: { search: '' } };
 
 const L = await import('./src/lib/index.js');
 const B = await import('./src/lib/badges.js');
-const T = await import('./src/lib/titres.js');
+const T = await import('./src/lib/titles.js');
 
 let ok = 0, ko = 0;
 function check(nom, cond) {
@@ -39,7 +39,7 @@ const actifs = themes.filter((t) => !['insolite', 'pop-culture'].includes(t.id))
 const mangas = actifs.find((t) => t.id === 'mangas-animes');
 let maxSujet = 0, series3plus = 0;
 for (let e = 0; e < 300; e++) {
-  const serie = L.tirerSerie(mangas.questions, 10, 2, 0);
+  const serie = L.drawSeries(mangas.questions, 10, 2, 0);
   const c = new Map();
   for (const q of serie) { const s = L.sujetDe(q.q); if (s) c.set(s, (c.get(s) || 0) + 1); }
   const mx = c.size ? Math.max(...c.values()) : 0;
@@ -52,11 +52,11 @@ check('tirerSerie solo : max 2 du meme sujet (constate ' + maxSujet + ')', maxSu
 check('tirerSerie solo : 0/300 series avec 3+ meme sujet', series3plus === 0);
 
 // --- 2) tirerSerie multi-themes : plafond par theme ---
-const poolSurvie = actifs.flatMap((t) => t.questions.map((q) => ({ ...q, themeId: t.id })));
+const survivalPool = actifs.flatMap((t) => t.questions.map((q) => ({ ...q, themeId: t.id })));
 const NB = 30, maxParTheme = Math.max(2, Math.ceil(NB / actifs.length) + 1);
 let maxTheme = 0, over = 0, themesTouchesMin = 99;
 for (let e = 0; e < 200; e++) {
-  const serie = L.tirerSerie(poolSurvie, NB, 2, maxParTheme);
+  const serie = L.drawSeries(survivalPool, NB, 2, maxParTheme);
   const c = new Map();
   for (const q of serie) c.set(q.themeId, (c.get(q.themeId) || 0) + 1);
   const mx = Math.max(...c.values());
@@ -70,36 +70,36 @@ check('tirerSerie survie : max ' + maxParTheme + '/theme respecte (constate ' + 
 check('tirerSerie survie : au moins 8 themes touches par serie (min constate ' + themesTouchesMin + ')', themesTouchesMin >= 8);
 
 // --- 3) quizz du jour : seedé + diversifié ---
-const q1 = L.questionsQuotidien(actifs, '2026-11-19').map((q) => q.q).join('|');
-const q2 = L.questionsQuotidien(actifs, '2026-11-19').map((q) => q.q).join('|');
-const q3 = L.questionsQuotidien(actifs, '2026-11-20').map((q) => q.q).join('|');
+const q1 = L.dailyQuestions(actifs, '2026-11-19').map((q) => q.q).join('|');
+const q2 = L.dailyQuestions(actifs, '2026-11-19').map((q) => q.q).join('|');
+const q3 = L.dailyQuestions(actifs, '2026-11-20').map((q) => q.q).join('|');
 check('quotidien : meme tirage 2x le meme jour', q1 === q2);
 check('quotidien : tirage different le jour suivant', q1 !== q3);
 const cT = new Map();
-for (const q of L.questionsQuotidien(actifs, '2026-11-19')) cT.set(q.themeId, (cT.get(q.themeId) || 0) + 1);
+for (const q of L.dailyQuestions(actifs, '2026-11-19')) cT.set(q.themeId, (cT.get(q.themeId) || 0) + 1);
 check('quotidien : max 2 questions du meme theme (constate ' + Math.max(...cT.values()) + ')', Math.max(...cT.values()) <= 2);
 
 // --- 4) points : 20 max, -1/s, min 10, x2 bonus ---
-check('pointsPour(correct, 0) = 20', L.pointsPour(true, 0) === 20);
-check('pointsPour(correct, 5) = 15', L.pointsPour(true, 5) === 15);
-check('pointsPour(correct, 10) = 10 (min)', L.pointsPour(true, 10) === 10);
-check('pointsPour(faux) = 0', L.pointsPour(false, 0) === 0);
-check('pointsPour(correct, 0, bonus) = 40', L.pointsPour(true, 0, true) === 40);
+check('pointsPour(correct, 0) = 20', L.pointsFor(true, 0) === 20);
+check('pointsPour(correct, 5) = 15', L.pointsFor(true, 5) === 15);
+check('pointsPour(correct, 10) = 10 (min)', L.pointsFor(true, 10) === 10);
+check('pointsPour(faux) = 0', L.pointsFor(false, 0) === 0);
+check('pointsPour(correct, 0, bonus) = 40', L.pointsFor(true, 0, true) === 40);
 
 // --- 5) suggestions : ajout / liste / suppr / vide refuse ---
-L.ajouterSuggestion('Test suggestion A', 'Joris');
-L.ajouterSuggestion('Test suggestion B', 'Test');
-const sl = L.chargerSuggestions();
+L.addSuggestion('Test suggestion A', 'Joris');
+L.addSuggestion('Test suggestion B', 'Test');
+const sl = L.loadSuggestions();
 check('suggestions : 2 ajoutees, plus recente en premier', sl.length === 2 && sl[0].texte === 'Test suggestion B');
-check('suggestions : vide refusee', L.ajouterSuggestion('   ', 'X') === null);
-L.supprimerSuggestion(sl[0].id);
-check('suggestions : suppression OK', L.chargerSuggestions().length === 1);
+check('suggestions : vide refusee', L.addSuggestion('   ', 'X') === null);
+L.removeSuggestion(sl[0].id);
+check('suggestions : suppression OK', L.loadSuggestions().length === 1);
 
 // --- 6) badges / titres calculables ---
-const badges = B.calculerBadges();
-const titres = T.calculerTitres();
+const badges = B.computeBadges();
+const titles = T.computeTitles();
 check('badges : 30 definis', badges.length === 30);
-check('titres : 50 definis', titres.length === 50);
+check('titres : 50 definis', titles.length === 50);
 
 // --- 7) compte par theme (objectif 1000+ partout) ---
 const parTheme = {};
@@ -114,11 +114,11 @@ lundi.setDate(lundi.getDate() - ((lundi.getDay() + 6) % 7));
 const hier = new Date(maintenant); hier.setDate(hier.getDate() - 1);
 const ilYa10j = new Date(maintenant); ilYa10j.setDate(ilYa10j.getDate() - 10);
 const lundiProchain = new Date(lundi); lundiProchain.setDate(lundiProchain.getDate() + 7);
-check('semaine en cours : aujourd’hui dedans', L.dansSemaineEnCours(maintenant.toISOString()) === true);
-check('semaine en cours : lundi de cette semaine dedans', L.dansSemaineEnCours(lundi.toISOString()) === true);
-check('semaine en cours : il y a 10 jours dehors', L.dansSemaineEnCours(ilYa10j.toISOString()) === false);
-check('semaine en cours : lundi prochain dehors', L.dansSemaineEnCours(lundiProchain.toISOString()) === false);
-check('cleJourLocal format AAAA-MM-JJ', /^\d{4}-\d{2}-\d{2}$/.test(L.cleJourLocal(maintenant)));
+check('semaine en cours : aujourd’hui dedans', L.isThisWeek(maintenant.toISOString()) === true);
+check('semaine en cours : lundi de cette semaine dedans', L.isThisWeek(lundi.toISOString()) === true);
+check('semaine en cours : il y a 10 jours dehors', L.isThisWeek(ilYa10j.toISOString()) === false);
+check('semaine en cours : lundi prochain dehors', L.isThisWeek(lundiProchain.toISOString()) === false);
+check('cleJourLocal format AAAA-MM-JJ', /^\d{4}-\d{2}-\d{2}$/.test(L.localDayKey(maintenant)));
 
 // --- 9) dopamine : prochain badge / titre ---
 const pb = B.prochainBadge();

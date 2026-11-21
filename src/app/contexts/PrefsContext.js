@@ -2,12 +2,12 @@
 // Pose les classes de body (thème clair / daltonien / dys) à chaque changement.
 import { createContext, createElement, useContext, useEffect, useState } from 'react';
 
-import { chargerPrefs, sauverPrefs } from '@lib/prefs.js';
+import { loadPrefs, sauverPrefs } from '@lib/prefs.js';
 
 const PrefsContext = createContext(null);
 
 export function PrefsProvider({ children }) {
-  const [prefs, setPrefs] = useState(() => chargerPrefs());
+  const [prefs, setPrefs] = useState(() => loadPrefs());
 
   // Accessibilité : les classes de body pilotent le thème clair, le mode daltonien et le mode dys.
   useEffect(() => {

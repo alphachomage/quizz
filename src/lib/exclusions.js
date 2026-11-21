@@ -1,23 +1,23 @@
 // exclusions.js — questions retirées du pool par l'admin (signalées puis validées
 // comme mauvaises). Le filtre est appliqué au chargement des questions.
-import { ExcluesRepo } from './repositories.js';
+import { ExcludedRepo } from './repositories.js';
 
-export function chargerExclues() {
-  return ExcluesRepo.tout();
+export function loadExcluded() {
+  return ExcludedRepo.tout();
 }
 
-function sauverExclues(liste) {
-  ExcluesRepo.sauver(liste);
+function sauverExclues(list) {
+  ExcludedRepo.sauver(list);
 }
 
-export function ajouterExclusion(texteNormalise) {
-  const liste = chargerExclues();
-  if (!liste.includes(texteNormalise)) {
-    liste.push(texteNormalise);
-    sauverExclues(liste);
+export function addExclusion(texteNormalise) {
+  const list = loadExcluded();
+  if (!list.includes(texteNormalise)) {
+    list.push(texteNormalise);
+    sauverExclues(list);
   }
 }
 
 export function retirerExclusion(texteNormalise) {
-  sauverExclues(chargerExclues().filter((x) => x !== texteNormalise));
+  sauverExclues(loadExcluded().filter((x) => x !== texteNormalise));
 }

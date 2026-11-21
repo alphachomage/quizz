@@ -28,9 +28,9 @@ for (const f of files) {
         Number.isInteger(q.bonne) && q.bonne >= 0 && q.bonne < q.reponses.length &&
         typeof q.q === 'string' && q.q.length > 0 && ['facile', 'moyen', 'dur'].includes(q.niveau);
       if (!ok) invalides++;
-      const cle = t.id + '|' + norm(q.q);
-      if (vus.has(cle)) doublons++;
-      vus.add(cle);
+      const key = t.id + '|' + norm(q.q);
+      if (vus.has(key)) doublons++;
+      vus.add(key);
     }
   }
 }

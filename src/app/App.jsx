@@ -4,22 +4,22 @@
 import { Suspense, useEffect, useMemo, useState } from 'react';
 
 import AppProviders from './AppProviders.jsx';
-import Ecrans from './Ecrans.jsx';
+import Screens from './Screens.jsx';
 import { ROUTES } from './routes.js';
 import { useNavigation } from './useNavigation.js';
-import { useCelebration } from './useCelebration.js';
-import { lireFlagsUrl, retirerFlagsUrl, urlSansFlagAdmin, redirigerVers } from './urlFlags.js';
+import { useUnlock } from './useUnlock.js';
+import { readUrlFlags, retirerFlagsUrl, urlWithoutAdminFlag, redirigerVers } from './urlFlags.js';
 import { useSession } from './contexts/SessionContext.js';
 import { usePrefs } from './contexts/PrefsContext.js';
 import { useThemes } from './contexts/ThemesContext.js';
 
-import Tuto from '@features/tuto/Tuto.jsx';
+import Tutorial from '@features/tutorial/Tutorial.jsx';
 // Deblocage rendu dans app/Ecrans.jsx
 
-import { aVuTuto, marquerTutoVu, sessionActuelle } from '@lib/comptes.js';
+import { hasSeenTutorial, markTutorialSeen, currentSession } from '@lib/accounts.js';
 import { reinitialiserScores, reinitialiserProgression } from '@lib/reset.js';
-import { persisterResultat } from '@features/resultat/persistance.js';
-import { telechargerJSON } from '@shared/utils/telechargerJSON.js';
+import { persistResult } from '@features/results/persist.js';
+import { telechargerJSON } from '@shared/utils/downloadJson.js';
 
 export default function App() {
   return (
@@ -57,10 +57,10 @@ function Shell() {
     exporterValidees,
   } = useThemes();
   const nav = useNavigation();
-  const { celebration, prendreSnapshot, revelerNouveautes, fermerCelebration } = useCelebration({ estInvite, prefs });
+  const { celebration, prendreSnapshot, revelerNouveautes, fermerCelebration } = useUnlock({ estInvite, prefs });
 
   // Flags d'URL (lus UNE fois) : ?admin=1 ?reset=1 ?resetcompte=1 ?tuto=1
-  const flags = useMemo(() => lireFlagsUrl(), []);
+  const flags = useMemo(() => readUrlFlags(), []);
   const [estAdmin] = useState(flags.admin);
   const [tutoOuvert, setTutoOuvert] = useState(false);
 
@@ -80,33 +80,33 @@ function Shell() {
 
   // Tuto de bienvenue : ouvert UNE SEULE FOIS par compte (clé fixe « invite » en mode invité),
   // rouvrable à volonté avec ?tuto=1 ou le bouton « ? ».
-  const cleTuto = session ? (session.invite ? 'invite' : session.pseudo) : null;
+  const tutorialKey = session ? (session.guest ? 'invite' : session.pseudo) : null;
   useEffect(() => {
-    if (!estAdmin && (flags.tuto || (cleTuto && !aVuTuto(cleTuto)))) setTutoOuvert(true);
+    if (!estAdmin && (flags.tutorial || (tutorialKey && !hasSeenTutorial(tutorialKey)))) setTutoOuvert(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, estAdmin]);
 
   function fermerTuto() {
-    if (cleTuto) marquerTutoVu(cleTuto);
+    if (tutorialKey) markTutorialSeen(tutorialKey);
     setTutoOuvert(false);
   }
 
-  function demarrer(cfg) {
+  function start(cfg) {
     prendreSnapshot(); // badges/titres débloqués AVANT la partie
-    nav.demarrer(cfg);
+    nav.start(cfg);
   }
 
   function terminer(res) {
     // Persistance de la partie UNE FOIS ici (record, historique, XP, classement,
     // streak du jour) : le composant Resultat ne fait plus que lire res.persistance.
-    const persistance = persisterResultat(res, estInvite, prefs);
+    const persistance = persistResult(res, estInvite, prefs);
     revelerNouveautes(); // badges/titres débloqués PENDANT la partie -> animation au retour
     nav.terminer({ ...res, persistance });
   }
 
   function quitterAdmin() {
     // Recharge la page sans ?admin=1 : les exclusions admin sont alors retirées du pool.
-    redirigerVers(urlSansFlagAdmin());
+    redirigerVers(urlWithoutAdminFlag());
   }
 
   const classeApp = prefs.animations === false ? 'app sans-animations' : 'app';
@@ -143,18 +143,18 @@ function Shell() {
 
   // Sans compte connecté, on affiche d'abord l'écran de connexion/création de compte.
   if (!session) {
-    const Compte = ROUTES.compte;
+    const Account = ROUTES.account;
     return (
       <div className={classeApp}>
-        {tutoOuvert && <Tuto onFermer={fermerTuto} estInvite={false} />}
-        <Compte onConnexion={() => setSession(sessionActuelle())} />
+        {tutoOuvert && <Tutorial onFermer={fermerTuto} estInvite={false} />}
+        <Account onConnexion={() => setSession(currentSession())} />
       </div>
     );
   }
 
   return (
     <div className={classeApp}>
-      <Ecrans
+      <Screens
         nav={nav}
         themes={themes}
         session={session}
@@ -163,7 +163,7 @@ function Shell() {
         tutoOuvert={tutoOuvert}
         fermerTuto={fermerTuto}
         deconnexion={deconnexion}
-        demarrer={demarrer}
+        start={start}
         terminer={terminer}
         changerPrefs={changerPrefs}
         setTutoOuvert={setTutoOuvert}

@@ -1,4 +1,4 @@
-// scripts/gen-manifest.mjs — génère src/data/manifest-themes.js :
+// scripts/gen-manifest.mjs — génère src/data/theme-manifest.js :
 // la liste des thèmes (id, nom, icône, couleur) SANS les questions, pour que
 // l'appli démarre avec un petit chunk initial et charge les questions à la demande.
 // Lancé automatiquement avant `npm run dev` et `npm run build` (predev/prebuild),
@@ -23,9 +23,9 @@ for (const f of fichiers) {
   }
 }
 
-const contenu = `// manifest-themes.js — GÉNÉRÉ par scripts/gen-manifest.mjs (ne pas éditer à la main).
+const contenu = `// theme-manifest.js — GÉNÉRÉ par scripts/gen-manifest.mjs (ne pas éditer à la main).
 // Métadonnées des thèmes SANS les questions : chunk initial léger, questions lazy.
-export const MANIFEST_THEMES = ${JSON.stringify([...metas.values()], null, 2)};
+export const THEME_MANIFEST = ${JSON.stringify([...metas.values()], null, 2)};
 `;
-fs.writeFileSync(path.join(dir, 'manifest-themes.js'), contenu);
-console.log(`manifest-themes.js : ${metas.size} thèmes, ${fichiers.length} fichiers`);
+fs.writeFileSync(path.join(dir, 'theme-manifest.js'), contenu);
+console.log(`theme-manifest.js : ${metas.size} thèmes, ${fichiers.length} fichiers`);

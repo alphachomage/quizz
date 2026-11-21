@@ -3,7 +3,7 @@
 // plus aucun appel direct lire(CLES.x)/ecrire(CLES.x) dans le reste du code.
 // Demain (V2, MODE_STOCKAGE='d1'), on branche ces repos sur l'API serveur
 // (api.js) sans toucher aux appelants.
-import { CLES, lire, ecrire, supprimer } from './storage.js';
+import { STORAGE_KEYS, read, write, remove } from './storage.js';
 
 // --- Fabrique générique : repo simple pour une clé ---
 // Le défaut est CLONÉ à chaque lecture : jamais de mutation du défaut partagé
@@ -12,35 +12,35 @@ function cloneDefaut(defaut) {
   return defaut === null || defaut === undefined ? defaut : JSON.parse(JSON.stringify(defaut));
 }
 
-function repoSimple(cle, defaut) {
+function repoSimple(key, defaut) {
   return {
-    cle,
+    key,
     tout: () => {
-      const v = lire(cle, null);
+      const v = read(key, null);
       return v === null || v === undefined ? cloneDefaut(defaut) : v;
     },
-    sauver: (valeur) => ecrire(cle, valeur),
-    vider: () => supprimer(cle),
+    sauver: (valeur) => write(key, valeur),
+    vider: () => remove(key),
   };
 }
 
 // --- Repos ---
 
 export const PrefsRepo = {
-  ...repoSimple(CLES.prefs, {}),
-  charger: () => ({ sons: true, musique: true, animations: true, vibrations: true, themeClair: false, daltonien: false, dys: false, ...(lire(CLES.prefs, {}) || {}) }),
+  ...repoSimple(STORAGE_KEYS.prefs, {}),
+  charger: () => ({ sons: true, music: true, animations: true, vibrations: true, themeClair: false, daltonien: false, dys: false, ...(read(STORAGE_KEYS.prefs, {}) || {}) }),
 };
 
-export const SessionRepo = repoSimple(CLES.session, null);
-export const ComptesRepo = repoSimple(CLES.comptes, []);
+export const SessionRepo = repoSimple(STORAGE_KEYS.session, null);
+export const AccountsRepo = repoSimple(STORAGE_KEYS.accounts, []);
 export const RecordsRepo = {
-  ...repoSimple(CLES.records, {}),
-  meilleur: (cleRecord) => (lire(CLES.records, {}) || {})[cleRecord] || 0,
-  sauverSiMeilleur: (cleRecord, score) => {
-    const records = lire(CLES.records, {}) || {};
-    if (score > (records[cleRecord] || 0)) {
-      records[cleRecord] = score;
-      ecrire(CLES.records, records);
+  ...repoSimple(STORAGE_KEYS.records, {}),
+  meilleur: (recordKey) => (read(STORAGE_KEYS.records, {}) || {})[recordKey] || 0,
+  sauverSiMeilleur: (recordKey, score) => {
+    const records = read(STORAGE_KEYS.records, {}) || {};
+    if (score > (records[recordKey] || 0)) {
+      records[recordKey] = score;
+      write(STORAGE_KEYS.records, records);
       return true; // nouveau record
     }
     return false;
@@ -48,54 +48,54 @@ export const RecordsRepo = {
 };
 
 export const XpRepo = {
-  ...repoSimple(CLES.xp, {}),
-  parTheme: (themeId) => (lire(CLES.xp, {}) || {})[themeId] || 0,
-  ajouter: (themeId, points) => {
-    const xp = lire(CLES.xp, {}) || {};
+  ...repoSimple(STORAGE_KEYS.xp, {}),
+  parTheme: (themeId) => (read(STORAGE_KEYS.xp, {}) || {})[themeId] || 0,
+  add: (themeId, points) => {
+    const xp = read(STORAGE_KEYS.xp, {}) || {};
     xp[themeId] = (xp[themeId] || 0) + points;
-    ecrire(CLES.xp, xp);
+    write(STORAGE_KEYS.xp, xp);
     return xp[themeId];
   },
 };
 
-export const PartiesRepo = {
-  ...repoSimple(CLES.parties, []),
+export const GamesRepo = {
+  ...repoSimple(STORAGE_KEYS.games, []),
   LIMITE: 500,
-  ajouter: (partie) => {
-    const liste = lire(CLES.parties, []) || [];
-    liste.push(partie);
-    ecrire(CLES.parties, liste.slice(-PartiesRepo.LIMITE)); // 500 dernières max
+  add: (game) => {
+    const list = read(STORAGE_KEYS.games, []) || [];
+    list.push(game);
+    write(STORAGE_KEYS.games, list.slice(-GamesRepo.LIMITE)); // 500 dernières max
   },
 };
 
-export const SoumissionsRepo = repoSimple(CLES.soumissions, []);
-export const ValideesRepo = repoSimple(CLES.validees, []);
-export const SignalesRepo = repoSimple(CLES.signales, []);
+export const SubmissionsRepo = repoSimple(STORAGE_KEYS.soumissions, []);
+export const ApprovedRepo = repoSimple(STORAGE_KEYS.validees, []);
+export const ReportsRepo = repoSimple(STORAGE_KEYS.signales, []);
 export const SuggestionsRepo = {
-  ...repoSimple(CLES.suggestions, []),
-  ajouter: (suggestion) => {
-    const liste = lire(CLES.suggestions, []) || [];
-    liste.unshift(suggestion);
-    ecrire(CLES.suggestions, liste.slice(0, 200)); // 200 max
+  ...repoSimple(STORAGE_KEYS.suggestions, []),
+  add: (suggestion) => {
+    const list = read(STORAGE_KEYS.suggestions, []) || [];
+    list.unshift(suggestion);
+    write(STORAGE_KEYS.suggestions, list.slice(0, 200)); // 200 max
   },
 };
-export const ExcluesRepo = repoSimple(CLES.exclues, []);
-export const SeriesRepo = repoSimple(CLES.series, {});
-export const StreakJourRepo = {
-  ...repoSimple(CLES.streakJour, { compte: 0, dernierJour: null }),
-  lire: () => {
-    const v = lire(CLES.streakJour, null);
-    return v || { compte: 0, dernierJour: null };
+export const ExcludedRepo = repoSimple(STORAGE_KEYS.exclues, []);
+export const SeriesRepo = repoSimple(STORAGE_KEYS.series, {});
+export const DailyStreakRepo = {
+  ...repoSimple(STORAGE_KEYS.dailyStreak, { account: 0, dernierJour: null }),
+  read: () => {
+    const v = read(STORAGE_KEYS.dailyStreak, null);
+    return v || { account: 0, dernierJour: null };
   },
 };
-export const TutoRepo = repoSimple(CLES.tuto, []);
-export const BadgeFavoriRepo = repoSimple(CLES.badgeFavori, null);
-export const TitreActifRepo = repoSimple(CLES.titreActif, null);
-export const ResetSoumRepo = repoSimple(CLES.resetSoum, null);
+export const TutorialRepo = repoSimple(STORAGE_KEYS.tutorial, []);
+export const FavoriteBadgeRepo = repoSimple(STORAGE_KEYS.favoriteBadge, null);
+export const ActiveTitleRepo = repoSimple(STORAGE_KEYS.titreActif, null);
+export const ResetSubmissionsRepo = repoSimple(STORAGE_KEYS.resetSoum, null);
 
 // Reset global (?reset=1 / ?resetcompte=1) : passe par les repos.
 export function toutVider() {
-  for (const repo of [RecordsRepo, PartiesRepo, XpRepo, SeriesRepo, StreakJourRepo, BadgeFavoriRepo, TitreActifRepo, SignalesRepo]) {
+  for (const repo of [RecordsRepo, GamesRepo, XpRepo, SeriesRepo, DailyStreakRepo, FavoriteBadgeRepo, ActiveTitleRepo, ReportsRepo]) {
     repo.vider();
   }
 }

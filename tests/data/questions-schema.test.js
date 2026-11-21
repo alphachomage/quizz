@@ -3,13 +3,13 @@
 // question et compte les doublons exacts connus (hérités des premiers lots).
 import { describe, expect, it } from 'vitest';
 
-import { NIVEAUX } from '@lib/index.js';
-import { chargerThemes } from '@/data/questions.js';
+import { LEVELS } from '@lib/index.js';
+import { loadThemes } from '@/data/questions.js';
 
 // Charge le vrai corpus (chunks lazy) une fois pour toute la suite.
-const THEMES = await chargerThemes();
+const THEMES = await loadThemes();
 
-const NIVEAUX_VALIDES = NIVEAUX.map((n) => n.id);
+const NIVEAUX_VALIDES = LEVELS.map((n) => n.id);
 
 describe('corpus de questions intégré', () => {
   it('contient 12 thèmes actifs', () => {
@@ -57,9 +57,9 @@ describe('corpus de questions intégré', () => {
     let doublons = 0;
     for (const t of THEMES) {
       for (const q of t.questions) {
-        const cle = `${t.id}|${q.q.trim().toLowerCase()}`;
-        if (vus.has(cle)) doublons++;
-        else vus.add(cle);
+        const key = `${t.id}|${q.q.trim().toLowerCase()}`;
+        if (vus.has(key)) doublons++;
+        else vus.add(key);
       }
     }
     // Les tout premiers fichiers de base contiennent quelques doublons connus ;

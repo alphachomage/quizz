@@ -15,28 +15,28 @@
 //   l'appli reste utilisable hors-ligne, la synchro est best-effort.
 //   Flag : ?stockage=d1 dans l'URL (test), sinon 'local'.
 
-import { lireParamUrl } from './nav.js';
+import { readUrlParam } from './nav.js';
 import { kvGet, kvSet } from './api.js';
 
-export const MODE_STOCKAGE = lireParamUrl('stockage') === 'd1' ? 'd1' : 'local';
+export const STORAGE_MODE = readUrlParam('stockage') === 'd1' ? 'd1' : 'local';
 
 // Registre de TOUTES les clés de stockage de l'application.
-export const CLES = {
+export const STORAGE_KEYS = {
   prefs: 'voltquiz_prefs',
   session: 'voltquiz_session',
-  comptes: 'voltquiz_comptes',
+  accounts: 'voltquiz_comptes',
   records: 'voltquiz_records',
   xp: 'voltquiz_xp',
-  parties: 'voltquiz_parties',
+  games: 'voltquiz_parties',
   soumissions: 'voltquiz_soumissions',
   validees: 'voltquiz_validees',
   signales: 'voltquiz_signales',
   suggestions: 'voltquiz_suggestions',
   exclues: 'voltquiz_exclues',
   series: 'voltquiz_dernieres_series',
-  streakJour: 'voltquiz_streak_quotidien',
-  tuto: 'voltquiz_tuto_vu',
-  badgeFavori: 'voltquiz_badge_favori',
+  dailyStreak: 'voltquiz_streak_quotidien',
+  tutorial: 'voltquiz_tuto_vu',
+  favoriteBadge: 'voltquiz_badge_favori',
   titreActif: 'voltquiz_titre_actif',
   resetSoum: 'voltquiz_reset_soumissions',
 };
@@ -55,9 +55,9 @@ export function notifier() {
 
 // Lit une valeur JSON. Retourne `defaut` si absente ou illisible.
 // Compat : si la valeur stockée n'est pas du JSON (ancien format brut), on la renvoie telle quelle.
-export function lire(cle, defaut = null) {
+export function read(key, defaut = null) {
   try {
-    const brut = localStorage.getItem(cle);
+    const brut = localStorage.getItem(key);
     if (brut === null) return defaut;
     try {
       return JSON.parse(brut);
@@ -71,14 +71,14 @@ export function lire(cle, defaut = null) {
 
 // Écrit une valeur (JSON) et prévient les abonnés.
 // En mode 'd1', pousse aussi au serveur en arrière-plan (best-effort, jamais bloquant).
-export function ecrire(cle, valeur) {
+export function write(key, valeur) {
   try {
-    localStorage.setItem(cle, JSON.stringify(valeur));
+    localStorage.setItem(key, JSON.stringify(valeur));
   } catch {
     // stockage indisponible (quota dépassé, navigation privée) : on ignore
   }
-  if (MODE_STOCKAGE === 'd1') {
-    kvSet(cle, valeur).catch(() => {
+  if (STORAGE_MODE === 'd1') {
+    kvSet(key, valeur).catch(() => {
       // serveur injoignable : la valeur reste en local, la synchro reprendra au prochain write
     });
   }
@@ -87,14 +87,14 @@ export function ecrire(cle, valeur) {
 
 // En mode 'd1' : pré-charge TOUTES les clés depuis le serveur (/api/kv) dans le cache
 // local, puis notifie. Appelé UNE FOIS au démarrage de l'appli (main.jsx).
-export async function prechargerDepuisServeur() {
-  if (MODE_STOCKAGE !== 'd1') return;
+export async function preloadFromServer() {
+  if (STORAGE_MODE !== 'd1') return;
   await Promise.all(
-    Object.values(CLES).map(async (cle) => {
+    Object.values(STORAGE_KEYS).map(async (key) => {
       try {
-        const r = await kvGet(cle);
+        const r = await kvGet(key);
         if (r && r.valeur !== undefined && r.valeur !== null) {
-          localStorage.setItem(cle, JSON.stringify(r.valeur));
+          localStorage.setItem(key, JSON.stringify(r.valeur));
         }
       } catch {
         // clé absente côté serveur ou réseau coupé : on garde le local
@@ -105,9 +105,9 @@ export async function prechargerDepuisServeur() {
 }
 
 // Supprime une clé et prévient les abonnés.
-export function supprimer(cle) {
+export function remove(key) {
   try {
-    localStorage.removeItem(cle);
+    localStorage.removeItem(key);
   } catch {
     // idem
   }

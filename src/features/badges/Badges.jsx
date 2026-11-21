@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 
-import Icone from '@shared/ui/Icone.jsx';
+import Icon from '@shared/ui/Icon.jsx';
 
-import { calculerBadges } from '@lib/badges.js';
-import { calculerTitres, titreActifId, definirTitreActif } from '@lib/titres.js';
+import { computeBadges } from '@lib/badges.js';
+import { computeTitles, activeTitleId, setActiveTitle } from '@lib/titles.js';
 
 // Écran « Mes badges & titres » : 2 onglets.
 // - Badges : 30 badges, verrouillé = grisé + condition exacte, débloqué = jaune PEPS.
@@ -12,22 +12,22 @@ import { calculerTitres, titreActifId, definirTitreActif } from '@lib/titres.js'
 
 export default function Badges({ themes, onAccueil }) {
   const [onglet, setOnglet] = useState('badges');
-  const badges = useMemo(() => calculerBadges(), []);
-  const titres = useMemo(() => calculerTitres(), []);
-  const [titreId, setTitreId] = useState(() => titreActifId());
+  const badges = useMemo(() => computeBadges(), []);
+  const titles = useMemo(() => computeTitles(), []);
+  const [titreId, setTitreId] = useState(() => activeTitleId());
 
   const n = badges.filter((b) => b.debloque).length;
   const pct = Math.round((n / badges.length) * 100);
-  const nt = titres.filter((t) => t.debloque).length;
-  const pctT = Math.round((nt / titres.length) * 100);
+  const nt = titles.filter((t) => t.debloque).length;
+  const pctT = Math.round((nt / titles.length) * 100);
 
   function choisirTitre(t) {
     if (!t.debloque) return;
-    definirTitreActif(t.id);
+    setActiveTitle(t.id);
     setTitreId(t.id);
   }
 
-  function nomTheme(id) {
+  function themeName(id) {
     const t = (themes || []).find((x) => x.id === id);
     return t ? t.nom : id;
   }
@@ -36,18 +36,18 @@ export default function Badges({ themes, onAccueil }) {
     <div className="ecran-centre stats-ecran">
       <div className="stats">
         <div className="stats-titre">
-          <h2><Icone nom="trophy" taille={24} /> Badges & titres</h2>
+          <h2><Icon nom="trophy" taille={24} /> Badges & titres</h2>
           <button className="btn-secondaire" onClick={onAccueil}>
-            <Icone nom="home" taille={18} /> Accueil
+            <Icon nom="home" taille={18} /> Accueil
           </button>
         </div>
 
         <div className="onglets">
           <button className={onglet === 'badges' ? 'onglet actif' : 'onglet'} onClick={() => setOnglet('badges')}>
-            <Icone nom="trophy" taille={15} /> Badges ({n}/{badges.length})
+            <Icon nom="trophy" taille={15} /> Badges ({n}/{badges.length})
           </button>
           <button className={onglet === 'titres' ? 'onglet actif' : 'onglet'} onClick={() => setOnglet('titres')}>
-            <Icone nom="star" taille={15} /> Titres ({nt}/{titres.length})
+            <Icon nom="star" taille={15} /> Titres ({nt}/{titles.length})
           </button>
         </div>
 
@@ -67,15 +67,15 @@ export default function Badges({ themes, onAccueil }) {
               {badges.map((b) => (
                 <li key={b.id} className={b.debloque ? 'badge debloque' : 'badge verrouille'}>
                   <span className="badge-icone">
-                    <Icone nom={b.icone} taille={26} />
+                    <Icon nom={b.icone} taille={26} />
                   </span>
                   <span className="badge-nom">{b.nom}</span>
                   <span className="badge-desc">{b.desc}</span>
                   <span className="badge-statut">
                     {b.debloque ? (
-                      <><Icone nom="check" taille={13} /> Débloqué</>
+                      <><Icon nom="check" taille={13} /> Débloqué</>
                     ) : (
-                      <><Icone nom="alert" taille={13} /> Verrouillé</>
+                      <><Icon nom="alert" taille={13} /> Verrouillé</>
                     )}
                   </span>
                 </li>
@@ -93,7 +93,7 @@ export default function Badges({ themes, onAccueil }) {
             <div className="xp-globale">
               <div className="xp-globale-titre">
                 <span>Progression</span>
-                <span className="xp-globale-val">{nt} / {titres.length} débloqués ({pctT} %)</span>
+                <span className="xp-globale-val">{nt} / {titles.length} débloqués ({pctT} %)</span>
               </div>
               <div className="xp-barre">
                 <i style={{ width: `${pctT}%` }} />
@@ -101,15 +101,15 @@ export default function Badges({ themes, onAccueil }) {
             </div>
 
             <ul className="badges-grille">
-              {titres.map((t) => (
+              {titles.map((t) => (
                 <li key={t.id} className={t.debloque ? 'badge debloque' : 'badge verrouille'}>
                   <span className="badge-icone">
-                    <Icone nom={t.general ? 'star' : (themes.find((x) => x.id === t.themeId)?.icone || 'sparkles')} taille={24} />
+                    <Icon nom={t.general ? 'star' : (themes.find((x) => x.id === t.themeId)?.icone || 'sparkles')} taille={24} />
                   </span>
                   <span className="badge-nom">{t.debloque ? t.nom : '???'}</span>
                   <span className="badge-desc">
                     {t.debloque
-                      ? (t.general ? 'Titre général' : `${nomTheme(t.themeId)} — niveau ${t.palier}`)
+                      ? (t.general ? 'Titre général' : `${themeName(t.themeId)} — niveau ${t.palier}`)
                       : 'Titre verrouillé'}
                   </span>
                   {t.debloque ? (
@@ -119,13 +119,13 @@ export default function Badges({ themes, onAccueil }) {
                       onClick={() => choisirTitre(t)}
                     >
                       {t.id === titreId ? (
-                        <><Icone nom="check" taille={13} /> Affiché sur mon profil</>
+                        <><Icon nom="check" taille={13} /> Affiché sur mon profil</>
                       ) : (
                         'Afficher sur mon profil'
                       )}
                     </button>
                   ) : (
-                    <span className="badge-statut"><Icone nom="alert" taille={13} /> Verrouillé</span>
+                    <span className="badge-statut"><Icon nom="alert" taille={13} /> Verrouillé</span>
                   )}
                 </li>
               ))}

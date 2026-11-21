@@ -1,21 +1,21 @@
 import { useMemo } from 'react';
 
-import Icone from '@shared/ui/Icone.jsx';
+import Icon from '@shared/ui/Icon.jsx';
 
-import { chargerParties, chargerXP } from '@lib/index.js';
+import { loadGames, loadXp } from '@lib/index.js';
 
 import {
-  calculerStats,
-  calculerCalendrier,
-  calculerTempsMoyen,
-  calculerXpGlobale,
-  classerThemesParXp,
-} from './statsCalculs.js';
-import CartesStats from './composants/CartesStats.jsx';
-import CalendrierMois from './composants/CalendrierMois.jsx';
-import Barres30j from './composants/Barres30j.jsx';
-import ProgressionXp from './composants/ProgressionXp.jsx';
-import ListesStats from './composants/ListesStats.jsx';
+  computeStats,
+  computeCalendar,
+  computeAvgTime,
+  computeGlobalXp,
+  sortThemesByXp,
+} from './statsCompute.js';
+import StatCards from './components/StatCards.jsx';
+import MonthCalendar from './components/MonthCalendar.jsx';
+import Last30Days from './components/Last30Days.jsx';
+import XpProgress from './components/XpProgress.jsx';
+import StatLists from './components/StatLists.jsx';
 
 // Écran « Mes statistiques » : coquille de rendu — tous les calculs sont dans
 // statsCalculs.js (fonctions pures), la mise en page dans ./composants/.
@@ -28,32 +28,32 @@ const MODES = [
 ];
 
 export default function Stats({ themes, pseudo, onAccueil }) {
-  const parties = useMemo(() => chargerParties(), []);
-  const xp = useMemo(() => chargerXP(), []);
+  const games = useMemo(() => loadGames(), []);
+  const xp = useMemo(() => loadXp(), []);
 
-  const stats = useMemo(() => calculerStats(parties), [parties]);
-  const calendrier = useMemo(() => calculerCalendrier(parties), [parties]);
-  const tempsMoyen = useMemo(() => calculerTempsMoyen(parties), [parties]);
-  const { xpTotal, nivGlobal, xpNext, pctXp } = useMemo(() => calculerXpGlobale(xp), [xp]);
-  const themesNives = useMemo(() => classerThemesParXp(themes, xp), [themes, xp]);
+  const stats = useMemo(() => computeStats(games), [games]);
+  const calendar = useMemo(() => computeCalendar(games), [games]);
+  const avgTime = useMemo(() => computeAvgTime(games), [games]);
+  const { totalXp, nivGlobal, xpNext, pctXp } = useMemo(() => computeGlobalXp(xp), [xp]);
+  const themedLevels = useMemo(() => sortThemesByXp(themes, xp), [themes, xp]);
 
   return (
     <div className="ecran-centre stats-ecran">
       <div className="stats">
         <div className="stats-titre">
-          <h2><Icone nom="chart" taille={24} /> Mes statistiques — {pseudo}</h2>
+          <h2><Icon nom="chart" taille={24} /> Mes statistiques — {pseudo}</h2>
           <button className="btn-secondaire" onClick={onAccueil}>
-            <Icone nom="home" taille={18} /> Accueil
+            <Icon nom="home" taille={18} /> Accueil
           </button>
         </div>
 
-        <CartesStats stats={stats} tempsMoyen={tempsMoyen} />
-        <CalendrierMois calendrier={calendrier} />
-        <Barres30j calendrier={calendrier} />
-        <ProgressionXp xpTotal={xpTotal} nivGlobal={nivGlobal} xpNext={xpNext} pctXp={pctXp} themesNives={themesNives} />
-        <ListesStats stats={stats} modes={MODES} />
+        <StatCards stats={stats} avgTime={avgTime} />
+        <MonthCalendar calendar={calendar} />
+        <Last30Days calendar={calendar} />
+        <XpProgress totalXp={totalXp} nivGlobal={nivGlobal} xpNext={xpNext} pctXp={pctXp} themedLevels={themedLevels} />
+        <StatLists stats={stats} modes={MODES} />
 
-        {stats.parties === 0 && (
+        {stats.games === 0 && (
           <p className="vide">Aucune partie pour le moment — lance un quiz depuis l'accueil et tes stats apparaîtront ici.</p>
         )}
       </div>

@@ -2,7 +2,7 @@ import { readFileSync, readdirSync } from 'fs';
 const newFiles = ['questions-mangas4-a1.js','questions-mangas4-a2.js','questions-mangas4-b1.js','questions-mangas4-b2.js','questions-mangas4-c1.js'];
 const mine = [];
 for (const f of newFiles) {
-  const mod = await import('./src/data/' + f);
+  const mod = await import('./src/data' + f);
   const qs = Object.values(mod)[0][0].questions;
   qs.forEach((q, i) => mine.push({ f, i, q: q.q, norm: q.q.trim().toLowerCase().replace(/\s+/g, ' ') }));
 }
@@ -10,7 +10,7 @@ const norm = s => s.replace(/[^a-z0-9àâäéèêëîïôöùûüç\s]/gi, '').r
 const existing = [];
 for (const f of readdirSync('./src/data')) {
   if (!f.startsWith('questions-') || f.startsWith('questions-mangas4-') || !f.endsWith('.js')) continue;
-  const src = readFileSync('./src/data/' + f, 'utf8');
+  const src = readFileSync('./src/data' + f, 'utf8');
   for (const m of src.matchAll(/q:\s*"((?:[^"\\]|\\.)*)"/g)) existing.push({ f, q: m[1] });
 }
 for (const e of existing) e.norm = norm(e.q.trim().toLowerCase());

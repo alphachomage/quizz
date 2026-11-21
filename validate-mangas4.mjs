@@ -1,7 +1,7 @@
 const files = ['questions-mangas4-a1.js','questions-mangas4-a2.js','questions-mangas4-b1.js','questions-mangas4-b2.js','questions-mangas4-c1.js'];
 let allQ = [];
 for (const f of files) {
-  const mod = await import('./src/data/' + f);
+  const mod = await import('./src/data' + f);
   const arr = Object.values(mod)[0];
   if (!Array.isArray(arr) || arr.length !== 1) console.log(f, 'ATTENTION: export non conforme', arr.length);
   const theme = arr[0];
@@ -27,7 +27,7 @@ import { readFileSync, readdirSync } from 'fs';
 const existing = [];
 for (const f of readdirSync('./src/data')) {
   if (!f.startsWith('questions-') || f.startsWith('questions-mangas4-') || !f.endsWith('.js')) continue;
-  const src = readFileSync('./src/data/' + f, 'utf8');
+  const src = readFileSync('./src/data' + f, 'utf8');
   for (const m of src.matchAll(/q:\s*"((?:[^"\\]|\\.)*)"/g)) existing.push(m[1].trim().toLowerCase().replace(/\s+/g, ' '));
 }
 console.log('questions existantes (hors nouveaux lots):', existing.length);
