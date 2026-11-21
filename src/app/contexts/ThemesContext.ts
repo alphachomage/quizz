@@ -1,6 +1,7 @@
-// ThemesContext.js — catalogue de thèmes : base intégrée + fichier personal (fetch)
+// ThemesContext.ts — catalogue de thèmes : base intégrée + fichier personal (fetch)
 // + questions validées (localStorage), et la liste plate pour la détection de similarité.
 import { createContext, createElement, useContext, useEffect, useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
 import { loadThemes } from '@data/questions.js';
 import {
   loadSubmissions,
@@ -10,13 +11,38 @@ import {
   approveSubmission,
   exportSubmissionsJson,
 } from '@lib/submissions.js';
+import type { ApprovedSubmission } from '@lib/submissions.js';
 import { validatePersonalFile, validateSubmissions } from '@lib/schema.js';
 import { mergeThemes } from '@shared/utils/mergeThemes.js';
-const ThemesContext = createContext(null);
-export function ThemesProvider({ children }) {
-  const [baseThemes, setBaseThemes] = useState(null); // null = questions en cours de chargement (chunks lazy)
-  const [submissions, setSubmissions] = useState(() => validateSubmissions(loadSubmissions())); // en attente de validation
-  const [validees, setValidees] = useState(() => validateSubmissions(loadApproved())); // validées = jouables
+import type { Question, Submission, TaggedQuestion, Theme } from '@lib/types.js';
+
+/** Contrat du context consommé via useThemes(). */
+export interface ThemesContextValue {
+  /** null = questions encore en cours de chargement (chunks lazy). */
+  themes: Theme[] | null;
+  /** Liste plate de toutes les questions connues (détection de similarité). */
+  allQuestions: TaggedQuestion[];
+  /** Propositions en attente de validation manuelle (PAS jouables). */
+  submissions: Submission[];
+  /** Propositions validées par l'admin (jouables). */
+  validees: ApprovedSubmission[];
+  approvedCount: number;
+  addQuestion: (q: Submission) => void;
+  removeQuestion: (id: string) => void;
+  approveQuestion: (id: string) => void;
+  exporterValidees: () => string;
+}
+
+const ThemesContext = createContext<ThemesContextValue | null>(null);
+
+interface ThemesProviderProps {
+  children: ReactNode;
+}
+
+export function ThemesProvider({ children }: ThemesProviderProps) {
+  const [baseThemes, setBaseThemes] = useState<Theme[] | null>(null); // null = questions en cours de chargement (chunks lazy)
+  const [submissions, setSubmissions] = useState<Submission[]>(() => validateSubmissions(loadSubmissions())); // en attente de validation
+  const [validees, setValidees] = useState<ApprovedSubmission[]>(() => validateSubmissions(loadApproved())); // validées = jouables
 
   // Au chargement : on charge les questions (chunks lazy) puis on fusionne le
   // fichier questions-utilisateur.json par-dessus la base intégrée.
@@ -47,10 +73,10 @@ export function ThemesProvider({ children }) {
 
   // Thèmes finaux = base/fichier + questions VALIDÉES manuellement (localStorage).
   // Les questions merely « proposées » (en attente) ne sont PAS jouables.
-  const themes = useMemo(() => {
+  const themes = useMemo<Theme[] | null>(() => {
     if (!baseThemes) return null; // chargement en cours
-    const map = new Map(
-      baseThemes.map((t) => [
+    const map = new Map<string, Theme>(
+      baseThemes.map((t): [string, Theme] => [
         t.id,
         {
           ...t,
@@ -59,15 +85,16 @@ export function ThemesProvider({ children }) {
       ])
     );
     for (const s of validees) {
-      const question = {
+      const question: Question = {
         q: s.q,
         reponses: s.reponses,
         bonne: s.bonne,
         niveau: s.niveau,
       };
       if (s.info) question.info = s.info;
-      if (map.has(s.themeId)) {
-        map.get(s.themeId).questions.push(question);
+      const existant = map.get(s.themeId);
+      if (existant) {
+        existant.questions.push(question);
       } else {
         map.set(s.themeId, {
           id: s.themeId,
@@ -83,7 +110,7 @@ export function ThemesProvider({ children }) {
 
   // Liste plate de toutes les questions connues (base + validées + en attente)
   // pour la détection de similarité lors d'une proposition.
-  const allQuestions = useMemo(() => {
+  const allQuestions = useMemo<TaggedQuestion[]>(() => {
     if (!themes) return [];
     const fromThemes = themes.flatMap((t) =>
       t.questions.map((q) => ({
@@ -108,24 +135,25 @@ export function ThemesProvider({ children }) {
   // Actions sur les propositions (validation manuelle côté admin).
   const actions = useMemo(
     () => ({
-      addQuestion: (q) => {
+      addQuestion: (q: Submission) => {
         addSubmission(q);
         setSubmissions(loadSubmissions());
       },
-      removeQuestion: (id) => {
+      removeQuestion: (id: string) => {
         removeSubmission(id);
         setSubmissions(loadSubmissions());
       },
-      approveQuestion: (id) => {
+      approveQuestion: (id: string) => {
         approveSubmission(id);
         setSubmissions(loadSubmissions());
         setValidees(loadApproved());
       },
-      exporterValidees: () => exportSubmissionsJson(validees, themes),
+      // themes est non null ici : l'écran admin n'est rendu qu'après le chargement.
+      exporterValidees: () => exportSubmissionsJson(validees, themes!),
     }),
     [validees, themes]
   );
-  const value = {
+  const value: ThemesContextValue = {
     themes,
     allQuestions: allQuestions,
     submissions: submissions,
@@ -141,7 +169,7 @@ export function ThemesProvider({ children }) {
     children
   );
 }
-export function useThemes() {
+export function useThemes(): ThemesContextValue {
   const ctx = useContext(ThemesContext);
   if (!ctx) throw new Error('useThemes doit être utilisé sous <ThemesProvider>');
   return ctx;

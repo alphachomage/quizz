@@ -1,27 +1,53 @@
-// app/Ecrans.jsx — rendu des écrans de l'appli CONNECTÉE (routes lazy), extrait de App.jsx
-// pour rester sous le plafond de 200 L/composant (R6). App.jsx garde les early returns
+// app/Screens.tsx — rendu des écrans de l'appli CONNECTÉE (routes lazy), extrait de App.tsx
+// pour rester sous le plafond de 200 L/composant (R6). App.tsx garde les early returns
 // (chargement, admin, compte) et délègue ici le reste.
+import type { Dispatch, ReactElement, SetStateAction } from 'react';
 import { ROUTES } from './routes.js';
+import type { Navigation, NavConfig } from './useNavigation.js';
+import type { Celebration } from './useUnlock.js';
+import type { SessionStockee } from './contexts/SessionContext.js';
+import type { GameResult, Prefs, Submission, TaggedQuestion, Theme } from '@lib/types.js';
 import Tutorial from '@features/tutorial/Tutorial.jsx';
 import UnlockModal from '@features/unlock/UnlockModal.jsx';
+
+/** Props déléguées par App (Shell) au rendu des écrans connectés. */
+export interface ScreensProps {
+  nav: Navigation;
+  themes: Theme[] | null;
+  session: SessionStockee;
+  prefs: Prefs;
+  isGuest: boolean;
+  tutoOuvert: boolean;
+  closeTutorial: () => void;
+  deconnexion: () => void;
+  start: (cfg: NavConfig) => void;
+  finish: (res: GameResult) => void;
+  changerPrefs: (nouvelles: Prefs) => void;
+  setTutoOuvert: Dispatch<SetStateAction<boolean>>;
+  allQuestions: TaggedQuestion[];
+  addQuestion: (q: Submission) => void;
+  celebration: Celebration | null;
+  closeCelebration: () => void;
+}
+
 export default function Screens({
   nav,
   themes,
   session,
   prefs,
-  isGuest: isGuest,
+  isGuest,
   tutoOuvert,
-  closeTutorial: closeTutorial,
+  closeTutorial,
   deconnexion,
   start,
-  finish: finish,
+  finish,
   changerPrefs,
   setTutoOuvert,
-  allQuestions: allQuestions,
-  addQuestion: addQuestion,
+  allQuestions,
+  addQuestion,
   celebration,
-  closeCelebration: closeCelebration,
-}) {
+  closeCelebration,
+}: ScreensProps): ReactElement {
   const Home = ROUTES.home;
   const Game = ROUTES.game;
   const Results = ROUTES.result;
@@ -81,7 +107,7 @@ export default function Screens({
         <ROUTES.form
           themes={themes}
           allQuestions={allQuestions}
-          onAdd={(q) => {
+          onAdd={(q: Submission) => {
             addQuestion(q);
             nav.navigateTo('accueil');
           }}

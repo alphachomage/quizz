@@ -1,27 +1,31 @@
-// app/App.jsx — shell de l'application (~100 L) : providers + flags URL + routes.
-// Toute la logique d'état vit dans les hooks (useNavigation, useCelebration) et
-// les contexts (session, prefs, thèmes). Les composants d'écran sont dans routes.js.
+// app/App.tsx — shell de l'application (~100 L) : providers + flags URL + routes.
+// Toute la logique d'état vit dans les hooks (useNavigation, useUnlock) et
+// les contexts (session, prefs, thèmes). Les composants d'écran sont dans routes.ts.
 import { Suspense, useEffect, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
 import AppProviders from './AppProviders.jsx';
 import Screens from './Screens.jsx';
 import { ROUTES } from './routes.js';
 import { useNavigation } from './useNavigation.js';
+import type { NavConfig } from './useNavigation.js';
 import { useUnlock } from './useUnlock.js';
 import { readUrlFlags, clearUrlFlags, urlWithoutAdminFlag, redirigerVers } from './urlFlags.js';
 import { useSession } from './contexts/SessionContext.js';
 import { usePrefs } from './contexts/PrefsContext.js';
 import { useThemes } from './contexts/ThemesContext.js';
 import Tutorial from '@features/tutorial/Tutorial.jsx';
-// Deblocage rendu dans app/Ecrans.jsx
+// Deblocage rendu dans app/Screens.tsx
 
 import { hasSeenTutorial, markTutorialSeen, currentSession } from '@lib/accounts.js';
 import { resetScores, resetProgress } from '@lib/reset.js';
 import { persistResult } from '@features/results/persist.js';
 import { downloadJson } from '@shared/utils/downloadJson.js';
-export default function App() {
+import type { GameResult } from '@lib/types.js';
+
+export default function App(): ReactElement {
   return (
     <AppProviders>
-      {/* Les écrans de routes.js sont en React.lazy : pendant le chargement d'un
+      {/* Les écrans de routes.ts sont en React.lazy : pendant le chargement d'un
           chunk, on affiche un écran de chargement sobre (mêmes classNames que les
           autres écrans centrés). Grâce aux startTransition de useNavigation, à la
           navigation suivante c'est l'écran précédent qui reste visible à la place. */}
@@ -39,27 +43,23 @@ export default function App() {
     </AppProviders>
   );
 }
-function Shell() {
-  const { session, setSession, deconnexion, isGuest: isGuest } = useSession();
+
+function Shell(): ReactElement {
+  const { session, setSession, deconnexion, isGuest } = useSession();
   const { prefs, changerPrefs } = usePrefs();
   const {
     themes,
-    allQuestions: allQuestions,
-    submissions: submissions,
-    approvedCount: approvedCount,
-    addQuestion: addQuestion,
-    removeQuestion: removeQuestion,
-    approveQuestion: approveQuestion,
+    allQuestions,
+    submissions,
+    approvedCount,
+    addQuestion,
+    removeQuestion,
+    approveQuestion,
     exporterValidees,
   } = useThemes();
   const nav = useNavigation();
-  const {
-    celebration,
-    prendreSnapshot,
-    revelerNouveautes,
-    closeCelebration: closeCelebration,
-  } = useUnlock({
-    isGuest: isGuest,
+  const { celebration, prendreSnapshot, revelerNouveautes, closeCelebration } = useUnlock({
+    isGuest,
     prefs,
   });
 
@@ -90,15 +90,15 @@ function Shell() {
       setTutoOuvert(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, isAdmin]);
-  function closeTutorial() {
+  function closeTutorial(): void {
     if (tutorialKey) markTutorialSeen(tutorialKey);
     setTutoOuvert(false);
   }
-  function start(cfg) {
+  function start(cfg: NavConfig): void {
     prendreSnapshot(); // badges/titres débloqués AVANT la partie
     nav.start(cfg);
   }
-  function finish(res) {
+  function finish(res: GameResult): void {
     // Persistance de la partie UNE FOIS ici (record, historique, XP, classement,
     // streak du jour) : le composant Resultat ne fait plus que lire res.persistance.
     const persistance = persistResult(res, isGuest, prefs);
@@ -108,7 +108,7 @@ function Shell() {
       persistance,
     });
   }
-  function quitterAdmin() {
+  function quitterAdmin(): void {
     // Recharge la page sans ?admin=1 : les exclusions admin sont alors retirées du pool.
     redirigerVers(urlWithoutAdminFlag());
   }

@@ -1,10 +1,24 @@
-// PrefsContext.js — préférences d'affichage + accessibilité, consommées via usePrefs().
+// PrefsContext.ts — préférences d'affichage + accessibilité, consommées via usePrefs().
 // Pose les classes de body (thème clair / daltonien / dys) à chaque changement.
 import { createContext, createElement, useContext, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 import { loadPrefs, savePrefs } from '@lib/prefs.js';
-const PrefsContext = createContext(null);
-export function PrefsProvider({ children }) {
-  const [prefs, setPrefs] = useState(() => loadPrefs());
+import type { Prefs } from '@lib/types.js';
+
+/** Contrat du context consommé via usePrefs(). */
+export interface PrefsContextValue {
+  prefs: Prefs;
+  changerPrefs: (nouvelles: Prefs) => void;
+}
+
+const PrefsContext = createContext<PrefsContextValue | null>(null);
+
+interface PrefsProviderProps {
+  children: ReactNode;
+}
+
+export function PrefsProvider({ children }: PrefsProviderProps) {
+  const [prefs, setPrefs] = useState<Prefs>(() => loadPrefs());
 
   // Accessibilité : les classes de body pilotent le thème clair, le mode daltonien et le mode dys.
   useEffect(() => {
@@ -16,7 +30,7 @@ export function PrefsProvider({ children }) {
       b.classList.remove('theme-clair', 'daltonien', 'dys');
     };
   }, [prefs]);
-  const changerPrefs = (nouvelles) => {
+  const changerPrefs = (nouvelles: Prefs) => {
     savePrefs(nouvelles);
     setPrefs(nouvelles);
   };
@@ -31,7 +45,7 @@ export function PrefsProvider({ children }) {
     children
   );
 }
-export function usePrefs() {
+export function usePrefs(): PrefsContextValue {
   const ctx = useContext(PrefsContext);
   if (!ctx) throw new Error('usePrefs doit être utilisé sous <PrefsProvider>');
   return ctx;
