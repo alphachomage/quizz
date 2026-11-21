@@ -2,9 +2,7 @@
 // (localStorage). Le mot de passe n'est JAMAIS stocké en clair : on stocke un
 // hash SHA-256 salé (crypto.subtle, dispo en local sur http://localhost).
 import { normalizePseudo, pseudoValide } from './moderation.js';
-
-const KEY_ACCOUNTS = 'voltquiz_comptes';
-const KEY_SESSION = 'voltquiz_session';
+import { read, write, remove, STORAGE_KEYS } from './storage.js';
 
 // Guard crypto : crypto.subtle n'existe que dans un contexte sécurisé (HTTPS ou
 // localhost). Sur HTTP non-local, on renvoie une erreur claire au lieu de planter.
@@ -13,15 +11,11 @@ export function contexteSecurise() {
 }
 
 export function loadAccounts() {
-  try {
-    return JSON.parse(localStorage.getItem(KEY_ACCOUNTS)) || [];
-  } catch {
-    return [];
-  }
+  return read(STORAGE_KEYS.accounts, []) || [];
 }
 
-function sauverComptes(list) {
-  localStorage.setItem(KEY_ACCOUNTS, JSON.stringify(list));
+function saveAccounts(list) {
+  write(STORAGE_KEYS.accounts, list);
 }
 
 export function listPseudos() {
@@ -64,8 +58,8 @@ export async function createAccount({ pseudo, email, mdp }) {
     avatar: null,
     date: new Date().toISOString(),
   });
-  sauverComptes(accounts);
-  localStorage.setItem(KEY_SESSION, JSON.stringify({ pseudo, avatar: null }));
+  saveAccounts(accounts);
+  write(STORAGE_KEYS.session, { pseudo, avatar: null });
   return { ok: true, pseudo };
 }
 
@@ -79,13 +73,13 @@ export async function connect(pseudo, mdp) {
   if (!account) return { ok: false, erreur: 'Aucun compte avec ce pseudo sur ce PC.' };
   const hash = await hashPassword(mdp || '', account.sel);
   if (hash !== account.hash) return { ok: false, erreur: 'Mot de passe incorrect.' };
-  localStorage.setItem(KEY_SESSION, JSON.stringify({ pseudo: account.pseudo, avatar: account.avatar || null }));
+  write(STORAGE_KEYS.session, { pseudo: account.pseudo, avatar: account.avatar || null });
   return { ok: true, pseudo: account.pseudo };
 }
 
 export function currentSession() {
   try {
-    return JSON.parse(localStorage.getItem(KEY_SESSION));
+    return read(STORAGE_KEYS.session, null);
   } catch {
     return null;
   }
@@ -98,7 +92,7 @@ export function startGuest() {
   let alea = '';
   for (let i = 0; i < 7; i++) alea += caracteres[Math.floor(Math.random() * caracteres.length)];
   const pseudo = `user-${alea}`;
-  localStorage.setItem(KEY_SESSION, JSON.stringify({ pseudo, guest: true, avatar: null }));
+  write(STORAGE_KEYS.session, { pseudo, guest: true, avatar: null });
   return pseudo;
 }
 
@@ -122,22 +116,21 @@ export function setAvatar(pseudo, dataUrl) {
   const c = accounts.find((x) => x.pseudoNormalise === normalizePseudo(pseudo));
   if (c) {
     c.avatar = dataUrl;
-    sauverComptes(accounts);
+    saveAccounts(accounts);
   }
   const s = currentSession();
-  if (s) localStorage.setItem(KEY_SESSION, JSON.stringify({ ...s, avatar: dataUrl }));
+  if (s) write(STORAGE_KEYS.session, { ...s, avatar: dataUrl });
 }
 
 export function disconnect() {
-  localStorage.removeItem(KEY_SESSION);
+  remove(STORAGE_KEYS.session);
 }
 
 // Tuto de bienvenue : affiché UNE SEULE FOIS par compte (première connexion).
-const KEY_TUTORIAL = 'voltquiz_tuto_vu';
 
 export function hasSeenTutorial(pseudo) {
   try {
-    const vu = JSON.parse(localStorage.getItem(KEY_TUTORIAL)) || {};
+    const vu = read(STORAGE_KEYS.tutorial, {}) || {};
     return !!vu[normalizePseudo(pseudo)];
   } catch {
     return false;
@@ -146,9 +139,9 @@ export function hasSeenTutorial(pseudo) {
 
 export function markTutorialSeen(pseudo) {
   try {
-    const vu = JSON.parse(localStorage.getItem(KEY_TUTORIAL)) || {};
+    const vu = read(STORAGE_KEYS.tutorial, {}) || {};
     vu[normalizePseudo(pseudo)] = true;
-    localStorage.setItem(KEY_TUTORIAL, JSON.stringify(vu));
+    write(STORAGE_KEYS.tutorial, vu);
   } catch {
     /* stockage indisponible : on ignore */
   }

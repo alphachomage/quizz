@@ -1,6 +1,8 @@
 // api.js — client HTTP de l'API VoltQuiz (V2). Aujourd'hui l'appli fonctionne
 // 100 % en local ; quand le flag VOLTQUIZ_STOCKAGE=d1 est posé, lib/storage.js
 // bascule lire/ecrire sur ces appels. Zéro dépendance, fetch natif.
+import { currentOrigin } from './nav.js';
+
 const BASE = '/api';
 
 async function appel(chemin, options = {}) {
@@ -40,6 +42,7 @@ export const apiJoinRoom = (id, pseudo) =>
   appel('/room/rejoindre', { method: 'POST', body: JSON.stringify({ id, pseudo }) });
 export const apiRoom = (id) => appel(`/room/${encodeURIComponent(id)}`);
 export function apiDuelSocket(roomId) {
-  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-  return new WebSocket(`${proto}//${location.host}/api/duel/${encodeURIComponent(roomId)}`);
+  // Origine ws déduite de l'origine courante (via nav.js, seul habilité à lire l'URL — R5).
+  const wsOrigin = currentOrigin().replace(/^http/, 'ws');
+  return new WebSocket(`${wsOrigin}/api/duel/${encodeURIComponent(roomId)}`);
 }

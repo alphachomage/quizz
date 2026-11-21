@@ -4,7 +4,7 @@
 import { useMemo, useState } from 'react';
 
 import { currentAvatar } from '@lib/accounts.js';
-import { prochainBadge } from '@lib/badges.js';
+import { badgeStats, prochainBadge } from '@lib/badges.js';
 import { displayedTitle } from '@lib/titles.js';
 import {
   recordKey,
@@ -33,9 +33,12 @@ export function useHome({ themes, pseudo, onDemarrer }) {
   const [profilOuvert, setProfilOuvert] = useState(false);
 
   // Stockage lu de façon réactive (une seule clé = un useStockage).
-  const records = useStorage(STORAGE_KEYS.records, {}) || {};
-  const xp = useStorage(STORAGE_KEYS.xp, {}) || {};
-  const games = useStorage(STORAGE_KEYS.games, []) || [];
+  const recordsRaw = useStorage(STORAGE_KEYS.records, {});
+  const xpRaw = useStorage(STORAGE_KEYS.xp, {});
+  const gamesRaw = useStorage(STORAGE_KEYS.games, []);
+  const records = useMemo(() => recordsRaw || {}, [recordsRaw]);
+  const xp = useMemo(() => xpRaw || {}, [xpRaw]);
+  const games = useMemo(() => gamesRaw || [], [gamesRaw]);
 
   // Pseudos déjà rencontrés (suggestions dans le duel, façon « amis » en local)
   const knownPlayers = useMemo(
@@ -72,7 +75,7 @@ export function useHome({ themes, pseudo, onDemarrer }) {
   // Record du quizz du jour (clé = date du jour) pour afficher « déjà joué » sur la carte.
   const dailyRecord = records[recordKey('quotidien', todayDate(), 'tous')] || 0;
   // Prochain badge à portée (effet « reviens-y » sur l'accueil), recalculé si les données changent.
-  const nextBadge = useMemo(() => prochainBadge(), [games, records, xp]);
+  const nextBadge = useMemo(() => prochainBadge(badgeStats({ games, records, xp })), [games, records, xp]);
   // Série de jours du quizz du jour (logo éclair).
   const dailyStreak = currentDailyStreak().account;
   // Titre choisi dans l'onglet Badges & titres, affiché sous la barre d'XP.

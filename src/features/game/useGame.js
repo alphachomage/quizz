@@ -50,11 +50,12 @@ export function useGame({ config, prefs, onTerminer }) {
   const { time, setTemps } = useTimer(phase === 'question', SECONDS_PER_QUESTION, () => repondre(null));
 
   // Ambiance sonore de la partie (nappe douce), selon le réglage « Musique de fond ».
+  const musicOn = !!(prefs && prefs.music !== false);
   useEffect(() => {
-    if (prefs && prefs.music !== false) startMusic(prefs);
+    if (musicOn) startMusic(prefs);
     else stopMusic();
     return () => stopMusic();
-  }, [prefs && prefs.music]);
+  }, [musicOn, prefs]);
 
   // Bip chaque seconde quand il reste 3 s ou moins.
   const seconde = Math.ceil(time);

@@ -13,7 +13,7 @@ import { computeGameStats, pctNiveau } from './gameStats.js';
 import { useShare } from './useShare.js';
 import ShareModal from './components/ShareModal.jsx';
 
-export default function Results({ result, prefs, themes, estInvite, onRejouer, onAccueil }) {
+export default function Results({ result, themes, estInvite, onRejouer, onAccueil }) {
   const { mode, niveau, theme, players, scores, bonnes, total, details } = result;
   const persistance = result.persistance || {};
   const {

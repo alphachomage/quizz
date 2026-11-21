@@ -16,7 +16,7 @@ import ReportButton from './components/ReportButton.jsx';
 
 export default function Game({ config, prefs, onTerminer }) {
   const p = useGame({ config, prefs, onTerminer });
-  const { mode, niveau, theme, players, question, phase, index, questions, time } = p;
+  const { mode, theme, players, question, phase, index, questions, time } = p;
 
   // --- Valeurs d'affichage dérivées ---
   const pct = (time / SECONDS_PER_QUESTION) * 100;
@@ -42,9 +42,12 @@ export default function Game({ config, prefs, onTerminer }) {
   const remainingPoints = pointsFor(true, SECONDS_PER_QUESTION - time, bonus);
   const couleurBarre = basePoints >= 17 ? '#2fd27a' : basePoints >= 13 ? '#FFD60A' : '#ff5d73';
   // En mode « tous thèmes », chaque question affiche son propre thème.
-  const currentTheme = question.themeNom
-    ? { nom: question.themeNom, couleur: question.themeCouleur, icone: question.themeIcone }
-    : theme;
+  const currentTheme = useMemo(
+    () => (question.themeNom
+      ? { nom: question.themeNom, couleur: question.themeCouleur, icone: question.themeIcone }
+      : theme),
+    [question, theme]
+  );
   const pAvecManches = useMemo(
     () => ({ ...p, manche, bonus, avecManches, currentTheme }),
     [p, manche, bonus, avecManches, currentTheme]

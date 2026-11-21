@@ -3,6 +3,7 @@
 // Chaque badge = { id, nom, desc (condition), icone, test(stats) -> bool }.
 // Pas de design par badge : on réutilise les icônes SVG existantes (Icone.jsx).
 
+import { read, write, STORAGE_KEYS } from './storage.js';
 import { loadGames } from './game-history.js';
 import { loadRecords } from './records.js';
 import { loadXp, themeLevel } from './xp.js';
@@ -10,10 +11,10 @@ import { loadApproved, loadSubmissions } from './submissions.js';
 import { currentDailyStreak } from './streak.js';
 
 // Statistiques agrégées servant aux conditions des badges.
-export function badgeStats() {
-  const games = loadGames();
-  const records = loadRecords();
-  const xp = loadXp();
+export function badgeStats(data) {
+  const games = data?.games ?? loadGames();
+  const records = data?.records ?? loadRecords();
+  const xp = data?.xp ?? loadXp();
 
   let repondues = 0;
   let bonnes = 0;
@@ -68,7 +69,7 @@ export function badgeStats() {
 // (clé posée dans storage.js — literal ici pour éviter l'import circulaire).
 function resetSoumissions() {
   try {
-    const o = JSON.parse(localStorage.getItem('voltquiz_reset_soumissions') || '{}');
+    const o = read(STORAGE_KEYS.resetSubmissions, {}) || {};
     return { proposees: o.proposees || 0, validees: o.validees || 0 };
   } catch {
     return { proposees: 0, validees: 0 };
@@ -147,8 +148,7 @@ const PROGRES_BADGES = {
 };
 
 // Le badge verrouillé le PLUS PROCHE de son déblocage (effet « reviens-y » sur l'accueil).
-export function prochainBadge() {
-  const s = badgeStats();
+export function prochainBadge(s = badgeStats()) {
   let best = null;
   for (const b of computeBadges()) {
     if (b.debloque) continue;
@@ -163,11 +163,10 @@ export function prochainBadge() {
 }
 
 // --- Badge favori affiché sur la carte profil (1 badge choisi parmi les débloqués) ---
-const KEY_FAVORITE_BADGE = 'voltquiz_badge_favori';
 
 export function favoriteBadgeId() {
   try {
-    return localStorage.getItem(KEY_FAVORITE_BADGE);
+    return read(STORAGE_KEYS.favoriteBadge, null);
   } catch {
     return null;
   }
@@ -175,7 +174,7 @@ export function favoriteBadgeId() {
 
 export function setFavoriteBadge(id) {
   const b = computeBadges().find((x) => x.id === id);
-  if (b && b.debloque) localStorage.setItem(KEY_FAVORITE_BADGE, id);
+  if (b && b.debloque) write(STORAGE_KEYS.favoriteBadge, id);
 }
 
 // Badge favori si toujours débloqué, sinon null.

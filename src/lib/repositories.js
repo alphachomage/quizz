@@ -68,9 +68,9 @@ export const GamesRepo = {
   },
 };
 
-export const SubmissionsRepo = repoSimple(STORAGE_KEYS.soumissions, []);
-export const ApprovedRepo = repoSimple(STORAGE_KEYS.validees, []);
-export const ReportsRepo = repoSimple(STORAGE_KEYS.signales, []);
+export const SubmissionsRepo = repoSimple(STORAGE_KEYS.submissions, []);
+export const ApprovedRepo = repoSimple(STORAGE_KEYS.approved, []);
+export const ReportsRepo = repoSimple(STORAGE_KEYS.reports, []);
 export const SuggestionsRepo = {
   ...repoSimple(STORAGE_KEYS.suggestions, []),
   add: (suggestion) => {
@@ -79,7 +79,7 @@ export const SuggestionsRepo = {
     write(STORAGE_KEYS.suggestions, list.slice(0, 200)); // 200 max
   },
 };
-export const ExcludedRepo = repoSimple(STORAGE_KEYS.exclues, []);
+export const ExcludedRepo = repoSimple(STORAGE_KEYS.excluded, []);
 export const SeriesRepo = repoSimple(STORAGE_KEYS.series, {});
 export const DailyStreakRepo = {
   ...repoSimple(STORAGE_KEYS.dailyStreak, { account: 0, dernierJour: null }),
@@ -90,8 +90,8 @@ export const DailyStreakRepo = {
 };
 export const TutorialRepo = repoSimple(STORAGE_KEYS.tutorial, []);
 export const FavoriteBadgeRepo = repoSimple(STORAGE_KEYS.favoriteBadge, null);
-export const ActiveTitleRepo = repoSimple(STORAGE_KEYS.titreActif, null);
-export const ResetSubmissionsRepo = repoSimple(STORAGE_KEYS.resetSoum, null);
+export const ActiveTitleRepo = repoSimple(STORAGE_KEYS.activeTitle, null);
+export const ResetSubmissionsRepo = repoSimple(STORAGE_KEYS.resetSubmissions, null);
 
 // Reset global (?reset=1 / ?resetcompte=1) : passe par les repos.
 export function toutVider() {

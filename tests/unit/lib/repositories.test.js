@@ -31,8 +31,8 @@ describe('repositories : contrat clé -> repo', () => {
     expect(RecordsRepo.key).toBe(STORAGE_KEYS.records);
     expect(XpRepo.key).toBe(STORAGE_KEYS.xp);
     expect(GamesRepo.key).toBe(STORAGE_KEYS.games);
-    expect(SubmissionsRepo.key).toBe(STORAGE_KEYS.soumissions);
-    expect(ApprovedRepo.key).toBe(STORAGE_KEYS.validees);
+    expect(SubmissionsRepo.key).toBe(STORAGE_KEYS.submissions);
+    expect(ApprovedRepo.key).toBe(STORAGE_KEYS.approved);
   });
 
   it('tout()/sauver()/vider() lisent et écrivent la bonne clé', () => {

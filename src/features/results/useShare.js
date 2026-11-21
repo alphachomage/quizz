@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { textePartage, appUrl, liensPartage, storyImage, shareNative, copierPressePapier } from '@lib/share.js';
 
 export function useShare({ result }) {
-  const { mode, niveau, players, scores, bonnes, total } = result;
+  const { niveau, players, scores, bonnes, total } = result;
   const [partageOuvert, setPartageOuvert] = useState(false);
   const [messagePartage, setMessagePartage] = useState('');
   const dailyStreak = result.persistance?.dailyStreak || 0;

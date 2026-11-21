@@ -55,7 +55,6 @@ export default function Screens({
       {nav.screen === 'resultat' && nav.result && nav.config && (
         <Results
           result={nav.result}
-          prefs={prefs}
           themes={themes}
           estInvite={estInvite}
           onRejouer={() => nav.allerVers('partie')}

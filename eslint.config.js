@@ -53,7 +53,7 @@ export default [
       'no-console': 'error',
       // R5 : localStorage/sessionStorage en ERREUR partout (le bloc src/lib/** plus
       // bas ré-autorise la couche stockage, qui est le point d'accès légitime).
-      'no-restricted-globals': ['error', 'localStorage', 'sessionStorage'],
+      'no-restricted-globals': ['error', 'localStorage', 'sessionStorage', 'location'],
     },
   },
 
@@ -159,9 +159,10 @@ export default [
   },
 
   // ===== R5 : points d'accès autorisés aux globales "bas niveau" =====
-  // lib/ (stockage + nav) et app/urlFlags.js sont les SEULS modules autorisés.
+  // UNIQUEMENT la couche stockage/nav et les flags d'URL — tout le reste de lib/ est
+  // désormais soumis à no-restricted-globals (localStorage interdit hors storage.js).
   {
-    files: ['src/lib/**/*.{js,jsx}', 'src/app/urlFlags.js'],
+    files: ['src/lib/storage.js', 'src/lib/nav.js', 'src/app/urlFlags.js'],
     rules: {
       'no-restricted-globals': 'off',
       'no-restricted-properties': 'off',

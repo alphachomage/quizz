@@ -28,17 +28,17 @@ export const STORAGE_KEYS = {
   records: 'voltquiz_records',
   xp: 'voltquiz_xp',
   games: 'voltquiz_parties',
-  soumissions: 'voltquiz_soumissions',
-  validees: 'voltquiz_validees',
-  signales: 'voltquiz_signales',
+  submissions: 'voltquiz_soumissions',
+  approved: 'voltquiz_validees',
+  reports: 'voltquiz_signales',
   suggestions: 'voltquiz_suggestions',
-  exclues: 'voltquiz_exclues',
+  excluded: 'voltquiz_exclues',
   series: 'voltquiz_dernieres_series',
   dailyStreak: 'voltquiz_streak_quotidien',
   tutorial: 'voltquiz_tuto_vu',
   favoriteBadge: 'voltquiz_badge_favori',
-  titreActif: 'voltquiz_titre_actif',
-  resetSoum: 'voltquiz_reset_soumissions',
+  activeTitle: 'voltquiz_titre_actif',
+  resetSubmissions: 'voltquiz_reset_soumissions',
 };
 
 // Abonnés prévenus à chaque écriture (pour useSyncExternalStore via le hook).

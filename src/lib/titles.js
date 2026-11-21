@@ -4,6 +4,7 @@
 // Le joueur choisit SON titre affiché sous la barre d'XP du profil (persisté en localStorage).
 // Titre verrouillé = affiché « ??? » dans l'onglet (nom caché).
 
+import { read, write, STORAGE_KEYS } from './storage.js';
 import { loadXp, themeLevel } from './xp.js';
 import { badgeStats } from './badges.js';
 
@@ -93,11 +94,10 @@ export function prochainTitre() {
 }
 
 // --- Titre affiché sous la barre d'XP du profil ---
-const KEY_TITLE = 'voltquiz_titre_actif';
 
 export function activeTitleId() {
   try {
-    return localStorage.getItem(KEY_TITLE);
+    return read(STORAGE_KEYS.activeTitle, null);
   } catch {
     return null;
   }
@@ -106,7 +106,7 @@ export function activeTitleId() {
 // Sélectionne le titre à afficher (uniquement s'il est débloqué).
 export function setActiveTitle(id) {
   const t = computeTitles().find((x) => x.id === id);
-  if (t && t.debloque) localStorage.setItem(KEY_TITLE, id);
+  if (t && t.debloque) write(STORAGE_KEYS.activeTitle, id);
 }
 
 // Titre à afficher : celui choisi s'il est encore débloqué, sinon le plus haut palier débloqué.
