@@ -26,4 +26,4 @@ Chiffres du corpus : toujours `npm run count:questions`, jamais un nombre en dur
 
 Guides à la racine : `README.md` (guide client pas à pas), `COMMENT-AJOUTER-MES-QUESTIONS.md`
 (format des questions), `DEPLOIEMENT-CLOUDFLARE.md` (mise en ligne), `PALETTES.md`
-(palette « vivante » archivée -> voir `docs/design.md`), `COMPARAISON-QUIZUP.md` (veille).
+(palette « vivante » archivée -> voir `docs/design.md`), `docs/veille-quizup.md` (veille QuizUp, archivée).

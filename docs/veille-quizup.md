@@ -1,7 +1,7 @@
 # Comparaison QuizUp vs VoltQuiz
 
 Document de recherche — projet **VoltQuiz** (`C:\Users\Joris\Downloads\QUIZZWALLAH`)
-Sources web citées en fin de document. Recherches effectuées le //.
+Sources web citées en fin de document.
 
 ---
 
@@ -128,7 +128,7 @@ Sources web citées en fin de document. Recherches effectuées le //.
 ## . Sources
 
 - Wikipedia — *QuizUp* : https://en.wikipedia.org/wiki/QuizUp (mécaniques : manches, s, pts max, bonus ×, pts max ; > thèmes ; M users / Md matchs / pays en mai ; min/jour ; rachat Glu Mobile ; arrêt )
-- Wikipedia — *Plain Vanilla Games* : https://en.wikipedia.org/wiki/Plain_Vanilla_Games (fondation , « fastest-growing iOS game ever », fermeture //, acquisition par Glu Mobile le // pour , M$)
+- Wikipedia — *Plain Vanilla Games* : https://en.wikipedia.org/wiki/Plain_Vanilla_Games (fondation , « fastest-growing iOS game ever », fermeture, acquisition par Glu Mobile pour un montant non communiqué)
 - Wikipedia — *QuizUp* (FR) : https://fr.wikipedia.org/wiki/QuizUp ( + thèmes, forum/chat)
 - TechCrunch, // — *QuizUp* launch : https://techcrunch.com////quizup/ (, M users en semaines, M matchs en jours)
 - TechCrunch, // — *Glu Mobile to invest up to $.M in QuizUp, with option to acquire* : https://techcrunch.com////glu-mobile-to-invest-up-to---million-in-quizup-with-option-to-acquire/
