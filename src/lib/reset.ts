@@ -1,4 +1,4 @@
-// reset.js — remises à zéro manuelles de la version d'essai (via URL, aucun bouton).
+// reset.ts — remises à zéro manuelles de la version d'essai (via URL, aucun bouton).
 // - ?reset=1        : scores, records, historique, XP, séries mémorisées.
 // - ?resetcompte=1  : reset TOTAL de la progression (streak du jour, badge favori,
 //   titre actif en plus). Les questions personal sont CONSERVÉES : un offset est posé
@@ -14,14 +14,15 @@ import {
   ResetSubmissionsRepo,
 } from './repositories.js';
 import { loadSubmissions, loadApproved } from './submissions.js';
-function resetScores() {
+
+function resetScores(): void {
   RecordsRepo.clear();
   GamesRepo.clear();
   XpRepo.clear();
   SeriesRepo.clear();
 }
 export { resetScores };
-function resetProgress() {
+function resetProgress(): void {
   resetScores();
   DailyStreakRepo.clear();
   FavoriteBadgeRepo.clear();

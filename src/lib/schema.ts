@@ -1,9 +1,11 @@
-// schema.js — validation (zod) de TOUTE donnée externe avant usage :
+// schema.ts — validation (zod) de TOUTE donnée externe avant usage :
 // fichier questions-utilisateur.json (fetch), soumissions/validées (localStorage,
 // modifiables à la main), thèmes personal. Garantit aussi bonne < reponses.length.
 // La base intégrée (src/data) est validée par tests/data/questions-schema.test.js.
 import { z } from 'zod';
-const LEVEL_IDS = ['facile', 'moyen', 'dur'];
+import type { Submission, Theme } from './types.js';
+
+const LEVEL_IDS = ['facile', 'moyen', 'dur'] as const;
 
 // Une question valide : texte non vide, 2 à 4 réponses non vides, bonne réponse
 // dans les limites, niveau connu, info optionnelle.
@@ -18,6 +20,11 @@ export const schemaQuestion = z
   .refine((q) => q.bonne < q.reponses.length, {
     message: 'bonne réponse hors limites (bonne < reponses.length requis)',
   });
+
+// Types déduits des schémas (z.infer) : structurellement alignés sur Question /
+// Theme / Submission de src/lib/types.ts.
+export type QuestionFromSchema = z.infer<typeof schemaQuestion>;
+
 const themeSchema = z.object({
   id: z
     .string()
@@ -33,11 +40,13 @@ const themeSchema = z.object({
     .optional(),
   questions: z.array(schemaQuestion).min(1),
 });
+export type ThemeFromSchema = z.infer<typeof themeSchema>;
 
 // Fichier questions-utilisateur.json complet.
 const personalFileSchema = z.object({
   themes: z.array(themeSchema).min(1),
 });
+export type PersonalFile = z.infer<typeof personalFileSchema>;
 
 // Une soumission stockée en localStorage (peut avoir été modifiée à la main).
 const submissionSchema = schemaQuestion.extend({
@@ -45,17 +54,18 @@ const submissionSchema = schemaQuestion.extend({
   id: z.string().optional(),
   date: z.string().optional(),
 });
+export type SubmissionFromSchema = z.infer<typeof submissionSchema>;
 
 // Valide un fichier personal (fetch) : renvoie les thèmes valides, ou null si invalide.
 // Les thèmes invalides sont ignorés plutôt que de faire planter l'appli.
-export function validatePersonalFile(data) {
+export function validatePersonalFile(data: unknown): { themes: Theme[] } | null {
   const result = personalFileSchema.safeParse(data);
   if (!result.success) return null;
   return result.data;
 }
 
 // Valide une liste de soumissions (localStorage) : ne garde que les valides.
-export function validateSubmissions(list) {
+export function validateSubmissions(list: unknown): Submission[] {
   if (!Array.isArray(list)) return [];
-  return list.filter((s) => submissionSchema.safeParse(s).success);
+  return list.filter((s): s is Submission => submissionSchema.safeParse(s).success);
 }

@@ -1,9 +1,10 @@
-// prefs.js — préférences d'affichage (sons / musique / animations / vibrations)
-// et accessibilité (thème clair, daltonien, dys). Stockées via lib/storage.js.
+// prefs.ts — préférences d'affichage (sons / musique / animations / vibrations)
+// et accessibilité (thème clair, daltonien, dys). Stockées via lib/storage.ts.
 import { PrefsRepo } from './repositories.js';
+import type { Prefs } from './types.js';
 
 // Toutes les préférences sont ACTIVÉES par défaut (sauf accessibilité, OFF).
-export function loadPrefs() {
+export function loadPrefs(): Prefs {
   const p = PrefsRepo.all();
   return {
     sons: p.sons !== false,
@@ -17,7 +18,7 @@ export function loadPrefs() {
     dys: p.dys === true,
   };
 }
-function savePrefs(prefs) {
+function savePrefs(prefs: Partial<Prefs>): void {
   PrefsRepo.save({
     sons: prefs.sons !== false,
     music: prefs.music !== false,

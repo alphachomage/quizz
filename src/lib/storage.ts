@@ -1,11 +1,11 @@
-// storage.js — UNIQUE point d'accès au stockage persistant (localStorage aujourd'hui,
+// storage.ts — UNIQUE point d'accès au stockage persistant (localStorage aujourd'hui,
 // demain Cloudflare D1 via fetch('/api/kv/<cle>') derrière le même contrat lire/ecrire).
 //
 // RÈGLES :
 // - Aucun composant ne touche localStorage directement : tout passe par lire/ecrire.
 // - Toutes les clés sont déclarées UNE FOIS ici (registre CLES).
 // - Ce module est PUR (aucun import react/DOM) : le hook réactif useStockage vit
-//   dans shared/hooks/useStockage.js.
+//   dans shared/hooks/useStorage.js.
 // - lire() tolère l'ancien format "chaîne brute" (non JSON) pour rester compatible
 //   avec les données écrites avant cette couche.
 //
@@ -17,7 +17,10 @@
 
 import { readUrlParam } from './nav.js';
 import { kvGet, kvSet } from './api.js';
-export const STORAGE_MODE = readUrlParam('stockage') === 'd1' ? 'd1' : 'local';
+
+/** Mode de stockage actif : 'local' (défaut, hors-ligne) ou 'd1' (synchro serveur V2). */
+export type StorageMode = 'local' | 'd1';
+export const STORAGE_MODE: StorageMode = readUrlParam('stockage') === 'd1' ? 'd1' : 'local';
 
 // Registre de TOUTES les clés de stockage de l'application.
 export const STORAGE_KEYS = {
@@ -38,27 +41,32 @@ export const STORAGE_KEYS = {
   favoriteBadge: 'voltquiz_badge_favori',
   activeTitle: 'voltquiz_titre_actif',
   resetSubmissions: 'voltquiz_reset_soumissions',
-};
+} as const;
+
+/** Valeur littérale d'une clé du registre (ex. 'voltquiz_prefs'). */
+export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
 
 // Abonnés prévenus à chaque écriture (pour useSyncExternalStore via le hook).
-const auditeurs = new Set();
-function subscribe(auditeur) {
+type Listener = () => void;
+const auditeurs = new Set<Listener>();
+function subscribe(auditeur: Listener): () => boolean {
   auditeurs.add(auditeur);
   return () => auditeurs.delete(auditeur);
 }
 export { subscribe };
-export function notify() {
+export function notify(): void {
   for (const a of auditeurs) a();
 }
 
-// Lit une valeur JSON. Retourne `defaut` si absente ou illisible.
+// Lit une valeur JSON. Retourne `defaultValue` si absente ou illisible.
 // Compat : si la valeur stockée n'est pas du JSON (ancien format brut), on la renvoie telle quelle.
-export function read(key, defaultValue = null) {
+// Le `string` dans le retour modélise justement ce cas de compatibilité.
+export function read<T = unknown>(key: string, defaultValue: T | null = null): T | string | null {
   try {
     const brut = localStorage.getItem(key);
     if (brut === null) return defaultValue;
     try {
-      return JSON.parse(brut);
+      return JSON.parse(brut) as T;
     } catch {
       return brut; // ancien format : chaîne brute
     }
@@ -69,7 +77,7 @@ export function read(key, defaultValue = null) {
 
 // Écrit une valeur (JSON) et prévient les abonnés.
 // En mode 'd1', pousse aussi au serveur en arrière-plan (best-effort, jamais bloquant).
-export function write(key, value) {
+export function write(key: string, value: unknown): void {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch {
@@ -85,7 +93,7 @@ export function write(key, value) {
 
 // En mode 'd1' : pré-charge TOUTES les clés depuis le serveur (/api/kv) dans le cache
 // local, puis notifie. Appelé UNE FOIS au démarrage de l'appli (main.jsx).
-export async function preloadFromServer() {
+export async function preloadFromServer(): Promise<void> {
   if (STORAGE_MODE !== 'd1') return;
   await Promise.all(
     Object.values(STORAGE_KEYS).map(async (key) => {
@@ -103,7 +111,7 @@ export async function preloadFromServer() {
 }
 
 // Supprime une clé et prévient les abonnés.
-export function remove(key) {
+export function remove(key: string): void {
   try {
     localStorage.removeItem(key);
   } catch {
