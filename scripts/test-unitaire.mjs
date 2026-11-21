@@ -12,9 +12,9 @@ globalThis.localStorage = {
 };
 globalThis.window = { location: { search: '' } };
 
-const L = await import('./src/lib/index.js');
-const B = await import('./src/lib/badges.js');
-const T = await import('./src/lib/titles.js');
+const L = await import('../src/lib/index.js');
+const B = await import('../src/lib/badges.js');
+const T = await import('../src/lib/titles.js');
 
 let ok = 0, ko = 0;
 function check(nom, cond) {
@@ -22,7 +22,7 @@ function check(nom, cond) {
 }
 
 // --- 1) tirerSerie : diversité des sujets ---
-const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'src', 'data');
+const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'src', 'data');
 const files = fs.readdirSync(dir).filter((f) => /^questions-.*\.js$/.test(f));
 const themes = [];
 for (const f of files) {

@@ -1,4 +1,5 @@
-# CI VoltQuiz — à chaque push/PR : lint + tests + build ; sur main : déploiement auto.
+# CI VoltQuiz — à chaque push/PR : lint + tests + couverture + build.
+# Sur main (push) : déploiement PROD auto. Sur PR : déploiement PREVIEW (env preview).
 # Secrets requis sur le dépôt GitHub : CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID.
 name: CI
 
@@ -19,20 +20,58 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run lint:arch
-      - run: npm test
+      - run: npm run test:unit
+      - run: npm run test:data
       - run: npm run test:legacy
       - run: npm run build
 
-  deploy:
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  integration: # chaque flux de partie en job parallèle
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        game: [game-solo, game-duel, game-survival, game-daily]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx vitest run tests/integration/${{ matrix.game }}.test.jsx
+
+  coverage: # seuils appliqués (vitest.config.js) -> échoue si la couverture baisse
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run test:coverage
+      - uses: actions/upload-artifact@v4
+        with: { name: coverage, path: coverage/ }
+
+  deploy-preview: # PR -> environnement preview Cloudflare (V2_ENABLED=true)
+    if: github.event_name == 'pull_request'
     needs: lint-test-build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run deploy:preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  deploy: # push sur main -> PROD
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [lint-test-build, integration, coverage]
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: npm run deploy
         env:
