@@ -23,10 +23,10 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./tests/setup.js'],
-    include: ['tests/**/*.test.{js,jsx}'],
+    include: ['tests/**/*.test.{js,jsx,ts,tsx}'],
     coverage: {
       reporter: ['text', 'json-summary'],
-      include: ['src/**/*.{js,jsx}'],
+      include: ['src/**/*.{js,jsx,ts,tsx}'],
       exclude: ['src/data/**', 'src/main.jsx'], // data = validé par test:data ; main = bootstrap PWA
       // Seuils appliqués en CI (npm run test:coverage) : plancher actuel, à relever
       // (ratchet) quand la couverture monte. Ne jamais les baisser.

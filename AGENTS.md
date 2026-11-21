@@ -21,7 +21,10 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
 1. **UI et contenus en français. AUCUN emoji** (ni UI ni doc, y compris README) : icônes
    SVG uniquement dans `src/shared/ui/Icon.jsx`.
 2. **Code en anglais, commentaires en français** (uniquement quand une décision n'est pas
-   limpide — ne pas commenter l'évident). Exception documentée : les **clés du schéma de
+   limpide — ne pas commenter l'évident). **TypeScript partout** (`src/**/*.{ts,tsx}`) :
+   migration en cours, `checkJs: false` tant que tout n'est pas converti ; `npm run typecheck`
+   (`tsc --noEmit`, strict sur les fichiers TS) doit rester vert. Les 263 fichiers
+   `src/data/questions-*.js` restent en JS pur (type déclaré dans `src/data/questions.d.ts`). Exception documentée : les **clés du schéma de
    données** (`q`, `reponses`, `bonne`, `niveau`, `info`, `nom`, `icone`, `couleur`) restent
    en français car c'est le format JSON documenté pour le client
    (`docs/questions.md`) et les clés localStorage existantes.
@@ -46,7 +49,8 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
 7. **Ne JAMAIS toucher** à `node_modules/`, `dist/`, `backups/`, `.wrangler/`, et ne jamais
    modifier les 263 fichiers `src/data/questions-*.js` (ajout uniquement).
 8. **Pas de nouvelle librairie externe** sans justification écrite (pour + contre) dans
-   la PR/commit — le projet tourne avec très peu de dépendances (react, react-dom, zod).
+   la PR/commit — dépendances : react, react-dom, zod (runtime) + tooling (vite, vitest,
+   eslint, typescript, wrangler...). Décision TS documentée dans `docs/methodologie.md`.
 9. **Tests : couverture appliquée**. `npm run test:coverage` échoue si les seuils de
    `vitest.config.js` ne sont pas atteints (plancher actuel, à relever — ratchet).
    Tester UNE feature seule : `npm run test:game`, `test:game:duel`, `test:scoring`…
@@ -54,8 +58,8 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
     local servi (4173) ; `npm run deploy:preview` = Cloudflare **preview** (V2 activée) ;
     `npm run deploy` = Cloudflare **prod**. Ne jamais déployer la prod depuis une branche
     non reviewée.
-11. **Avant chaque merge** : `npm run lint` + `npm run lint:arch` + `npm test` +
-    `npm run build` + `npx wrangler deploy --dry-run` tous verts.
+11. **Avant chaque merge** : `npm run lint` + `npm run typecheck` + `npm run lint:arch` +
+    `npm test` + `npm run build` + `npx wrangler deploy --dry-run` tous verts.
 12. **Review de chaque étape/commit** (par l'agent parent) : relire le **code** (règles
     ci-dessus + bonnes pratiques React) **ET la documentation** (docs/ à jour ? chemins
     de fichiers valides ? chiffres à jour via `npm run count:questions` ? cohérence avec
@@ -76,6 +80,7 @@ npm run preview          # PROD buildée servie en local -> http://localhost:417
 npm run deploy:preview   # déploiement Cloudflare PREVIEW (env preview, V2_ENABLED=true)
 npm run deploy           # déploiement Cloudflare PROD
 npm run lint             # eslint (0 erreur, 0 warning) ; lint:arch = pas de cycle
+npm run typecheck        # tsc --noEmit (strict sur les .ts/.tsx)
 npm test                 # tous les tests Vitest ; test:game = flux solo seul (~2 s)
 npm run test:coverage    # couverture avec seuils appliqués (échoue si en dessous)
 npm run count:questions  # comptage réel du corpus (thèmes, questions, doublons)

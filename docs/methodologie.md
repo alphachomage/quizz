@@ -25,7 +25,23 @@
 - [ ] pas de nouvelle librairie sans **justification écrite** (pour + contre)
 - [ ] la prod répond après merge : `curl -s https://voltquiz.joris-leo81.workers.dev/api/ping`
 
-## Décisions techniques documentées
+## Décisions techniques
+
+### 2026-11 — Passage à TypeScript (validé)
+
+**Décision** : tout `src/` passe en `.ts`/`.tsx` (migration incrémentale : `lib/` d'abord,
+puis `shared/`, `app/`, puis `features/`), `tsc --noEmit` strict en CI (`npm run typecheck`).
+Les 263 fichiers `src/data/questions-*.js` restent en JS (règle 7) avec le type déclaré dans
+`src/data/questions.d.ts` ; le schéma zod (`src/lib/schema.ts`) reste la source de vérité
+runtime (`z.infer` donne les types).
+
+| Pour | Contre |
+|---|---|
+| Bugs attrapés à la compilation (props, champs renommés) — utile avec la V2 (API D1) et Capacitor | Coût de migration (~109 fichiers app) |
+| Code auto-documenté pour le prochain développeur (non-dev assisté par agent) | +2 devDeps (`typescript`, `typescript-eslint`) — aucun impact runtime (Vite/esbuild) |
+| zod déjà présent : `z.infer` = types du format JSON sans doublon | `strict` activé progressivement (ratchet), `checkJs: false` pendant la transition |
+
+ documentées
 
 Quand une décision n'est pas évidente, la documenter (dans le doc concerné ou la PR) :
 contexte, options envisagées, **pour/contre de chaque option**, décision retenue, date.

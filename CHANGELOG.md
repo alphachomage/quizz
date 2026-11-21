@@ -5,6 +5,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 
 ## Non publié
 
+### Ajouté
+- **TypeScript** : `tsconfig.json` (strict sur les `.ts`/`.tsx`, `allowJs`+`checkJs:false` pendant la migration incrémentale), `src/vite-env.d.ts`, `npm run typecheck` (`tsc --noEmit`) + étape CI, bloc `typescript-eslint` dans `eslint.config.js` (règles R1-R5 étendues aux `.ts`/`.tsx`), `typescript@^5` + `typescript-eslint@^8` en devDeps (Vite compile le TS nativement, zéro impact runtime). Migration par couches : `lib/` -> `data/questions.d.ts` -> `shared/`/`app/` -> `features/`. Les 263 fichiers `questions-*.js` restent en JS. Décision documentée dans `docs/methodologie.md`.
+
+
 ### Nettoyé
 - Stubs racine supprimés (`COMMENT-AJOUTER-MES-QUESTIONS.md`, `DEPLOIEMENT-CLOUDFLARE.md`, `PALETTES.md`) : le contenu vivait déjà dans `docs/questions.md`, `docs/deploiement.md` et `docs/design.md` (palette « vivante » archivée réintégrée dans `docs/design.md`). Références mises à jour (README, AGENTS.md, docs/INDEX.md).
 - CI : étape « Vérifier les secrets Cloudflare » avant chaque deploy (message d'erreur explicite si `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` manquent) + procédure pas à pas des secrets dans `docs/deploiement.md`.

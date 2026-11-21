@@ -13,7 +13,7 @@
     "deploy:preview": "vite build && wrangler deploy --env preview",
     "deploy": "vite build && wrangler deploy",
     "lint": "eslint src tests worker.js worker-api.js durable-objects scripts vite.config.js vitest.config.js eslint.config.js",
-    "lint:arch": "madge --circular --extensions js,jsx src/",
+    "lint:arch": "madge --circular --extensions js,jsx,ts,tsx src/",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -31,7 +31,8 @@
     "test:game:daily": "vitest run tests/integration/game-daily.test.jsx",
     "test:draw": "vitest run tests/unit/lib/draw.test.js",
     "test:similarity": "vitest run tests/unit/lib/similarity.test.js",
-    "test:accounts": "vitest run tests/unit/lib/accounts.test.js"
+    "test:accounts": "vitest run tests/unit/lib/accounts.test.js",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -53,6 +54,8 @@
     "jsdom": "^31.0.1",
     "madge": "^8.0.0",
     "prettier": "^3.10.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.73.0",
     "vite": "^6.4.6",
     "vite-plugin-pwa": "^1.3.0",
     "vitest": "^5.1.1",

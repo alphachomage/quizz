@@ -9,6 +9,7 @@ npm run test:game:duel / :survival / :daily   # game-duel / game-survival / game
 npm run test:unit        # tests/unit/**  ·  npm run test:integration  ·  npm run test:data
 npm run test:scoring / :draw / :similarity / :accounts
 npm run test:coverage    # couverture avec seuils appliqués (échoue si en dessous)
+npm run typecheck        # tsc --noEmit (strict TS) — aussi en CI
 ```
 
 ## Couverture (seuils + ratchet)
@@ -42,7 +43,7 @@ tests/
 ## Règles
 
 - `vitest.config.js` : jsdom, globals, alias `@*` identiques à Vite, AUCUN plugin
-  Cloudflare/PWA en test.
+  Cloudflare/PWA en test. Fichiers `.test.{js,jsx,ts,tsx}` acceptés (migration TS en cours).
 - Écrans en React.lazy : dans les tests d'intégration, pré-charger le mock
   `@data/questions.js` + les 9 écrans avec les VRAIS timers AVANT `vi.useFakeTimers()`,
   puis attendre en avançant les timers (`vi.advanceTimersByTimeAsync`) — sinon les
