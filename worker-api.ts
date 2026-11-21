@@ -1,10 +1,12 @@
-// worker-api.js — mini-routeur /api/* de VoltQuiz (zéro dépendance), importé par worker.js.
+/* global Env */
+// worker-api.ts — mini-routeur /api/* de VoltQuiz (zéro dépendance), importé par worker.ts.
 // Préparé pour la V2 (comptes serveur, parties, records, XP, rooms de duel) :
 // toutes les routes sont fonctionnelles si les bindings D1/KV/DO sont configurés.
-// En attendant, le client reste 100 % local (voir src/lib/api.js + lib/storage.js).
+// En attendant, le client reste 100 % local (voir src/lib/api.ts + lib/storage.ts).
+// Types du runtime (Env, D1Database, KVNamespace...) : durable-objects/workers-env.d.ts.
 
 // --- Helpers ---
-function json(data, status = 200, extra = {}) {
+function json(data: unknown, status = 200, extra: Record<string, string> = {}): Response {
   return Response.json(data, {
     status,
     headers: {
@@ -13,7 +15,7 @@ function json(data, status = 200, extra = {}) {
     },
   });
 }
-function jsonError(error, status = 400) {
+function jsonError(error: string, status = 400): Response {
   return json(
     {
       ok: false,
@@ -24,32 +26,32 @@ function jsonError(error, status = 400) {
 }
 const MAX_BODY = 64 * 1024; // 64 Ko max par body JSON (anti-gros payloads)
 
-async function readBody(request) {
+async function readBody(request: Request): Promise<Record<string, unknown> | null> {
   try {
     const text = await request.text();
     if (text.length > MAX_BODY) return null; // -> 400 côté appelant
-    return JSON.parse(text);
+    return JSON.parse(text) as Record<string, unknown>;
   } catch {
     return null;
   }
 }
 
 // --- CORS : autorise same-origin + les origines de ALLOWED_ORIGINS (env) ---
-function originesAutorisees(env, url) {
+function originesAutorisees(env: Env, url: URL): string[] {
   const list = String(env.ALLOWED_ORIGINS || '')
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
   return [url.origin, ...list];
 }
-function corsAutorise(request, env, url) {
+function corsAutorise(request: Request, env: Env, url: URL): boolean {
   const origin = request.headers.get('Origin');
   if (!origin) return true; // même origine / pas de navigateur (curl, Capacitor natif)
   return originesAutorisees(env, url).includes(origin);
 }
-function entetesCors(request, env, url) {
+function entetesCors(request: Request, env: Env, url: URL): Record<string, string> {
   const origin = request.headers.get('Origin');
-  const h = {};
+  const h: Record<string, string> = {};
   if (origin && corsAutorise(request, env, url)) {
     h['Access-Control-Allow-Origin'] = origin;
     h['Vary'] = 'Origin';
@@ -61,7 +63,7 @@ function entetesCors(request, env, url) {
 }
 
 // Comparaison de hash en temps constant (évite l'oracle de timing sur le login).
-function hashesEqual(a, b) {
+function hashesEqual(a: string, b: string): boolean {
   const A = new TextEncoder().encode(a);
   const B = new TextEncoder().encode(b);
   if (A.length !== B.length) return false;
@@ -69,7 +71,7 @@ function hashesEqual(a, b) {
 }
 
 // --- KV générique (sync du stockage local -> serveur) ---
-async function routeKv(request, env, key) {
+async function routeKv(request: Request, env: Env, key: string): Promise<Response> {
   if (!key) return jsonError('Clé manquante.', 400);
   if (request.method === 'GET') {
     const brut = env.DB ? await kvViaD1Get(env, key) : null;
@@ -92,11 +94,13 @@ async function routeKv(request, env, key) {
 }
 
 // KV stocké dans D1 (table kv) si le binding DB existe.
-async function kvViaD1Get(env, key) {
-  const row = await env.DB.prepare('SELECT valeur FROM kv WHERE cle = ?').bind(key).first();
-  return row ? JSON.parse(row.value) : null;
+async function kvViaD1Get(env: Env, key: string): Promise<unknown> {
+  const row = await env.DB.prepare('SELECT valeur FROM kv WHERE cle = ?')
+    .bind(key)
+    .first<{ valeur: string }>();
+  return row ? JSON.parse(row.valeur) : null;
 }
-async function kvViaD1Set(env, key, value) {
+async function kvViaD1Set(env: Env, key: string, value: unknown): Promise<void> {
   await env.DB.prepare(
     'INSERT INTO kv (cle, valeur) VALUES (?, ?) ON CONFLICT(cle) DO UPDATE SET valeur = excluded.valeur'
   )
@@ -106,7 +110,7 @@ async function kvViaD1Set(env, key, value) {
 
 // --- Auth : inscription / connexion (PBKDF2 210 000 itérations côté serveur) ---
 const PBKDF2_ITERATIONS = 210000;
-async function pbkdf2(password, sel) {
+async function pbkdf2(password: string, sel: string): Promise<string> {
   const data = new TextEncoder().encode(`${sel}::${password}`);
   const key = await crypto.subtle.importKey('raw', data, 'PBKDF2', false, ['deriveBits']);
   const bits = await crypto.subtle.deriveBits(
@@ -121,14 +125,29 @@ async function pbkdf2(password, sel) {
   );
   return [...new Uint8Array(bits)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
-function normalizePseudo(p) {
+function normalizePseudo(p: unknown): string {
   return String(p || '')
     .toLowerCase()
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9]/g, '');
 }
-async function routeAuth(request, env, action) {
+// Ligne de la table D1 `comptes` (schéma : migrations/0001_init.sql).
+interface CompteRow {
+  pseudo: string;
+  pseudo_normalise: string;
+  email: string | null;
+  hash: string;
+  sel: string;
+  hash_version: number;
+  cree_le: string | null;
+  dernier_login: string | null;
+}
+async function routeAuth(
+  request: Request,
+  env: Env,
+  action: string | undefined
+): Promise<Response> {
   const body = await readBody(request);
   if (!body || !body.pseudo || !body.password)
     return jsonError('Pseudo et mot de passe requis.', 400);
@@ -136,7 +155,7 @@ async function routeAuth(request, env, action) {
   const pseudo = String(body.pseudo).slice(0, 20);
   const n = normalizePseudo(pseudo);
   if (action === 'inscription') {
-    if (!body.email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(body.email))
+    if (!body.email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(body.email)))
       return jsonError('E-mail invalide.', 400);
     if (String(body.password).length < 8)
       return jsonError('Mot de passe : 8 caractères minimum.', 400);
@@ -145,7 +164,7 @@ async function routeAuth(request, env, action) {
       .first();
     if (exists) return jsonError('Ce pseudo est déjà pris.', 409);
     const sel = crypto.randomUUID();
-    const hash = await pbkdf2(body.password, sel);
+    const hash = await pbkdf2(String(body.password), sel);
     const now = new Date().toISOString();
     await env.DB.prepare(
       'INSERT INTO comptes (pseudo, pseudo_normalise, email, hash, sel, hash_version, cree_le, dernier_login) VALUES (?, ?, ?, ?, ?, 2, ?, ?)'
@@ -160,9 +179,9 @@ async function routeAuth(request, env, action) {
   if (action === 'connexion') {
     const account = await env.DB.prepare('SELECT * FROM comptes WHERE pseudo_normalise = ?')
       .bind(n)
-      .first();
+      .first<CompteRow>();
     if (!account) return jsonError('Aucun compte avec ce pseudo.', 404);
-    const hash = await pbkdf2(body.password, account.sel);
+    const hash = await pbkdf2(String(body.password), account.sel);
     if (!hashesEqual(hash, account.hash)) return jsonError('Mot de passe incorrect.', 401);
     await env.DB.prepare('UPDATE comptes SET dernier_login = ? WHERE pseudo = ?')
       .bind(new Date().toISOString(), account.pseudo)
@@ -176,7 +195,7 @@ async function routeAuth(request, env, action) {
 }
 
 // --- Parties / records / XP (D1) ---
-async function routeGames(request, env, url) {
+async function routeGames(request: Request, env: Env, url: URL): Promise<Response> {
   if (!env.DB) return jsonError('Base non configurée.', 503);
   if (request.method === 'GET') {
     const pseudo = url.searchParams.get('pseudo');
@@ -219,7 +238,12 @@ async function routeGames(request, env, url) {
   }
   return jsonError('Méthode non supportée.', 405);
 }
-async function routeRecords(request, env, url, key) {
+async function routeRecords(
+  request: Request,
+  env: Env,
+  url: URL,
+  key: string | null
+): Promise<Response> {
   if (!env.DB) return jsonError('Base non configurée.', 503);
   if (request.method === 'GET' && key) {
     const row = await env.DB.prepare('SELECT * FROM records WHERE cle = ?').bind(key).first();
@@ -243,12 +267,18 @@ async function routeRecords(request, env, url, key) {
   }
   return jsonError('Méthode non supportée.', 405);
 }
-async function routeXp(request, env, url, pseudo, themeId) {
+async function routeXp(
+  request: Request,
+  env: Env,
+  url: URL,
+  pseudo: string | null,
+  themeId: string | null
+): Promise<Response> {
   if (!env.DB) return jsonError('Base non configurée.', 503);
   if (request.method === 'GET' && pseudo && themeId) {
     const row = await env.DB.prepare('SELECT xp FROM xp WHERE pseudo_theme = ?')
       .bind(`${pseudo}:${themeId}`)
-      .first();
+      .first<{ xp: number }>();
     return json({
       ok: true,
       xp: row ? row.xp : 0,
@@ -271,7 +301,12 @@ async function routeXp(request, env, url, pseudo, themeId) {
 }
 
 // --- Rooms de duel éphémères (KV) ---
-async function routeRoom(request, env, url, segment) {
+async function routeRoom(
+  request: Request,
+  env: Env,
+  url: URL,
+  segment: string | null
+): Promise<Response> {
   if (!env.ROOMS) return jsonError('KV ROOMS non configuré.', 503);
   if (request.method === 'POST' && !segment) {
     const body = await readBody(request);
@@ -315,7 +350,7 @@ async function routeRoom(request, env, url, segment) {
 
 // --- Compteurs en mémoire de l'isolate (remis à zéro au redémarrage du Worker) ---
 // Exposés via /api/stats pour le tableau de bord admin : rapports CSP reçus et
-// hits du rate-limit (429, incrémenté dans worker.js).
+// hits du rate-limit (429, incrémenté dans worker.ts).
 const internalCounters = {
   rapportsCsp: 0,
   hits429: 0,
@@ -323,7 +358,7 @@ const internalCounters = {
 
 // --- Routeur principal ---
 export { internalCounters };
-export async function apiRouter(request, env, url) {
+export async function apiRouter(request: Request, env: Env, url: URL): Promise<Response> {
   const p = url.pathname; // ex: /api/kv/xxx
 
   // Preflight CORS (appli mobile Capacitor = autre origine).

@@ -1,16 +1,27 @@
-/* global WebSocketPair */
-// durable-objects/DuelRoom.js — Durable Object "room de duel" (V2).
+/* global WebSocketPair, DurableObjectState, Env */
+// durable-objects/DuelRoom.ts — Durable Object "room de duel" (V2).
 // Une room = 2 joueurs + état de la partie, persisté par Cloudflare.
 // Le duel temps réel passe par WebSocket : /api/duel/<roomId> -> ce DO.
 // Préparé maintenant ; activé quand la V2 démarre (pas de migration de données avant).
+// Types du runtime (DurableObjectState, Env, WebSocketPair...) :
+// workers-env.d.ts, même dossier.
+
+// Connexion WebSocket active d'un joueur de la room.
+interface PlayerConnection {
+  ws: WebSocket;
+  pseudo: string;
+}
 
 export class DuelRoom {
-  constructor(state, env) {
+  state: DurableObjectState;
+  env: Env;
+  players: PlayerConnection[];
+  constructor(state: DurableObjectState, env: Env) {
     this.state = state; // stockage isolé du DO (SQLite côté Cloudflare)
     this.env = env;
     this.players = []; // connexions WebSocket actives
   }
-  async fetch(request) {
+  async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
 
     // WebSocket : /api/duel/<roomId>
@@ -38,7 +49,7 @@ export class DuelRoom {
       return Response.json({
         ok: true,
         players: this.players.map((j) => j.pseudo),
-        etat: (await this.state.storage.get('etat')) || 'attente',
+        etat: (await this.state.storage.get<string>('etat')) || 'attente',
       });
     }
 
@@ -65,7 +76,7 @@ export class DuelRoom {
   }
 
   // Appelé à chaque message WebSocket reçu d'un joueur.
-  async webSocketMessage(ws, message) {
+  async webSocketMessage(ws: WebSocket, message: string): Promise<void> {
     try {
       const data = JSON.parse(message);
       this.diffuser(
@@ -82,14 +93,14 @@ export class DuelRoom {
   }
 
   // Connexion fermée : on retire le joueur.
-  async webSocketClose(ws) {
+  async webSocketClose(ws: WebSocket): Promise<void> {
     this.players = this.players.filter((j) => j.ws !== ws);
     this.diffuser({
       type: 'presence',
       players: this.players.map((j) => j.pseudo),
     });
   }
-  diffuser(message, sauf = null) {
+  diffuser(message: Record<string, unknown>, sauf: WebSocket | null = null): void {
     const text = JSON.stringify(message);
     for (const j of this.players) {
       if (j.ws !== sauf) {

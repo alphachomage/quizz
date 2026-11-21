@@ -1,14 +1,17 @@
-// worker.js — point d'entrée Cloudflare Worker de VoltQuiz.
+/* global Env, ExecutionContext */
+// worker.ts — point d'entrée Cloudflare Worker de VoltQuiz.
 //
 // Avec `run_worker_first = true` (wrangler.toml), CHAQUE requête passe par ici :
 // le Worker sert les fichiers statiques via le binding ASSETS (dist/client),
 // pose les en-têtes de sécurité sur CHAQUE réponse (CSP d'abord en Report-Only,
 // voir CSP_REPORT_ONLY dans wrangler.toml), gère le cache, et route l'API
-// (/api/*, voir worker-api.js : V2 = comptes D1, rooms de duel KV/DO).
+// (/api/*, voir worker-api.ts : V2 = comptes D1, rooms de duel KV/DO).
+// Les types du runtime (Env, Fetcher, D1Database...) sont déclarés localement dans
+// durable-objects/workers-env.d.ts (pas de @cloudflare/workers-types, règle 8).
 
 // --- En-têtes de sécurité appliqués à CHAQUE réponse ---
 // estProd = variable ENVIRONMENT + hôte non local (localhost = dev Vite/HMR).
-function securityHeaders(env, hote = '') {
+function securityHeaders(env: Env, hote = ''): Headers {
   const isLocal = /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(hote);
   const isProd = !isLocal && (env.ENVIRONMENT || 'production') === 'production';
   // En dev (localhost), Vite HMR a besoin de 'unsafe-inline'/'unsafe-eval' pour les scripts.
@@ -49,7 +52,7 @@ function securityHeaders(env, hote = '') {
 }
 
 // Pose les en-têtes de sécurité + cache sur une réponse existante.
-function secure(answer, env, cacheControl, hote = '') {
+function secure(answer: Response, env: Env, cacheControl?: string, hote = ''): Response {
   // Réponse 101 (WebSocket upgrade) : on recrée la Response SANS body mais en copiant
   // la propriété webSocket, sinon le socket est perdu côté workerd.
   if (answer.status === 101 && answer.webSocket) {
@@ -73,8 +76,8 @@ function secure(answer, env, cacheControl, hote = '') {
 }
 
 // --- Rate limiting simple en mémoire (30 req/min/IP sur /api/*) ---
-const fenetres = new Map(); // ip -> [timestamps]
-function rateLimite(bee, ip) {
+const fenetres = new Map<string, number[]>(); // ip -> [timestamps]
+function rateLimite(bee: Env, ip: string): boolean {
   const now = Date.now();
   const fenetre = 60000;
   const list = (fenetres.get(ip) || []).filter((t) => now - t < fenetre);
@@ -86,11 +89,11 @@ function rateLimite(bee, ip) {
 }
 import { apiRouter, internalCounters } from './worker-api.js';
 export default {
-  async fetch(request, env, _ctx) {
+  async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
     const ip = request.headers.get('cf-connecting-ip') || 'inconnu';
 
-    // --- API : rate limiting (30 req/min/IP) puis routeur /api/* (worker-api.js) ---
+    // --- API : rate limiting (30 req/min/IP) puis routeur /api/* (worker-api.ts) ---
     if (url.pathname.startsWith('/api/')) {
       if (!rateLimite(env, ip)) {
         internalCounters.hits429 += 1; // exposé via /api/stats (tableau de bord admin)
