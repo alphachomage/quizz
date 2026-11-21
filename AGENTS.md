@@ -61,9 +61,14 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
 11. **Avant chaque merge** : `npm run lint` + `npm run typecheck` + `npm run lint:arch` +
     `npm test` + `npm run build` + `npx wrangler deploy --dry-run` tous verts.
 12. **Review de chaque étape/commit** (par l'agent parent) : relire le **code** (règles
-    ci-dessus + bonnes pratiques React) **ET la documentation** (docs/ à jour ? chemins
-    de fichiers valides ? chiffres à jour via `npm run count:questions` ? cohérence avec
-    le code ?) avant de merger.
+    ci-dessus + bonnes pratiques React) **ET la documentation** avant de merger, avec la
+    checklist détaillée de `docs/methodologie.md` (« Checklist avant chaque merge ») :
+    - chemins de fichiers cités **existent sur le disque** (spot-check `ls`) ;
+    - chiffres du corpus **jamais en dur** : régénérés via `npm run count:questions` ;
+    - commandes citées **testées** (`npm run test:game`, `db:migrate:local`...) ;
+    - extensions à jour (`.ts`/`.tsx`, sauf `questions-*.js`/`theme-manifest.js`) ;
+    - cohérence avec le code (ex. `V2_ENABLED`, modes de stockage, flags URL) ;
+    - `CHANGELOG.md` a une entrée, `docs/INDEX.md` reflète les docs courantes.
 13. Git : une branche `feature/<phase>-<slug>` par étape depuis `origin/main`, worktree
     dédié par sous-agent, review du diff (code + docs), merge sur `main`, push.
     Commits conventionnels (`feat:` `fix:` `perf:` `refactor:` `docs:` `chore:`).

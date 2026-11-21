@@ -6,6 +6,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 ## Non publié
 
 ### Modifié
+- Review doc renforcée : règle 12 d'`AGENTS.md` pointe désormais vers une sous-checklist doc détaillée dans `docs/methodologie.md` (chemins existants, chiffres via `count:questions`, commandes testées, extensions TS, cohérence flags/`V2_ENABLED`, CHANGELOG + INDEX à jour, grep des refs périmées). Dérive corrigée au passage : `docs/methodologie.md` disait encore `V2_ENABLED=false` en prod.
+
+
+### Modifié
 - Passe de cohérence TypeScript sur toutes les docs agents (`AGENTS.md`, `README.md`, `docs/**`) : extensions de fichiers corrigées (`.js`/`.jsx` -> `.ts`/`.tsx`, `Icone` -> `Icon`), `?stockage=d1` -> `?stockage=local` (le mode `d1` est désormais le défaut), `worker.js`/`worker-api.js` -> `.ts`. Les anciens MD racine dupliqués (`COMMENT-AJOUTER-MES-QUESTIONS.md`, `DEPLOIEMENT-CLOUDFLARE.md`) avaient déjà été supprimés : le contenu canonique est dans `docs/questions.md` et `docs/deploiement.md`.
 
 

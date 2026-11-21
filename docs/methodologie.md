@@ -19,9 +19,14 @@
       pas de `linear-gradient`, pas de `console.log` dans `src/`, pas d'accès
       `localStorage`/`location` hors `lib/storage.ts`/`lib/nav.ts`/`app/urlFlags.ts`,
       pas de `dangerouslySetInnerHTML`/`eval`, plafond 200 L souple respecté
-- [ ] **documentation relue** : chemins de fichiers valides (spot-check avec `ls`),
-      chiffres du corpus via `npm run count:questions` (jamais en dur), commandes
-      testées (`npm run test:game`...), cohérence avec le code
+- [ ] **documentation relue** (obligatoire, même pour un commit « code seul ») :
+      - [ ] chaque chemin de fichier cité existe sur le disque (spot-check `ls`) ;
+      - [ ] chiffres du corpus jamais écrits en dur -> `npm run count:questions` ;
+      - [ ] commandes citées testées telles quelles (`npm run test:game`, `db:migrate:local`…) ;
+      - [ ] extensions à jour (`.ts`/`.tsx` ; seuls `questions-*.js` et `theme-manifest.js` restent en JS) ;
+      - [ ] cohérence avec le code : flags URL (`?stockage=local`), `V2_ENABLED`, ports, clés localStorage ;
+      - [ ] `CHANGELOG.md` à jour (entrée « Non publié »), `docs/INDEX.md` cohérent ;
+      - [ ] grep de salissures : `worker.js`, `storage.js`, `.jsx`, `ci.yml`, `test:legacy`, `?stockage=d1`, `V2_ENABLED=false`
 - [ ] pas de nouvelle librairie sans **justification écrite** (pour + contre)
 - [ ] la prod répond après merge : `curl -s https://voltquiz.joris-leo81.workers.dev/api/ping`
 
@@ -55,7 +60,7 @@ les choix techniques en les expliquant.
 
 `npm run dev` (local 5173), `npm run preview` (build servie en local 4173),
 `npm run deploy:preview` (Cloudflare preview, V2_ENABLED=true),
-`npm run deploy` (prod, V2_ENABLED=false) — détail dans `docs/deploiement.md`.
+`npm run deploy` (prod, V2_ENABLED=true) — détail dans `docs/deploiement.md`.
 
 ## Subagents / parallélisation
 
