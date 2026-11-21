@@ -1,6 +1,8 @@
 # Ajouter mes propres questions
 
-Voir **docs/questions.md** (format JSON, proposition depuis l'appli avec détection de
-similarité + validation manuelle, fichier public/questions-utilisateur.json, visu admin ?admin=1).
+Voir **docs/questions.md** : format JSON (clés en français : `q`, `reponses`, `bonne`,
+`niveau`, `info`), proposition depuis l'appli avec détection de similarité + validation
+manuelle (`?admin=1`), ou fichier `public/questions-utilisateur.json` (validé au chargement).
 
-Guide historique complet : racine du dépôt, section « Questions ».
+Compteur officiel du corpus (thèmes, questions, doublons) : `npm run count:questions`.
+Ne jamais modifier les fichiers existants de `src/data/questions-*.js` : ajout uniquement.

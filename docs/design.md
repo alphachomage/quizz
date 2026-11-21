@@ -3,13 +3,13 @@
 ## Règles absolues
 
 - **Aucun emoji** nulle part (UI ni doc). Toutes les icônes sont des SVG 24x24 dans
-  `src/shared/ui/Icone.jsx` (duotone : forme pleine `currentColor` + détails découpés
+  `src/shared/ui/Icon.jsx` (duotone : forme pleine `currentColor` + détails découpés
   via `--couleur` du parent).
 - **Palette 60-30-10, AUCUN dégradé** (`linear-gradient` interdit, vérifié par grep en review).
   60 % fond, 30 % cartes, 10 % accent. Texte foncé `#141414` sur les fonds accent.
-- UI 100 % en français.
+- UI 100 % en français. Code en anglais, commentaires en français.
 
-## Palette ACTIVE « sobre » (dans `:root` et `body.theme-clair` de `src/styles.css`)
+## Palette ACTIVE « sobre » (`:root` de `src/styles/tokens.css`, `body.theme-clair` de `src/styles/palette.css`)
 
 | Rôle | Sombre | Clair |
 |---|---|---|
@@ -19,28 +19,34 @@
 | texte | `--texte #ECECEC`, `--texte-doux #9C9C94` | `--texte #1A1A1A`, `--texte-doux #6E6E6E` |
 | bordure | `rgba(255,255,255,0.14)` | `rgba(0,0,0,0.14)` |
 
-Manifest WPA + `theme-color` : `#000000`. Ombres neutres `rgba(0,0,0,...)`.
+Manifest PWA + `theme-color` : `#000000`. Ombres neutres `rgba(0,0,0,...)`.
 
 La palette « vivante » d'avant (violet `#A48DFF` / bleu `#2D5BFF` / jaune `#FFD60A`, avec
 ses ombres `rgba(139,92,246,...)`) est archivée dans `PALETTES.md` : pour la restaurer,
-recopier ses valeurs dans `:root` et `body.theme-clair` de `styles.css`.
+recopier ses valeurs dans `:root` de `src/styles/tokens.css` et `body.theme-clair` de
+`src/styles/palette.css`.
 
-## Couleurs des 12 thèmes (identiques dans les deux palettes — ne jamais inventer)
+## Couleurs des 14 thèmes en fichiers (identiques dans les deux palettes — ne jamais inventer)
 
-| Thème (id) | Couleur |
-|---|---|
-| cinema-series | `#fb7185` |
-| cuisine | `#fb923c` |
-| culture-generale | `#818cf8` |
-| espace | `#818cf8` |
-| geographie | `#2dd4bf` |
-| histoire | `#a3e635` |
-| jeux-videos | `#38bdf8` |
-| mangas-animes | `#f472b6` |
-| musique | `#a78bfa` |
-| mythologie | `#fbbf24` |
-| sciences | `#2dd4bf` |
-| sport | `#4ade80` |
+12 thèmes actifs + 2 retirés du jeu (insolite, pop-culture — questions reclassées,
+voir `docs/questions.md`). Source de vérité : `npm run count:questions` + `src/data/theme-manifest.js`.
+
+| Thème (id) | Couleur | Dans le jeu |
+|---|---|---|
+| cinema-series | `#fb7185` | oui |
+| cuisine | `#fb923c` | oui |
+| culture-generale | `#818cf8` | oui |
+| espace | `#818cf8` | oui |
+| geographie | `#2dd4bf` | oui |
+| histoire | `#a3e635` | oui |
+| insolite | `#fb923c` | non (retiré) |
+| jeux-videos | `#38bdf8` | oui |
+| mangas-animes | `#f472b6` | oui |
+| musique | `#a78bfa` | oui |
+| mythologie | `#fbbf24` | oui |
+| pop-culture | `#e879f9` | non (retiré) |
+| sciences | `#2dd4bf` | oui |
+| sport | `#4ade80` | oui |
 
 ## Mise en page actuelle (« épuré »)
 

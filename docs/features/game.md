@@ -1,14 +1,15 @@
-# Feature partie
+# Feature partie (game)
 
-`src/features/partie/` :
+`src/features/game/` :
 
-- `Partie.jsx` (~85 L, render seul) + `composants/` : BarreHaut, MinuteurLigne, Reponses,
-  Feedback, PasseAppareil, Confettis, SignalerBouton.
-- `usePartie.js` : toute la logique (états, `repondre`/`suivant`/`pret`/`finir`/
+- `Game.jsx` (~88 L, render seul) + `components/` : TopBar, TimerLine, Answers,
+  Feedback, PassDevice, Confetti, ReportButton.
+- `useGame.js` : toute la logique (états, `repondre`/`suivant`/`pret`/`finir`/
   `signalerQuestion`, effets musique/tick/auto-advance, guard pool vide).
-- `useMinuteur.js` : 1 setState/s, `onExpire` à 0.
-- `tirage.js` (pur) : `tirerQuestionsPartie(config)` + `avecReponsesAleatoires` + `taguerTheme`.
-- `constantes.js` : palettes de réponses (dont Okabe-Ito daltonien) et confettis.
+- `useTimer.js` : 1 setState/s, `onExpire` à 0.
+- `draw.js` (pur) : `drawGameQuestions(config)` + `withShuffledAnswers` + `taguerTheme`.
+- `constants.js` : palettes de réponses (`ANSWER_COLORS`, Okabe-Ito `COLORBLIND_COLORS`)
+  et confettis (`CONFETTI_COLORS`).
 
-Règles du jeu : voir `docs/jeu.md`. Tests : `tests/integration/partie-*.test.jsx` +
-`tests/unit/features/partie-tirage.test.js`.
+Règles du jeu : voir `docs/jeu.md`. Tests : `tests/integration/game-*.test.jsx` +
+`tests/unit/features/game-draw.test.js`.
