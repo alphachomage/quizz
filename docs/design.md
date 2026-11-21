@@ -21,10 +21,15 @@
 
 Manifest PWA + `theme-color` : `#000000`. Ombres neutres `rgba(0,0,0,...)`.
 
-La palette « vivante » d'avant (violet `#A48DFF` / bleu `#2D5BFF` / jaune `#FFD60A`, avec
-ses ombres `rgba(139,92,246,...)`) est archivée dans `PALETTES.md` : pour la restaurer,
-recopier ses valeurs dans `:root` de `src/styles/tokens.css` et `body.theme-clair` de
-`src/styles/palette.css`.
+### Palette « vivante » archivée (pour plus tard)
+
+Pour restaurer l'ancienne palette « vivante », recopier ces valeurs dans `:root` de
+`src/styles/tokens.css` et `body.theme-clair` de `src/styles/palette.css` :
+sombre = cartes `#A48DFF` / `#8f78f0`, clair = cartes `#2D5BFF` / `#1f47d6`,
+accent `#FFD60A` (les deux), texte sombre `#f5f2ea` / `#b3ad9e`, texte clair `#141414` /
+`#5c5c5c`, texte sur carte `#ffffff` / `rgba(255,255,255,0.78)`, bordures
+`rgba(255,255,255,0.22)` / `rgba(0,0,0,0.25)`, et ombres violettes
+`rgba(139,92,246,0.4/0.5/0.22/0.16/0.12)` + `drop-shadow(0 8px 30px rgba(139,92,246,0.5))`.
 
 ## Couleurs des 14 thèmes en fichiers (identiques dans les deux palettes — ne jamais inventer)
 

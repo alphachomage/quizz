@@ -24,6 +24,5 @@ Chiffres du corpus : toujours `npm run count:questions`, jamais un nombre en dur
 | Écran résultats | `docs/features/results.md` | modifier les résultats | `features/results/` : persist (depuis App.terminer), partage |
 | Admin | `docs/features/admin.md` | `?admin=1` | signalements, soumissions, suggestions, exclusions, compteur |
 
-Guides à la racine : `README.md` (guide client pas à pas), `COMMENT-AJOUTER-MES-QUESTIONS.md`
-(format des questions), `DEPLOIEMENT-CLOUDFLARE.md` (mise en ligne), `PALETTES.md`
-(palette « vivante » archivée -> voir `docs/design.md`), `docs/veille-quizup.md` (veille QuizUp, archivée).
+Guides à la racine : `README.md` seul (guide client pas à pas). Cette doc + `docs/veille-quizup.md`
+(veille QuizUp, archivée) sont dans `docs/`.

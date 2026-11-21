@@ -6,6 +6,11 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 ## Non publié
 
 ### Nettoyé
+- Stubs racine supprimés (`COMMENT-AJOUTER-MES-QUESTIONS.md`, `DEPLOIEMENT-CLOUDFLARE.md`, `PALETTES.md`) : le contenu vivait déjà dans `docs/questions.md`, `docs/deploiement.md` et `docs/design.md` (palette « vivante » archivée réintégrée dans `docs/design.md`). Références mises à jour (README, AGENTS.md, docs/INDEX.md).
+- CI : étape « Vérifier les secrets Cloudflare » avant chaque deploy (message d'erreur explicite si `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` manquent) + procédure pas à pas des secrets dans `docs/deploiement.md`.
+
+
+### Nettoyé
 - Suite de tests « legacy » supprimée (`scripts/legacy-tests.mjs`, `npm run test:legacy`) : une seule façon de tester, Vitest (`npm test`). Les vérifications non couvertes ont été portées : `tests/data/corpus-draw.test.js` (diversité du tirage sur le vrai corpus : sujets, plafond par thème, quizz du jour), `tests/unit/lib/titles.test.js` (50 titres, nextTitle), `tests/unit/lib/suggestions.test.js` (ajout/ordre/refus du vide/suppression), + assertions 30 badges et semaine en cours dans `badges.test.js` / `daily.test.js`.
 
 

@@ -45,7 +45,15 @@ npm run tail            # wrangler tail --format pretty (logs temps réel)
   deploy:preview` -> environnement preview Cloudflare (V2_ENABLED=true).
 - Job **deploy** (push sur `main` uniquement, `needs: [lint-test-build, integration,
   coverage]`, `environment: production`) : `npm run deploy` -> prod.
-- Secrets GitHub requis : `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
+- Secrets GitHub requis : `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` (sinon le job
+  deploy échoue avec une erreur explicite — étape « Vérifier les secrets Cloudflare »).
+  Procédure unique :
+  1. Cloudflare Dashboard > profil > **API Tokens** > *Create Token* > modèle
+     **Edit Cloudflare Workers** > Create Token -> copier la valeur.
+  2. L'**Account ID** est dans l'URL du dashboard Cloudflare
+     (`https://dash.cloudflare.com/<account_id>/...`) ou Dashboard > Workers & Pages > Overview (colonne de droite).
+  3. Sur GitHub : repo > **Settings > Secrets and variables > Actions** > *New repository
+     secret* -> `CLOUDFLARE_API_TOKEN` et `CLOUDFLARE_ACCOUNT_ID`.
 - La prod doit répondre : `curl -s https://voltquiz.joris-leo81.workers.dev/api/ping`.
 
 ## Variables (`wrangler.toml`)

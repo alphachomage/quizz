@@ -98,7 +98,7 @@ dédiée, fonctionne même **sans internet**.
 ## bis — Ajouter des questions à la main (méthode fichier)
 
 Remplis le fichier `public/questions-utilisateur.json` en suivant
-**`COMMENT-AJOUTER-MES-QUESTIONS.md`** (format simple, chaque question a un niveau
+**`docs/questions.md`** (format simple, chaque question a un niveau
 `facile` / `moyen` / `dur`). Sauvegarde, recharge la page (F5) : tes questions sont là.
 
 ---
@@ -128,5 +128,5 @@ Puis ouvre **http://localhost:4173** (version optimisée, idéale pour l'install
 - `AGENTS.md` : mode d'emploi technique du projet (stack, règles, arborescence, roadmap mobile).
 - `docs/` : documentation complète (index dans `docs/INDEX.md`) — règles du jeu, questions,
  sécurité, déploiement, tests.
-- `COMMENT-AJOUTER-MES-QUESTIONS.md` : le format pour écrire tes questions.
-- `DEPLOIEMENT-CLOUDFLARE.md` : mettre le jeu en ligne.
+- `docs/questions.md` : le format pour écrire tes questions.
+- `docs/deploiement.md` : mettre le jeu en ligne (Cloudflare).

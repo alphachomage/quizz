@@ -24,7 +24,7 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
    limpide — ne pas commenter l'évident). Exception documentée : les **clés du schéma de
    données** (`q`, `reponses`, `bonne`, `niveau`, `info`, `nom`, `icone`, `couleur`) restent
    en français car c'est le format JSON documenté pour le client
-   (`COMMENT-AJOUTER-MES-QUESTIONS.md`) et les clés localStorage existantes.
+   (`docs/questions.md`) et les clés localStorage existantes.
    Les noms de classes CSS restent en français pour l'instant (refonte design prévue).
 3. **Palette 60-30-10, AUCUN dégradé** : voir `docs/design.md` (palette « sobre » active,
    couleurs des thèmes à respecter, ne jamais inventer de couleur). Pour une refonte
