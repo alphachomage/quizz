@@ -1,18 +1,78 @@
-// features/stats/statsCalculs.js — calculs de l'écran « Mes statistiques »,
+// features/stats/statsCalculs.ts — calculs de l'écran « Mes statistiques »,
 // extraits du composant en fonctions PURES (testables hors React).
 // Tout se calcule à partir de l'historique local des parties + de l'XP.
 import { LEVELS } from '@lib/scoring.js';
 import { localDayKey } from '@lib/dates.js';
 import { themeLevel, xpForLevel } from '@lib/xp.js';
+import type { XpMap } from '@lib/xp.js';
+import type { StoredGame } from '@lib/game-history.js';
+import type { GameDetail, Theme } from '@lib/types.js';
+
+// Détail persisté vu par les stats : le schéma de base (GameDetail) est enrichi
+// du temps de réponse (champ « secondes » posé pendant la partie).
+export interface DetailWithTime extends GameDetail {
+  secondes?: number;
+}
+
+/** Partie persistée vue par les stats (détail enrichi du temps de réponse). */
+export type StatsGame = Omit<StoredGame, 'details'> & { details?: DetailWithTime[] };
+
+/** Bilan d'un mode de jeu : nombre de parties + meilleur score. */
+export interface ModeStats {
+  games: number;
+  best: number;
+}
+
+/** Bilan d'un thème (liste « par thème »). */
+export interface ThemeStats {
+  id: string;
+  nom: string;
+  jouées: number;
+  correctes: number;
+  pct: number;
+}
+
+/** Bilan d'un niveau de difficulté (liste « par niveau »). */
+export interface LevelStats {
+  id: string;
+  nom: string;
+  couleur: string;
+  jouées: number;
+  correctes: number;
+  pct: number;
+}
+
+/** Bilan global de l'écran Stats. */
+export interface Stats {
+  games: number;
+  repondues: number;
+  bonnes: number;
+  pct: number;
+  points: number;
+  perMode: Record<string, ModeStats>;
+  parThemeListe: ThemeStats[];
+  parNiveauListe: LevelStats[];
+}
+
+// Accumulateurs internes (avant projection en listes triées).
+interface ThemeAcc {
+  nom: string;
+  jouées: number;
+  correctes: number;
+}
+interface LevelAcc {
+  jouées: number;
+  correctes: number;
+}
 
 // Bilan global + par mode + par thème + par difficulté.
-export function computeStats(games) {
+export function computeStats(games: StatsGame[]): Stats {
   let repondues = 0;
   let bonnes = 0;
   let points = 0;
-  const perMode = {};
-  const perTheme = {}; // themeId -> { nom, jouées, correctes }
-  const perLevel = {}; // 'facile'|'moyen'|'dur' -> { jouées, correctes }
+  const perMode: Record<string, ModeStats> = {};
+  const perTheme: Record<string, ThemeAcc> = {}; // themeId -> { nom, jouées, correctes }
+  const perLevel: Record<string, LevelAcc> = {}; // 'facile'|'moyen'|'dur' -> { jouées, correctes }
 
   for (const p of games) {
     const nbJ = (p.players || []).length || 1;
@@ -62,10 +122,12 @@ export function computeStats(games) {
         });
       t.jouées += (p.total || 0) * nbJ;
       t.correctes += (p.players || []).reduce((a, j) => a + (j.bonnes || 0), 0);
-      if (LEVELS.some((n) => n.id === p.niveau)) {
+      // niveauPartie vaut null hors solo (survie = "mix", quotidien = date) : jamais un niveau connu
+      const niveauPartie = p.niveau;
+      if (niveauPartie && LEVELS.some((n) => n.id === niveauPartie)) {
         const nv =
-          perLevel[p.niveau] ||
-          (perLevel[p.niveau] = {
+          perLevel[niveauPartie] ||
+          (perLevel[niveauPartie] = {
             jouées: 0,
             correctes: 0,
           });
@@ -74,7 +136,7 @@ export function computeStats(games) {
       }
     }
   }
-  const parThemeListe = Object.entries(perTheme)
+  const parThemeListe: ThemeStats[] = Object.entries(perTheme)
     .map(([id, v]) => ({
       id,
       ...v,
@@ -83,7 +145,7 @@ export function computeStats(games) {
     .sort((a, b) => b.jouées - a.jouées);
 
   // Par difficulté, dans l'ordre Facile / Moyen / Difficile
-  const parNiveauListe = LEVELS.map((n) => {
+  const parNiveauListe: LevelStats[] = LEVELS.map((n) => {
     const v = perLevel[n.id] || {
       jouées: 0,
       correctes: 0,
@@ -108,11 +170,35 @@ export function computeStats(games) {
   };
 }
 
+/** Une case du calendrier du mois (null = case vide avant le 1er). */
+export interface CalendarDay {
+  key: string;
+  n: number;
+  day: number;
+  futur: boolean;
+  niveau: number;
+}
+
+/** Points marqués sur un jour des 30 derniers jours. */
+export interface Last30Day {
+  key: string;
+  points: number;
+  games: number;
+}
+
+/** Calendrier d'activité du mois en cours + courbe des 30 derniers jours. */
+export interface Calendar {
+  weeks: (CalendarDay | null)[][];
+  last30Days: Last30Day[];
+  maxPoints: number;
+  monthName: string;
+}
+
 // Calendrier d'activité du mois en cours (grille L..D) + points des 30 derniers jours.
 // `now` est paramétrable pour les tests.
-export function computeCalendar(games, now = new Date()) {
-  const parJour = {};
-  const parJourPoints = {};
+export function computeCalendar(games: StatsGame[], now = new Date()): Calendar {
+  const parJour: Record<string, number> = {};
+  const parJourPoints: Record<string, number> = {};
   for (const p of games) {
     if (!p.date) continue;
     const key = localDayKey(new Date(p.date));
@@ -126,8 +212,8 @@ export function computeCalendar(games, now = new Date()) {
   const premier = new Date(year, month, 1);
   const decalage = (premier.getDay() + 6) % 7; // 0 = lundi en première colonne
   // grille du mois en cours : lignes de semaines, cases vides avant le 1er
-  const weeks = [];
-  let week = new Array(decalage).fill(null);
+  const weeks: (CalendarDay | null)[][] = [];
+  let week: (CalendarDay | null)[] = new Array(decalage).fill(null);
   for (let j = 1; j <= nbJours; j++) {
     const d = new Date(year, month, j);
     const key = localDayKey(d);
@@ -145,7 +231,7 @@ export function computeCalendar(games, now = new Date()) {
     }
   }
   if (week.length > 0) weeks.push(week);
-  const last30Days = [];
+  const last30Days: Last30Day[] = [];
   for (let i = 29; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     d.setDate(d.getDate() - i);
@@ -169,7 +255,7 @@ export function computeCalendar(games, now = new Date()) {
 }
 
 // Temps de réaction moyen (champ « secondes » des détails), null si aucune donnée.
-export function computeAvgTime(games) {
+export function computeAvgTime(games: StatsGame[]): number | null {
   let somme = 0;
   let n = 0;
   for (const p of games) {
@@ -183,8 +269,17 @@ export function computeAvgTime(games) {
   return n ? Math.round((somme / n) * 10) / 10 : null;
 }
 
+/** XP globale du compte + niveau global + progression vers le niveau suivant. */
+export interface GlobalXpStats {
+  totalXp: number;
+  nivGlobal: number;
+  xpLevel: number;
+  xpNext: number;
+  pctXp: number;
+}
+
 // XP globale (somme des thèmes) + niveau global + pourcentage vers le niveau suivant.
-export function computeGlobalXp(xp) {
+export function computeGlobalXp(xp: XpMap): GlobalXpStats {
   const totalXp = Object.values(xp).reduce((a, b) => a + (b || 0), 0);
   const nivGlobal = themeLevel(totalXp);
   const xpLevel = xpForLevel(nivGlobal);
@@ -202,8 +297,11 @@ export function computeGlobalXp(xp) {
   };
 }
 
+/** Thème enrichi de son XP et de son niveau (liste « progression XP »). */
+export type ThemeLevel = Theme & { xp: number; niv: number };
+
 // Thèmes triés par XP décroissante (ceux avec de l'XP uniquement).
-export function sortThemesByXp(themes, xp) {
+export function sortThemesByXp(themes: Theme[], xp: XpMap): ThemeLevel[] {
   return themes
     .map((t) => ({
       ...t,

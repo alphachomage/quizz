@@ -1,4 +1,4 @@
-// features/resultat/persistance.js — persistance d'une partie terminée.
+// features/resultat/persistance.ts — persistance d'une partie terminée.
 // Appelée UNE FOIS depuis App.terminer (plus depuis un useEffect de montage du
 // composant d'affichage) : record, historique (leaderboard/stats), XP par thème
 // et globale, position au classement, série de jours du quizz du jour, sons.
@@ -7,10 +7,40 @@
 import { loadGames, addGame } from '@lib/game-history.js';
 import { loadRecords, saveRecord, recordKey } from '@lib/records.js';
 import { loadXp, addXp, themeLevel } from '@lib/xp.js';
+import type { XpMap } from '@lib/xp.js';
 import { recordDailyStreak } from '@lib/streak.js';
 import { playSound, vibrate } from '@lib/sounds.js';
+import type { GameResult, Prefs } from '@lib/types.js';
 import { levelPercent } from './gameStats.js';
-export function persistResult(result, isGuest, prefs) {
+
+/** XP gagnée sur un thème pendant la partie (ligne affichée sur l'écran de résultats). */
+export interface ThemeXpRow {
+  themeId: string;
+  gain: number;
+  nivAvant: number;
+  nivApres: number;
+  pct: number;
+}
+
+/** XP globale du compte avant/après la partie. */
+export interface GlobalXp {
+  avant: number;
+  apres: number;
+  gain: number;
+}
+
+/** Valeurs persistées à la fin d'une partie et affichées par l'écran de résultats. */
+export interface Persistance {
+  record: number;
+  recordAvant: number;
+  nouveauRecord: boolean;
+  themeXp: ThemeXpRow[];
+  globalXp: GlobalXp;
+  rang: number | null;
+  dailyStreak: number;
+}
+
+export function persistResult(result: GameResult, isGuest: boolean, prefs?: Prefs | null): Persistance {
   const { mode, niveau, theme, players, scores, bonnes, total, details } = result;
   const key = recordKey(mode, niveau, theme.id);
 
@@ -44,21 +74,21 @@ export function persistResult(result, isGuest, prefs) {
   }
 
   // --- XP gagnée : par thème grâce au détail question par question ---
-  let themeXp = [];
-  let globalXp = {
+  let themeXp: ThemeXpRow[] = [];
+  let globalXp: GlobalXp = {
     avant: 0,
     apres: 0,
     gain: 0,
   };
   if (!isGuest) {
-    const xpBefore = loadXp();
-    const perTheme = {};
+    const xpBefore: XpMap = loadXp();
+    const perTheme: Record<string, number> = {};
     if (details && details.length > 0) {
       for (const d of details) perTheme[d.themeId] = (perTheme[d.themeId] || 0) + (d.gain || 0);
     } else {
       perTheme[theme.id] = scores.reduce((a, b) => a + b, 0);
     }
-    const rows = [];
+    const rows: ThemeXpRow[] = [];
     for (const [themeId, gain] of Object.entries(perTheme)) {
       if (!gain) continue;
       const av = xpBefore[themeId] || 0;
@@ -83,9 +113,9 @@ export function persistResult(result, isGuest, prefs) {
   }
 
   // --- Position au leaderboard du mode (top 10 affiché) ---
-  let rang = null;
+  let rang: number | null = null;
   if (!isGuest) {
-    const leaderboardRows = [];
+    const leaderboardRows: number[] = [];
     for (const p of loadGames()) {
       if (p.mode !== mode) continue;
       if (mode === 'solo' && p.niveau !== niveau) continue; // survie : tous niveaux mélangés

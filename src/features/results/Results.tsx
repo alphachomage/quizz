@@ -1,23 +1,37 @@
-// features/resultat/Resultat.jsx — écran des résultats, NE FAIT QUE RENDRE.
+// features/resultat/Resultat.tsx — écran des résultats, NE FAIT QUE RENDRE.
 // La persistance (record, historique, XP, classement, streak) a été faite UNE FOIS
 // par App.terminer via persisterResultat() et arrive dans resultat.persistance :
 // plus aucun useEffect de persistance dans ce composant d'affichage.
 import { useMemo } from 'react';
+import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import { levelName } from '@lib/scoring.js';
 import { themeLevel } from '@lib/xp.js';
+import type { GameResult, Theme } from '@lib/types.js';
 import { computeGameStats, levelPercent } from './gameStats.js';
+import type { Persistance } from './persist.js';
 import { useShare } from './useShare.js';
 import ShareModal from './components/ShareModal.jsx';
+
+/** Props de l'écran de résultats (déléguées par app/Screens.tsx). */
+export interface ResultsProps {
+  result: GameResult & { persistance?: Persistance };
+  themes: Theme[] | null;
+  isGuest: boolean;
+  onReplay: () => void;
+  onHome: () => void;
+}
+
 export default function Results({
   result,
   themes,
-  isGuest: isGuest,
-  onReplay: onReplay,
-  onHome: onHome,
-}) {
+  isGuest,
+  onReplay,
+  onHome,
+}: ResultsProps): ReactElement {
   const { mode, niveau, theme, players, scores, bonnes, total, details } = result;
-  const persistance = result.persistance || {};
+  // persistance est toujours posée par App.terminer ; les défauts restent défensifs
+  const persistance: Partial<Persistance> = result.persistance || {};
   const {
     record = 0,
     recordAvant = 0,

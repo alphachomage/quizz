@@ -1,6 +1,21 @@
-// ListesStats.jsx — les 3 listes « par mode / par thème / par niveau » de l'écran Stats.
+// ListesStats.tsx — les 3 listes « par mode / par thème / par niveau » de l'écran Stats.
+import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
-export default function StatLists({ stats, modes }) {
+import type { Stats } from '../statsCompute.js';
+
+/** Onglet de mode affiché dans la liste « par mode » (défini par Stats.tsx). */
+export interface ModeTab {
+  id: string;
+  nom: string;
+  icone: string;
+}
+
+interface StatListsProps {
+  stats: Stats;
+  modes: ModeTab[];
+}
+
+export default function StatLists({ stats, modes }: StatListsProps): ReactElement {
   return (
     <>
       <section>
