@@ -10,7 +10,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: var(--esp-10);
   flex-wrap: wrap;
 }
 
@@ -21,16 +21,16 @@
 .btn-petit {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--esp-6);
   padding: 9px 14px;
   font-size: 0.88rem;
   font-weight: 700;
-  color: #141414;
+  color: var(--texte-sur-accent);
   background: var(--accent1);
   border: none;
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
   cursor: pointer;
-  transition: transform 0.12s ease;
+  transition: transform var(--dur-rapide) ease;
 }
 
 .btn-petit:hover {
@@ -43,7 +43,7 @@
   line-height: 1.5;
   background: var(--carte);
   border: 1px dashed var(--bordure);
-  border-radius: 14px;
+  border-radius: var(--radius-petit);
   padding: 14px 16px;
 }
 
@@ -51,18 +51,18 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 14px;
+  gap: var(--esp-8);
+  margin-bottom: var(--esp-14);
 }
 
 .liste-propositions li {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--esp-10);
   padding: 12px 14px;
   background: var(--carte);
   border: 1px solid var(--bordure);
-  border-radius: 14px;
+  border-radius: var(--radius-petit);
 }
 
 .prop-corps {
@@ -93,49 +93,49 @@
   flex-shrink: 0;
   background: transparent;
   border: 1px solid var(--bordure);
-  border-radius: 10px;
+  border-radius: var(--radius-micro);
   cursor: pointer;
-  transition: background 0.12s ease;
+  transition: background var(--dur-rapide) ease;
 }
 
 .btn-suppr {
-  color: #ff8fa3;
+  color: var(--erreur-texte);
 }
 
 .btn-suppr:hover {
-  background: rgba(255, 93, 115, 0.15);
+  background: var(--erreur-15);
 }
 
 .btn-valider {
-  color: #4ade80;
+  color: var(--succes);
 }
 
 .btn-valider:hover {
-  background: rgba(74, 222, 128, 0.15);
+  background: var(--succes-15);
 }
 
 .badge-compte {
   display: inline-block;
-  margin-left: 8px;
+  margin-left: var(--esp-8);
   padding: 2px 10px;
   font-size: 0.72rem;
   font-weight: 700;
   color: var(--texte-doux);
   background: var(--carte-2);
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
   text-transform: none;
   letter-spacing: 0.3px;
 }
 
 .badge-compte.valide {
-  color: #4ade80;
+  color: var(--succes);
 }
 
 /* ===== Enchaînement auto ===== */
 
 .suite-auto {
-  margin-top: 14px;
+  margin-top: var(--esp-14);
   color: var(--texte-doux);
   font-size: 0.88rem;
-  animation: pop 0.25s ease;
+  animation: pop var(--dur-pop) ease;
 }

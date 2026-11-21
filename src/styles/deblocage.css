@@ -7,7 +7,7 @@
   text-align: center;
   background: var(--carte);
   border: 1px solid var(--bordure);
-  border-radius: 28px;
+  border-radius: var(--radius-28);
   color: var(--texte-carte);
   animation: deblocage-pop 0.45s cubic-bezier(0.2, 1.6, 0.4, 1);
 }
@@ -18,35 +18,35 @@
   justify-content: center;
   width: 76px;
   height: 76px;
-  margin-bottom: 12px;
-  border-radius: 50%;
+  margin-bottom: var(--esp-12);
+  border-radius: var(--radius-rond);
   background: var(--accent1);
-  color: #141414;
+  color: var(--texte-sur-accent);
   animation: deblocage-halo 1.2s ease-out infinite alternate;
 }
 
 .deblocage-titre {
   font-size: 1.4rem;
-  margin-bottom: 16px;
+  margin-bottom: var(--esp-16);
 }
 
 .deblocage-liste {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: var(--esp-10);
+  margin-bottom: var(--esp-20);
   text-align: left;
 }
 
 .deblocage-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--esp-12);
   padding: 10px 12px;
   background: var(--fond);
   border: 1px solid var(--bordure);
-  border-radius: 18px;
+  border-radius: var(--radius-moyen);
   animation: deblocage-item 0.4s ease backwards;
 }
 
@@ -57,12 +57,12 @@
   width: 42px;
   height: 42px;
   flex-shrink: 0;
-  border-radius: 50%;
+  border-radius: var(--radius-rond);
 }
 
 .deblocage-item-icone.badge-debloque {
   background: var(--accent1);
-  color: #141414;
+  color: var(--texte-sur-accent);
 }
 
 .deblocage-item-icone.titre-debloque {
@@ -89,8 +89,8 @@
 }
 
 @keyframes deblocage-halo {
-  from { box-shadow: 0 0 0 0 rgba(217, 208, 184, 0.45); }
-  to { box-shadow: 0 0 0 18px rgba(217, 208, 184, 0); }
+  from { box-shadow: 0 0 0 0 var(--accent-45); }
+  to { box-shadow: 0 0 0 18px transparent; }
 }
 
 @keyframes deblocage-item {

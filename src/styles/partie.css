@@ -4,32 +4,32 @@
 .barre-haut {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--esp-8);
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: var(--esp-10);
 }
 
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--esp-6);
   padding: 6px 12px;
   font-size: 0.85rem;
   font-weight: 700;
   background: var(--carte);
   border: 1px solid var(--bordure);
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
 }
 
 .theme-chip {
-  color: #fff;
+  color: var(--blanc);
   border: none;
 }
 
 .niveau-chip i {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
+  border-radius: var(--radius-rond);
   display: inline-block;
 }
 
@@ -45,14 +45,14 @@
 .tour {
   text-align: center;
   color: var(--texte-doux);
-  margin-bottom: 10px;
+  margin-bottom: var(--esp-10);
 }
 
 .minuteur-ligne {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: var(--esp-12);
+  margin-bottom: var(--esp-24);
 }
 
 .minuteur {
@@ -60,30 +60,30 @@
   height: 10px;
   background: var(--carte);
   border: 1px solid var(--bordure);
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
   overflow: hidden;
   margin-bottom: 0;
 }
 
 .minuteur-rempli {
   height: 100%;
-  border-radius: 999px;
-  transition: width 1s linear, background 0.3s ease; /* 1 setState/s côté JS, lissé ici */
+  border-radius: var(--radius-pilule);
+  transition: width 1s linear, background var(--dur-standard) ease; /* 1 setState/s côté JS, lissé ici */
 }
 
 .minuteur-pts {
   flex-shrink: 0;
   background: var(--accent1);
-  color: #141414;
+  color: var(--texte-sur-accent);
   font-weight: 800;
   font-size: 0.85rem;
   padding: 4px 12px;
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
   font-variant-numeric: tabular-nums;
 }
 
 .minuteur-ligne.danger .minuteur-rempli {
-  animation: minuteur-pulse 0.5s ease-in-out infinite alternate;
+  animation: minuteur-pulse var(--dur-demi) ease-in-out infinite alternate;
 }
 
 @keyframes minuteur-pulse {
@@ -98,31 +98,31 @@
   line-height: 1.4;
   text-align: center;
   margin-bottom: 26px;
-  animation: pop 0.25s ease;
+  animation: pop var(--dur-pop) ease;
 }
 
 .reponses {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: var(--esp-12);
 }
 
 .reponse {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--esp-10);
   padding: 16px 20px;
   min-height: 62px;
   font-size: 1rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--blanc);
   background: var(--couleur, var(--accent1));
   border: none;
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
   cursor: pointer;
   text-align: left;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
-  transition: transform 0.1s ease, filter 0.15s ease, opacity 0.15s ease;
+  box-shadow: var(--ombre-3d);
+  transition: transform 0.1s ease, filter var(--dur-court) ease, opacity var(--dur-court) ease;
 }
 
 .reponse:hover:not(:disabled) {
@@ -132,7 +132,7 @@
 
 .reponse:active:not(:disabled) {
   transform: translateY(2px);
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+  box-shadow: var(--ombre-3d-presse);
 }
 
 .reponse:disabled {
@@ -146,20 +146,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.25);
-  border-radius: 50%;
+  background: var(--blanc-doux);
+  border-radius: var(--radius-rond);
   font-size: 0.9rem;
 }
 
 .reponse.bonne {
-  background: #16a34a !important;
-  outline: 3px solid #4ade80;
+  background: var(--succes-fond) !important;
+  outline: 3px solid var(--succes);
 }
 
 .reponse.mauvaise {
-  background: #7f1d1d !important;
-  outline: 3px solid #f87171;
-  animation: shake 0.3s ease;
+  background: var(--erreur-fond) !important;
+  outline: 3px solid var(--erreur);
+  animation: shake var(--dur-standard) ease;
 }
 
 .reponse.estompee {
@@ -174,16 +174,16 @@
 .feedback {
   margin-top: 22px;
   text-align: center;
-  animation: pop 0.25s ease;
+  animation: pop var(--dur-pop) ease;
 }
 
 .gain {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--esp-6);
   font-size: 1.6rem;
   font-weight: 900;
-  color: #4ade80;
+  color: var(--succes);
 }
 
 .rate {
@@ -192,15 +192,15 @@
 }
 
 .rate strong {
-  color: #4ade80;
+  color: var(--succes);
 }
 
 .info {
-  margin-top: 12px;
+  margin-top: var(--esp-12);
   padding: 12px 16px;
   background: var(--carte);
   border: 1px solid var(--bordure);
-  border-radius: 14px;
+  border-radius: var(--radius-petit);
   color: var(--texte-doux);
   font-size: 0.93rem;
   line-height: 1.5;
@@ -222,23 +222,23 @@
   text-align: center;
   background: var(--carte);
   border: 1px solid var(--bordure);
-  border-radius: 26px;
+  border-radius: var(--radius-carte);
   padding: 34px 24px;
-  backdrop-filter: blur(12px);
-  animation: pop 0.3s ease;
+  backdrop-filter: var(--flou-carte);
+  animation: pop var(--dur-standard) ease;
 }
 
 .gros-icone {
   display: flex;
   justify-content: center;
   color: var(--accent2);
-  margin-bottom: 14px;
+  margin-bottom: var(--esp-14);
 }
 
 .passe-appareil h2,
 .resultat h2 {
   font-size: 1.4rem;
-  margin-bottom: 16px;
+  margin-bottom: var(--esp-16);
 }
 
 .nom-joueur {
@@ -246,14 +246,14 @@
   padding: 12px 28px;
   font-size: 1.5rem;
   font-weight: 900;
-  color: #fff;
-  border-radius: 999px;
-  margin-bottom: 12px;
+  color: var(--blanc);
+  border-radius: var(--radius-pilule);
+  margin-bottom: var(--esp-12);
 }
 
 .indice {
   color: var(--texte-doux);
-  margin-bottom: 8px;
+  margin-bottom: var(--esp-8);
 }
 
 .gros-score {
@@ -275,7 +275,7 @@
 .scores-duel {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: var(--esp-12);
   margin: 18px 0;
 }
 
@@ -283,17 +283,17 @@
   padding: 18px 10px;
   background: var(--carte-2);
   border: 2px solid transparent;
-  border-radius: 18px;
+  border-radius: var(--radius-moyen);
 }
 
 .score-joueur.gagnant {
   border-color: var(--or) !important;
-  background: rgba(253, 224, 71, 0.08);
+  background: var(--accent-08);
 }
 
 .score-joueur .nom {
   font-weight: 800;
-  margin-bottom: 6px;
+  margin-bottom: var(--esp-6);
 }
 
 .score-joueur .points {
@@ -305,14 +305,14 @@
 .score-joueur .detail {
   font-size: 0.8rem;
   color: var(--texte-doux);
-  margin-top: 4px;
+  margin-top: var(--esp-4);
 }
 
 .record {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 14px;
+  gap: var(--esp-6);
+  margin-top: var(--esp-14);
   font-weight: 800;
   color: var(--accent2);
 }
@@ -321,12 +321,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  margin-top: 10px;
+  gap: var(--esp-6);
+  margin-top: var(--esp-10);
   color: var(--texte-doux);
   font-size: 0.88rem;
 }
 
 .actions {
-  margin-top: 8px;
+  margin-top: var(--esp-8);
 }

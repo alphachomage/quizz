@@ -5,7 +5,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 40;
+  z-index: var(--z-fixe);
   background: var(--fond);
   border-top: 1px solid var(--bordure);
 }
