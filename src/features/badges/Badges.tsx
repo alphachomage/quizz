@@ -2,27 +2,35 @@ import { useMemo, useState } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import { computeBadges } from '@lib/badges.js';
 import { computeTitles, activeTitleId, setActiveTitle } from '@lib/titles.js';
+import type { ComputedTitle } from '@lib/titles.js';
+import type { Theme } from '@lib/types.js';
 
 // Écran « Mes badges & titres » : 2 onglets.
 // - Badges : 30 badges, verrouillé = grisé + condition exacte, débloqué = jaune PEPS.
 // - Titres : ~50 titres (3 par thème selon le niveau 3/5/10 + 14 généraux).
 //   Verrouillé = « ??? » ; débloqué = on peut le choisir comme titre affiché sous la barre d'XP.
 
-export default function Badges({ themes, onHome: onHome }) {
+interface BadgesProps {
+  themes: Theme[] | null;
+  onHome: () => void;
+}
+
+export default function Badges({ themes, onHome: onHome }: BadgesProps) {
   const [tab, setTab] = useState('badges');
   const badges = useMemo(() => computeBadges(), []);
   const titles = useMemo(() => computeTitles(), []);
-  const [titleId, setTitleId] = useState(() => activeTitleId());
+  const [titleId, setTitleId] = useState<string | null>(() => activeTitleId());
   const n = badges.filter((b) => b.debloque).length;
   const pct = Math.round((n / badges.length) * 100);
   const nt = titles.filter((t) => t.debloque).length;
   const pctT = Math.round((nt / titles.length) * 100);
-  function pickTitle(t) {
+  function pickTitle(t: ComputedTitle): void {
     if (!t.debloque) return;
     setActiveTitle(t.id);
     setTitleId(t.id);
   }
-  function themeName(id) {
+  // `themes` vaut null pendant le chargement, mais l'écran n'est rendu qu'une fois les thèmes prêts.
+  function themeName(id: string | null): string | null | undefined {
     const t = (themes || []).find((x) => x.id === id);
     return t ? t.nom : id;
   }
@@ -131,7 +139,7 @@ export default function Badges({ themes, onHome: onHome }) {
                       nom={
                         t.general
                           ? 'star'
-                          : themes.find((x) => x.id === t.themeId)?.icone || 'sparkles'
+                          : (themes || []).find((x) => x.id === t.themeId)?.icone || 'sparkles'
                       }
                       taille={24}
                     />

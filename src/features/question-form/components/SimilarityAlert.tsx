@@ -1,11 +1,30 @@
-// AlerteSimilarite.jsx — bloc affiché à la soumission quand des questions existantes
+// SimilarityAlert.tsx — bloc affiché à la soumission quand des questions existantes
 // sont similaires (détection floue locale, index pré-calculé).
 import Icon from '@shared/ui/Icon.jsx';
 import { THRESHOLD_IDENTICAL } from '@lib/similarity.js';
-function etiquette(score) {
+import type { TaggedQuestion } from '@lib/types.js';
+
+// Une question similaire trouvée : la question d'origine + son score (0..1).
+// Défini localement car similarity.ts ne l'exporte pas (type interne de l'index).
+interface SimilarHit {
+  question: TaggedQuestion;
+  score: number;
+}
+
+interface SimilarityAlertProps {
+  avertissement: SimilarHit[];
+  onAdd: () => void;
+  onCancel: () => void;
+}
+
+function etiquette(score: number): string {
   return score >= THRESHOLD_IDENTICAL ? 'quasi identique' : 'similaire';
 }
-export default function SimilarityAlert({ avertissement, onAdd: onAdd, onCancel: onCancel }) {
+export default function SimilarityAlert({
+  avertissement,
+  onAdd: onAdd,
+  onCancel: onCancel,
+}: SimilarityAlertProps) {
   return (
     <div className="alerte">
       <h3>

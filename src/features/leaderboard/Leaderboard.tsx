@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
+import type { CSSProperties } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import { loadGames } from '@lib/game-history.js';
 import { levelName, LEVELS } from '@lib/scoring.js';
 import { isThisWeek } from '@lib/dates.js';
+import type { Theme } from '@lib/types.js';
 
 // Leaderboard local : UNIQUEMENT les classements par mode de jeu, avec pour chaque
 // ligne le thème, la difficulté et le nombre de points.
@@ -10,8 +12,35 @@ import { isThisWeek } from '@lib/dates.js';
 //  - Duel 1v1, Survie, Quizz du jour : top scores de l'historique des parties
 // (les stats personal détaillées sont dans l'écran « Mes statistiques »)
 
+// Onglet de classement (un par mode de jeu).
+interface TabDef {
+  id: string;
+  nom: string;
+  icone: string;
+}
+
+// Ligne de classement construite depuis l'historique des parties.
+interface RowClassement {
+  key: string;
+  nom: string;
+  score: number;
+  bonnes: number;
+  total: number;
+  themeName?: string;
+  themeColor?: string;
+  themeIcon?: string;
+  niveau: string | null;
+  date?: string;
+}
+
+interface LeaderboardProps {
+  themes: Theme[] | null;
+  onHome: () => void;
+  onStats: () => void;
+}
+
 const RANK_COLORS = ['#fde047', '#cbd5e1', '#fbbf24'];
-const TABS = [
+const TABS: TabDef[] = [
   {
     id: 'solo',
     nom: 'Solo',
@@ -33,7 +62,7 @@ const TABS = [
     icone: 'calendar',
   },
 ];
-export default function Leaderboard({ themes, onHome: onHome, onStats }) {
+export default function Leaderboard({ themes, onHome: onHome, onStats }: LeaderboardProps) {
   const [tab, setTab] = useState('solo');
   const [niveauSolo, setSoloLevel] = useState('tous'); // filtre de l'onglet Solo
   const [periode, setPeriode] = useState('tout'); // 'tout' | 'semaine' (classement hebdo)
@@ -41,12 +70,13 @@ export default function Leaderboard({ themes, onHome: onHome, onStats }) {
 
   // --- Lignes de classement pour un mode donné (depuis l'historique des parties) ---
   const modeRows = useMemo(() => {
-    const rows = [];
+    const rows: RowClassement[] = [];
     for (const p of games) {
       if (p.mode !== tab) continue;
       if (periode === 'semaine' && !isThisWeek(p.date)) continue; // classement de la semaine
       if (tab === 'solo' && niveauSolo !== 'tous' && p.niveau !== niveauSolo) continue;
-      const theme = themes.find((t) => t.id === p.themeId);
+      // `themes` vaut null pendant le chargement, mais l'écran n'est rendu qu'une fois les thèmes prêts.
+      const theme = (themes || []).find((t) => t.id === p.themeId);
       for (const j of p.players || []) {
         rows.push({
           key: `${p.id}-${j.nom}`,
@@ -64,14 +94,14 @@ export default function Leaderboard({ themes, onHome: onHome, onStats }) {
     }
     return rows.sort((a, b) => b.score - a.score).slice(0, 20);
   }, [games, tab, niveauSolo, periode, themes]);
-  function labelMode(mode, niveau) {
+  function labelMode(mode: string, niveau: string | null): string {
     if (mode === 'solo') return `solo · ${levelName(niveau)}`;
     if (mode === 'duel') return 'duel 1v1';
     if (mode === 'survie') return `survie · ${levelName(niveau)}`;
     if (mode === 'quotidien') return `quizz du ${niveau}`;
     return mode;
   }
-  function rowDetail(l) {
+  function rowDetail(l: RowClassement): string {
     if (tab === 'solo' || tab === 'duel') {
       return `${labelMode(tab, l.niveau)} · ${l.bonnes}/${l.total} bonnes`;
     }
@@ -182,9 +212,11 @@ export default function Leaderboard({ themes, onHome: onHome, onStats }) {
                 <span className="lc-nom">{l.nom}</span>
                 <span
                   className="lc-theme"
-                  style={{
-                    '--couleur': l.themeColor,
-                  }}
+                  style={
+                    {
+                      '--couleur': l.themeColor,
+                    } as CSSProperties
+                  }
                   title={l.themeName}
                 >
                   <Icon nom={l.themeIcon} taille={14} />

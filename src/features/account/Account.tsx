@@ -2,9 +2,13 @@ import { useState } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import { createAccount, connect, listPseudos, startGuest } from '@lib/accounts.js';
 
+interface AccountProps {
+  onConnexion: (pseudo: string) => void;
+}
+
 // Écran de compte : connexion ou création (pseudo + e-mail + mot de passe).
 // 100 % local : les comptes vivent dans le navigateur de ce PC uniquement.
-export default function Account({ onConnexion }) {
+export default function Account({ onConnexion }: AccountProps) {
   const [tab, setTab] = useState('connexion');
   const [pseudo, setPseudoN] = useState('');
   const [email, setEmail] = useState('');
@@ -13,7 +17,7 @@ export default function Account({ onConnexion }) {
   const [error, setError] = useState('');
   const [enCours, setEnCours] = useState(false);
   const pseudos = listPseudos();
-  async function soumettre() {
+  async function soumettre(): Promise<void> {
     setError('');
     if (tab === 'creation' && password !== mdp2) {
       setError('Les deux mots de passe ne correspondent pas.');
