@@ -11,15 +11,17 @@ import {
   removeSuggestion,
 } from '@lib/index.js';
 
+import AdminDashboard from './AdminDashboard.jsx';
 import ThemesSection from './components/ThemesSection.jsx';
 import ReportedSection from './components/ReportedSection.jsx';
 import ProposedSection from './components/ProposedSection.jsx';
 import SuggestionsSection from './components/SuggestionsSection.jsx';
 
-// Vue ADMIN (questions signalées + questions proposées en attente de validation).
+// Vue ADMIN (?admin=1) : tableau de bord global en haut (AdminDashboard), puis les
+// sections de modération (signalements, propositions, suggestions, thèmes).
 // Accessible uniquement via l'URL : http://127.0.0.1:5173/?admin=1
 // RIEN de tout ça n'est visible dans l'interface joueur.
-// Coquille : l'état vit ici, les 4 sections sont des composants dans ./composants/.
+// Coquille : l'état vit ici, le dashboard + les 4 sections sont des composants séparés.
 
 export default function AdminReports({ onQuitter, themes, soumissions, nbValidees, onValiderSoumission, onSupprimerSoumission, onExporterValidees }) {
   const [signales, setSignales] = useState(() => loadReports());
@@ -82,6 +84,8 @@ export default function AdminReports({ onQuitter, themes, soumissions, nbValidee
         <p className="vide">
           Cette page n'est accessible que via <code>?admin=1</code> — elle n'apparaît nulle part dans le jeu.
         </p>
+
+        <AdminDashboard themes={themes} />
 
         <ThemesSection themes={themes} />
 

@@ -30,6 +30,23 @@ export function urlWithoutAdminFlag() {
   return window.location.pathname + (qs ? `?${qs}` : '');
 }
 
+// URL de l'appli avec UN paramètre posé (ex. ?reset=1, ?stockage=d1) en conservant
+// les flags déjà présents (admin=1...) — utilisée par le tableau de bord admin.
+export function urlAvecParam(nom, valeur) {
+  const params = new URLSearchParams(window.location.search);
+  params.set(nom, valeur);
+  const qs = params.toString();
+  return window.location.pathname + (qs ? `?${qs}` : '');
+}
+
+// URL de l'appli avec UN paramètre supprimé (ex. retirer ?stockage=d1).
+export function urlSansParam(nom) {
+  const params = new URLSearchParams(window.location.search);
+  params.delete(nom);
+  const qs = params.toString();
+  return window.location.pathname + (qs ? `?${qs}` : '');
+}
+
 // Recharge la page vers une URL donnée (ex. quitter la vue admin).
 export function redirigerVers(url) {
   window.location.assign(url);

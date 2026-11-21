@@ -107,4 +107,21 @@ describe('shell de l\'application (app/)', () => {
     await attendreTexte(/invité/i);
     expect(screen.getAllByText(/invité/i).length).toBeGreaterThan(0);
   });
+
+  it('vue admin (?admin=1) : tableau de bord en haut + sections de modération', async () => {
+    window.history.replaceState(null, '', '/?admin=1');
+    try {
+      render(<App />);
+      // Le tableau de bord apparaît dès que les thèmes factices sont chargés.
+      await attendreTexte('Tableau de bord');
+      expect(screen.getByText('Parties jouées')).toBeTruthy();
+      expect(screen.getByText('Serveur (V2)')).toBeTruthy();
+      expect(screen.getByText('Modération')).toBeTruthy();
+      // Les sections existantes restent présentes sous le dashboard.
+      expect(screen.getByText('Questions signalées')).toBeTruthy();
+      expect(screen.getByText('Suggestions des joueurs')).toBeTruthy();
+    } finally {
+      window.history.replaceState(null, '', '/');
+    }
+  });
 });

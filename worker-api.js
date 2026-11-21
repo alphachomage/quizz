@@ -219,6 +219,11 @@ async function routeRoom(request, env, url, segment) {
   return jsonErreur('Route room invalide.', 404);
 }
 
+// --- Compteurs en mémoire de l'isolate (remis à zéro au redémarrage du Worker) ---
+// Exposés via /api/stats pour le tableau de bord admin : rapports CSP reçus et
+// hits du rate-limit (429, incrémenté dans worker.js).
+export const compteursInternes = { rapportsCsp: 0, hits429: 0 };
+
 // --- Routeur principal ---
 export async function apiRouter(request, env, url) {
   const p = url.pathname; // ex: /api/kv/xxx
@@ -241,11 +246,32 @@ export async function apiRouter(request, env, url) {
   }
 
   if (p === '/api/ping' || p === '/api/health') {
-    return json({ ok: true, app: 'VoltQuiz', version: env.APP_VERSION || '0.1.0', heure: new Date().toISOString() });
+    return json({ ok: true, app: 'VoltQuiz', version: env.APP_VERSION || '0.1.0', v2: env.V2_ENABLED === 'true', heure: new Date().toISOString() });
   }
   if (p === '/api/csp-report' && request.method === 'POST') {
     await request.text().catch(() => '');
+    compteursInternes.rapportsCsp += 1;
     return new Response(null, { status: 204, headers: { 'Cache-Control': 'no-store' } });
+  }
+  // Stats V2 pour le tableau de bord admin (?admin=1) : gated V2 comme les autres
+  // routes -> 503 « V2 non active » si V2_ENABLED n'est pas "true".
+  if (p === '/api/stats' && request.method === 'GET') {
+    let rooms = 0;
+    if (env.ROOMS) {
+      try {
+        rooms = (await env.ROOMS.list({ prefix: 'room:' })).keys.length;
+      } catch {
+        rooms = 0; // KV indisponible : on affiche 0 plutôt que de planter
+      }
+    }
+    return json({
+      ok: true,
+      v2: env.V2_ENABLED === 'true',
+      rooms,
+      rapportsCsp: compteursInternes.rapportsCsp,
+      hits429: compteursInternes.hits429,
+      heure: new Date().toISOString(),
+    });
   }
   if (p.startsWith('/api/kv/')) return routeKv(request, env, decodeURIComponent(p.slice('/api/kv/'.length)));
   if (p === '/api/auth/inscription' || p === '/api/auth/connexion') {

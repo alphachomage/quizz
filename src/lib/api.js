@@ -20,6 +20,11 @@ export const kvGet = (key) => appel(`/kv/${encodeURIComponent(key)}`);
 export const kvSet = (key, valeur) =>
   appel(`/kv/${encodeURIComponent(key)}`, { method: 'POST', body: JSON.stringify({ valeur }) });
 
+// Santé de l'API (route ouverte, répond même V2 off) + stats V2 (rooms KV,
+// rapports CSP, hits 429 — 503 si V2 off, à gérer côté appelant).
+export const apiHealth = () => appel('/health');
+export const apiStats = () => appel('/stats');
+
 // Auth (hash vérifié côté serveur, PBKDF2 en V2).
 export const authSignup = (pseudo, email, mdp) =>
   appel('/auth/inscription', { method: 'POST', body: JSON.stringify({ pseudo, email, mdp }) });
