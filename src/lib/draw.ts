@@ -1,10 +1,14 @@
-// draw.js — mélange, diversité des sujets/thèmes, tirage seedé du quizz du jour.
+// draw.ts — mélange, diversité des sujets/thèmes, tirage seedé du quizz du jour.
 // Module PUR : le générateur aléatoire est injectable (rand = Math.random par défaut).
 import { todayDate } from './dates.js';
 import { DAILY_QUESTIONS } from './scoring.js';
+import type { TaggedQuestion, Theme } from './types.js';
+
+/** Générateur de nombres pseudo-aléatoires dans [0, 1[ (injectable pour des tirages déterministes). */
+export type Rand = () => number;
 
 // Hachage simple d'un texte en nombre (pour rendre le tirage du jour déterministe).
-export function hashText(text) {
+export function hashText(text: string): number {
   let h = 2166136261;
   for (let i = 0; i < text.length; i++) {
     h ^= text.charCodeAt(i);
@@ -14,7 +18,7 @@ export function hashText(text) {
 }
 
 // Générateur pseudo-aléatoire déterministe (mulberry32) : même graine = même tirage.
-function seededRandom(graine) {
+function seededRandom(graine: number): Rand {
   let a = graine >>> 0;
   return function () {
     a |= 0;
@@ -27,7 +31,7 @@ function seededRandom(graine) {
 
 // Mélange déterministe (Fisher-Yates avec le générateur fourni).
 export { seededRandom };
-export function shuffleSeeded(items, rand) {
+export function shuffleSeeded<T>(items: T[], rand: Rand): T[] {
   const t = [...items];
   for (let i = t.length - 1; i > 0; i--) {
     const j = Math.floor(rand() * (i + 1));
@@ -37,7 +41,7 @@ export function shuffleSeeded(items, rand) {
 }
 
 // Mélange un tableau (algorithme de Fisher-Yates), sans modifier l'original.
-export function shuffle(items) {
+export function shuffle<T>(items: T[]): T[] {
   return shuffleSeeded(items, Math.random);
 }
 
@@ -45,18 +49,22 @@ export function shuffle(items) {
 // Détecte le « sujet » d'une question : le premier groupe de mots en capitales
 // (nom propre / franchise) qui n'est PAS en début de phrase,
 // ex. « One Piece », « Naruto », « Dragon Ball », « Zelda ».
-function subjectOf(text) {
+interface Mot {
+  w: string;
+  i: number;
+}
+function subjectOf(text: string): string {
   const t = String(text || '');
   const re = /[A-ZÀ-Þ][\p{L}0-9’'-]*/gu;
-  const mots = [];
-  let m;
+  const mots: Mot[] = [];
+  let m: RegExpExecArray | null;
   while ((m = re.exec(t)) !== null)
     mots.push({
       w: m[0],
       i: m.index,
     });
-  const groupes = [];
-  let cur = [];
+  const groupes: Mot[][] = [];
+  let cur: Mot[] = [];
   for (const mot of mots) {
     const prev = cur[cur.length - 1];
     if (prev && mot.i <= prev.i + prev.w.length + 2) cur.push(mot);
@@ -82,19 +90,32 @@ function subjectOf(text) {
     : '';
 }
 
+// --- Tirage diversifié ---
+/** Question tirable : au minimum un texte ; `themeId` présent en modes multi-thèmes. */
+export interface DrawableQuestion {
+  q: string;
+  themeId?: string;
+}
+
 // Tire nb questions au hasard dans le pool en diversifiant :
 // - au maximum maxParSujet questions du même SUJET détecté (ex. pas 3x One Piece),
-// - au maximum maxParTheme questions du même THEME (si les questions ont un themeId,
+// - au maximum maxPerTheme questions du même THEME (si les questions ont un themeId,
 //   ex. survie / quizz du jour : pas 5 questions de Géographie dans la même série).
 // Tant qu'il reste assez de questions différentes ; sinon on complète avec le reste.
 // `rand` permet un tirage déterministe (quizz du jour : même tirage pour tous le même jour).
 export { subjectOf };
-export function drawSeries(pool, countN, maxParSujet = 2, maxPerTheme = 0, rand = Math.random) {
+export function drawSeries<T extends DrawableQuestion>(
+  pool: T[],
+  countN: number,
+  maxParSujet = 2,
+  maxPerTheme = 0,
+  rand: Rand = Math.random
+): T[] {
   const ordre = shuffleSeeded(pool, rand);
-  const choisie = [];
-  const accountSubjects = new Map();
-  const accountThemes = new Map();
-  const remainingN = [];
+  const choisie: T[] = [];
+  const accountSubjects = new Map<string, number>();
+  const accountThemes = new Map<string, number>();
+  const remainingN: T[] = [];
   for (const q of ordre) {
     if (choisie.length >= countN) break;
     const s = subjectOf(q.q);
@@ -121,9 +142,9 @@ export function drawSeries(pool, countN, maxParSujet = 2, maxPerTheme = 0, rand 
 // Tirage du quizz du jour : 10 questions parmi TOUS les thèmes et TOUS les niveaux,
 // identique pour tout le monde le même jour (graine = hash de la date).
 // Chaque question repart avec ses réponses mélangées (mélange aussi seedé).
-export function dailyQuestions(themes, date = todayDate()) {
+export function dailyQuestions(themes: Theme[], date: string = todayDate()): TaggedQuestion[] {
   const rand = seededRandom(hashText(`voltquiz-quotidien-${date}`));
-  const all = [];
+  const all: TaggedQuestion[] = [];
   for (const t of themes) {
     for (const q of t.questions) {
       all.push({
