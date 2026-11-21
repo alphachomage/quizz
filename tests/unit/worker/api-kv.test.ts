@@ -1,13 +1,13 @@
 // Tests de la route /api/kv/* (worker-api.ts) avec une D1 factice en mémoire :
-// POST/GET/DELETE, plafond de body spécifique kv (1 Mo — l'historique des parties
-// dépasse les 64 Ko généraux), 400 sans value, 503 si V2 off.
+// POST/GET/DELETE vers la table sync_client, plafond de body spécifique (1 Mo —
+// l'historique des parties dépasse les 64 Ko généraux), 400 sans value.
 /* global Env */
 import { describe, expect, it } from 'vitest';
 import { apiRouter } from '../../../worker-api.js';
 
-// D1 factice : table kv = Map<string, string>.
-function fakeD1(): { db: Env['DB']; kv: Map<string, string> } {
-  const kv = new Map<string, string>();
+// D1 factice : table sync_client = Map<string, string>.
+function fakeD1(): { db: Env['DB']; sync: Map<string, string> } {
+  const sync = new Map<string, string>();
   const db = {
     prepare(sql: string) {
       let params: unknown[] = [];
@@ -17,27 +17,27 @@ function fakeD1(): { db: Env['DB']; kv: Map<string, string> } {
           return self;
         },
         async first() {
-          const v = kv.get(String(params[0]));
+          const v = sync.get(String(params[0]));
           return v === undefined ? null : { valeur: v };
         },
         async run() {
-          if (sql.startsWith('INSERT')) kv.set(String(params[0]), String(params[1]));
-          else if (sql.startsWith('DELETE')) kv.delete(String(params[0]));
+          if (sql.startsWith('INSERT')) sync.set(String(params[0]), String(params[1]));
+          else if (sql.startsWith('DELETE')) sync.delete(String(params[0]));
           return { success: true };
         },
       };
       return self;
     },
   } as unknown as Env['DB'];
-  return { db, kv };
+  return { db, sync };
 }
 
-function envAvec(db: Env['DB'], v2 = 'true'): Env {
+function envAvec(db: Env['DB']): Env {
   return {
     DB: db,
-    V2_ENABLED: v2,
     ENVIRONMENT: 'production',
     APP_VERSION: '0.1.0',
+    ADMIN_PSEUDOS: '',
     ALLOWED_ORIGINS: '',
   } as unknown as Env;
 }
@@ -56,7 +56,7 @@ async function appelKv(
   return { status: res.status, data: (await res.json()) as { ok?: boolean; value?: unknown; error?: string } };
 }
 
-describe('/api/kv/* (D1 factice)', () => {
+describe('/api/kv/* (table D1 sync_client, D1 factice)', () => {
   it('POST puis GET : la valeur est persistée et relue', async () => {
     const { db } = fakeD1();
     const env = envAvec(db);
@@ -76,7 +76,7 @@ describe('/api/kv/* (D1 factice)', () => {
     expect(res.status).toBe(400);
   });
 
-  it('POST > 64 Ko sur /api/kv accepté (plafond kv = 1 Mo, l’historique des parties grossit)', async () => {
+  it('POST > 64 Ko sur /api/kv accepté (plafond sync = 1 Mo, l’historique des parties grossit)', async () => {
     const { db } = fakeD1();
     const env = envAvec(db);
     const gros = 'a'.repeat(200 * 1024); // ~200 Ko > 64 Ko
@@ -114,16 +114,22 @@ describe('/api/kv/* (D1 factice)', () => {
     expect(get.data.value).toBe(null);
   });
 
-  it('V2 off : /api/kv -> 503 mais /api/health répond encore', async () => {
-    const { db } = fakeD1();
-    const env = envAvec(db, 'false');
+  it('sans binding DB, /api/kv répond quand même (value null) et /api/parties -> 503', async () => {
+    const env = {
+      ENVIRONMENT: 'production',
+      APP_VERSION: '0.1.0',
+      ADMIN_PSEUDOS: '',
+      ALLOWED_ORIGINS: '',
+    } as unknown as Env;
     const kv = await appelKv(env, 'x');
-    expect(kv.status).toBe(503);
-    const health = await apiRouter(
-      new Request('https://voltquiz.test/api/health'),
-      env,
-      new URL('https://voltquiz.test/api/health')
-    );
-    expect(health.status).toBe(200);
+    expect(kv.status).toBe(200);
+    expect(kv.data.value).toBe(null);
+    const req = new Request('https://voltquiz.test/api/parties', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mode: 'solo' }),
+    });
+    const res = await apiRouter(req, env, new URL(req.url));
+    expect(res.status).toBe(503);
   });
 });
