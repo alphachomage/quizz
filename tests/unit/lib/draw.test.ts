@@ -68,7 +68,8 @@ describe('tirerSerie', () => {
       ),
     ];
     const seriesN = drawSeries(pool, 10, 2, 0, mulberry32(7));
-    const account = (subject) => seriesN.filter((q) => subjectOf(q.q) === subject).length;
+    const account = (subject: string) =>
+      seriesN.filter((q) => subjectOf(q.q) === subject).length;
     expect(account('one piece')).toBeLessThanOrEqual(2);
     expect(account('zelda')).toBeLessThanOrEqual(2);
   });
@@ -92,7 +93,7 @@ describe('tirerSerie', () => {
         )
     ).flat();
     const seriesN = drawSeries(pool, 10, 2, 2, mulberry32(3));
-    const account = new Map();
+    const account = new Map<string | undefined, number>();
     for (const q of seriesN) account.set(q.themeId, (account.get(q.themeId) || 0) + 1);
     for (const [, n] of account) expect(n).toBeLessThanOrEqual(2);
   });

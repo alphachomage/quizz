@@ -1,5 +1,5 @@
 // Tests des comptes locaux et de la modération des pseudos
-// (src/lib/comptes.js + src/lib/moderation.js).
+// (src/lib/accounts.ts + src/lib/moderation.ts).
 import { describe, expect, it } from 'vitest';
 import {
   loadAccounts,
@@ -38,8 +38,8 @@ describe('comptes locaux', () => {
     const account = loadAccounts().find((c) => c.pseudo === 'testeur');
     expect(account).toBeTruthy();
     expect(JSON.stringify(loadAccounts())).not.toContain('secret123');
-    expect(account.hash).toMatch(/^[0-9a-f]{64}$/); // SHA-256 hex
-    expect(account.sel).toBeTruthy(); // sel présent, hash salé
+    expect(account!.hash).toMatch(/^[0-9a-f]{64}$/); // SHA-256 hex
+    expect(account!.sel).toBeTruthy(); // sel présent, hash salé
   });
   it('refuse un e-mail invalide et un pseudo pris', async () => {
     await createAccount({
@@ -76,7 +76,7 @@ describe('comptes locaux', () => {
     expect((await connect('testeur', 'mauvais')).ok).toBe(false);
     const res = await connect('testeur', 'secret123');
     expect(res.ok).toBe(true);
-    expect(currentSession().pseudo).toBe('testeur');
+    expect(currentSession()!.pseudo).toBe('testeur');
     disconnect();
     expect(currentSession()).toBe(null);
   });

@@ -1,4 +1,4 @@
-// Tests de la détection de similarité (src/lib/similarite.js) : normalisation
+// Tests de la détection de similarité (src/lib/similarity.ts) : normalisation
 // sans accents/ponctuation, score de Jaccard mots + bigrammes, seuils.
 import { describe, expect, it } from 'vitest';
 import {

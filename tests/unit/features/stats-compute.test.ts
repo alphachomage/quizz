@@ -1,4 +1,4 @@
-// Tests des calculs de l'écran Stats (src/features/stats/statsCalculs.js) — fonctions pures.
+// Tests des calculs de l'écran Stats (src/features/stats/statsCompute.ts) — fonctions pures.
 import { describe, expect, it } from 'vitest';
 import {
   computeStats,
@@ -7,9 +7,12 @@ import {
   computeGlobalXp,
   sortThemesByXp,
 } from '@/features/stats/statsCompute.js';
+import type { CalendarDay, DetailWithTime, StatsGame } from '@/features/stats/statsCompute.js';
+import type { Theme } from '@lib/types.js';
 
 // Fabrique une partie de test au format de l'historique local (voltquiz_parties).
-function game(over = {}) {
+// Les détails factices n'ont pas tous les champs de GameDetail : cast global.
+function game(over: Partial<StatsGame> = {}): StatsGame {
   return {
     mode: 'solo',
     niveau: 'moyen',
@@ -37,7 +40,7 @@ function game(over = {}) {
       })
     ),
     ...over,
-  };
+  } as unknown as StatsGame;
 }
 describe('calculerStats', () => {
   it('calcule le bilan global (parties, répondues, bonnes, pct, points)', () => {
@@ -198,14 +201,14 @@ describe('calculerCalendrier', () => {
       }),
     ];
     const c = computeCalendar(ps, now);
-    const cases = c.weeks.flat().filter(Boolean);
-    const n18 = cases.find((x) => x.key === '2026-11-18').niveau;
-    const n19 = cases.find((x) => x.key === '2026-11-19').niveau;
-    const n17 = cases.find((x) => x.key === '2026-11-17').niveau;
+    const cases = c.weeks.flat().filter((x): x is CalendarDay => Boolean(x));
+    const n18 = cases.find((x) => x.key === '2026-11-18')!.niveau;
+    const n19 = cases.find((x) => x.key === '2026-11-19')!.niveau;
+    const n17 = cases.find((x) => x.key === '2026-11-17')!.niveau;
     expect(n18).toBe(1);
     expect(n19).toBe(2);
     expect(n17).toBe(3);
-    const withoutGame = cases.find((x) => x.key === '2026-11-10').niveau;
+    const withoutGame = cases.find((x) => x.key === '2026-11-10')!.niveau;
     expect(withoutGame).toBe(0);
   });
 });
@@ -222,7 +225,7 @@ describe('calculerTempsMoyen', () => {
             {
               themeId: 'x',
               correct: true,
-            },
+            } as DetailWithTime,
           ],
         }),
       ])
@@ -242,6 +245,7 @@ describe('calculerXpGlobale / classerThemesParXp', () => {
     expect(g.pctXp).toBeLessThanOrEqual(100);
   });
   it('classe les thèmes par XP décroissante, uniquement ceux avec de l’XP', () => {
+    // sortThemesByXp ne lit que id/nom : cast pour des thèmes sans questions.
     const themes = [
       {
         id: 'a',
@@ -255,7 +259,7 @@ describe('calculerXpGlobale / classerThemesParXp', () => {
         id: 'c',
         nom: 'C',
       },
-    ];
+    ] as unknown as Theme[];
     const list = sortThemesByXp(themes, {
       a: 10,
       b: 300,

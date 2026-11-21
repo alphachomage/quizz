@@ -1,5 +1,5 @@
-// Tests des repositories (src/lib/repositories.js) : un repo par clé de stockage,
-// méthodes métier (records, XP, parties avec limite 500) au-dessus de storage.js.
+// Tests des repositories (src/lib/repositories.ts) : un repo par clé de stockage,
+// méthodes métier (records, XP, parties avec limite 500) au-dessus de storage.ts.
 import { beforeEach, describe, expect, it } from 'vitest';
 import { STORAGE_KEYS } from '@/lib/storage.js';
 import {
@@ -8,15 +8,16 @@ import {
   GamesRepo,
   SubmissionsRepo,
   ApprovedRepo,
-  SuggestionsRepo,
   DailyStreakRepo,
   clearAll,
 } from '@/lib/repositories.js';
+import type { StoredGame } from '@/lib/repositories.js';
 
 // chargerXxx du domaine restent des wrappers au-dessus des repos :
 import { loadRecords, saveRecord, recordKey } from '@/lib/records.js';
 import { loadXp, addXp } from '@/lib/xp.js';
 import { loadGames, addGame } from '@/lib/game-history.js';
+import type { NewGame } from '@/lib/game-history.js';
 import {
   loadSubmissions,
   addSubmission,
@@ -26,7 +27,7 @@ import {
 import { loadDailyStreak, recordDailyStreak } from '@/lib/streak.js';
 import { addSuggestion, loadSuggestions } from '@/lib/suggestions.js';
 beforeEach(() => {
-  localStorage.clear();
+  window.localStorage.clear();
 });
 describe('repositories : contrat clé -> repo', () => {
   it('chaque repo encapsule sa clé CLES', () => {
@@ -40,7 +41,7 @@ describe('repositories : contrat clé -> repo', () => {
     RecordsRepo.save({
       'solo:moyen:histoire': 120,
     });
-    expect(JSON.parse(localStorage.getItem(STORAGE_KEYS.records))).toEqual({
+    expect(JSON.parse(window.localStorage.getItem(STORAGE_KEYS.records)!)).toEqual({
       'solo:moyen:histoire': 120,
     });
     expect(RecordsRepo.all()).toEqual({
@@ -56,7 +57,7 @@ describe('méthodes métier', () => {
     expect(RecordsRepo.saveIfBetter(key, 100)).toBe(true);
     expect(RecordsRepo.saveIfBetter(key, 50)).toBe(false);
     expect(RecordsRepo.best(key)).toBe(100);
-    // le domaine (records.js) lit la même donnée via le repo
+    // le domaine (records.ts) lit la même donnée via le repo
     expect(saveRecord(key, 150)).toBe(150);
     expect(loadRecords()[key]).toBe(150);
   });
@@ -74,7 +75,7 @@ describe('méthodes métier', () => {
       addGame({
         mode: 'solo',
         total: 10,
-      });
+      } as unknown as NewGame);
     const games = loadGames();
     expect(games).toHaveLength(500);
     expect(games[0].id).toBeTruthy(); // chaque partie a un id + une date
@@ -89,7 +90,7 @@ describe('méthodes métier', () => {
       niveau: 'facile',
     });
     expect(loadSubmissions()).toHaveLength(1);
-    approveSubmission(s.id);
+    approveSubmission(s.id!);
     expect(loadSubmissions()).toHaveLength(0); // disparaît de la liste des propositions
     expect(loadApproved()).toHaveLength(1); // devient jouable
     expect(loadApproved()[0].valideLe).toBeTruthy();
@@ -106,7 +107,7 @@ describe('méthodes métier', () => {
   it('les suggestions sont tronquées à 200 max', () => {
     for (let i = 0; i < 205; i++) addSuggestion('suggestion ' + i, 'testeur');
     expect(loadSuggestions()).toHaveLength(200);
-    expect(JSON.parse(localStorage.getItem(STORAGE_KEYS.suggestions))).toHaveLength(200);
+    expect(JSON.parse(window.localStorage.getItem(STORAGE_KEYS.suggestions)!)).toHaveLength(200);
   });
 });
 describe('toutVider (reset)', () => {
@@ -120,7 +121,7 @@ describe('toutVider (reset)', () => {
     GamesRepo.save([
       {
         mode: 'solo',
-      },
+      } as unknown as StoredGame,
     ]);
     DailyStreakRepo.save({
       account: 3,

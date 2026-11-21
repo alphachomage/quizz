@@ -1,11 +1,11 @@
-// Tests des suggestions des joueurs (src/lib/suggestions.js) : ajout, ordre
+// Tests des suggestions des joueurs (src/lib/suggestions.ts) : ajout, ordre
 // (plus récente en premier), refus du vide, suppression (porté du legacy).
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { addSuggestion, loadSuggestions, removeSuggestion } from '@/lib/suggestions.js';
 
 beforeEach(() => {
-  localStorage.clear();
+  window.localStorage.clear();
 });
 
 describe('suggestions', () => {

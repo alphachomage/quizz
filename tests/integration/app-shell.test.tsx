@@ -1,15 +1,16 @@
-// tests/integration/app-shell.test.jsx — test du shell app/ (providers + navigation) :
+// tests/integration/app-shell.test.tsx — test du shell app/ (providers + navigation) :
 // invité -> accueil -> choix thème -> modale niveau -> partie -> 1re réponse.
 // Le catalogue de données est remplacé par des fixtures (pas les 264 vrais fichiers).
 //
-// Note écrans en React.lazy (routes.js) : sous fake timers, les import() dynamiques
+// Note écrans en React.lazy (routes.ts) : sous fake timers, les import() dynamiques
 // de Vitest ne se résolvent pas. On pré-charge donc le mock + les 9 écrans avec les
 // VRAIS timers AVANT vi.useFakeTimers(), puis on avance les timers manuellement.
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from '@/app/App.jsx';
 import { startGuest } from '@lib/accounts.js';
-import { makeThemes, mulberry32 } from '../fixtures/questions.fixture.js';
+// makeThemes n'est utilisé que via le import() dynamique du vi.mock ci-dessous.
+import { mulberry32 } from '../fixtures/questions.fixture.js';
 
 // Catalogue factice : 3 thèmes x 30 questions (au lieu du vrai corpus).
 vi.mock('@data/questions.js', async () => {
@@ -21,7 +22,7 @@ vi.mock('@data/questions.js', async () => {
 });
 
 // Attend qu'un texte apparaisse en avançant les fake timers (scheduler React + chunks lazy).
-async function waitForText(matcher, max = 100) {
+async function waitForText(matcher: string | RegExp, max = 100): Promise<HTMLElement> {
   for (let i = 0; i < max; i++) {
     await act(async () => {
       await vi.advanceTimersByTimeAsync(20);
@@ -33,7 +34,7 @@ async function waitForText(matcher, max = 100) {
 }
 
 // Pré-chargement (vrais timers) : le vi.mock de @data/questions.js + les 9 écrans lazy.
-async function preloadModules() {
+async function preloadModules(): Promise<void> {
   await import('@data/questions.js');
   await Promise.all([
     import('@features/home/Home.jsx'),
@@ -53,7 +54,7 @@ describe("shell de l'application (app/)", () => {
     vi.useFakeTimers();
     vi.spyOn(Math, 'random').mockImplementation(mulberry32(2026));
     // Préférences silencieuses (pas de musique/sons en test).
-    localStorage.setItem(
+    window.localStorage.setItem(
       'voltquiz_prefs',
       JSON.stringify({
         sons: false,
@@ -83,14 +84,14 @@ describe("shell de l'application (app/)", () => {
     expect(screen.getByText('Choisis la difficulté :')).toBeTruthy();
 
     // Clic sur "C'est parti" DANS LA MODALE (le CTA fixe du bas a le même libellé).
-    fireEvent.click(document.querySelector('.modal .btn-principal'));
+    fireEvent.click(document.querySelector('.modal .btn-principal')!);
     // Navigation vers l'écran Partie (lazy) : on avance les timers jusqu'à la 1re question.
     await waitForText(/Question \S+ \?/);
     expect(document.querySelector('.question')).toBeTruthy();
     expect(document.querySelectorAll('.reponse')).toHaveLength(4);
 
     // On répond à la bonne réponse (fixture : bonne = "R<tag>-0") -> feedback +N pts.
-    const tag = document.querySelector('.question').textContent.match(/Question (\S+) \?/)[1];
+    const tag = document.querySelector('.question')!.textContent!.match(/Question (\S+) \?/)![1];
     fireEvent.click(screen.getByText(`R${tag}-0`));
     expect(document.querySelector('.gain')).toBeTruthy();
 
@@ -101,7 +102,7 @@ describe("shell de l'application (app/)", () => {
     expect(document.querySelector('.question')).toBeTruthy();
   });
   it("sans session, l'écran de compte s'affiche d'abord", async () => {
-    localStorage.clear(); // pas de session
+    window.localStorage.clear(); // pas de session
     render(<App />);
     // L'écran compte (chunk lazy) propose le mode invité.
     await waitForText(/invité/i);

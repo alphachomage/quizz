@@ -1,22 +1,24 @@
-// tests/integration/partie-duel.test.jsx — flux complet d'un duel 1v1 local :
+// tests/integration/game-duel.test.tsx — flux complet d'un duel 1v1 local :
 // écran « passe l'appareil » entre les tours, 6 questions par joueur,
 // dernière manche en bonus x2, récapitulatif à 2 joueurs.
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import Game from '@features/game/Game.jsx';
+import type { GameLaunchConfig } from '@features/game/draw.js';
+import type { GameResult } from '@lib/types.js';
 import { makeTheme, mulberry32, TEST_PREFS } from '../fixtures/questions.fixture.js';
-function currentQuestion() {
-  return document.querySelector('.question').textContent.match(/Question (\S+) \?/)[1];
+function currentQuestion(): string {
+  return document.querySelector('.question')!.textContent!.match(/Question (\S+) \?/)![1];
 }
-function answerCorrect() {
+function answerCorrect(): void {
   fireEvent.click(screen.getByText(`R${currentQuestion()}-0`));
 }
-function avancer() {
+function avancer(): void {
   act(() => {
     vi.advanceTimersByTime(2100);
   });
 }
-function pret() {
+function pret(): void {
   fireEvent.click(screen.getByText(/Je suis prêt/));
 }
 describe('partie duel 1v1 (flux complet)', () => {
@@ -33,14 +35,17 @@ describe('partie duel 1v1 (flux complet)', () => {
       id: 'test',
       perLevel: 10,
     }); // 30 questions au total
-    const onFinish = vi.fn();
+    const onFinish = vi.fn<(result: GameResult) => void>();
     render(
       <Game
-        config={{
-          mode: 'duel',
-          theme,
-          players: ['Alice', 'Bob'],
-        }}
+        config={
+          // En duel aucun niveau n'est choisi : cast car GameLaunchConfig déclare `niveau` requis.
+          {
+            mode: 'duel',
+            theme,
+            players: ['Alice', 'Bob'],
+          } as unknown as GameLaunchConfig
+        }
         prefs={TEST_PREFS}
         onFinish={onFinish}
       />

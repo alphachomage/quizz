@@ -1,16 +1,17 @@
-// tests/integration/partie-quotidien.test.jsx — quizz du jour : tirage seedé
+// tests/integration/game-daily.test.tsx — quizz du jour : tirage seedé
 // (identique pour tout le monde le même jour), 10 questions, pas de manche bonus.
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import Game from '@features/game/Game.jsx';
+import type { GameResult } from '@lib/types.js';
 import { makeThemes, mulberry32, TEST_PREFS } from '../fixtures/questions.fixture.js';
-function currentQuestion() {
-  return document.querySelector('.question').textContent.match(/Question (\S+) \?/)[1];
+function currentQuestion(): string {
+  return document.querySelector('.question')!.textContent!.match(/Question (\S+) \?/)![1];
 }
-function answerCorrect() {
+function answerCorrect(): void {
   fireEvent.click(screen.getByText(`R${currentQuestion()}-0`));
 }
-function avancer() {
+function avancer(): void {
   act(() => {
     vi.advanceTimersByTime(2100);
   });
@@ -26,7 +27,7 @@ describe('quizz du jour (flux complet)', () => {
   });
   it('10 questions seedées, 10 bonnes réponses, score 245 (20 x 10 + bonus de série)', () => {
     const themes = makeThemes(6, 10); // 180 questions brassées par le tirage seedé
-    const onFinish = vi.fn();
+    const onFinish = vi.fn<(result: GameResult) => void>();
     render(
       <Game
         config={{
@@ -43,11 +44,11 @@ describe('quizz du jour (flux complet)', () => {
 
     // Le tirage du jour est déterministe : il dépend de la date, pas de Math.random.
     expect(screen.getByText(/Quizz du 2026-05-05/)).toBeTruthy();
-    const gains = [];
+    const gains: number[] = [];
     for (let i = 0; i < 10; i++) {
       answerCorrect();
       const el = document.querySelector('.gain');
-      gains.push(Number(el.textContent.match(/\+(\d+) pts/)[1]));
+      gains.push(Number(el!.textContent!.match(/\+(\d+) pts/)![1]));
       avancer();
     }
 
@@ -61,7 +62,7 @@ describe('quizz du jour (flux complet)', () => {
     expect(res.bonnes).toEqual([10]);
     expect(res.total).toBe(10);
     // Chaque question du jour porte son thème d'origine.
-    const touchedThemes = new Set(res.details.map((d) => d.themeId));
+    const touchedThemes = new Set(res.details!.map((d) => d.themeId));
     expect(touchedThemes.size).toBeGreaterThan(1);
   });
 });

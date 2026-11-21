@@ -1,4 +1,4 @@
-// tests/data/questions-schema.test.js — SEUL test qui charge le vrai corpus
+// tests/data/questions-schema.test.ts — SEUL test qui charge le vrai corpus
 // (les 264 fichiers src/data/questions-*.js). Vérifie le schéma de chaque
 // question et compte les doublons exacts connus (hérités des premiers lots).
 import { describe, expect, it } from 'vitest';
@@ -53,7 +53,7 @@ describe('corpus de questions intégré', () => {
   });
 
   it('compte les doublons exacts (héritage des premiers lots, < 150 tolérés)', () => {
-    const vus = new Set();
+    const vus = new Set<string>();
     let doublons = 0;
     for (const t of THEMES) {
       for (const q of t.questions) {

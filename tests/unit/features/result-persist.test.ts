@@ -1,20 +1,29 @@
-// Tests de la persistance d'une partie terminée (features/resultat/persistance.js)
-// et des stats affichées (statsPartie.js) — fonctions pures/testables hors React.
+// Tests de la persistance d'une partie terminée (features/results/persist.ts)
+// et des stats affichées (gameStats.ts) — fonctions pures/testables hors React.
 import { describe, expect, it } from 'vitest';
 import { persistResult } from '@/features/results/persist.js';
 import { computeGameStats, levelPercent } from '@/features/results/gameStats.js';
+import type { ResultDetail } from '@/features/results/gameStats.js';
 import { loadGames } from '@lib/game-history.js';
 import { loadRecords, recordKey } from '@lib/records.js';
 import { loadXp, themeLevel } from '@lib/xp.js';
 import { loadDailyStreak } from '@lib/streak.js';
+import type { GameResult, Theme } from '@lib/types.js';
 import { TEST_PREFS } from '../../fixtures/questions.fixture.js';
+// persistResult ne lit que l'id du thème : cast pour la fixture sans questions.
 const theme = {
   id: 'test',
   nom: 'Thème test',
   icone: 'question',
   couleur: '#38bdf8',
-};
-function soloResult(score = 100) {
+} as unknown as Theme;
+
+// Détail de partie tel qu'envoyé par le moteur : ResultDetail + bonusStreak de la fixture.
+interface DetailTest extends ResultDetail {
+  bonusStreak: number;
+  secondes: number;
+}
+function soloResult(score = 100): Omit<GameResult, 'details'> & { details: DetailTest[] } {
   return {
     mode: 'solo',
     niveau: 'moyen',
@@ -27,7 +36,7 @@ function soloResult(score = 100) {
       {
         length: 10,
       },
-      (_, i) => ({
+      (_, i): DetailTest => ({
         themeId: 'test',
         themeName: 'Thème test',
         niveau: 'moyen',
@@ -104,13 +113,13 @@ describe('calculerStatsPartie', () => {
         secondes: 3,
         streak: 3,
       },
-    ]);
+    ] as unknown as ResultDetail[]);
     expect(s.avgTime).toBe(3);
     expect(s.meilleureSerie).toBe(3);
   });
   it('renvoie null si aucune durée enregistrée', () => {
     expect(computeGameStats([]).avgTime).toBe(null);
-    expect(computeGameStats(null).meilleureSerie).toBe(0);
+    expect(computeGameStats(null!).meilleureSerie).toBe(0); // null volontaire : repli sans détails
   });
 });
 describe('pctNiveau', () => {

@@ -25,8 +25,8 @@ describe('questionsQuotidien', () => {
   });
   it('diversifie : max 2 questions du même sujet et 2 du même thème', () => {
     const q = dailyQuestions(themes, '2026-02-02');
-    const accountSubjects = new Map();
-    const accountThemes = new Map();
+    const accountSubjects = new Map<string, number>();
+    const accountThemes = new Map<string, number>();
     for (const x of q) {
       const s = subjectOf(x.q);
       if (s) accountSubjects.set(s, (accountSubjects.get(s) || 0) + 1);

@@ -1,33 +1,33 @@
-// tests/integration/partie-solo.test.jsx — flux complet d'une partie SOLO :
+// tests/integration/game-solo.test.tsx — flux complet d'une partie SOLO :
 // 10 questions, minuteur gelé (réponses instantanées), enchaînement auto,
 // score exact attendu, puis appel de onTerminer avec le bon récapitulatif.
-// C'est la commande `npm run test:partie` : elle doit rester verte à chaque commit.
+// C'est la commande `npm run test:game` : elle doit rester verte à chaque commit.
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import Game from '@features/game/Game.jsx';
+import type { GameResult } from '@lib/types.js';
 import { makeTheme, mulberry32, TEST_PREFS } from '../fixtures/questions.fixture.js';
 
 // Tag de la question affichée dans le <h1 class="question">.
-function currentQuestion() {
+function currentQuestion(): string {
   const h1 = document.querySelector('.question');
-  const m = h1.textContent.match(/Question (\S+) \?/);
-  return m[1];
+  return h1!.textContent!.match(/Question (\S+) \?/)![1];
 }
 
 // Texte de la bonne réponse de la question courante (fixture : bonne = "R<tag>-0").
-function goodAnswer() {
+function goodAnswer(): string {
   return `R${currentQuestion()}-0`;
 }
-function answerCorrect() {
+function answerCorrect(): void {
   fireEvent.click(screen.getByText(goodAnswer()));
 }
 
 // Lit le gain affiché dans le feedback ("+N pts") et le renvoie en nombre.
-function gainAffiche() {
+function gainAffiche(): number {
   const el = document.querySelector('.gain');
-  return Number(el.textContent.match(/\+(\d+) pts/)[1]);
+  return Number(el!.textContent!.match(/\+(\d+) pts/)![1]);
 }
-function avancer() {
+function avancer(): void {
   act(() => {
     vi.advanceTimersByTime(2100); // enchaînement auto après 2 s
   });
@@ -46,7 +46,7 @@ describe('partie solo (flux complet)', () => {
       id: 'test',
       perLevel: 10,
     }); // 20 questions "facile"
-    const onFinish = vi.fn();
+    const onFinish = vi.fn<(result: GameResult) => void>();
     render(
       <Game
         config={{
@@ -59,7 +59,7 @@ describe('partie solo (flux complet)', () => {
         onFinish={onFinish}
       />
     );
-    const gains = [];
+    const gains: number[] = [];
     for (let i = 0; i < 10; i++) {
       expect(document.querySelector('.question')).toBeTruthy();
       answerCorrect();
@@ -77,15 +77,15 @@ describe('partie solo (flux complet)', () => {
     expect(res.bonnes).toEqual([10]);
     expect(res.total).toBe(10);
     expect(res.details).toHaveLength(10);
-    expect(res.details.every((d) => d.correct)).toBe(true);
-    expect(res.details.every((d) => d.themeId === 'test')).toBe(true);
+    expect(res.details!.every((d) => d.correct)).toBe(true);
+    expect(res.details!.every((d) => d.themeId === 'test')).toBe(true);
   });
   it('une mauvaise réponse rapporte 0 pt et la partie continue', () => {
     const theme = makeTheme({
       id: 'test',
       perLevel: 10,
     });
-    const onFinish = vi.fn();
+    const onFinish = vi.fn<(result: GameResult) => void>();
     render(
       <Game
         config={{
@@ -117,7 +117,7 @@ describe('partie solo (flux complet)', () => {
     const attendu = [0, 20, 21, 22, 23, 24, 25, 26, 47, 48];
     expect(res.scores[0]).toBe(attendu.reduce((a, b) => a + b, 0));
     expect(res.bonnes).toEqual([9]);
-    expect(res.details[0].correct).toBe(false);
-    expect(res.details[0].gain).toBe(0);
+    expect(res.details![0].correct).toBe(false);
+    expect(res.details![0].gain).toBe(0);
   });
 });

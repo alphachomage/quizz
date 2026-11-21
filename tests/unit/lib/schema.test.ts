@@ -1,4 +1,4 @@
-// Tests de la validation zod des données externes (src/lib/schema.js).
+// Tests de la validation zod des données externes (src/lib/schema.ts).
 import { describe, expect, it } from 'vitest';
 
 import { schemaQuestion, validatePersonalFile, validateSubmissions } from '@/lib/schema.js';
@@ -52,7 +52,7 @@ describe('validerFichierPerso', () => {
     };
     const res = validatePersonalFile(data);
     expect(res).toBeTruthy();
-    expect(res.themes[0].id).toBe('mon-theme');
+    expect(res!.themes[0].id).toBe('mon-theme');
   });
 
   it('renvoie null sur un fichier invalide (thème sans questions, mauvaise couleur...)', () => {

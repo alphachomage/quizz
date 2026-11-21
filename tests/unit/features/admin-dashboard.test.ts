@@ -1,4 +1,4 @@
-// Tests du tableau de bord admin (src/features/admin/dashboardCompute.js) — fonctions
+// Tests du tableau de bord admin (src/features/admin/dashboardCompute.ts) — fonctions
 // PURES de métriques, testées depuis des fixtures (jamais le vrai stockage).
 import { describe, expect, it } from 'vitest';
 import {
@@ -11,9 +11,12 @@ import {
   parseRecordKey,
   recordLabel,
 } from '@/features/admin/dashboardCompute.js';
+import type { StoredGame, StoredReport, StoredSuggestion } from '@/lib/repositories.js';
+import type { Submission, Theme } from '@lib/types.js';
 
 // Partie factice au format de l'historique local (voltquiz_parties).
-function game(over = {}) {
+// Champs partiels (ex. players sans score en duel) : `over` lâche + cast global.
+function game(over: Record<string, unknown> = {}): StoredGame {
   return {
     mode: 'solo',
     niveau: 'moyen',
@@ -28,15 +31,16 @@ function game(over = {}) {
       },
     ],
     ...over,
-  };
+  } as unknown as StoredGame;
 }
 
 // Date ISO d'un jour local précis (indépendante du fuseau horaire du runner).
-function localISO(year, month, day, hour = 10) {
+function localISO(year: number, month: number, day: number, hour = 10): string {
   return new Date(year, month - 1, day, hour, 0, 0).toISOString();
 }
 describe('computeCorpus', () => {
   it('compte les thèmes et les questions jouables', () => {
+    // computeCorpus ne lit que id + questions.length : questions factices vides.
     const themes = [
       {
         id: 'a',
@@ -50,7 +54,7 @@ describe('computeCorpus', () => {
         id: 'c',
         questions: [],
       },
-    ];
+    ] as unknown as Theme[];
     expect(computeCorpus(themes)).toEqual({
       themeCount: 3,
       nbQuestions: 4,
@@ -194,6 +198,7 @@ describe('computeRecordsTop + parseRecordKey', () => {
 });
 describe('computeModeration', () => {
   it('compte les signalements en attente et les autres compteurs', () => {
+    // computeModeration ne compte que les longueurs : entrées partielles castées.
     const m = computeModeration({
       reports: [
         {
@@ -207,7 +212,7 @@ describe('computeModeration', () => {
           q: 'c',
           statut: 'retirer',
         },
-      ],
+      ] as unknown as StoredReport[],
       submissions: [
         {
           id: '1',
@@ -215,7 +220,7 @@ describe('computeModeration', () => {
         {
           id: '2',
         },
-      ],
+      ] as unknown as Submission[],
       approved: [
         {
           id: '3',
@@ -226,12 +231,12 @@ describe('computeModeration', () => {
         {
           id: '5',
         },
-      ],
+      ] as unknown as Submission[],
       suggestions: [
         {
           id: '6',
         },
-      ],
+      ] as unknown as StoredSuggestion[],
       excluded: ['x'],
     });
     expect(m).toEqual({
@@ -323,7 +328,7 @@ describe('computeStreak', () => {
         date: localISO(2026, 11, 19, 23),
       }),
       game({
-        date: null,
+        date: null!, // date absente : ignorée par le compteur du jour
       }),
     ];
     expect(

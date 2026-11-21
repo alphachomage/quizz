@@ -1,6 +1,8 @@
-// Tests du tirage d'une partie (src/features/partie/tirage.js) — fonction pure.
+// Tests du tirage d'une partie (src/features/game/draw.ts) — fonction pure.
 import { describe, expect, it, vi, afterEach, beforeEach } from 'vitest';
 import { drawGameQuestions, withShuffledAnswers, tagTheme } from '@/features/game/draw.js';
+import type { GameLaunchConfig } from '@/features/game/draw.js';
+import type { Question, Theme } from '@lib/types.js';
 import { makeTheme, makeThemes, mulberry32 } from '../../fixtures/questions.fixture.js';
 describe('tirerQuestionsPartie', () => {
   beforeEach(() => {
@@ -28,11 +30,12 @@ describe('tirerQuestionsPartie', () => {
       id: 'test',
       perLevel: 10,
     });
+    // En duel aucun niveau n'est choisi : cast car GameLaunchConfig déclare `niveau` requis.
     const series = drawGameQuestions({
       mode: 'duel',
       theme,
       players: ['a', 'b'],
-    });
+    } as unknown as GameLaunchConfig);
     expect(series).toHaveLength(2);
     expect(series[0]).toHaveLength(6);
     expect(series[1]).toHaveLength(6);
@@ -44,13 +47,13 @@ describe('tirerQuestionsPartie', () => {
       theme: themes[0],
       allThemes: themes,
       players: ['a'],
-    });
+    } as unknown as GameLaunchConfig);
     expect(seriesN).toHaveLength(30);
     expect(seriesN.every((q) => q.themeId && q.themeName)).toBe(true);
   });
   it('quotidien : même ensemble de questions pour la même date (ordre re-mélangé ensuite)', () => {
     const themes = makeThemes(6, 10);
-    const cfg = {
+    const cfg: GameLaunchConfig = {
       mode: 'quotidien',
       theme: themes[0],
       allThemes: themes,
@@ -63,8 +66,8 @@ describe('tirerQuestionsPartie', () => {
     // L'ensemble est seedé (identique pour tous le même jour) ; l'ordre final est re-mélangé.
     expect([...a[0].map((q) => q.q)].sort()).toEqual([...b[0].map((q) => q.q)].sort());
   });
-  it("avecReponsesAleatoires : conserve les réponses, recalcule l'index de la bonne", () => {
-    const q = {
+  it('avecReponsesAleatoires : conserve les réponses, recalcule l’index de la bonne', () => {
+    const q: Question = {
       q: 'Q ?',
       reponses: ['a', 'b', 'c', 'd'],
       bonne: 2,
@@ -80,7 +83,7 @@ describe('tirerQuestionsPartie', () => {
       nom: 'Géographie',
       couleur: '#2dd4bf',
       icone: 'globe',
-    };
+    } as unknown as Theme; // tagTheme ne lit que id/nom/couleur/icone
     const taguee = tagTheme(
       {
         q: 'Q ?',
