@@ -33,12 +33,19 @@ puis `curl localhost:5173/api/kv/test` -> `{"ok":true,"key":"test","value":42}`.
   direct `read(STORAGE_KEYS.*)` hors storage/repositories. Le défaut est cloné à la lecture.
 - **Mode par défaut** : `STORAGE_MODE` dans `src/lib/storage.ts` = `'d1'` (synchro serveur
   active). Échappatoire hors-ligne : `?stockage=local` dans l'URL. En `'d1'` :
-  - `write()` pousse aussi au serveur en arrière-plan : `POST /api/kv/<cle>` (best-effort) ;
+  - `write()` pousse aussi au serveur en arrière-plan : `POST /api/kv/<cle>` ;
+  - `remove()` pousse la suppression : `DELETE /api/kv/<cle>` ;
   - `preloadFromServer()` (appelé dans `src/main.tsx`) remplit le cache local depuis
     `GET /api/kv/<cle>` pour chaque clé STORAGE_KEYS au démarrage (no-op en `'local'`).
-  L'appli reste 100 % utilisable hors-ligne (cache localStorage + write best-effort) ;
-  la synchro serveur reprend au prochain write. `npm run preview` (vite preview sans worker)
-  n'a pas d'API : le mode d1 y retombe silencieusement sur le cache local.
+  L'appli reste 100 % utilisable hors-ligne. **File d'attente anti-perte** : si le serveur
+  refuse une écriture (hors-ligne, 429, 5xx, body trop gros), elle part dans
+  `voltquiz_pending_writes` (clé localStorage LOCALE, hors STORAGE_KEYS) et est retentée par
+  `flushPendingWrites()` au démarrage, après chaque write, et sur l'événement `online`.
+  `preloadFromServer()` n'écrase jamais une clé qui a une écriture en attente (le local est
+  alors plus récent que le serveur). Sans cette file, une écriture refusée restait en
+  localStorage puis était écrasée par le pré-chargement serveur au démarrage suivant.
+  `npm run preview` (vite preview sans worker) n'a pas d'API : le mode d1 y retombe
+  silencieusement sur le cache local.
 - R5 (lint en error) : aucun composant n'appelle le stockage ni `localStorage` directement.
 
 ## Côté serveur (en place, testé)
@@ -50,11 +57,13 @@ puis `curl localhost:5173/api/kv/test` -> `{"ok":true,"key":"test","value":42}`.
 - `migrations/0001_init.sql` : tables comptes, parties, records, xp, soumissions, kv.
   Appliquée en local ET en remote :
   `npx wrangler d1 migrations apply voltquiz --local` puis `--remote`.
-- `worker-api.ts` : routes `/api/kv/:cle`, `/api/auth/*` (PBKDF2 210k), `/api/parties`,
-  `/api/records`, `/api/xp`, `/api/room*` (KV), `/api/duel/:room` (WebSocket -> DO),
-  `/api/ping|health`, `/api/csp-report`. Toutes : validation, body cap 64 Ko,
+- `worker-api.ts` : routes `/api/kv/:cle` (GET/POST/DELETE), `/api/auth/*` (PBKDF2 210k),
+  `/api/parties`, `/api/records`, `/api/xp`, `/api/room*` (KV), `/api/duel/:room`
+  (WebSocket -> DO), `/api/ping|health`, `/api/csp-report`. Toutes : validation,
   `Cache-Control: no-store`, rate limit 30/min/IP (dans `worker.ts`), porte
-  **V2_ENABLED** (hors routes de santé -> 503 si désactivé).
+  **V2_ENABLED** (hors routes de santé -> 503 si désactivé). Plafond de body : 64 Ko en
+  général, **1 Mo pour `/api/kv/*`** (l'historique `voltquiz_parties` — 500 parties avec
+  détail — dépasse 64 Ko ; au-delà, le POST était refusé 400 et l'écriture restait locale).
 - `durable-objects/DuelRoom.ts` : room de duel temps réel (présence + relais d'actions).
 - `src/lib/api.ts` : client fetch de ces routes (`kvGet`/`kvSet` utilisés par storage.ts,
   `authSignup`/`authLogin`, `apiAddGame`/`apiGames`, `apiRecord`/`apiSaveRecord`,

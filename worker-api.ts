@@ -25,11 +25,17 @@ function jsonError(error: string, status = 400): Response {
   );
 }
 const MAX_BODY = 64 * 1024; // 64 Ko max par body JSON (anti-gros payloads)
+// Les grosses clés kv (ex. voltquiz_parties = historique des 500 dernières parties avec
+// le détail des questions) dépassent 64 Ko : plafond spécifique pour /api/kv.
+const MAX_BODY_KV = 1024 * 1024; // 1 Mo max pour /api/kv
 
-async function readBody(request: Request): Promise<Record<string, unknown> | null> {
+async function readBody(
+  request: Request,
+  max = MAX_BODY
+): Promise<Record<string, unknown> | null> {
   try {
     const text = await request.text();
-    if (text.length > MAX_BODY) return null; // -> 400 côté appelant
+    if (text.length > max) return null; // -> 400 côté appelant
     return JSON.parse(text) as Record<string, unknown>;
   } catch {
     return null;
@@ -55,7 +61,7 @@ function entetesCors(request: Request, env: Env, url: URL): Record<string, strin
   if (origin && corsAutorise(request, env, url)) {
     h['Access-Control-Allow-Origin'] = origin;
     h['Vary'] = 'Origin';
-    h['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS';
+    h['Access-Control-Allow-Methods'] = 'GET, POST, DELETE, OPTIONS';
     h['Access-Control-Allow-Headers'] = 'Content-Type';
     h['Access-Control-Max-Age'] = '86400';
   }
@@ -82,9 +88,16 @@ async function routeKv(request: Request, env: Env, key: string): Promise<Respons
     });
   }
   if (request.method === 'POST') {
-    const body = await readBody(request);
+    const body = await readBody(request, MAX_BODY_KV);
     if (!body || !('value' in body) || body.value === undefined) return jsonError('Valeur manquante.', 400);
     if (env.DB) await kvViaD1Set(env, key, body.value);
+    return json({
+      ok: true,
+      key,
+    });
+  }
+  if (request.method === 'DELETE') {
+    if (env.DB) await kvViaD1Delete(env, key);
     return json({
       ok: true,
       key,
@@ -106,6 +119,9 @@ async function kvViaD1Set(env: Env, key: string, value: unknown): Promise<void> 
   )
     .bind(key, JSON.stringify(value))
     .run();
+}
+async function kvViaD1Delete(env: Env, key: string): Promise<void> {
+  await env.DB.prepare('DELETE FROM kv WHERE cle = ?').bind(key).run();
 }
 
 // --- Auth : inscription / connexion (PBKDF2 210 000 itérations côté serveur) ---
