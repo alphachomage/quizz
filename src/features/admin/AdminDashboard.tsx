@@ -1,7 +1,9 @@
-// AdminDashboard.jsx — tableau de bord GLOBAL de la vue admin (?admin=1), affiché en
+// AdminDashboard.tsx — tableau de bord GLOBAL de la vue admin (?admin=1), affiché en
 // haut de AdminReports, au-dessus des sections de modération. Coquille de rendu :
 // les métriques viennent de useAdminMetrics (lib/ uniquement, R5) + useServerStats
 // (/api/* via lib/api.js), et chaque carte a UNE responsabilité dans ./components/.
+import type { ReactElement } from 'react';
+import type { Theme } from '@lib/types.js';
 import { useAdminMetrics } from './useAdminMetrics.js';
 import { useServerStats } from './useServerStats.js';
 import CorpusCard from './components/CorpusCard.jsx';
@@ -12,7 +14,12 @@ import StreakCard from './components/StreakCard.jsx';
 import StorageCard from './components/StorageCard.jsx';
 import ServerCard from './components/ServerCard.jsx';
 import ActionsCard from './components/ActionsCard.jsx';
-export default function AdminDashboard({ themes }) {
+
+interface AdminDashboardProps {
+  themes: Theme[] | null;
+}
+
+export default function AdminDashboard({ themes }: AdminDashboardProps): ReactElement {
   const metrics = useAdminMetrics(themes);
   const server = useServerStats();
   return (

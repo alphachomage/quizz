@@ -1,9 +1,16 @@
-// GamesCard.jsx — carte "Parties" du tableau de bord admin : total des parties jouées,
+// GamesCard.tsx — carte "Parties" du tableau de bord admin : total des parties jouées,
 // % de réussite global, et détail par mode (données : computeGamesMetrics).
+import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import { modeIcon, modeLabel } from '../dashboardCompute.js';
+import type { GamesMetrics } from '../dashboardCompute.js';
 import MetricCard from './MetricCard.jsx';
-export default function GamesCard({ metriques }) {
+
+interface GamesCardProps {
+  metriques: GamesMetrics;
+}
+
+export default function GamesCard({ metriques }: GamesCardProps): ReactElement {
   return (
     <MetricCard
       icone="chart"

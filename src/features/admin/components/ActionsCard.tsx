@@ -1,16 +1,23 @@
-// ActionsCard.jsx — carte "Actions" du tableau de bord admin : actions globales qui
+// ActionsCard.tsx — carte "Actions" du tableau de bord admin : actions globales qui
 // rechargent la page avec un flag d'URL (?reset=1, ?resetcompte=1, ?stockage=d1).
 // La navigation passe par app/urlFlags.js (R5 : jamais window.location en direct).
+import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import { redirigerVers, urlWithParam, urlWithoutParam } from '@app/urlFlags.js';
+import type { StorageMode } from '@lib/storage.js';
 import MetricCard from './MetricCard.jsx';
-export default function ActionsCard({ mode }) {
-  function resetScores() {
+
+interface ActionsCardProps {
+  mode: StorageMode;
+}
+
+export default function ActionsCard({ mode }: ActionsCardProps): ReactElement {
+  function resetScores(): void {
     if (window.confirm('Remettre à zéro scores, records, historique et XP (?reset=1) ?')) {
       redirigerVers(urlWithParam('reset', '1'));
     }
   }
-  function resetAccountFlag() {
+  function resetAccountFlag(): void {
     if (
       window.confirm(
         'Reset COMPLET de la progression (?resetcompte=1) : scores + streak + badges + titres ?'
@@ -19,7 +26,7 @@ export default function ActionsCard({ mode }) {
       redirigerVers(urlWithParam('resetcompte', '1'));
     }
   }
-  function basculerStockage() {
+  function basculerStockage(): void {
     if (mode === 'd1') {
       if (window.confirm('Revenir au stockage 100 % local (retire ?stockage=d1) ?')) {
         redirigerVers(urlWithoutParam('stockage'));

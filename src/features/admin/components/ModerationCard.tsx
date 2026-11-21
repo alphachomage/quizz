@@ -1,8 +1,15 @@
-// ModerationCard.jsx — carte "Modération" du tableau de bord admin : signalements en
+// ModerationCard.tsx — carte "Modération" du tableau de bord admin : signalements en
 // attente de vérification en valeur principale, puis soumissions / validées /
 // suggestions / exclusions en dessous (données : computeModeration).
+import type { ReactElement } from 'react';
+import type { ModerationMetrics } from '../dashboardCompute.js';
 import MetricCard from './MetricCard.jsx';
-export default function ModerationCard({ moderation }) {
+
+interface ModerationCardProps {
+  moderation: ModerationMetrics;
+}
+
+export default function ModerationCard({ moderation }: ModerationCardProps): ReactElement {
   const rows = [
     {
       nom: 'Soumissions en attente',

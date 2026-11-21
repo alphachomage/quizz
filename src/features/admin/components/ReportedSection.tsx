@@ -1,13 +1,24 @@
-// SectionSignalees.jsx — vue admin : questions signalées par les joueurs (pouce rouge),
+// ReportedSection.tsx — vue admin : questions signalées par les joueurs (pouce rouge),
 // triées par nombre de signalements, avec vérification manuelle Garder / Retirer du pool.
+import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
+import type { ReportStatut, StoredReport } from '@lib/reports.js';
+
+interface ReportedSectionProps {
+  list: StoredReport[];
+  onVerify: (s: StoredReport, statut: ReportStatut) => void;
+  onRemove: (q: string) => void;
+  onExport: () => void;
+  onClearAll: () => void;
+}
+
 export default function ReportedSection({
   list,
-  onVerify: onVerify,
-  onRemove: onRemove,
-  onExport: onExport,
-  onClearAll: onClearAll,
-}) {
+  onVerify,
+  onRemove,
+  onExport,
+  onClearAll,
+}: ReportedSectionProps): ReactElement {
   return (
     <>
       <h2 className="titre-section">
@@ -54,7 +65,8 @@ export default function ReportedSection({
               <div className="prop-corps">
                 <strong>{s.q}</strong>
                 <span className="prop-meta">
-                  {s.themeName || s.themeId} · {new Date(s.last || s.date).toLocaleString('fr-FR')}
+                  {s.themeName || s.themeId} ·{' '}
+                  {new Date(s.last || s.date || '').toLocaleString('fr-FR')}
                   {s.statut === 'garder' && ' · vérifiée : conservée dans le pool'}
                   {s.statut === 'retirer' && ' · vérifiée : retirée du pool'}
                 </span>

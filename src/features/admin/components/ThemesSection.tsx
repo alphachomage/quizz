@@ -1,12 +1,18 @@
-// SectionThemes.jsx — vue admin : nombre de questions par thème (visible uniquement ici).
+// ThemesSection.tsx — vue admin : nombre de questions par thème (visible uniquement ici).
+import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
+import type { Theme } from '@lib/types.js';
 
-export default function ThemesSection({ themes }) {
+interface ThemesSectionProps {
+  themes: Theme[] | null;
+}
+
+export default function ThemesSection({ themes }: ThemesSectionProps): ReactElement {
   return (
     <>
       <h2 className="titre-section">Thèmes — nombre de questions (admin)</h2>
       <ul className="stats-liste">
-        {[...themes]
+        {[...(themes ?? [])]
           .sort((a, b) => (a.nom || a.id).localeCompare(b.nom || b.id, 'fr'))
           .map((t) => (
             <li key={t.id} className="stats-ligne stats-ligne-col">
