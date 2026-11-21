@@ -12,12 +12,12 @@
 ## Checklist avant chaque merge (code ET docs)
 
 - [ ] `npm run lint` **0 erreur 0 warning**, `npm run lint:arch` 0 cycle
-- [ ] `npm test` + `npm run test:coverage` (seuils `vitest.config.js`, ratchet) +
+- [ ] `npm test` + `npm run test:coverage` (seuils `vitest.config.ts`, ratchet) +
       `npm run build` verts
-- [ ] si `worker.js`/`wrangler.toml` touchés : `npx wrangler deploy --dry-run` OK
+- [ ] si `worker.ts`/`wrangler.toml` touchés : `npx wrangler deploy --dry-run` OK
 - [ ] diff relu : code en anglais/commentaires français, UI en français, zéro emoji,
       pas de `linear-gradient`, pas de `console.log` dans `src/`, pas d'accès
-      `localStorage`/`location` hors `lib/storage.js`/`lib/nav.js`/`app/urlFlags.js`,
+      `localStorage`/`location` hors `lib/storage.ts`/`lib/nav.ts`/`app/urlFlags.ts`,
       pas de `dangerouslySetInnerHTML`/`eval`, plafond 200 L souple respecté
 - [ ] **documentation relue** : chemins de fichiers valides (spot-check avec `ls`),
       chiffres du corpus via `npm run count:questions` (jamais en dur), commandes

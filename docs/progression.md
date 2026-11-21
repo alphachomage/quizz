@@ -29,7 +29,7 @@ onglets par mode, filtre Facile/Moyen/Difficile en solo, sélecteur
 « Tout l'historique / Cette semaine » (`isThisWeek` dans `src/lib/dates.ts`,
 lundi->dimanche). Lignes : rang, joueur, badge thème coloré, difficulté, points.
 
-## Stats (`src/features/stats/Stats.tsx` + `statsCompute.js`)
+## Stats (`src/features/stats/Stats.tsx` + `statsCompute.ts`)
 
 Depuis l'historique : `computeStats` (parties jouées, questions répondues, % réussite,
 points cumulés, meilleur score par mode, taux par thème), `computeCalendar`

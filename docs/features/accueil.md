@@ -1,6 +1,6 @@
 # Feature accueil
 
-`src/features/home/Home.tsx` (render-only) + `useHome.js` + `components/` (7
+`src/features/home/Home.tsx` (render-only) + `useHome.ts` + `components/` (7
 sous-composants). Modales transverses dans `src/shared/modals/`. Écran chargé en
 React.lazy (`src/app/routes.ts`, clé `home`).
 

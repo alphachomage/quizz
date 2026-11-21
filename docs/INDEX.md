@@ -7,14 +7,14 @@ Chiffres du corpus : toujours `npm run count:questions`, jamais un nombre en dur
 | Thème | Fichier | Quand le lire | Contenu (chemins clés) |
 |---|---|---|---|
 | Stack & archi | `docs/stack.md` | toucher à la structure src/ | arborescence réelle, règles R1-R10, alias `@*` |
-| Règles du jeu | `docs/jeu.md` | modifier scoring/modes/tirage | `lib/scoring.js`, `lib/draw.js`, `features/game/` |
+| Règles du jeu | `docs/jeu.md` | modifier scoring/modes/tirage | `lib/scoring.ts`, `lib/draw.ts`, `features/game/` |
 | Design | `docs/design.md` | toucher au CSS/UI | palette 60-30-10 sobre (`styles/tokens.css`), 14 couleurs de thèmes, a11y |
 | Questions | `docs/questions.md` | ajouter/modifier des questions | format JSON (clés FR), chunks lazy + `loadThemes()`, similarité, admin, `npm run count:questions` |
-| Comptes | `docs/comptes.md` | connexion, invité, modération | `lib/accounts.js`, hash SHA-256 salé, reset URL |
-| Progression | `docs/progression.md` | XP/badges/titres/classement/stats | `lib/xp.js`, 30 badges, 50 titres, historique 500 parties |
-| Sons & partage | `docs/sons-partage.md` | audio, vibrations, partage | `lib/sounds.js`, `lib/share.js`, `results/useShare.js` |
-| Sécurité | `docs/securite.md` | worker.js, données externes | CSP report-only, V2_ENABLED, CORS, 64 Ko, 429, hash timing-safe, WebSocket 101 |
-| Stockage D1 | `docs/stockage-d1.md` | persistance, V2 serveur | `lib/storage.js` (STORAGE_KEYS), `lib/repositories.js`, `lib/api.js`, migrations, `/api/*`, décision mobile |
+| Comptes | `docs/comptes.md` | connexion, invité, modération | `lib/accounts.ts`, hash SHA-256 salé, reset URL |
+| Progression | `docs/progression.md` | XP/badges/titres/classement/stats | `lib/xp.ts`, 30 badges, 50 titres, historique 500 parties |
+| Sons & partage | `docs/sons-partage.md` | audio, vibrations, partage | `lib/sounds.ts`, `lib/share.ts`, `results/useShare.ts` |
+| Sécurité | `docs/securite.md` | worker.ts, données externes | CSP report-only, V2_ENABLED, CORS, 64 Ko, 429, hash timing-safe, WebSocket 101 |
+| Stockage D1 | `docs/stockage-d1.md` | persistance, V2 serveur | `lib/storage.ts` (STORAGE_KEYS), `lib/repositories.ts`, `lib/api.ts`, migrations, `/api/*`, décision mobile |
 | Déploiement | `docs/deploiement.md` | publier | 4 environnements (dev 5173 / preview 4173 / deploy:preview / deploy), déploiement auto Cloudflare depuis `main` (Workers Builds, sans GitHub Action) |
 | Tests | `docs/tests.md` | ajouter un test | arborescence tests/, commandes par feature, couverture à seuils (ratchet) |
 | Méthodologie | `docs/methodologie.md` | git, review, subagents | branches + worktrees, review code+docs, décisions techniques documentées |

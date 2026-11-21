@@ -14,7 +14,7 @@ npm run typecheck        # tsc --noEmit (strict TS) — avant chaque merge
 
 ## Couverture (seuils + ratchet)
 
-`vitest.config.js` (séparé de `vite.config.js`) définit les seuils appliqués par
+`vitest.config.ts` (séparé de `vite.config.ts`) définit les seuils appliqués par
 `npm run test:coverage` avant chaque merge :
 
 - global : statements 45 %, branches 40 %, functions 48 %, lignes 50 % ;
@@ -30,7 +30,7 @@ baisser. La commande échoue si les seuils ne sont pas atteints.
 tests/
 ├── setup.ts                      # mocks : localStorage nettoyé, AudioContext, vibrate,
 │                                 # matchMedia, crypto.subtle (webcrypto), fetch, canvas
-├── fixtures/questions.fixture.js # makeQuestion/makeTheme/mulberry32 — JAMAIS les vrais fichiers
+├── fixtures/questions.fixture.ts # makeQuestion/makeTheme/mulberry32 — JAMAIS les vrais fichiers
 ├── unit/lib/                     # scoring, draw, daily, similarity, accounts, suggestions, badges, titles, schema, repositories
 ├── unit/features/                # game-draw, result-persist, stats-compute
 ├── integration/                  # game-solo, game-duel, game-survival, game-daily,
@@ -42,10 +42,10 @@ tests/
 
 ## Règles
 
-- `vitest.config.js` : jsdom, globals, alias `@*` identiques à Vite, AUCUN plugin
+- `vitest.config.ts` : jsdom, globals, alias `@*` identiques à Vite, AUCUN plugin
   Cloudflare/PWA en test. Fichiers `.test.{ts,tsx}` (100 % TS).
 - Écrans en React.lazy : dans les tests d'intégration, pré-charger le mock
-  `@data/questions.js` + les 9 écrans avec les VRAIS timers AVANT `vi.useFakeTimers()`,
+  `@data/questions.ts` + les 9 écrans avec les VRAIS timers AVANT `vi.useFakeTimers()`,
   puis attendre en avançant les timers (`vi.advanceTimersByTimeAsync`) — sinon les
   import() dynamiques de Vitest et le scheduler React restent bloqués.
 - Timers factices (`vi.useFakeTimers()`) pour le minuteur ; `Math.random` mocké

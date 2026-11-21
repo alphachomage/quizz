@@ -1,6 +1,6 @@
 # Sécurité
 
-## En-têtes (`worker.js`, sur CHAQUE réponse via `securiser()`)
+## En-têtes (`worker.ts`, sur CHAQUE réponse via `securiser()`)
 
 `entetesSecurite(env, hote)` : CSP (d'abord `Content-Security-Policy-Report-Only`
 avec `report-uri /api/csp-report` tant que `CSP_REPORT_ONLY=true` dans `wrangler.toml`,
@@ -19,16 +19,16 @@ object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'` 
 `securiser()` **préserve la réponse 101 WebSocket** (recréée sans body mais avec la
 propriété `webSocket` copiée, sinon le socket est perdu côté workerd).
 
-## Cache (`worker.js`)
+## Cache (`worker.ts`)
 
-`no-cache` sur `/`, `/index.html`, `/sw.js` (+ `Service-Worker-Allowed: /`),
+`no-cache` sur `/`, `/index.html`, `/sw.ts` (+ `Service-Worker-Allowed: /`),
 manifest, JSON ; `public, max-age=31536000, immutable` sur `/assets/*` (hashés) ;
 `no-store` sur `/api/*` ; `public, max-age=3600` pour le reste.
 
-## API (`worker.js` -> `worker-api.js`)
+## API (`worker.ts` -> `worker-api.ts`)
 
-- **Rate limiting** 30 req/min/IP en mémoire -> **429** (`rateLimite` dans `worker.js`).
-- **Body cap 64 Ko** (`MAX_BODY` dans `worker-api.js`) -> 400 au-delà.
+- **Rate limiting** 30 req/min/IP en mémoire -> **429** (`rateLimite` dans `worker.ts`).
+- **Body cap 64 Ko** (`MAX_BODY` dans `worker-api.ts`) -> 400 au-delà.
 - **CORS** : `ALLOWED_ORIGINS` (wrangler.toml) + origine de la requête ; preflight
   `OPTIONS` -> 204 ; toute écriture cross-origin non autorisée -> **403**.
 - **V2_ENABLED** : tant que la variable n'est pas `"true"`, seules les routes de santé
@@ -51,7 +51,7 @@ manifest, JSON ; `public, max-age=31536000, immutable` sur `/assets/*` (hashés)
 - **Mots de passe** : jamais en clair. Local : SHA-256 salé (`crypto.randomUUID` +
   `crypto.subtle`, guard `secureContext()` dans `src/lib/accounts.ts` -> erreur
   claire hors contexte sécurisé). Serveur V2 : PBKDF2 210 000 itérations
-  (`worker-api.js`).
+  (`worker-api.ts`).
 - **Modération pseudos** (`src/lib/moderation.ts`) : liste bloquée (nazisme,
   homophobie, misogynie, racisme, insultes, sexuel), leetspeak décodé, sous-chaîne
   >= 4 caractères.
@@ -60,9 +60,9 @@ manifest, JSON ; `public, max-age=31536000, immutable` sur `/assets/*` (hashés)
 
 ## Règles d'architecture (ESLint, en ERREUR)
 
-`eslint.config.js` applique R1-R5 en `error` (vérifié par tests négatifs) :
+`eslint.config.ts` applique R1-R5 en `error` (vérifié par tests négatifs) :
 `no-restricted-imports` (R1 lib/ pur, R2 data/ -> lib/ only, R3 shared/ -> lib/+react,
-R4 features/X jamais features/Y, seuls `app/urlFlags.js` + `app/contexts/` autorisés
+R4 features/X jamais features/Y, seuls `app/urlFlags.ts` + `app/contexts/` autorisés
 depuis features/) et `no-restricted-globals` localStorage/sessionStorage/location +
 `no-restricted-properties` window.location/window.history/document.location (R5 :
 exemption UNIQUEMENT pour `src/lib/storage.ts`, `src/lib/nav.ts`, `src/app/urlFlags.ts`).

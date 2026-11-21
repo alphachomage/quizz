@@ -24,7 +24,7 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
    limpide — ne pas commenter l'évident). **TypeScript partout** : `src/`, `tests/`, `worker*.ts`, `durable-objects/`, `vite.config.ts`,
    `vitest.config.ts` sont en `.ts`/`.tsx` strict (`npm run typecheck` = `tsc --noEmit`, vert requis).
    Restent en JS pur : les 263 fichiers `src/data/questions-*.js` + `theme-manifest.js` généré
-   (règle 7 ; type déclaré dans `src/data/questions.d.ts`), `eslint.config.js` et `scripts/*.mjs`. Exception documentée : les **clés du schéma de
+   (règle 7 ; type déclaré dans `src/data/questions.d.ts`), `eslint.config.ts` et `scripts/*.mjs`. Exception documentée : les **clés du schéma de
    données** (`q`, `reponses`, `bonne`, `niveau`, `info`, `nom`, `icone`, `couleur`) restent
    en français car c'est le format JSON documenté pour le client
    (`docs/questions.md`) et les clés localStorage existantes.
@@ -40,8 +40,8 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
 5. **Aucun composant ne touche `localStorage`/`document`/`window.location`/`location`
    directement** : passer par `src/lib/storage.ts` (read/write/remove/useStorage),
    `src/lib/nav.ts` (origine/params URL/reload) et `src/app/urlFlags.ts` (flags URL).
-   Règle R5 appliquée en ERREUR par ESLint (exemption UNIQUEMENT pour `storage.js`,
-   `nav.js`, `urlFlags.js`).
+   Règle R5 appliquée en ERREUR par ESLint (exemption UNIQUEMENT pour `storage.ts`,
+   `nav.ts`, `urlFlags.ts`).
 6. **ESLint : 0 erreur ET 0 warning tolérés** (`npm run lint`). Règles revues pour React :
    `react-hooks/rules-of-hooks` error, `exhaustive-deps` warn (désactivable au cas par cas
    avec justification en commentaire), `react-refresh/only-export-components` warn,
@@ -52,7 +52,7 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
    la PR/commit — dépendances : react, react-dom, zod (runtime) + tooling (vite, vitest,
    eslint, typescript, wrangler...). Décision TS documentée dans `docs/methodologie.md`.
 9. **Tests : couverture appliquée**. `npm run test:coverage` échoue si les seuils de
-   `vitest.config.js` ne sont pas atteints (plancher actuel, à relever — ratchet).
+   `vitest.config.ts` ne sont pas atteints (plancher actuel, à relever — ratchet).
    Tester UNE feature seule : `npm run test:game`, `test:game:duel`, `test:scoring`…
 10. **Environnements explicites** : `npm run dev` = local (5173) ; `npm run preview` = build
     local servi (4173) ; `npm run deploy:preview` = Cloudflare **preview** (V2 activée) ;
@@ -87,7 +87,7 @@ npm run test:coverage    # couverture avec seuils appliqués (échoue si en dess
 npm run count:questions  # comptage réel du corpus (thèmes, questions, doublons)
 npm run db:migrate:local # applique les migrations D1 en LOCAL (dev workerd, .wrangler/state)
 npm run db:migrate       # applique les migrations D1 en PROD (wrangler login ou CLOUDFLARE_API_TOKEN)
-npx wrangler deploy --dry-run   # valide worker.js + wrangler.toml sans déployer
+npx wrangler deploy --dry-run   # valide worker.ts + wrangler.toml sans déployer
 ```
 
 ## Où est quoi ? (pointeurs rapides)

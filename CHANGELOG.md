@@ -5,6 +5,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 
 ## Non publié
 
+### Modifié
+- Passe de cohérence TypeScript sur toutes les docs agents (`AGENTS.md`, `README.md`, `docs/**`) : extensions de fichiers corrigées (`.js`/`.jsx` -> `.ts`/`.tsx`, `Icone` -> `Icon`), `?stockage=d1` -> `?stockage=local` (le mode `d1` est désormais le défaut), `worker.js`/`worker-api.js` -> `.ts`. Les anciens MD racine dupliqués (`COMMENT-AJOUTER-MES-QUESTIONS.md`, `DEPLOIEMENT-CLOUDFLARE.md`) avaient déjà été supprimés : le contenu canonique est dans `docs/questions.md` et `docs/deploiement.md`.
+
+
 ### Supprimé
 - GitHub Action `.github/workflows/ci.yml` (et `.github/`) : redondante — Cloudflare Workers Builds déploie automatiquement chaque push sur `main`. Plus aucun secret Cloudflare (`CLOUDFLARE_API_TOKEN`…) dans GitHub. Les vérifications (lint, typecheck, lint:arch, tests, build, `wrangler deploy --dry-run`) restent obligatoires en local avant chaque push (règle 11). Docs mises à jour : `docs/deploiement.md`, `docs/methodologie.md`, `docs/tests.md`, `docs/stack.md`, `docs/INDEX.md`, `AGENTS.md`.
 
