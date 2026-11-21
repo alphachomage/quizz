@@ -21,7 +21,7 @@ export const QUESTIONS_MANGAS4_A1 = [
       { q: "Quel est le défaut majeur d'un mangeur de fruit du démon dans One Piece ?", reponses: ["Il ne peut plus voler", "Il ne peut plus nager", "Il ne peut plus dormir", "Il ne peut plus manger"], bonne: 1, niveau: "facile" },
       { q: "Comment s'appelle le bretteur de l'équipage du Chapeau de paille ?", reponses: ["Usopp", "Sanji", "Roronoa Zoro", "Franky"], bonne: 2, niveau: "facile" },
       { q: "Quelle monnaie utilise-t-on dans le monde de One Piece ?", reponses: ["Le dollar", "Le yen", "Le berry", "L'euro"], bonne: 2, niveau: "facile" },
-      { q: "Comment s'appelle le navire actuel de l'équipage de Luffy ?", reponses: ["Le Going Merry", "Le Thousand Sunny", "Le Moby Dick", "Le Polar Tang"], bonne: 1, niveau: "facile" },
+      { q: "Comment s'appelle le navire current de l'équipage de Luffy ?", reponses: ["Le Going Merry", "Le Thousand Sunny", "Le Moby Dick", "Le Polar Tang"], bonne: 1, niveau: "facile" },
       { q: "Qui est le cuisinier de l'équipage du Chapeau de paille ?", reponses: ["Sanji", "Usopp", "Chopper", "Jinbe"], bonne: 0, niveau: "facile" },
       { q: "De quelle mer vient Luffy au tout début de l'aventure dans One Piece ?", reponses: ["La mer de l'Ouest", "East Blue", "La Grand Line", "La mer des Calmes"], bonne: 1, niveau: "facile" },
       { q: "Quel nom les Saiyans donnaient-ils à Son Goku à sa naissance ?", reponses: ["Vegeta", "Kakarot", "Broly", "Raditz"], bonne: 1, niveau: "facile" },

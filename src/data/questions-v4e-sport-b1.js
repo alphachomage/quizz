@@ -40,7 +40,7 @@ export const QUESTIONS_V4E_SPORT_B1 = [
       { q: "Quel est le poids réglementaire d’une boule de pétanque ?", reponses: ["Entre 700 et 800 grammes", "Entre 400 et 500 grammes", "Entre 1 et 1,2 kilogramme", "Moins de 300 grammes"], bonne: 0, niveau: "moyen" },
       { q: "Comment appelle-t-on le cercle d’où l’on lance les boules à la pétanque ?", reponses: ["Le rond", "La ligne de touche", "Le but", "La zone de marque"], bonne: 0, niveau: "moyen" },
       { q: "Aux fléchettes, quel score maximum peut-on réaliser avec trois fléches ?", reponses: ["Cent quatre-vingts", "Cent soixante", "Cent quarante", "Deux cent un"], bonne: 0, niveau: "moyen" },
-      { q: "Combien de points rapporte le centre rouge de la cible aux fléchettes ?", reponses: ["Cinquante", "Vingt-cinq", "Cent", "Trente"], bonne: 0, niveau: "moyen" },
+      { q: "Combien de points rapporte le centre rouge de la target aux fléchettes ?", reponses: ["Cinquante", "Vingt-cinq", "Cent", "Trente"], bonne: 0, niveau: "moyen" },
       { q: "Au snooker, combien de points vaut la bille noire ?", reponses: ["Sept", "Six", "Huit", "Dix"], bonne: 0, niveau: "moyen" },
       { q: "Combien de billes rouges comportent un frame de snooker ?", reponses: ["Quinze", "Dix", "Vingt", "Douze"], bonne: 0, niveau: "moyen" },
       { q: "Combien de billes compte une table de billard français (carambole) ?", reponses: ["Trois", "Deux", "Quinze", "Seize"], bonne: 0, niveau: "moyen" },

@@ -41,7 +41,7 @@ export const QUESTIONS_HISTOIRE_A = [
       { q: "Les Vikings venaient principalement de quelle région ?", reponses: ["La Scandinavie", "La péninsule Ibérique", "Les îles Britanniques", "L'Europe centrale"], bonne: 0, niveau: "facile" },
       { q: "Quel philosophe grec était le disciple de Socrate ?", reponses: ["Aristote", "Platon", "Épicure", "Zénon de Cition"], bonne: 1, niveau: "facile" },
       { q: "Quel philosophe grec a fondé le Lycée à Athènes ?", reponses: ["Socrate", "Platon", "Aristote", "Ésope"], bonne: 2, niveau: "facile" },
-      { q: "La guerre de Troie de la mythologie se situait dans quel pays actuel ?", reponses: ["La Grèce", "La Turquie", "L'Italie", "La Syrie"], bonne: 1, niveau: "facile" },
+      { q: "La guerre de Troie de la mythologie se situait dans quel pays current ?", reponses: ["La Grèce", "La Turquie", "L'Italie", "La Syrie"], bonne: 1, niveau: "facile" },
       { q: "Quelle ville était la capitale de l'Empire byzantin ?", reponses: ["Rome", "Athènes", "Constantinople", "Antioche"], bonne: 2, niveau: "facile" },
       { q: "Les célèbres statues Moais se trouvent sur...", reponses: ["L'île de Pâques", "Hawaï", "Les Galápagos", "Madagascar"], bonne: 0, niveau: "facile" },
       { q: "Quel peuple est crédité de l'invention du papier ?", reponses: ["Les Chinois", "Les Égyptiens", "Les Romains", "Les Grecs"], bonne: 0, niveau: "facile" },

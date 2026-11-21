@@ -42,7 +42,7 @@ export const QUESTIONS_V4I_SPORT_A1 = [
       { q: "Au judo, quelle ceinture est le grade le plus élevé pour un pratiquant adulte ?", reponses: ["La ceinture noire", "La ceinture blanche", "La ceinture rouge", "La ceinture or"], bonne: 0, niveau: "facile" },
       { q: "Dans quel pays le karaté a-t-il été développé, notamment sur l'île d'Okinawa ?", reponses: ["Le Japon", "La Chine", "La Corée du Sud", "Les Philippines"], bonne: 0, niveau: "facile" },
       { q: "Quel sport se pratique avec une épée, un fleuret ou un sabre ?", reponses: ["L'escrime", "Le kendo", "La savate", "L'escrime artistique"], bonne: 0, niveau: "facile" },
-      { q: "Combien de couleurs de zones de points compte une cible officielle de tir à l'arc ?", reponses: ["Cinq", "Trois", "Sept", "Dix"], bonne: 0, niveau: "facile" },
+      { q: "Combien de couleurs de zones de points compte une target officielle de tir à l'arc ?", reponses: ["Cinq", "Trois", "Sept", "Dix"], bonne: 0, niveau: "facile" },
       { q: "En équitation, comment appelle-t-on l'allure la plus rapide du cheval, en quatre temps ?", reponses: ["Le galop", "Le trot", "Le pas", "L'amble"], bonne: 0, niveau: "facile" },
       { q: "Quel sport nautique consiste à pagayer debout sur une grande planche, avec une pagaie ?", reponses: ["Le stand up paddle", "Le kayak", "L'aviron", "Le canoë"], bonne: 0, niveau: "facile" },
       { q: "En voile, comment appelle-t-on le côté du bateau d'où souffle le vent ?", reponses: ["Au vent", "Sous le vent", "En poupe", "En amure"], bonne: 0, niveau: "facile" },

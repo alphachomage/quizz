@@ -6,10 +6,12 @@ export default function MonthCalendar({ calendar }) {
       <div className="calendrier">
         <div className="cal-ligne cal-entetes">
           {['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((l, i) => (
-            <span key={i} className="cal-entete">{l}</span>
+            <span key={i} className="cal-entete">
+              {l}
+            </span>
           ))}
         </div>
-        {calendar.semaines.map((s, wi) => (
+        {calendar.weeks.map((s, wi) => (
           <div key={wi} className="cal-ligne">
             {s.map((j, ji) =>
               j === null ? (
@@ -20,14 +22,16 @@ export default function MonthCalendar({ calendar }) {
                   className={j.futur ? 'cal-case cal-futur' : `cal-case cal-n${j.niveau}`}
                   title={`${j.key} : ${j.n} partie(s)`}
                 >
-                  {j.jour}
+                  {j.day}
                 </span>
               )
             )}
           </div>
         ))}
       </div>
-      <p className="vide">Chaque case = un jour du mois en cours. Plus c’est plein, plus tu as joué ce jour-là.</p>
+      <p className="vide">
+        Chaque case = un jour du mois en cours. Plus c’est plein, plus tu as joué ce jour-là.
+      </p>
     </section>
   );
 }

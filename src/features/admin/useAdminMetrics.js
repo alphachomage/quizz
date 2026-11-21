@@ -44,5 +44,16 @@ export function useAdminMetrics(themes) {
       },
     };
     // `themes` change au chargement des chunks ; chaque useStorage re-déclenche le calcul.
-  }, [themes, games, records, reports, submissions, approved, suggestions, excluded, streakRaw, accounts]);
+  }, [
+    themes,
+    games,
+    records,
+    reports,
+    submissions,
+    approved,
+    suggestions,
+    excluded,
+    streakRaw,
+    accounts,
+  ]);
 }

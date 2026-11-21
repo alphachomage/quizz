@@ -10,19 +10,27 @@ export class DuelRoom {
     this.env = env;
     this.players = []; // connexions WebSocket actives
   }
-
   async fetch(request) {
     const url = new URL(request.url);
 
     // WebSocket : /api/duel/<roomId>
     if (request.headers.get('Upgrade') === 'websocket') {
       const paire = new WebSocketPair();
-      const [client, serveur] = Object.values(paire);
-      this.state.acceptWebSocket(serveur);
+      const [client, server] = Object.values(paire);
+      this.state.acceptWebSocket(server);
       const pseudo = url.searchParams.get('pseudo') || 'Joueur';
-      this.players.push({ ws: serveur, pseudo });
-      this.diffuser({ type: 'presence', players: this.players.map((j) => j.pseudo) });
-      return new Response(null, { status: 101, webSocket: client });
+      this.players.push({
+        ws: server,
+        pseudo,
+      });
+      this.diffuser({
+        type: 'presence',
+        players: this.players.map((j) => j.pseudo),
+      });
+      return new Response(null, {
+        status: 101,
+        webSocket: client,
+      });
     }
 
     // HTTP : état de la room (utile pour rejoindre / rafraîchir).
@@ -30,25 +38,44 @@ export class DuelRoom {
       return Response.json({
         ok: true,
         players: this.players.map((j) => j.pseudo),
-        etat: await this.state.storage.get('etat') || 'attente',
+        etat: (await this.state.storage.get('etat')) || 'attente',
       });
     }
 
     // POST : action de jeu (réponse, etc.) relayée aux deux joueurs.
     if (request.method === 'POST') {
       const action = await request.json().catch(() => ({}));
-      this.diffuser({ type: 'action', action });
-      return Response.json({ ok: true });
+      this.diffuser({
+        type: 'action',
+        action,
+      });
+      return Response.json({
+        ok: true,
+      });
     }
-
-    return Response.json({ ok: false, erreur: 'Méthode non supportée.' }, { status: 405 });
+    return Response.json(
+      {
+        ok: false,
+        error: 'Méthode non supportée.',
+      },
+      {
+        status: 405,
+      }
+    );
   }
 
   // Appelé à chaque message WebSocket reçu d'un joueur.
   async webSocketMessage(ws, message) {
     try {
       const data = JSON.parse(message);
-      this.diffuser({ type: 'action', de: data.pseudo || '?', action: data }, ws);
+      this.diffuser(
+        {
+          type: 'action',
+          de: data.pseudo || '?',
+          action: data,
+        },
+        ws
+      );
     } catch {
       // message invalide : ignoré
     }
@@ -57,14 +84,20 @@ export class DuelRoom {
   // Connexion fermée : on retire le joueur.
   async webSocketClose(ws) {
     this.players = this.players.filter((j) => j.ws !== ws);
-    this.diffuser({ type: 'presence', players: this.players.map((j) => j.pseudo) });
+    this.diffuser({
+      type: 'presence',
+      players: this.players.map((j) => j.pseudo),
+    });
   }
-
   diffuser(message, sauf = null) {
-    const texte = JSON.stringify(message);
+    const text = JSON.stringify(message);
     for (const j of this.players) {
       if (j.ws !== sauf) {
-        try { j.ws.send(texte); } catch { /* socket fermé : ignoré */ }
+        try {
+          j.ws.send(text);
+        } catch {
+          /* socket fermé : ignoré */
+        }
       }
     }
   }

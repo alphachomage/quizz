@@ -7,18 +7,18 @@
   /* 60-30-10 SOMBRE sobre : 60% noir #000000, 30% gris ardoise #26262B, 10% sable #D9D0B8 */
   /* (palette "vivante" violet/jaune #FFD60A archivée dans PALETTES.md) */
   --fond: #000000;
-  --carte: #26262B;
-  --carte-2: #1D1D23;
+  --carte: #26262b;
+  --carte-2: #1d1d23;
   --bordure: rgba(255, 255, 255, 0.14);
   --bordure-fine: rgba(255, 255, 255, 0.1); /* filets discrets (stats, réglages) */
   --bordure-foncee: rgba(0, 0, 0, 0.35); /* bordure de la modale */
-  --texte: #ECECEC;
-  --texte-doux: #9C9C94;
-  --texte-carte: #F4F4F2;
+  --texte: #ececec;
+  --texte-doux: #9c9c94;
+  --texte-carte: #f4f4f2;
   --texte-doux-carte: rgba(255, 255, 255, 0.62);
-  --accent1: #D9D0B8;
-  --accent2: #D9D0B8;
-  --or: #D9D0B8;
+  --accent1: #d9d0b8;
+  --accent2: #d9d0b8;
+  --or: #d9d0b8;
 
   /* Sable #D9D0B8 à alpha (remplace les anciens ambres/violets "vivants") */
   --accent-08: rgba(217, 208, 184, 0.08);
@@ -36,7 +36,7 @@
   /* Sémantique fonctionnelle (hors 60-30-10 mais requise pour lire le feedback ;
      le mode daltonien la remplace par Okabe-Ito dans accessibilite.css) */
   --texte-sur-accent: #141414; /* texte foncé sur fond accent sable (contraste WCAG AA) */
-  --blanc: #FFFFFF;
+  --blanc: #ffffff;
   --blanc-doux: rgba(255, 255, 255, 0.25);
   --blanc-40: rgba(255, 255, 255, 0.4);
   --succes: #4ade80;

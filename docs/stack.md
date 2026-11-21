@@ -58,7 +58,7 @@ src/
 │   └── utils/              # mergeThemes.js · downloadJson.js
 ├── lib/                    # PUR (pas de React) : 27 modules, imports directs (pas de barrel)
 │   └── storage.js          # STORAGE_KEYS (17 clés voltquiz_*), STORAGE_MODE, read/write/remove,
-│                           #   sabonner/notifier, preloadFromServer
+│                           #   subscribe/notify, preloadFromServer
 │       repositories.js     # 1 repo par clé STORAGE_KEYS (RecordsRepo, XpRepo, GamesRepo...)
 │       nav.js              # currentOrigin / readUrlParam / rechargerPage (R5)
 │       scoring, draw, dates, streak, xp, series, texte, records, submissions, reports,

@@ -2,78 +2,100 @@
 // pour rester sous le plafond de 200 L/composant (R6). App.jsx garde les early returns
 // (chargement, admin, compte) et délègue ici le reste.
 import { ROUTES } from './routes.js';
-
 import Tutorial from '@features/tutorial/Tutorial.jsx';
 import UnlockModal from '@features/unlock/UnlockModal.jsx';
-
 export default function Screens({
   nav,
   themes,
   session,
   prefs,
-  estInvite,
+  isGuest: isGuest,
   tutoOuvert,
-  fermerTuto,
+  closeTutorial: closeTutorial,
   deconnexion,
   start,
-  terminer,
+  finish: finish,
   changerPrefs,
   setTutoOuvert,
-  toutesQuestions,
-  ajouterQuestion,
+  allQuestions: allQuestions,
+  addQuestion: addQuestion,
   celebration,
-  fermerCelebration,
+  closeCelebration: closeCelebration,
 }) {
   const Home = ROUTES.home;
   const Game = ROUTES.game;
   const Results = ROUTES.result;
-
   return (
     <>
-      {tutoOuvert && <Tutorial onFermer={fermerTuto} estInvite={estInvite} />}
+      {tutoOuvert && <Tutorial onClose={closeTutorial} isGuest={isGuest} />}
       {nav.screen === 'accueil' && (
         <Home
           themes={themes}
           pseudo={session.pseudo}
           prefs={prefs}
-          estAdmin={false}
-          estInvite={estInvite}
-          onDeconnexion={() => { deconnexion(); nav.allerVers('accueil'); }}
-          onDemarrer={start}
-          onProposer={() => nav.allerVers('formulaire')}
-          onClassement={() => nav.allerVers('classement')}
-          onStats={() => nav.allerVers('stats')}
-          onBadges={() => nav.allerVers('badges')}
-          onChangerPrefs={changerPrefs}
-          onTuto={() => setTutoOuvert(true)}
+          isAdmin={false}
+          isGuest={isGuest}
+          onLogout={() => {
+            deconnexion();
+            nav.navigateTo('accueil');
+          }}
+          onStart={start}
+          onPropose={() => nav.navigateTo('formulaire')}
+          onLeaderboard={() => nav.navigateTo('classement')}
+          onStats={() => nav.navigateTo('stats')}
+          onBadges={() => nav.navigateTo('badges')}
+          onChangePrefs={changerPrefs}
+          onTutorial={() => setTutoOuvert(true)}
         />
       )}
-      {nav.screen === 'classement' && <ROUTES.leaderboard themes={themes} onAccueil={() => nav.allerVers('accueil')} onStats={() => nav.allerVers('stats')} />}
-      {nav.screen === 'stats' && <ROUTES.stats themes={themes} pseudo={session.pseudo} onAccueil={() => nav.allerVers('accueil')} />}
-      {nav.screen === 'badges' && <ROUTES.badges themes={themes} onAccueil={() => nav.allerVers('accueil')} />}
-      {nav.screen === 'partie' && nav.config && <Game config={nav.config} prefs={prefs} onTerminer={terminer} />}
+      {nav.screen === 'classement' && (
+        <ROUTES.leaderboard
+          themes={themes}
+          onHome={() => nav.navigateTo('accueil')}
+          onStats={() => nav.navigateTo('stats')}
+        />
+      )}
+      {nav.screen === 'stats' && (
+        <ROUTES.stats
+          themes={themes}
+          pseudo={session.pseudo}
+          onHome={() => nav.navigateTo('accueil')}
+        />
+      )}
+      {nav.screen === 'badges' && (
+        <ROUTES.badges themes={themes} onHome={() => nav.navigateTo('accueil')} />
+      )}
+      {nav.screen === 'partie' && nav.config && (
+        <Game config={nav.config} prefs={prefs} onFinish={finish} />
+      )}
       {nav.screen === 'resultat' && nav.result && nav.config && (
         <Results
           result={nav.result}
           themes={themes}
-          estInvite={estInvite}
-          onRejouer={() => nav.allerVers('partie')}
-          onAccueil={() => nav.allerVers('accueil')}
+          isGuest={isGuest}
+          onReplay={() => nav.navigateTo('partie')}
+          onHome={() => nav.navigateTo('accueil')}
         />
       )}
       {nav.screen === 'formulaire' && (
         <ROUTES.form
           themes={themes}
-          toutesQuestions={toutesQuestions}
-          onAjouter={(q) => { ajouterQuestion(q); nav.allerVers('accueil'); }}
-          onAnnuler={() => nav.allerVers('accueil')}
+          allQuestions={allQuestions}
+          onAdd={(q) => {
+            addQuestion(q);
+            nav.navigateTo('accueil');
+          }}
+          onCancel={() => nav.navigateTo('accueil')}
         />
       )}
       {nav.screen === 'accueil' && celebration && (
         <UnlockModal
           celebration={celebration}
-          onFermer={fermerCelebration}
-          onVoirBadges={() => { fermerCelebration(); nav.allerVers('badges'); }}
+          onClose={closeCelebration}
+          onSeeBadges={() => {
+            closeCelebration();
+            nav.navigateTo('badges');
+          }}
         />
       )}
     </>

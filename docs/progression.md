@@ -11,7 +11,7 @@ et dans le profil (`src/shared/modals/Profile.jsx`). XP globale = somme des thè
 ## Badges (30) et titres (50)
 
 - `src/lib/badges.js` : `BADGES` (30 badges) + `computeBadges()` depuis l'historique
-  local (`badgeStats`) ; `prochainBadge()` pour la bannière « reviens-y » de l'accueil
+  local (`badgeStats`) ; `nextBadge()` pour la bannière « reviens-y » de l'accueil
   (`BadgeBanner`). Badge favori choisi parmi les débloqués (clé
   `voltquiz_badge_favori`, `favoriteBadge`/`setFavoriteBadge`, affiché sur le profil).
 - `src/lib/titles.js` : 3 paliers par thème (`PALIERS_TITRE = [3, 5, 10]` sur les 12

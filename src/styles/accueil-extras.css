@@ -51,8 +51,13 @@
 }
 
 @keyframes bolt-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.35); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.35);
+  }
 }
 
 /* --- Bannière « prochain badge » (effet reviens-y sur l'accueil) --- */

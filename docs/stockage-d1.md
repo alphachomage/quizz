@@ -8,13 +8,13 @@ sur D1 via l'API sans toucher aux composants.
 
 - `src/lib/storage.js` — **unique point d'accès** : registre `STORAGE_KEYS` (17 clés,
   noms français conservés : `voltquiz_prefs`, `voltquiz_comptes`, `voltquiz_parties`...),
-  `read` / `write` / `remove` (JSON, compat ancien format brut), `sabonner`/`notifier`.
+  `read` / `write` / `remove` (JSON, compat ancien format brut), `subscribe`/`notifier`.
   Le hook réactif est `useStorage` (`src/shared/hooks/useStorage.js`,
   `useSyncExternalStore` + event `storage` cross-onglet).
 - `src/lib/repositories.js` — **1 repo par clé STORAGE_KEYS** (PrefsRepo, SessionRepo,
   AccountsRepo, RecordsRepo, XpRepo, GamesRepo (500 max), SubmissionsRepo, ApprovedRepo,
   ReportsRepo, SuggestionsRepo, ExcludedRepo, SeriesRepo, DailyStreakRepo, TutorialRepo,
-  FavoriteBadgeRepo, ActiveTitleRepo, ResetSubmissionsRepo) + `toutVider()`. Aucun appel
+  FavoriteBadgeRepo, ActiveTitleRepo, ResetSubmissionsRepo) + `clearAll()`. Aucun appel
   direct `read(STORAGE_KEYS.*)` hors storage/repositories. Le défaut est cloné à la lecture.
 - **Flag** : `STORAGE_MODE` dans `storage.js` = `'local'` par défaut, `'d1'` avec
   `?stockage=d1` dans l'URL (test). En `'d1'` :

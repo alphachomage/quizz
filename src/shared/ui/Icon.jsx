@@ -4,7 +4,13 @@
 
 const CHEMINS = {
   // logo
-  bolt: <path fill="currentColor" stroke="none" d="M13.6 1.5 4.2 13.6h5.6L8.6 22.5l9.4-12.1h-5.6l1.2-8.9z" />,
+  bolt: (
+    <path
+      fill="currentColor"
+      stroke="none"
+      d="M13.6 1.5 4.2 13.6h5.6L8.6 22.5l9.4-12.1h-5.6l1.2-8.9z"
+    />
+  ),
   // accessibilité
   sun: (
     <>
@@ -65,19 +71,26 @@ const CHEMINS = {
       </g>
     </>
   ),
-  film: ( // écran avec bouton play découpé
+  film: (
+    // écran avec bouton play découpé
     <>
       <rect x="2.5" y="4.5" width="19" height="15" rx="3.5" fill="currentColor" stroke="none" />
       <path d="M10.2 9.1v5.8l5-2.9z" fill="var(--couleur, #8b5cf6)" stroke="none" />
     </>
   ),
-  music: ( // note pleine (Material "music_note")
+  music: (
+    // note pleine (Material "music_note")
     <path fill="currentColor" stroke="none" d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" />
   ),
-  ball: ( // ballon plein, pentagone et coutures découpés dans la couleur du badge
+  ball: (
+    // ballon plein, pentagone et coutures découpés dans la couleur du badge
     <>
       <circle cx="12" cy="12" r="9.5" fill="currentColor" stroke="none" />
-      <path fill="var(--couleur, #8b5cf6)" stroke="none" d="M12 7.6 16.1 10.6 14.6 15.1H9.4L7.9 10.6z" />
+      <path
+        fill="var(--couleur, #8b5cf6)"
+        stroke="none"
+        d="M12 7.6 16.1 10.6 14.6 15.1H9.4L7.9 10.6z"
+      />
       <g stroke="var(--couleur, #8b5cf6)" strokeWidth="1.6" fill="none">
         <line x1="12" y1="2.5" x2="12" y2="7.6" />
         <line x1="16.1" y1="10.6" x2="20.8" y2="9.2" />
@@ -89,7 +102,11 @@ const CHEMINS = {
   ),
   gamepad: (
     <>
-      <path fill="currentColor" stroke="none" d="M17.3 5H6.7a4 4 0 0 0-4 3.6C2.6 9.4 2 14.5 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.4-1.4a2 2 0 0 1 1.4-.6h4.4a2 2 0 0 1 1.4.6L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.5-.6-6.6-.7-7.4A4 4 0 0 0 17.3 5z" />
+      <path
+        fill="currentColor"
+        stroke="none"
+        d="M17.3 5H6.7a4 4 0 0 0-4 3.6C2.6 9.4 2 14.5 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.4-1.4a2 2 0 0 1 1.4-.6h4.4a2 2 0 0 1 1.4.6L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.5-.6-6.6-.7-7.4A4 4 0 0 0 17.3 5z"
+      />
       <g stroke="var(--couleur, #8b5cf6)" strokeWidth="1.8" fill="none" strokeLinecap="round">
         <line x1="6" y1="11" x2="10" y2="11" />
         <line x1="8" y1="9" x2="8" y2="13" />
@@ -98,13 +115,23 @@ const CHEMINS = {
       <circle cx="18" cy="10" r="1.2" fill="var(--couleur, #8b5cf6)" stroke="none" />
     </>
   ),
-  sparkles: ( // étoiles 4 branches pleines
+  sparkles: (
+    // étoiles 4 branches pleines
     <>
-      <path fill="currentColor" stroke="none" d="M11 3c.7 4 2.9 6.2 7 7-4.1.8-6.3 3-7 7-.7-4-2.9-6.2-7-7 4.1-.8 6.3-3 7-7z" />
-      <path fill="currentColor" stroke="none" d="M18.5 14c.35 2 1.5 3.15 3.5 3.5-2 .35-3.15 1.5-3.5 3.5-.35-2-1.5-3.15-3.5-3.5 2-.35 3.15-1.5 3.5-3.5z" />
+      <path
+        fill="currentColor"
+        stroke="none"
+        d="M11 3c.7 4 2.9 6.2 7 7-4.1.8-6.3 3-7 7-.7-4-2.9-6.2-7-7 4.1-.8 6.3-3 7-7z"
+      />
+      <path
+        fill="currentColor"
+        stroke="none"
+        d="M18.5 14c.35 2 1.5 3.15 3.5 3.5-2 .35-3.15 1.5-3.5 3.5-.35-2-1.5-3.15-3.5-3.5 2-.35 3.15-1.5 3.5-3.5z"
+      />
     </>
   ),
-  question: ( // disque plein, point d'interrogation découpé dans la couleur du badge
+  question: (
+    // disque plein, point d'interrogation découpé dans la couleur du badge
     <>
       <circle cx="12" cy="12" r="9.5" fill="currentColor" stroke="none" />
       <path
@@ -117,7 +144,8 @@ const CHEMINS = {
       <circle cx="12" cy="17.4" r="1.2" fill="var(--couleur, #8b5cf6)" stroke="none" />
     </>
   ),
-  pin: ( // pin plein avec trou
+  pin: (
+    // pin plein avec trou
     <path
       fill="currentColor"
       fillRule="evenodd"
@@ -157,7 +185,9 @@ const CHEMINS = {
     </>
   ),
   device: <rect x="7" y="2" width="10" height="20" rx="2.5" />,
-  star: <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />,
+  star: (
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+  ),
   check: <polyline points="20 6 9 17 4 12" />,
   x: (
     <>
@@ -206,7 +236,8 @@ const CHEMINS = {
     </>
   ),
   // interface / réglages
-  sliders: ( // trois lignes horizontales avec curseurs = réglages
+  sliders: (
+    // trois lignes horizontales avec curseurs = réglages
     <>
       <line x1="3" y1="5" x2="21" y2="5" />
       <line x1="3" y1="12" x2="21" y2="12" />
@@ -242,14 +273,15 @@ const CHEMINS = {
       <line x1="3" y1="10" x2="21" y2="10" />
     </>
   ),
-  volume: (
+  volumeLevel: (
     <>
       <polygon points="11 5 6 9 2.5 9 2.5 15 6 15 11 19 11 5" fill="currentColor" stroke="none" />
       <path d="M15.5 8.5a5 5 0 0 1 0 7" />
       <path d="M18.6 5.6a9.2 9.2 0 0 1 0 12.8" />
     </>
   ),
-  vibrate: ( // téléphone avec ondes latérales
+  vibrate: (
+    // téléphone avec ondes latérales
     <>
       <rect x="8" y="3" width="8" height="18" rx="2.2" />
       <line x1="10.8" y1="17.8" x2="13.2" y2="17.8" />
@@ -257,14 +289,20 @@ const CHEMINS = {
       <path d="M19.5 9.5a4 4 0 0 1 0 5" />
     </>
   ),
-  flame: ( // flamme (bonus de série)
+  flame: (
+    // flamme (bonus de série)
     <>
       <path d="M12 22c4.4 0 7.5-3 7.5-7.2 0-3.1-1.8-5.4-3.4-7.3-.9-1-1.9-2.1-2.4-3.5-.2-.6-1-.7-1.3-.1C10.6 6.5 8.5 8.6 7 11c-.6 1-1 2.2-1 3.4C6 18.9 8.6 22 12 22z" />
-      <path d="M12 22c-1.9 0-3.2-1.3-3.2-3.1 0-1.7 1.2-2.8 2.1-4 .3-.4.9-.4 1.2 0 .4.6 1.9 2.3 1.9 4 0 1.8-1.3 3.1-3 3.1z" fill="currentColor" stroke="none" />
+      <path
+        d="M12 22c-1.9 0-3.2-1.3-3.2-3.1 0-1.7 1.2-2.8 2.1-4 .3-.4.9-.4 1.2 0 .4.6 1.9 2.3 1.9 4 0 1.8-1.3 3.1-3 3.1z"
+        fill="currentColor"
+        stroke="none"
+      />
     </>
   ),
   // nouveaux thèmes
-  temple: ( // temple grec (mythologie) : fronton + 3 colonnes
+  temple: (
+    // temple grec (mythologie) : fronton + 3 colonnes
     <>
       <path d="M12 3 3.5 8h17L12 3z" />
       <line x1="5" y1="10.5" x2="5" y2="18" />
@@ -274,39 +312,45 @@ const CHEMINS = {
       <line x1="3" y1="10.5" x2="21" y2="10.5" />
     </>
   ),
-  flask: ( // fiole de laboratoire (sciences)
+  flask: (
+    // fiole de laboratoire (sciences)
     <>
       <path d="M10 2.5v6L4.6 18a2 2 0 0 0 1.8 3h11.2a2 2 0 0 0 1.8-3L14 8.5v-6" />
       <line x1="8.5" y1="2.5" x2="15.5" y2="2.5" />
       <line x1="7" y1="14.5" x2="17" y2="14.5" />
     </>
   ),
-  planet: ( // planète avec anneau (espace)
+  planet: (
+    // planète avec anneau (espace)
     <>
       <circle cx="12" cy="12" r="5.5" />
       <ellipse cx="12" cy="12" rx="10" ry="3.6" transform="rotate(-18 12 12)" />
     </>
   ),
-  utensils: ( // fourchette + couteau (cuisine)
+  utensils: (
+    // fourchette + couteau (cuisine)
     <>
       <path d="M4 2.5v6a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-6" />
       <line x1="6" y1="2.5" x2="6" y2="21.5" />
       <path d="M19 15V2.5a4.5 4.5 0 0 0-4.5 4.5v6a2 2 0 0 0 2 2H19zm0 0v6.5" />
     </>
   ),
-  thumbsdown: ( // pouce vers le bas (signaler une question)
+  thumbsdown: (
+    // pouce vers le bas (signaler une question)
     <>
       <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10z" />
       <path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17" />
     </>
   ),
-  book: ( // livre ouvert (mangas & animés)
+  book: (
+    // livre ouvert (mangas & animés)
     <>
       <path d="M2 4.5h6a4 4 0 0 1 4 4V20a3 3 0 0 0-3-3H2z" />
       <path d="M22 4.5h-6a4 4 0 0 0-4 4V20a3 3 0 0 1 3-3h7z" />
     </>
   ),
-  scroll: ( // parchemin (histoire)
+  scroll: (
+    // parchemin (histoire)
     <>
       <path d="M19 17V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h1" />
       <path d="M8 21h11a2 2 0 0 0 2-2v-2a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v2a2 2 0 0 1-2 2z" />

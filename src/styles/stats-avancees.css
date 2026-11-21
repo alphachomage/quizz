@@ -34,11 +34,24 @@
   background: var(--desactive-15);
 }
 
-.cal-n1 { background: var(--accent-35); }
-.cal-n2 { background: var(--accent-65); color: var(--texte-sur-accent); }
-.cal-n3 { background: var(--accent1); color: var(--texte-sur-accent); }
-.cal-futur { background: transparent; opacity: 0.35; }
-.cal-vide { background: transparent; }
+.cal-n1 {
+  background: var(--accent-35);
+}
+.cal-n2 {
+  background: var(--accent-65);
+  color: var(--texte-sur-accent);
+}
+.cal-n3 {
+  background: var(--accent1);
+  color: var(--texte-sur-accent);
+}
+.cal-futur {
+  background: transparent;
+  opacity: 0.35;
+}
+.cal-vide {
+  background: transparent;
+}
 
 .barres {
   display: flex;

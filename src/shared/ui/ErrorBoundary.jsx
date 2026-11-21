@@ -2,26 +2,28 @@
 // Si un composant plante pendant le rendu, on affiche un écran de secours
 // en français (palette sobre, aucun emoji) au lieu d'un écran noir.
 import { Component } from 'react';
-
-import { rechargerPage } from '@lib/nav.js';
-
+import { reloadPage } from '@lib/nav.js';
 export default class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
-    this.state = { erreur: null };
+    this.state = {
+      error: null,
+    };
   }
-
-  static getDerivedStateFromError(erreur) {
-    return { erreur };
+  static getDerivedStateFromError(error) {
+    return {
+      error: error,
+    };
   }
-
-  componentDidCatch(erreur, info) {
+  componentDidCatch(error, info) {
     // Détail de l'erreur conservé pour le diagnostic (pas de console en prod).
-    this.detail = { message: String(erreur), composant: info?.componentStack };
+    this.detail = {
+      message: String(error),
+      composant: info?.componentStack,
+    };
   }
-
   render() {
-    if (this.state.erreur) {
+    if (this.state.error) {
       return (
         <div
           style={{
@@ -45,15 +47,26 @@ export default class ErrorBoundary extends Component {
               textAlign: 'center',
             }}
           >
-            <h1 style={{ fontWeight: 400, fontSize: '24px', margin: '0 0 12px' }}>
+            <h1
+              style={{
+                fontWeight: 400,
+                fontSize: '24px',
+                margin: '0 0 12px',
+              }}
+            >
               Une erreur est survenue
             </h1>
-            <p style={{ color: '#9C9C94', margin: '0 0 24px' }}>
+            <p
+              style={{
+                color: '#9C9C94',
+                margin: '0 0 24px',
+              }}
+            >
               VoltQuiz a rencontré un problème inattendu. Tes données locales sont conservées :
               recharge simplement l'application.
             </p>
             <button
-              onClick={() => rechargerPage()}
+              onClick={() => reloadPage()}
               style={{
                 background: '#D9D0B8',
                 color: '#141414',

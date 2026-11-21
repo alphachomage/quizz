@@ -19,6 +19,7 @@ export function readUrlParam(nom) {
 }
 
 // Recharge complètement la page (bouton « Recharger » de l'ErrorBoundary).
-export function rechargerPage() {
+function reloadPage() {
   window.location.reload();
 }
+export { reloadPage };

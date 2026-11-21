@@ -22,8 +22,8 @@ export function localDayKey(d) {
 export function isThisWeek(dateISO) {
   const d = dateISO ? new Date(dateISO) : new Date();
   if (isNaN(d)) return false;
-  const maintenant = new Date();
-  const lundi = new Date(maintenant.getFullYear(), maintenant.getMonth(), maintenant.getDate());
+  const now = new Date();
+  const lundi = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   lundi.setDate(lundi.getDate() - ((lundi.getDay() + 6) % 7)); // lundi de cette semaine
   const lundiProchain = new Date(lundi);
   lundiProchain.setDate(lundiProchain.getDate() + 7);

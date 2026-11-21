@@ -10,18 +10,27 @@ globalThis.localStorage = {
   setItem: (k, v) => store.set(k, String(v)),
   removeItem: (k) => store.delete(k),
 };
-globalThis.window = { location: { search: '' } };
-
-import { dailyQuestions, drawSeries, sujetDe } from '../src/lib/draw.js';
+globalThis.window = {
+  location: {
+    search: '',
+  },
+};
+import { dailyQuestions, drawSeries, subjectOf } from '../src/lib/draw.js';
 import { pointsFor } from '../src/lib/scoring.js';
 import { addSuggestion, loadSuggestions, removeSuggestion } from '../src/lib/suggestions.js';
 import { isThisWeek, localDayKey } from '../src/lib/dates.js';
 const B = await import('../src/lib/badges.js');
 const T = await import('../src/lib/titles.js');
-
-let ok = 0, ko = 0;
+let ok = 0,
+  ko = 0;
 function check(nom, cond) {
-  if (cond) { ok++; console.log('PASS  ' + nom); } else { ko++; console.log('FAIL  ' + nom); }
+  if (cond) {
+    ok++;
+    console.log('PASS  ' + nom);
+  } else {
+    ko++;
+    console.log('FAIL  ' + nom);
+  }
 }
 
 // --- 1) tirerSerie : diversité des sujets ---
@@ -35,52 +44,93 @@ for (const f of files) {
   for (const t of lot) {
     const ex = themes.find((x) => x.id === t.id);
     if (ex) ex.questions.push(...t.questions);
-    else themes.push({ ...t, questions: [...t.questions] });
+    else
+      themes.push({
+        ...t,
+        questions: [...t.questions],
+      });
   }
 }
 const actifs = themes.filter((t) => !['insolite', 'pop-culture'].includes(t.id));
 const mangas = actifs.find((t) => t.id === 'mangas-animes');
-let maxSujet = 0, series3plus = 0;
+let maxPerSubject = 0,
+  series3plus = 0;
 for (let e = 0; e < 300; e++) {
-  const serie = drawSeries(mangas.questions, 10, 2, 0);
+  const seriesN = drawSeries(mangas.questions, 10, 2, 0);
   const c = new Map();
-  for (const q of serie) { const s = sujetDe(q.q); if (s) c.set(s, (c.get(s) || 0) + 1); }
+  for (const q of seriesN) {
+    const s = subjectOf(q.q);
+    if (s) c.set(s, (c.get(s) || 0) + 1);
+  }
   const mx = c.size ? Math.max(...c.values()) : 0;
-  if (mx > maxSujet) maxSujet = mx;
+  if (mx > maxPerSubject) maxPerSubject = mx;
   if (mx >= 3) series3plus++;
-  if (serie.length !== 10) { ko++; console.log('FAIL  tirage incomplet'); }
+  if (seriesN.length !== 10) {
+    ko++;
+    console.log('FAIL  tirage incomplet');
+  }
 }
 check('tirerSerie solo : 10 questions tirees a chaque fois', true);
-check('tirerSerie solo : max 2 du meme sujet (constate ' + maxSujet + ')', maxSujet <= 2);
+check('tirerSerie solo : max 2 du meme sujet (constate ' + maxPerSubject + ')', maxPerSubject <= 2);
 check('tirerSerie solo : 0/300 series avec 3+ meme sujet', series3plus === 0);
 
 // --- 2) tirerSerie multi-themes : plafond par theme ---
-const survivalPool = actifs.flatMap((t) => t.questions.map((q) => ({ ...q, themeId: t.id })));
-const NB = 30, maxParTheme = Math.max(2, Math.ceil(NB / actifs.length) + 1);
-let maxTheme = 0, over = 0, themesTouchesMin = 99;
+const survivalPool = actifs.flatMap((t) =>
+  t.questions.map((q) => ({
+    ...q,
+    themeId: t.id,
+  }))
+);
+const N = 30,
+  maxPerTheme = Math.max(2, Math.ceil(N / actifs.length) + 1);
+let maxThemeCount = 0,
+  over = 0,
+  minThemesHit = 99;
 for (let e = 0; e < 200; e++) {
-  const serie = drawSeries(survivalPool, NB, 2, maxParTheme);
+  const seriesN = drawSeries(survivalPool, N, 2, maxPerTheme);
   const c = new Map();
-  for (const q of serie) c.set(q.themeId, (c.get(q.themeId) || 0) + 1);
+  for (const q of seriesN) c.set(q.themeId, (c.get(q.themeId) || 0) + 1);
   const mx = Math.max(...c.values());
-  if (mx > maxTheme) maxTheme = mx;
-  if (mx > maxParTheme) over++;
-  themesTouchesMin = Math.min(themesTouchesMin, c.size);
+  if (mx > maxThemeCount) maxThemeCount = mx;
+  if (mx > maxPerTheme) over++;
+  minThemesHit = Math.min(minThemesHit, c.size);
 }
-check('tirerSerie survie : max ' + maxParTheme + '/theme respecte (constate ' + maxTheme + ', depassements ' + over + ')', over === 0);
+check(
+  'tirerSerie survie : max ' +
+    maxPerTheme +
+    '/theme respecte (constate ' +
+    maxThemeCount +
+    ', depassements ' +
+    over +
+    ')',
+  over === 0
+);
 // invariant reel = plafond par theme ci-dessus ; couverture : avec 30 questions et max 4/theme,
 // 8+ themes touches sur 12 est un bon equilibre (le hasard peut concentrer ailleurs)
-check('tirerSerie survie : au moins 8 themes touches par serie (min constate ' + themesTouchesMin + ')', themesTouchesMin >= 8);
+check(
+  'tirerSerie survie : au moins 8 themes touches par serie (min constate ' + minThemesHit + ')',
+  minThemesHit >= 8
+);
 
 // --- 3) quizz du jour : seedé + diversifié ---
-const q1 = dailyQuestions(actifs, '2026-11-19').map((q) => q.q).join('|');
-const q2 = dailyQuestions(actifs, '2026-11-19').map((q) => q.q).join('|');
-const q3 = dailyQuestions(actifs, '2026-11-20').map((q) => q.q).join('|');
+const q1 = dailyQuestions(actifs, '2026-11-19')
+  .map((q) => q.q)
+  .join('|');
+const q2 = dailyQuestions(actifs, '2026-11-19')
+  .map((q) => q.q)
+  .join('|');
+const q3 = dailyQuestions(actifs, '2026-11-20')
+  .map((q) => q.q)
+  .join('|');
 check('quotidien : meme tirage 2x le meme jour', q1 === q2);
 check('quotidien : tirage different le jour suivant', q1 !== q3);
 const cT = new Map();
-for (const q of dailyQuestions(actifs, '2026-11-19')) cT.set(q.themeId, (cT.get(q.themeId) || 0) + 1);
-check('quotidien : max 2 questions du meme theme (constate ' + Math.max(...cT.values()) + ')', Math.max(...cT.values()) <= 2);
+for (const q of dailyQuestions(actifs, '2026-11-19'))
+  cT.set(q.themeId, (cT.get(q.themeId) || 0) + 1);
+check(
+  'quotidien : max 2 questions du meme theme (constate ' + Math.max(...cT.values()) + ')',
+  Math.max(...cT.values()) <= 2
+);
 
 // --- 4) points : 20 max, -1/s, min 10, x2 bonus ---
 check('pointsPour(correct, 0) = 20', pointsFor(true, 0) === 20);
@@ -93,7 +143,10 @@ check('pointsPour(correct, 0, bonus) = 40', pointsFor(true, 0, true) === 40);
 addSuggestion('Test suggestion A', 'Joris');
 addSuggestion('Test suggestion B', 'Test');
 const sl = loadSuggestions();
-check('suggestions : 2 ajoutees, plus recente en premier', sl.length === 2 && sl[0].texte === 'Test suggestion B');
+check(
+  'suggestions : 2 ajoutees, plus recente en premier',
+  sl.length === 2 && sl[0].text === 'Test suggestion B'
+);
 check('suggestions : vide refusee', addSuggestion('   ', 'X') === null);
 removeSuggestion(sl[0].id);
 check('suggestions : suppression OK', loadSuggestions().length === 1);
@@ -105,29 +158,43 @@ check('badges : 30 definis', badges.length === 30);
 check('titres : 50 definis', titles.length === 50);
 
 // --- 7) compte par theme (objectif 1000+ partout) ---
-const parTheme = {};
-for (const t of actifs) parTheme[t.id] = t.questions.length;
-const min = Math.min(...Object.values(parTheme));
-check('12 themes actifs, min ' + min + ' questions/theme (objectif 1000+)', Object.keys(parTheme).length === 12 && min >= 1000);
+const perTheme = {};
+for (const t of actifs) perTheme[t.id] = t.questions.length;
+const min = Math.min(...Object.values(perTheme));
+check(
+  '12 themes actifs, min ' + min + ' questions/theme (objectif 1000+)',
+  Object.keys(perTheme).length === 12 && min >= 1000
+);
 
 // --- 8) classement hebdo : dansSemaineEnCours ---
-const maintenant = new Date();
-const lundi = new Date(maintenant.getFullYear(), maintenant.getMonth(), maintenant.getDate());
+const now = new Date();
+const lundi = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 lundi.setDate(lundi.getDate() - ((lundi.getDay() + 6) % 7));
-const hier = new Date(maintenant); hier.setDate(hier.getDate() - 1);
-const ilYa10j = new Date(maintenant); ilYa10j.setDate(ilYa10j.getDate() - 10);
-const lundiProchain = new Date(lundi); lundiProchain.setDate(lundiProchain.getDate() + 7);
-check('semaine en cours : aujourd’hui dedans', isThisWeek(maintenant.toISOString()) === true);
+const yesterday = new Date(now);
+yesterday.setDate(yesterday.getDate() - 1);
+const ilYa10j = new Date(now);
+ilYa10j.setDate(ilYa10j.getDate() - 10);
+const lundiProchain = new Date(lundi);
+lundiProchain.setDate(lundiProchain.getDate() + 7);
+check('semaine en cours : aujourd’hui dedans', isThisWeek(now.toISOString()) === true);
 check('semaine en cours : lundi de cette semaine dedans', isThisWeek(lundi.toISOString()) === true);
 check('semaine en cours : il y a 10 jours dehors', isThisWeek(ilYa10j.toISOString()) === false);
-check('semaine en cours : lundi prochain dehors', isThisWeek(lundiProchain.toISOString()) === false);
-check('cleJourLocal format AAAA-MM-JJ', /^\d{4}-\d{2}-\d{2}$/.test(localDayKey(maintenant)));
+check(
+  'semaine en cours : lundi prochain dehors',
+  isThisWeek(lundiProchain.toISOString()) === false
+);
+check('cleJourLocal format AAAA-MM-JJ', /^\d{4}-\d{2}-\d{2}$/.test(localDayKey(now)));
 
 // --- 9) dopamine : prochain badge / titre ---
-const pb = B.prochainBadge();
-check('prochainBadge : un badge verrouillé proposé (attendu parties-1 0/1 au départ)', pb && pb.id === 'parties-1' && pb.actuel === 0 && pb.cible === 1);
-const pt = T.prochainTitre();
-check('prochainTitre : un titre verrouillé proposé (palier 3, niveau actuel 1)', pt && pt.cible === 3 && pt.actuel === 1);
-
+const pb = B.nextBadge();
+check(
+  'prochainBadge : un badge verrouillé proposé (attendu parties-1 0/1 au départ)',
+  pb && pb.id === 'parties-1' && pb.current === 0 && pb.target === 1
+);
+const pt = T.nextTitle();
+check(
+  'prochainTitre : un titre verrouillé proposé (palier 3, niveau current 1)',
+  pt && pt.target === 3 && pt.current === 1
+);
 console.log('\n==== RESULTAT : ' + ok + ' PASS / ' + ko + ' FAIL ====');
 process.exit(ko === 0 ? 0 : 1);

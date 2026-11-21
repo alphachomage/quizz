@@ -36,7 +36,7 @@ export const QUESTIONS_V4H_MYTHOLOGIE_B1 = [
       { q: "Quel dieu aveugle fut poussé par Loki à tuer le dieu Baldr avec une branche de gui ?", reponses: ["Höd", "Váli", "Vidar", "Hermod"], bonne: 0, niveau: "moyen" },
       { q: "Comment s'appelle la déesse nordique qui emmène la moitié des guerriers tombés vers son palais Fólkvangr ?", reponses: ["Freyja", "Frigg", "Sif", "Idunn"], bonne: 0, niveau: "moyen" },
       { q: "Quel dieu guerrier nordique perdit une main en la plaçant dans la gueule du loup Fenrir ?", reponses: ["Tyr", "Thor", "Vidar", "Bragi"], bonne: 0, niveau: "moyen" },
-      { q: "Comment s'appelle la lance d'Odin, forgée par des nains, qui ne manque jamais sa cible ?", reponses: ["Gungnir", "Mjöllnir", "Tyrfing", "Gram"], bonne: 0, niveau: "moyen" },
+      { q: "Comment s'appelle la lance d'Odin, forgée par des nains, qui ne manque jamais sa target ?", reponses: ["Gungnir", "Mjöllnir", "Tyrfing", "Gram"], bonne: 0, niveau: "moyen" },
       { q: "Quel héros germanique tua le dragon Fafnir et se baigna dans son sang pour devenir invincible ?", reponses: ["Sigurd", "Beowulf", "Baldr", "Hödr"], bonne: 0, niveau: "moyen" },
       { q: "Comment s'appelle le cheval d'Odin à huit pattes, né de Loki métamorphosé en jument ?", reponses: ["Sleipnir", "Grani", "Blóðughófi", "Gullfaxi"], bonne: 0, niveau: "moyen" },
       { q: "Quel géant de glace, tué par Odin et ses deux frères, servit de matière à la création du monde nordique ?", reponses: ["Ymir", "Bergelmir", "Thrym", "Hrungnir"], bonne: 0, niveau: "moyen" },

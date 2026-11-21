@@ -29,7 +29,7 @@ export const QUESTIONS_MANGAS1_B1 = [
       { q: "Comment s'appelle le frère adoptif de Luffy et Ace ?", reponses: ["Sabo", "Portgas D. Ace", "Monkey D. Garp", "Curly Dadan"], bonne: 0, niveau: "moyen" },
       { q: "Combien de sabres Roronoa Zoro manie-t-il en même temps ?", reponses: ["3", "1", "2", "4"], bonne: 0, niveau: "moyen" },
       { q: "Quel est le surnom de Roronoa Zoro ?", reponses: ["Le chasseur de pirates", "Le samouraï du Nouveau Monde", "Le sabreur fantôme", "Le roi des corsaires"], bonne: 0, niveau: "moyen" },
-      { q: "Comment s'appelle le navire actuel de l'équipage du Chapeau de paille ?", reponses: ["Le Thousand Sunny", "Le Going Merry", "Le Flying Dutchman", "Le Red Force"], bonne: 0, niveau: "moyen" },
+      { q: "Comment s'appelle le navire current de l'équipage du Chapeau de paille ?", reponses: ["Le Thousand Sunny", "Le Going Merry", "Le Flying Dutchman", "Le Red Force"], bonne: 0, niveau: "moyen" },
       { q: "Quel est le fruit du démon de Trafalgar Law ?", reponses: ["Le fruit de l'Op-Op", "Le fruit du Gum-Gum", "Le fruit de l'Hito Hito", "Le fruit du Bara-Bara"], bonne: 0, niveau: "moyen" },
       { q: "Quel fruit du démon a mangé Tony-Tony Chopper ?", reponses: ["Le fruit de l'Hito Hito", "Le fruit du Mogu Mogu", "Le fruit de l'Op-Op", "Le fruit du Gum-Gum"], bonne: 0, niveau: "moyen" },
       { q: "Comment s'appelle l'île gouvernée par Donquijote Doflamingo ?", reponses: ["Dressrosa", "Amazon Lily", "Punk Hazard", "Zou"], bonne: 0, niveau: "moyen" },

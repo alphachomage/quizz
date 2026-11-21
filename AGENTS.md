@@ -49,7 +49,7 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
    la PR/commit — le projet tourne avec très peu de dépendances (react, react-dom, zod).
 9. **Tests : couverture appliquée**. `npm run test:coverage` échoue si les seuils de
    `vitest.config.js` ne sont pas atteints (plancher actuel, à relever — ratchet).
-   Tester UNE feature seule : `npm run test:partie`, `test:partie:duel`, `test:scoring`…
+   Tester UNE feature seule : `npm run test:game`, `test:game:duel`, `test:scoring`…
 10. **Environnements explicites** : `npm run dev` = local (5173) ; `npm run preview` = build
     local servi (4173) ; `npm run deploy:preview` = Cloudflare **preview** (V2 activée) ;
     `npm run deploy` = Cloudflare **prod**. Ne jamais déployer la prod depuis une branche
@@ -76,9 +76,9 @@ npm run preview          # PROD buildée servie en local -> http://localhost:417
 npm run deploy:preview   # déploiement Cloudflare PREVIEW (env preview, V2_ENABLED=true)
 npm run deploy           # déploiement Cloudflare PROD
 npm run lint             # eslint (0 erreur, 0 warning) ; lint:arch = pas de cycle
-npm test                 # tous les tests Vitest ; test:partie = flux solo seul (~2 s)
+npm test                 # tous les tests Vitest ; test:game = flux solo seul (~2 s)
 npm run test:coverage    # couverture avec seuils appliqués (échoue si en dessous)
-npm run test:legacy      # 26 tests historiques (scripts/test-unitaire.mjs)
+npm run test:legacy      # 26 tests historiques (scripts/legacy-tests.mjs)
 npm run count:questions  # comptage réel du corpus (thèmes, questions, doublons)
 npx wrangler deploy --dry-run   # valide worker.js + wrangler.toml sans déployer
 ```

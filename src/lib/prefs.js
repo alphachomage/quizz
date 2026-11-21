@@ -4,10 +4,11 @@ import { PrefsRepo } from './repositories.js';
 
 // Toutes les préférences sont ACTIVÉES par défaut (sauf accessibilité, OFF).
 export function loadPrefs() {
-  const p = PrefsRepo.tout();
+  const p = PrefsRepo.all();
   return {
     sons: p.sons !== false,
-    music: p.music !== false, // musique de fond (toggle séparé, ON par défaut)
+    music: p.music !== false,
+    // musique de fond (toggle séparé, ON par défaut)
     animations: p.animations !== false,
     vibrations: p.vibrations !== false,
     // Accessibilité : thème clair, mode daltonien, mode dys (tous OFF par défaut)
@@ -16,9 +17,8 @@ export function loadPrefs() {
     dys: p.dys === true,
   };
 }
-
-export function sauverPrefs(prefs) {
-  PrefsRepo.sauver({
+function savePrefs(prefs) {
+  PrefsRepo.save({
     sons: prefs.sons !== false,
     music: prefs.music !== false,
     animations: prefs.animations !== false,
@@ -28,3 +28,4 @@ export function sauverPrefs(prefs) {
     dys: prefs.dys === true,
   });
 }
+export { savePrefs };

@@ -75,8 +75,14 @@
 }
 
 @keyframes chute {
-  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(105vh) rotate(var(--rot, 360deg)); opacity: 0.6; }
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(105vh) rotate(var(--rot, 360deg));
+    opacity: 0.6;
+  }
 }
 
 .reponse.bonne {
@@ -84,9 +90,15 @@
 }
 
 @keyframes pop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.04); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* Animations d�sactiv�es dans les param�tres : tout est instantan�. */

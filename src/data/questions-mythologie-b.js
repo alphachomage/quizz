@@ -36,7 +36,7 @@ export const QUESTIONS_MYTHOLOGIE_B = [
       { q: "Quel dieu romain des Enfers correspond au dieu grec Hadès ?", reponses: ["Pluton", "Saturne", "Janus", "Quirinus"], bonne: 0, niveau: "moyen" },
       { q: "Comment s'appelle le dieu romain du commerce, dieu messager aux sandales ailées ?", reponses: ["Mercure", "Mars", "Vulcain", "Silvanus"], bonne: 0, niveau: "moyen" },
       { q: "Comment s'appelle le marteau magique de Thor ?", reponses: ["Mjöllnir", "Gungnir", "Draupnir", "Gram"], bonne: 0, niveau: "moyen" },
-      { q: "Comment s'appelle la lance d'Odin qui ne rate jamais sa cible ?", reponses: ["Gungnir", "Mjöllnir", "Tyrfing", "Hofund"], bonne: 0, niveau: "moyen" },
+      { q: "Comment s'appelle la lance d'Odin qui ne rate jamais sa target ?", reponses: ["Gungnir", "Mjöllnir", "Tyrfing", "Hofund"], bonne: 0, niveau: "moyen" },
       { q: "Comment s'appelle l'arbre-monde qui relie tous les mondes dans la mythologie nordique ?", reponses: ["Yggdrasil", "Bifröst", "Ginnungagap", "Midgard"], bonne: 0, niveau: "moyen" },
       { q: "Quel pont arc-en-ciel relie le monde des hommes à celui des dieux ?", reponses: ["Bifröst", "Yggdrasil", "Niflheim", "Muspelheim"], bonne: 0, niveau: "moyen" },
       { q: "Comment s'appelle la fin du monde prédite dans la mythologie nordique ?", reponses: ["Le Ragnarök", "Le Valhalla", "L'Asgard", "Le Niflheim"], bonne: 0, niveau: "moyen" },

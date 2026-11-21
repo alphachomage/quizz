@@ -1,17 +1,13 @@
 // Tests des badges (src/lib/badges.js) : calcul depuis l'historique local.
 import { describe, expect, it } from 'vitest';
-
 import { addGame } from '@lib/game-history.js';
-
-import { BADGES, computeBadges, prochainBadge } from '@/lib/badges.js';
-
+import { BADGES, computeBadges, nextBadge } from '@/lib/badges.js';
 describe('calculerBadges', () => {
   it('aucune partie = tous les badges verrouillés', () => {
     const badges = computeBadges();
     expect(badges).toHaveLength(BADGES.length);
     expect(badges.every((b) => !b.debloque)).toBe(true);
   });
-
   it('une partie jouée débloque le badge "première partie"', () => {
     addGame({
       mode: 'solo',
@@ -28,13 +24,12 @@ describe('calculerBadges', () => {
     const premiere = badges.find((b) => b.id === 'parties-1');
     expect(premiere.debloque).toBe(true);
   });
-
   it('prochainBadge propose un badge verrouillé avec sa progression', () => {
-    const p = prochainBadge();
+    const p = nextBadge();
     expect(p).toBeTruthy();
     expect(p.id).toBeTruthy();
-    expect(p.cible).toBeGreaterThan(0);
-    expect(p.actuel).toBeGreaterThanOrEqual(0);
+    expect(p.target).toBeGreaterThan(0);
+    expect(p.current).toBeGreaterThanOrEqual(0);
     expect(p.pct).toBeGreaterThanOrEqual(0);
     expect(p.pct).toBeLessThan(1); // verrouillé
   });

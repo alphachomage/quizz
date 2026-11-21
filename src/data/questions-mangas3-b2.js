@@ -52,8 +52,8 @@ export const QUESTIONS_MANGAS3_B2 = [
       { q: "Dans quel magazine paraît le manga 'Détective Conan' ?", reponses: ["Le Weekly Shōnen Jump", "Le Weekly Shōnen Sunday", "Le Nakayoshi", "Le Big Comic"], bonne: 1, niveau: "moyen" },
       { q: "Comment appelle-t-on le recueil relié qui compile les chapitres d'un manga ?", reponses: ["Un dōjinshi", "Un fanzine", "Un artbook", "Un tankōbon"], bonne: 3, niveau: "moyen" },
       { q: "Que désigne une 'scanlation' ?", reponses: ["Un manga sur les scanners", "La traduction pirate d'un chapitre de manga", "Un jeu de cartes japonais", "Un storyboard"], bonne: 1, niveau: "moyen" },
-      { q: "À quelle cible s'adresse principalement un manga 'shōnen' ?", reponses: ["Les jeunes filles", "Les hommes adultes", "Les jeunes garçons", "Les enfants en bas âge"], bonne: 2, niveau: "moyen" },
-      { q: "Et à quelle cible s'adresse principalement un manga 'shōjo' ?", reponses: ["Les jeunes filles", "Les jeunes garçons", "Les femmes adultes", "Les seniors"], bonne: 0, niveau: "moyen" },
+      { q: "À quelle target s'adresse principalement un manga 'shōnen' ?", reponses: ["Les jeunes filles", "Les hommes adultes", "Les jeunes garçons", "Les enfants en bas âge"], bonne: 2, niveau: "moyen" },
+      { q: "Et à quelle target s'adresse principalement un manga 'shōjo' ?", reponses: ["Les jeunes filles", "Les jeunes garçons", "Les femmes adultes", "Les seniors"], bonne: 0, niveau: "moyen" },
       { q: "Quel éditeur publie le Weekly Shōnen Jump ?", reponses: ["Kodansha", "Shueisha", "Shogakukan", "Square Enix"], bonne: 1, niveau: "moyen" },
       { q: "Quelle plateforme est spécialisée dans le streaming légal d'anime ?", reponses: ["Twitch", "Crunchyroll", "TikTok", "Spotify"], bonne: 1, niveau: "moyen" },
       { q: "Dans 'Détective Conan', quelle substance a rétréci Shinichi Kudo en Conan ?", reponses: ["Une potion magique", "Le poison APTX 4869", "Un virus", "Un sortilège"], bonne: 1, niveau: "moyen" }

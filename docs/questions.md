@@ -53,7 +53,7 @@ sont disponibles immédiatement.
 `bonne` = index (0-based) dans `reponses` ; 2 à 4 réponses ; `niveau` obligatoire
 (`facile` | `moyen` | `dur`) ; `icone` = nom d'une icône de `src/shared/ui/Icon.jsx`.
 Même `id` qu'un thème existant = questions ajoutées à ce thème (fusion par
-`fusionThemes` dans `src/shared/utils/mergeThemes.js`).
+`mergeThemes` dans `src/shared/utils/mergeThemes.js`).
 
 ## Thèmes et couleurs (ne jamais inventer de couleur)
 
@@ -82,7 +82,7 @@ Même `id` qu'un thème existant = questions ajoutées à ce thème (fusion par
    `THRESHOLD_SIMILAR`, quasi-identique 0.85 `THRESHOLD_IDENTICAL`), puis
    **validation manuelle** dans `?admin=1` : la proposition passe de « en attente »
    (`voltquiz_soumissions`) à « validées » (`voltquiz_validees`, jouables,
-   exportables en JSON via `telechargerJSON`) et disparaît de la liste des propositions.
+   exportables en JSON via `downloadJson`) et disparaît de la liste des propositions.
 2. **Via le fichier** `public/questions-utilisateur.json` (fetch au démarrage, validé
    par zod `validatePersonalFile` dans `src/lib/schema.js`, puis fusionné dans
    `ThemesContext`).

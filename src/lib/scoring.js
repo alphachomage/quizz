@@ -9,17 +9,27 @@ export const SURVIVAL_MAX = 30; // plafond de questions en mode survie (1re faut
 
 // Les 3 niveaux de difficulté (utilisés en mode solo).
 export const LEVELS = [
-  { id: 'facile', nom: 'Facile', couleur: '#4ade80' },
-  { id: 'moyen', nom: 'Moyen', couleur: '#fbbf24' },
-  { id: 'dur', nom: 'Difficile', couleur: '#fb7185' },
+  {
+    id: 'facile',
+    nom: 'Facile',
+    couleur: '#4ade80',
+  },
+  {
+    id: 'moyen',
+    nom: 'Moyen',
+    couleur: '#fbbf24',
+  },
+  {
+    id: 'dur',
+    nom: 'Difficile',
+    couleur: '#fb7185',
+  },
 ];
-
 export function levelName(id) {
   const n = LEVELS.find((x) => x.id === id);
   return n ? n.nom : 'Tous niveaux'; // survie = tous niveaux mélangés (clé "mix")
 }
-
-export function couleurNiveau(id) {
+function levelColor(id) {
   const n = LEVELS.find((x) => x.id === id);
   return n ? n.couleur : '#a78bfa';
 }
@@ -28,9 +38,10 @@ export function couleurNiveau(id) {
 // Bonne réponse : 20 pts de base, -1 pt par seconde écoulée (minimum 10 pts).
 // Faux ou temps écoulé : 0 pt. En manche bonus, les points sont doublés.
 // (max solo : 8x20 + 2x40 = 240 pts, hors bonus de série)
-export function pointsFor(correct, secondesEcoulees, bonus = false) {
+export { levelColor };
+export function pointsFor(correct, secondsElapsed, bonus = false) {
   if (!correct) return 0;
-  const base = Math.max(10, 20 - Math.floor(secondesEcoulees));
+  const base = Math.max(10, 20 - Math.floor(secondsElapsed));
   return bonus ? base * 2 : base;
 }
 
@@ -38,6 +49,9 @@ export function pointsFor(correct, secondesEcoulees, bonus = false) {
 // Une partie = 3 manches ; la 3e manche est « bonus » (points x2).
 export function roundInfo(index, total) {
   const taille = Math.ceil(total / 3);
-  const manche = Math.min(3, Math.floor(index / taille) + 1);
-  return { manche, bonus: manche === 3 };
+  const round = Math.min(3, Math.floor(index / taille) + 1);
+  return {
+    round: round,
+    bonus: round === 3,
+  };
 }

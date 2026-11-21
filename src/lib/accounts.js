@@ -1,53 +1,75 @@
 // Comptes locaux : e-mail + mot de passe + pseudo, stockés UNIQUEMENT sur ce PC
 // (localStorage). Le mot de passe n'est JAMAIS stocké en clair : on stocke un
 // hash SHA-256 salé (crypto.subtle, dispo en local sur http://localhost).
-import { normalizePseudo, pseudoValide } from './moderation.js';
+import { normalizePseudo, isValidPseudo } from './moderation.js';
 import { read, write, remove, STORAGE_KEYS } from './storage.js';
 
-// Guard crypto : crypto.subtle n'existe que dans un contexte sécurisé (HTTPS ou
+// Guard crypto : crypto.subtle n'existe que dans un context sécurisé (HTTPS ou
 // localhost). Sur HTTP non-local, on renvoie une erreur claire au lieu de planter.
-function contexteSecurise() {
-  return !!(globalThis.crypto && globalThis.crypto.subtle && typeof globalThis.crypto.randomUUID === 'function');
+function secureContext() {
+  return !!(
+    globalThis.crypto &&
+    globalThis.crypto.subtle &&
+    typeof globalThis.crypto.randomUUID === 'function'
+  );
 }
-
 export function loadAccounts() {
   return read(STORAGE_KEYS.accounts, []) || [];
 }
-
 function saveAccounts(list) {
   write(STORAGE_KEYS.accounts, list);
 }
-
 export function listPseudos() {
   return loadAccounts().map((c) => c.pseudo);
 }
-
-export function pseudoExiste(pseudo) {
+function pseudoExists(pseudo) {
   const n = normalizePseudo(pseudo);
   return loadAccounts().some((c) => c.pseudoNormalise === n);
 }
-
+export { pseudoExists };
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email || '');
 }
-
-async function hashPassword(mdp, sel) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`${sel}::${mdp}`));
+async function hashPassword(password, sel) {
+  const buf = await crypto.subtle.digest(
+    'SHA-256',
+    new TextEncoder().encode(`${sel}::${password}`)
+  );
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 // Crée un compte local. Retourne { ok: true, pseudo } ou { ok: false, erreur }.
-export async function createAccount({ pseudo, email, mdp }) {
-  if (!contexteSecurise()) {
-    return { ok: false, erreur: "Contexte non sécurisé : ouvre l'appli en https ou sur localhost pour créer un compte." };
+export async function createAccount({ pseudo, email, password: password }) {
+  if (!secureContext()) {
+    return {
+      ok: false,
+      error:
+        "Contexte non sécurisé : ouvre l'appli en https ou sur localhost pour créer un compte.",
+    };
   }
-  const errPseudo = pseudoValide(pseudo);
-  if (errPseudo) return { ok: false, erreur: errPseudo };
-  if (!isValidEmail(email)) return { ok: false, erreur: "L'adresse e-mail semble invalide." };
-  if (!mdp || mdp.length < 8) return { ok: false, erreur: 'Le mot de passe doit faire au moins 8 caractères.' };
-  if (pseudoExiste(pseudo)) return { ok: false, erreur: 'Ce pseudo est déjà pris sur ce PC.' };
+  const pseudoError = isValidPseudo(pseudo);
+  if (pseudoError)
+    return {
+      ok: false,
+      error: pseudoError,
+    };
+  if (!isValidEmail(email))
+    return {
+      ok: false,
+      error: "L'adresse e-mail semble invalide.",
+    };
+  if (!password || password.length < 8)
+    return {
+      ok: false,
+      error: 'Le mot de passe doit faire au moins 8 caractères.',
+    };
+  if (pseudoExists(pseudo))
+    return {
+      ok: false,
+      error: 'Ce pseudo est déjà pris sur ce PC.',
+    };
   const sel = crypto.randomUUID();
-  const hash = await hashPassword(mdp, sel);
+  const hash = await hashPassword(password, sel);
   const accounts = loadAccounts();
   accounts.push({
     pseudo,
@@ -59,24 +81,46 @@ export async function createAccount({ pseudo, email, mdp }) {
     date: new Date().toISOString(),
   });
   saveAccounts(accounts);
-  write(STORAGE_KEYS.session, { pseudo, avatar: null });
-  return { ok: true, pseudo };
+  write(STORAGE_KEYS.session, {
+    pseudo,
+    avatar: null,
+  });
+  return {
+    ok: true,
+    pseudo,
+  };
 }
 
 // Connexion : vérifie le hash du mot de passe. Retourne { ok, pseudo? , erreur? }.
-export async function connect(pseudo, mdp) {
-  if (!contexteSecurise()) {
-    return { ok: false, erreur: "Contexte non sécurisé : la connexion nécessite https ou localhost." };
+export async function connect(pseudo, password) {
+  if (!secureContext()) {
+    return {
+      ok: false,
+      error: 'Contexte non sécurisé : la connexion nécessite https ou localhost.',
+    };
   }
   const n = normalizePseudo(pseudo);
   const account = loadAccounts().find((c) => c.pseudoNormalise === n);
-  if (!account) return { ok: false, erreur: 'Aucun compte avec ce pseudo sur ce PC.' };
-  const hash = await hashPassword(mdp || '', account.sel);
-  if (hash !== account.hash) return { ok: false, erreur: 'Mot de passe incorrect.' };
-  write(STORAGE_KEYS.session, { pseudo: account.pseudo, avatar: account.avatar || null });
-  return { ok: true, pseudo: account.pseudo };
+  if (!account)
+    return {
+      ok: false,
+      error: 'Aucun compte avec ce pseudo sur ce PC.',
+    };
+  const hash = await hashPassword(password || '', account.sel);
+  if (hash !== account.hash)
+    return {
+      ok: false,
+      error: 'Mot de passe incorrect.',
+    };
+  write(STORAGE_KEYS.session, {
+    pseudo: account.pseudo,
+    avatar: account.avatar || null,
+  });
+  return {
+    ok: true,
+    pseudo: account.pseudo,
+  };
 }
-
 export function currentSession() {
   try {
     return read(STORAGE_KEYS.session, null);
@@ -92,16 +136,20 @@ export function startGuest() {
   let alea = '';
   for (let i = 0; i < 7; i++) alea += caracteres[Math.floor(Math.random() * caracteres.length)];
   const pseudo = `user-${alea}`;
-  write(STORAGE_KEYS.session, { pseudo, guest: true, avatar: null });
+  write(STORAGE_KEYS.session, {
+    pseudo,
+    guest: true,
+    avatar: null,
+  });
   return pseudo;
 }
-
-export function estInvite() {
+function isGuest() {
   const s = currentSession();
   return !!(s && s.guest);
 }
 
 // Avatar du compte connecté (dataURL stockée dans le compte).
+export { isGuest };
 export function currentAvatar() {
   const s = currentSession();
   if (!s) return null;
@@ -119,9 +167,12 @@ export function setAvatar(pseudo, dataUrl) {
     saveAccounts(accounts);
   }
   const s = currentSession();
-  if (s) write(STORAGE_KEYS.session, { ...s, avatar: dataUrl });
+  if (s)
+    write(STORAGE_KEYS.session, {
+      ...s,
+      avatar: dataUrl,
+    });
 }
-
 export function disconnect() {
   remove(STORAGE_KEYS.session);
 }
@@ -136,7 +187,6 @@ export function hasSeenTutorial(pseudo) {
     return false;
   }
 }
-
 export function markTutorialSeen(pseudo) {
   try {
     const vu = read(STORAGE_KEYS.tutorial, {}) || {};

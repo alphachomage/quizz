@@ -12,5 +12,5 @@ React.lazy (`src/app/routes.js`, clé `home`).
   « C'est parti » fixe en bas (`FixedCta`).
 - Barre utilisateur (`UserBar`) : profil, badges, stats, classement, paramètres,
   tuto, déconnexion.
-- Bannière « prochain badge » (`BadgeBanner`, `prochainBadge`), bouton
+- Bannière « prochain badge » (`BadgeBanner`, `nextBadge`), bouton
   « Proposer une question », « Une suggestion ? », noms de duel suggérés (`DuelNames`).

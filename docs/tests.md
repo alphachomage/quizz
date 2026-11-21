@@ -4,11 +4,11 @@
 
 ```bash
 npm test                 # toute la suite Vitest (tests/unit + tests/integration + tests/data)
-npm run test:partie      # UNIQUEMENT le flux solo (tests/integration/game-solo.test.jsx)
-npm run test:partie:duel / :survie / :quotidien   # game-duel / game-survival / game-daily
+npm run test:game      # UNIQUEMENT le flux solo (tests/integration/game-solo.test.jsx)
+npm run test:game:duel / :survival / :daily   # game-duel / game-survival / game-daily
 npm run test:unit        # tests/unit/**  ·  npm run test:integration  ·  npm run test:data
 npm run test:scoring / :tirage / :similarite / :comptes
-npm run test:legacy      # 26 tests historiques node (scripts/test-unitaire.mjs)
+npm run test:legacy      # 26 tests historiques node (scripts/legacy-tests.mjs)
 npm run test:coverage    # couverture avec seuils appliqués (échoue si en dessous)
 ```
 

@@ -46,7 +46,7 @@ export const QUESTIONS_V1_HISTOIRE_B1 = [
       { q: "En quelle année Israël a-t-il remporté la guerre des Six Jours contre ses voisins arabes ?", reponses: ["1948", "1956", "1967", "1973"], bonne: 2, niveau: "moyen" },
       { q: "Quelle organisation, fondée en 1964 et dirigée notamment par Yasser Arafat, revendique la création d'un État palestinien ?", reponses: ["L'OLP", "Le Hamas", "Le Hezbollah", "Le Jihad islamique"], bonne: 0, niveau: "moyen" },
       { q: "En quelle année les accords d'Oslo ont-ils été signés entre Israël et l'OLP ?", reponses: ["1978", "1988", "1993", "1995"], bonne: 2, niveau: "moyen" },
-      { q: "Quel grand empire d'Afrique de l'Ouest, centré sur le Mali actuel, a connu son apogée au XIVe siècle ?", reponses: ["L'empire du Mali", "L'empire du Ghana", "L'empire songhaï", "Le royaume du Bénin"], bonne: 0, niveau: "moyen" },
+      { q: "Quel grand empire d'Afrique de l'Ouest, centré sur le Mali current, a connu son apogée au XIVe siècle ?", reponses: ["L'empire du Mali", "L'empire du Ghana", "L'empire songhaï", "Le royaume du Bénin"], bonne: 0, niveau: "moyen" },
       { q: "Quel empereur du Mali, réputé l'homme le plus riche de l'histoire, a fait le pèlerinage de La Mecque en 1324 ?", reponses: ["Mansa Moussa", "Soundiata Keïta", "Askia Mohammed", "Soni Ali"], bonne: 0, niveau: "moyen" },
       { q: "Quel pays d'Afrique de l'Est, de religion chrétienne orthodoxe, est resté indépendant face aux colonisateurs ?", reponses: ["L'Éthiopie", "Le Liberia", "L'Égypte", "Le Maroc"], bonne: 0, niveau: "moyen" },
       { q: "En quelle année les Éthiopiens ont-ils infligé une défaite décisive aux Italiens à la bataille d'Adoua ?", reponses: ["1878", "1889", "1896", "1911"], bonne: 2, niveau: "moyen" },

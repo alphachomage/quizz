@@ -13,7 +13,7 @@ export const QUESTIONS_V4C_CULTURE_GENERALE_C1 = [
       { q: "Que signifie l'expression 'casser sa pipe' ?", reponses: ["Mourir", "Fumer une pipe", "Perdre un objet précieux", "Se mettre en colère"], bonne: 0, niveau: "dur" },
       { q: "Que signifie 'passer à la casserole' ?", reponses: ["Subir un paiement ou une épreuve pénible", "Cuisiner dans une casserole", "Être très bien habillé", "Gagner beaucoup d'argent"], bonne: 0, niveau: "dur" },
       { q: "Que signifie l'expression 'être tiré à quatre épingles' ?", reponses: ["Être habillé avec une élégance parfaite", "Être piqué par des épingles", "Être très fatigué", "Être en retard"], bonne: 0, niveau: "dur" },
-      { q: "En quelle année la marque Nike a-t-elle officiellement adopté son nom actuel ?", reponses: ["1971", "1964", "1980", "1985"], bonne: 0, niveau: "dur" },
+      { q: "En quelle année la marque Nike a-t-elle officiellement adopté son nom current ?", reponses: ["1971", "1964", "1980", "1985"], bonne: 0, niveau: "dur" },
       { q: "En quelle année le pharmacien John Pemberton a-t-il créé la boisson Coca-Cola ?", reponses: ["1886", "1892", "1879", "1901"], bonne: 0, niveau: "dur" },
       { q: "En quelle année les frères McDonald ont-ils ouvert leur premier restaurant à San Bernardino ?", reponses: ["1940", "1955", "1948", "1936"], bonne: 0, niveau: "dur" },
       { q: "En quelle année Lego a-t-il déposé le brevet de sa brique en plastique emboîtable ?", reponses: ["1958", "1949", "1964", "1953"], bonne: 0, niveau: "dur" },

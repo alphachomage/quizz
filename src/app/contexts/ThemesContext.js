@@ -1,7 +1,6 @@
-// ThemesContext.js — catalogue de thèmes : base intégrée + fichier perso (fetch)
+// ThemesContext.js — catalogue de thèmes : base intégrée + fichier personal (fetch)
 // + questions validées (localStorage), et la liste plate pour la détection de similarité.
 import { createContext, createElement, useContext, useEffect, useMemo, useState } from 'react';
-
 import { loadThemes } from '@data/questions.js';
 import {
   loadSubmissions,
@@ -12,36 +11,36 @@ import {
   exportSubmissionsJson,
 } from '@lib/submissions.js';
 import { validatePersonalFile, validateSubmissions } from '@lib/schema.js';
-import { fusionThemes } from '@shared/utils/mergeThemes.js';
-
+import { mergeThemes } from '@shared/utils/mergeThemes.js';
 const ThemesContext = createContext(null);
-
 export function ThemesProvider({ children }) {
-  const [themesBase, setThemesBase] = useState(null); // null = questions en cours de chargement (chunks lazy)
-  const [soumissions, setSoumissions] = useState(() => validateSubmissions(loadSubmissions())); // en attente de validation
+  const [baseThemes, setBaseThemes] = useState(null); // null = questions en cours de chargement (chunks lazy)
+  const [submissions, setSubmissions] = useState(() => validateSubmissions(loadSubmissions())); // en attente de validation
   const [validees, setValidees] = useState(() => validateSubmissions(loadApproved())); // validées = jouables
 
   // Au chargement : on charge les questions (chunks lazy) puis on fusionne le
   // fichier questions-utilisateur.json par-dessus la base intégrée.
   useEffect(() => {
-    let actif = true;
+    let active = true;
     const controleur = new AbortController();
     (async () => {
       try {
         const base = await loadThemes();
-        const persoBrut = await fetch('/questions-utilisateur.json', { signal: controleur.signal })
+        const rawPersonal = await fetch('/questions-utilisateur.json', {
+          signal: controleur.signal,
+        })
           .then((r) => (r.ok ? r.json() : null))
           .catch(() => null);
-        if (!actif) return;
+        if (!active) return;
         // Donnée externe (fetch) : validée par schéma zod avant usage.
-        const perso = validatePersonalFile(persoBrut);
-        setThemesBase(perso ? fusionThemes(base, perso.themes) : base);
+        const personal = validatePersonalFile(rawPersonal);
+        setBaseThemes(personal ? mergeThemes(base, personal.themes) : base);
       } catch {
-        if (actif) setThemesBase([]); // échec de chargement : catalogue vide plutôt que crash
+        if (active) setBaseThemes([]); // échec de chargement : catalogue vide plutôt que crash
       }
     })();
     return () => {
-      actif = false;
+      active = false;
       controleur.abort();
     };
   }, []);
@@ -49,10 +48,23 @@ export function ThemesProvider({ children }) {
   // Thèmes finaux = base/fichier + questions VALIDÉES manuellement (localStorage).
   // Les questions merely « proposées » (en attente) ne sont PAS jouables.
   const themes = useMemo(() => {
-    if (!themesBase) return null; // chargement en cours
-    const map = new Map(themesBase.map((t) => [t.id, { ...t, questions: [...t.questions] }]));
+    if (!baseThemes) return null; // chargement en cours
+    const map = new Map(
+      baseThemes.map((t) => [
+        t.id,
+        {
+          ...t,
+          questions: [...t.questions],
+        },
+      ])
+    );
     for (const s of validees) {
-      const question = { q: s.q, reponses: s.reponses, bonne: s.bonne, niveau: s.niveau };
+      const question = {
+        q: s.q,
+        reponses: s.reponses,
+        bonne: s.bonne,
+        niveau: s.niveau,
+      };
       if (s.info) question.info = s.info;
       if (map.has(s.themeId)) {
         map.get(s.themeId).questions.push(question);
@@ -67,52 +79,68 @@ export function ThemesProvider({ children }) {
       }
     }
     return [...map.values()];
-  }, [themesBase, validees]);
+  }, [baseThemes, validees]);
 
   // Liste plate de toutes les questions connues (base + validées + en attente)
   // pour la détection de similarité lors d'une proposition.
-  const toutesQuestions = useMemo(() => {
+  const allQuestions = useMemo(() => {
     if (!themes) return [];
-    const depuisThemes = themes.flatMap((t) =>
-      t.questions.map((q) => ({ ...q, themeId: t.id, themeNom: t.nom, themeCouleur: t.couleur }))
+    const fromThemes = themes.flatMap((t) =>
+      t.questions.map((q) => ({
+        ...q,
+        themeId: t.id,
+        themeName: t.nom,
+        themeColor: t.couleur,
+      }))
     );
-    const enAttente = soumissions.map((s) => ({
+    const enAttente = submissions.map((s) => ({
       q: s.q,
       reponses: s.reponses,
       bonne: s.bonne,
       niveau: s.niveau,
       themeId: s.themeId,
-      themeNom: themes.find((t) => t.id === s.themeId)?.nom || s.themeId,
-      themeCouleur: themes.find((t) => t.id === s.themeId)?.couleur || '#8b5cf6',
+      themeName: themes.find((t) => t.id === s.themeId)?.nom || s.themeId,
+      themeColor: themes.find((t) => t.id === s.themeId)?.couleur || '#8b5cf6',
     }));
-    return [...depuisThemes, ...enAttente];
-  }, [themes, soumissions]);
+    return [...fromThemes, ...enAttente];
+  }, [themes, submissions]);
 
   // Actions sur les propositions (validation manuelle côté admin).
   const actions = useMemo(
     () => ({
-      ajouterQuestion: (q) => {
+      addQuestion: (q) => {
         addSubmission(q);
-        setSoumissions(loadSubmissions());
+        setSubmissions(loadSubmissions());
       },
-      supprimerQuestion: (id) => {
+      removeQuestion: (id) => {
         removeSubmission(id);
-        setSoumissions(loadSubmissions());
+        setSubmissions(loadSubmissions());
       },
-      validerQuestion: (id) => {
+      approveQuestion: (id) => {
         approveSubmission(id);
-        setSoumissions(loadSubmissions());
+        setSubmissions(loadSubmissions());
         setValidees(loadApproved());
       },
       exporterValidees: () => exportSubmissionsJson(validees, themes),
     }),
     [validees, themes]
   );
-
-  const valeur = { themes, toutesQuestions, soumissions, validees, nbValidees: validees.length, ...actions };
-  return createElement(ThemesContext.Provider, { value: valeur }, children);
+  const value = {
+    themes,
+    allQuestions: allQuestions,
+    submissions: submissions,
+    validees,
+    approvedCount: validees.length,
+    ...actions,
+  };
+  return createElement(
+    ThemesContext.Provider,
+    {
+      value: value,
+    },
+    children
+  );
 }
-
 export function useThemes() {
   const ctx = useContext(ThemesContext);
   if (!ctx) throw new Error('useThemes doit être utilisé sous <ThemesProvider>');

@@ -68,7 +68,9 @@
 .minuteur-rempli {
   height: 100%;
   border-radius: var(--radius-pilule);
-  transition: width 1s linear, background var(--dur-standard) ease; /* 1 setState/s côté JS, lissé ici */
+  transition:
+    width 1s linear,
+    background var(--dur-standard) ease; /* 1 setState/s côté JS, lissé ici */
 }
 
 .minuteur-pts {
@@ -87,8 +89,12 @@
 }
 
 @keyframes minuteur-pulse {
-  from { filter: brightness(1); }
-  to { filter: brightness(1.45); }
+  from {
+    filter: brightness(1);
+  }
+  to {
+    filter: brightness(1.45);
+  }
 }
 
 .question {
@@ -122,7 +128,10 @@
   cursor: pointer;
   text-align: left;
   box-shadow: var(--ombre-3d);
-  transition: transform 0.1s ease, filter var(--dur-court) ease, opacity var(--dur-court) ease;
+  transition:
+    transform 0.1s ease,
+    filter var(--dur-court) ease,
+    opacity var(--dur-court) ease;
 }
 
 .reponse:hover:not(:disabled) {
@@ -317,7 +326,7 @@
   color: var(--accent2);
 }
 
-.record-actuel {
+.record-current {
   display: flex;
   align-items: center;
   justify-content: center;

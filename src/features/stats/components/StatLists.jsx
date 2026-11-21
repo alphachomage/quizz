@@ -1,6 +1,5 @@
 // ListesStats.jsx — les 3 listes « par mode / par thème / par niveau » de l'écran Stats.
 import Icon from '@shared/ui/Icon.jsx';
-
 export default function StatLists({ stats, modes }) {
   return (
     <>
@@ -8,12 +7,14 @@ export default function StatLists({ stats, modes }) {
         <h3 className="titre-section">Par mode de jeu</h3>
         <ul className="stats-liste">
           {modes.map((m) => {
-            const s = stats.parMode[m.id];
+            const s = stats.perMode[m.id];
             return (
               <li key={m.id} className="stats-ligne">
-                <span className="stats-ligne-nom"><Icon nom={m.icone} taille={17} /> {m.nom}</span>
+                <span className="stats-ligne-nom">
+                  <Icon nom={m.icone} taille={17} /> {m.nom}
+                </span>
                 <span className="stats-ligne-val">
-                  {s ? `${s.games} partie(s) · meilleur score ${s.meilleur} pts` : 'pas encore joué'}
+                  {s ? `${s.games} partie(s) · meilleur score ${s.best} pts` : 'pas encore joué'}
                 </span>
               </li>
             );
@@ -43,7 +44,14 @@ export default function StatLists({ stats, modes }) {
           <ul className="stats-liste">
             {stats.parNiveauListe.map((n) => (
               <li key={n.id} className="stats-ligne">
-                <span className="stats-ligne-nom" style={{ color: n.couleur }}>{n.nom}</span>
+                <span
+                  className="stats-ligne-nom"
+                  style={{
+                    color: n.couleur,
+                  }}
+                >
+                  {n.nom}
+                </span>
                 <span className="stats-ligne-val">
                   {n.correctes}/{n.jouées} bonnes réponses · {n.pct} %
                 </span>

@@ -1,12 +1,19 @@
 // BarreUser.jsx — barre utilisateur en haut de l'accueil : avatar, pseudo, niveau,
 // barre d'XP globale, titre, et boutons (badges, tuto, stats, paramètres, déconnexion).
 import Icon from '@shared/ui/Icon.jsx';
-
-export default function UserBar({ a, pseudo, estInvite, onDeconnexion, onBadges, onTuto, onStats }) {
+export default function UserBar({
+  a,
+  pseudo,
+  isGuest: isGuest,
+  onLogout: onLogout,
+  onBadges,
+  onTutorial: onTutorial,
+  onStats,
+}) {
   return (
     <div className="barre-user">
       <div className="user-bloc">
-        {!estInvite && (
+        {!isGuest && (
           <button
             className="avatar-btn"
             onClick={() => a.setProfilOuvert(true)}
@@ -15,41 +22,66 @@ export default function UserBar({ a, pseudo, estInvite, onDeconnexion, onBadges,
             {a.avatar ? (
               <img src={a.avatar} alt="" className="avatar-img" />
             ) : (
-              <span className="avatar-defaut"><Icon nom="user" taille={18} /></span>
+              <span className="avatar-defaut">
+                <Icon nom="user" taille={18} />
+              </span>
             )}
           </button>
         )}
         <div className="user-infos">
           <span className="user-nom">
-            {pseudo} {estInvite ? <span className="chip-invite">Invité</span> : <span className="user-niv">Niv. {a.nivGlobal}</span>}
+            {pseudo}{' '}
+            {isGuest ? (
+              <span className="chip-invite">Invité</span>
+            ) : (
+              <span className="user-niv">Niv. {a.nivGlobal}</span>
+            )}
           </span>
-          {!estInvite && (
+          {!isGuest && (
             <>
-              <span className="user-xpbar" title={`${a.totalXp} XP au total — niveau ${a.nivGlobal + 1} à ${a.xpNext} XP`}>
-                <i style={{ width: `${a.pctXpGlobal}%` }} />
+              <span
+                className="user-xpbar"
+                title={`${a.totalXp} XP au total — niveau ${a.nivGlobal + 1} à ${a.xpNext} XP`}
+              >
+                <i
+                  style={{
+                    width: `${a.pctXpGlobal}%`,
+                  }}
+                />
               </span>
-              {a.profileTitle && <span className="user-titre" title="Ton titre (choisi dans l'onglet Badges & titres)">{a.profileTitle}</span>}
+              {a.profileTitle && (
+                <span
+                  className="user-titre"
+                  title="Ton titre (choisi dans l'onglet Badges & titres)"
+                >
+                  {a.profileTitle}
+                </span>
+              )}
             </>
           )}
         </div>
       </div>
-      {!estInvite && (
+      {!isGuest && (
         <button className="btn-icone" title="Mes badges" onClick={onBadges}>
           <Icon nom="star" taille={17} />
         </button>
       )}
-      <button className="btn-icone" title="Revoir le tutoriel" onClick={onTuto}>
+      <button className="btn-icone" title="Revoir le tutoriel" onClick={onTutorial}>
         <Icon nom="question" taille={17} />
       </button>
-      {!estInvite && (
+      {!isGuest && (
         <button className="btn-icone" title="Mes statistiques" onClick={onStats}>
           <Icon nom="chart" taille={17} />
         </button>
       )}
-      <button className="btn-icone" title="Paramètres (sons, animations, vibrations)" onClick={() => a.setShowParametres(true)}>
+      <button
+        className="btn-icone"
+        title="Paramètres (sons, animations, vibrations)"
+        onClick={() => a.setShowSettings(true)}
+      >
         <Icon nom="sliders" taille={17} />
       </button>
-      <button className="btn-suppr" title="Se déconnecter" onClick={onDeconnexion}>
+      <button className="btn-suppr" title="Se déconnecter" onClick={onLogout}>
         <Icon nom="logout" taille={16} />
       </button>
     </div>

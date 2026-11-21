@@ -17,7 +17,6 @@
 
 import { readUrlParam } from './nav.js';
 import { kvGet, kvSet } from './api.js';
-
 export const STORAGE_MODE = readUrlParam('stockage') === 'd1' ? 'd1' : 'local';
 
 // Registre de TOUTES les clés de stockage de l'application.
@@ -43,46 +42,45 @@ export const STORAGE_KEYS = {
 
 // Abonnés prévenus à chaque écriture (pour useSyncExternalStore via le hook).
 const auditeurs = new Set();
-
-export function sabonner(auditeur) {
+function subscribe(auditeur) {
   auditeurs.add(auditeur);
   return () => auditeurs.delete(auditeur);
 }
-
-export function notifier() {
+export { subscribe };
+export function notify() {
   for (const a of auditeurs) a();
 }
 
 // Lit une valeur JSON. Retourne `defaut` si absente ou illisible.
 // Compat : si la valeur stockée n'est pas du JSON (ancien format brut), on la renvoie telle quelle.
-export function read(key, defaut = null) {
+export function read(key, defaultValue = null) {
   try {
     const brut = localStorage.getItem(key);
-    if (brut === null) return defaut;
+    if (brut === null) return defaultValue;
     try {
       return JSON.parse(brut);
     } catch {
       return brut; // ancien format : chaîne brute
     }
   } catch {
-    return defaut;
+    return defaultValue;
   }
 }
 
 // Écrit une valeur (JSON) et prévient les abonnés.
 // En mode 'd1', pousse aussi au serveur en arrière-plan (best-effort, jamais bloquant).
-export function write(key, valeur) {
+export function write(key, value) {
   try {
-    localStorage.setItem(key, JSON.stringify(valeur));
+    localStorage.setItem(key, JSON.stringify(value));
   } catch {
     // stockage indisponible (quota dépassé, navigation privée) : on ignore
   }
   if (STORAGE_MODE === 'd1') {
-    kvSet(key, valeur).catch(() => {
+    kvSet(key, value).catch(() => {
       // serveur injoignable : la valeur reste en local, la synchro reprendra au prochain write
     });
   }
-  notifier();
+  notify();
 }
 
 // En mode 'd1' : pré-charge TOUTES les clés depuis le serveur (/api/kv) dans le cache
@@ -93,15 +91,15 @@ export async function preloadFromServer() {
     Object.values(STORAGE_KEYS).map(async (key) => {
       try {
         const r = await kvGet(key);
-        if (r && r.valeur !== undefined && r.valeur !== null) {
-          localStorage.setItem(key, JSON.stringify(r.valeur));
+        if (r && r.value !== undefined && r.value !== null) {
+          localStorage.setItem(key, JSON.stringify(r.value));
         }
       } catch {
         // clé absente côté serveur ou réseau coupé : on garde le local
       }
     })
   );
-  notifier();
+  notify();
 }
 
 // Supprime une clé et prévient les abonnés.
@@ -111,5 +109,5 @@ export function remove(key) {
   } catch {
     // idem
   }
-  notifier();
+  notify();
 }

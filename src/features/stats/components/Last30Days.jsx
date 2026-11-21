@@ -4,11 +4,13 @@ export default function Last30Days({ calendar }) {
     <section>
       <h3 className="titre-section">Points marqués — 30 derniers jours</h3>
       <div className="barres">
-        {calendar.jours30.map((j) => (
+        {calendar.last30Days.map((j) => (
           <span
             key={j.key}
             className="barre"
-            style={{ height: `${Math.round((j.points / calendar.maxPoints) * 100)}%` }}
+            style={{
+              height: `${Math.round((j.points / calendar.maxPoints) * 100)}%`,
+            }}
             data-label={`${j.points} pts · ${j.games} partie(s)`}
             title={`${j.key} : ${j.points} pts · ${j.games} partie(s)`}
           />

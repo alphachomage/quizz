@@ -7,17 +7,17 @@ import { RecordsRepo } from './repositories.js';
 export function recordKey(mode, niveau, themeId) {
   return `${mode}:${niveau || 'mix'}:${themeId}`;
 }
-
 export function loadRecords() {
-  return RecordsRepo.tout();
+  return RecordsRepo.all();
 }
 
-// Sauvegarde le record si le score est meilleur. Retourne le record actuel.
-export function sauverRecord(key, valeur) {
+// Sauvegarde le record si le score est meilleur. Retourne le record current.
+function saveRecord(key, value) {
   const records = loadRecords();
-  if ((records[key] || 0) < valeur) {
-    records[key] = valeur;
-    RecordsRepo.sauver(records);
+  if ((records[key] || 0) < value) {
+    records[key] = value;
+    RecordsRepo.save(records);
   }
   return records[key] || 0;
 }
+export { saveRecord };

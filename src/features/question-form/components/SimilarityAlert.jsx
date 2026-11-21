@@ -2,15 +2,15 @@
 // sont similaires (détection floue locale, index pré-calculé).
 import Icon from '@shared/ui/Icon.jsx';
 import { THRESHOLD_IDENTICAL } from '@lib/similarity.js';
-
 function etiquette(score) {
   return score >= THRESHOLD_IDENTICAL ? 'quasi identique' : 'similaire';
 }
-
-export default function SimilarityAlert({ avertissement, onAjouter, onAnnuler }) {
+export default function SimilarityAlert({ avertissement, onAdd: onAdd, onCancel: onCancel }) {
   return (
     <div className="alerte">
-      <h3><Icon nom="alert" taille={20} /> {avertissement.length} question(s) similaire(s) trouvée(s)</h3>
+      <h3>
+        <Icon nom="alert" taille={20} /> {avertissement.length} question(s) similaire(s) trouvée(s)
+      </h3>
       <ul className="liste-similaires">
         {avertissement.map((s, i) => (
           <li key={i} className="sim-item">
@@ -18,8 +18,13 @@ export default function SimilarityAlert({ avertissement, onAjouter, onAnnuler })
               <span className={`sim-score ${s.score >= THRESHOLD_IDENTICAL ? 'identique' : ''}`}>
                 {Math.round(s.score * 100)} % — {etiquette(s.score)}
               </span>
-              <span className="sim-theme" style={{ background: s.question.themeCouleur || '#8b5cf6' }}>
-                {s.question.themeNom}
+              <span
+                className="sim-theme"
+                style={{
+                  background: s.question.themeColor || '#8b5cf6',
+                }}
+              >
+                {s.question.themeName}
               </span>
             </div>
             <div className="sim-texte">« {s.question.q} »</div>
@@ -35,10 +40,16 @@ export default function SimilarityAlert({ avertissement, onAjouter, onAnnuler })
           </li>
         ))}
       </ul>
-      <p className="alerte-texte">Tu es sûr de vouloir ajouter cette question malgré les ressemblances ?</p>
+      <p className="alerte-texte">
+        Tu es sûr de vouloir ajouter cette question malgré les ressemblances ?
+      </p>
       <div className="alerte-actions">
-        <button className="btn-principal" onClick={onAjouter}>Oui, ajouter quand même</button>
-        <button className="btn-secondaire" onClick={onAnnuler}>Modifier ma question</button>
+        <button className="btn-principal" onClick={onAdd}>
+          Oui, ajouter quand même
+        </button>
+        <button className="btn-secondaire" onClick={onCancel}>
+          Modifier ma question
+        </button>
       </div>
     </div>
   );

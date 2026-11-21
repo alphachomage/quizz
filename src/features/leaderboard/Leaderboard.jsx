@@ -1,7 +1,5 @@
 import { useMemo, useState } from 'react';
-
 import Icon from '@shared/ui/Icon.jsx';
-
 import { loadGames } from '@lib/game-history.js';
 import { levelName, LEVELS } from '@lib/scoring.js';
 import { isThisWeek } from '@lib/dates.js';
@@ -10,49 +8,62 @@ import { isThisWeek } from '@lib/dates.js';
 // ligne le thème, la difficulté et le nombre de points.
 //  - Solo : filtre par niveau (Tous / Facile / Moyen / Difficile)
 //  - Duel 1v1, Survie, Quizz du jour : top scores de l'historique des parties
-// (les stats perso détaillées sont dans l'écran « Mes statistiques »)
+// (les stats personal détaillées sont dans l'écran « Mes statistiques »)
 
-const COULEURS_RANG = ['#fde047', '#cbd5e1', '#fbbf24'];
-
-const ONGLETS = [
-  { id: 'solo', nom: 'Solo', icone: 'timer' },
-  { id: 'duel', nom: 'Duel 1v1', icone: 'swords' },
-  { id: 'survie', nom: 'Survie', icone: 'skull' },
-  { id: 'quotidien', nom: 'Quizz du jour', icone: 'calendar' },
+const RANK_COLORS = ['#fde047', '#cbd5e1', '#fbbf24'];
+const TABS = [
+  {
+    id: 'solo',
+    nom: 'Solo',
+    icone: 'timer',
+  },
+  {
+    id: 'duel',
+    nom: 'Duel 1v1',
+    icone: 'swords',
+  },
+  {
+    id: 'survie',
+    nom: 'Survie',
+    icone: 'skull',
+  },
+  {
+    id: 'quotidien',
+    nom: 'Quizz du jour',
+    icone: 'calendar',
+  },
 ];
-
-export default function Leaderboard({ themes, onAccueil, onStats }) {
-  const [onglet, setOnglet] = useState('solo');
-  const [niveauSolo, setNiveauSolo] = useState('tous'); // filtre de l'onglet Solo
+export default function Leaderboard({ themes, onHome: onHome, onStats }) {
+  const [tab, setTab] = useState('solo');
+  const [niveauSolo, setSoloLevel] = useState('tous'); // filtre de l'onglet Solo
   const [periode, setPeriode] = useState('tout'); // 'tout' | 'semaine' (classement hebdo)
   const games = useMemo(() => loadGames(), []);
 
   // --- Lignes de classement pour un mode donné (depuis l'historique des parties) ---
-  const lignesMode = useMemo(() => {
-    const lignes = [];
+  const modeRows = useMemo(() => {
+    const rows = [];
     for (const p of games) {
-      if (p.mode !== onglet) continue;
+      if (p.mode !== tab) continue;
       if (periode === 'semaine' && !isThisWeek(p.date)) continue; // classement de la semaine
-      if (onglet === 'solo' && niveauSolo !== 'tous' && p.niveau !== niveauSolo) continue;
+      if (tab === 'solo' && niveauSolo !== 'tous' && p.niveau !== niveauSolo) continue;
       const theme = themes.find((t) => t.id === p.themeId);
       for (const j of p.players || []) {
-        lignes.push({
+        rows.push({
           key: `${p.id}-${j.nom}`,
           nom: j.nom,
           score: j.score,
           bonnes: j.bonnes,
           total: p.total,
-          themeNom: p.themeId === 'tous' ? 'Tous les thèmes' : (theme ? theme.nom : p.themeNom),
-          themeCouleur: theme ? theme.couleur : '#8b5cf6',
-          themeIcone: theme ? theme.icone : 'sparkles',
+          themeName: p.themeId === 'tous' ? 'Tous les thèmes' : theme ? theme.nom : p.themeName,
+          themeColor: theme ? theme.couleur : '#8b5cf6',
+          themeIcon: theme ? theme.icone : 'sparkles',
           niveau: p.niveau,
           date: p.date,
         });
       }
     }
-    return lignes.sort((a, b) => b.score - a.score).slice(0, 20);
-  }, [games, onglet, niveauSolo, periode, themes]);
-
+    return rows.sort((a, b) => b.score - a.score).slice(0, 20);
+  }, [games, tab, niveauSolo, periode, themes]);
   function labelMode(mode, niveau) {
     if (mode === 'solo') return `solo · ${levelName(niveau)}`;
     if (mode === 'duel') return 'duel 1v1';
@@ -60,23 +71,32 @@ export default function Leaderboard({ themes, onAccueil, onStats }) {
     if (mode === 'quotidien') return `quizz du ${niveau}`;
     return mode;
   }
-
-  function detailLigne(l) {
-    if (onglet === 'solo' || onglet === 'duel') {
-      return `${labelMode(onglet, l.niveau)} · ${l.bonnes}/${l.total} bonnes`;
+  function rowDetail(l) {
+    if (tab === 'solo' || tab === 'duel') {
+      return `${labelMode(tab, l.niveau)} · ${l.bonnes}/${l.total} bonnes`;
     }
-    if (onglet === 'survie') return `survie · ${levelName(l.niveau)} · série de ${l.bonnes}`;
-    if (onglet === 'quotidien') return `quizz du ${l.niveau} · ${l.bonnes}/${l.total} bonnes`;
+    if (tab === 'survie') return `survie · ${levelName(l.niveau)} · série de ${l.bonnes}`;
+    if (tab === 'quotidien') return `quizz du ${l.niveau} · ${l.bonnes}/${l.total} bonnes`;
     return '';
   }
-
-  const estModePartie = ['solo', 'duel', 'survie', 'quotidien'].includes(onglet);
-
+  const isGameMode = ['solo', 'duel', 'survie', 'quotidien'].includes(tab);
   return (
     <div className="classement">
       <header className="hero">
-        <div className="logo" style={{ fontSize: '1.9rem' }}>
-          <span className="logo-marque" style={{ width: 46, height: 46, borderRadius: 14 }}>
+        <div
+          className="logo"
+          style={{
+            fontSize: '1.9rem',
+          }}
+        >
+          <span
+            className="logo-marque"
+            style={{
+              width: 46,
+              height: 46,
+              borderRadius: 14,
+            }}
+          >
             <Icon nom="podium" taille={26} />
           </span>
           Classement
@@ -85,11 +105,11 @@ export default function Leaderboard({ themes, onAccueil, onStats }) {
       </header>
 
       <div className="onglets">
-        {ONGLETS.map((o) => (
+        {TABS.map((o) => (
           <button
             key={o.id}
-            className={onglet === o.id ? 'onglet actif' : 'onglet'}
-            onClick={() => setOnglet(o.id)}
+            className={tab === o.id ? 'onglet actif' : 'onglet'}
+            onClick={() => setTab(o.id)}
           >
             <Icon nom={o.icone} taille={15} /> {o.nom}
           </button>
@@ -98,8 +118,14 @@ export default function Leaderboard({ themes, onAccueil, onStats }) {
 
       <div className="filtres-niveau">
         {[
-          { id: 'tout', nom: 'Tout l’historique' },
-          { id: 'semaine', nom: 'Cette semaine' },
+          {
+            id: 'tout',
+            nom: 'Tout l’historique',
+          },
+          {
+            id: 'semaine',
+            nom: 'Cette semaine',
+          },
         ].map((p) => (
           <button
             key={p.id}
@@ -111,13 +137,19 @@ export default function Leaderboard({ themes, onAccueil, onStats }) {
         ))}
       </div>
 
-      {onglet === 'solo' && (
+      {tab === 'solo' && (
         <div className="filtres-niveau">
-          {[{ id: 'tous', nom: 'Tous niveaux' }, ...LEVELS].map((n) => (
+          {[
+            {
+              id: 'tous',
+              nom: 'Tous niveaux',
+            },
+            ...LEVELS,
+          ].map((n) => (
             <button
               key={n.id}
               className={niveauSolo === n.id ? 'filtre actif' : 'filtre'}
-              onClick={() => setNiveauSolo(n.id)}
+              onClick={() => setSoloLevel(n.id)}
             >
               {n.nom}
             </button>
@@ -125,36 +157,50 @@ export default function Leaderboard({ themes, onAccueil, onStats }) {
         </div>
       )}
 
-      {estModePartie && (
-        lignesMode.length === 0 ? (
+      {isGameMode &&
+        (modeRows.length === 0 ? (
           <p className="vide">
-            {periode === 'semaine' && 'Aucune partie cette semaine — le classement hebdo se remplit dès ta prochaine partie. '}
-            {onglet === 'solo'
+            {periode === 'semaine' &&
+              'Aucune partie cette semaine — le classement hebdo se remplit dès ta prochaine partie. '}
+            {tab === 'solo'
               ? `Aucune partie solo${niveauSolo !== 'tous' ? ` au niveau ${levelName(niveauSolo)}` : ''}${periode === 'tout' ? ' enregistrée pour l’instant.' : ''}`
-              : periode === 'tout' && `Aucune partie ${ONGLETS.find((o) => o.id === onglet)?.nom.toLowerCase()} enregistrée pour l’instant.`}
+              : periode === 'tout' &&
+                `Aucune partie ${TABS.find((o) => o.id === tab)?.nom.toLowerCase()} enregistrée pour l’instant.`}
           </p>
         ) : (
           <ul className="liste-classement">
-            {lignesMode.map((l, i) => (
+            {modeRows.map((l, i) => (
               <li key={l.key} className="ligne-classement">
-                <span className="rang" style={{ color: COULEURS_RANG[i] || 'var(--texte-doux)' }}>{i + 1}</span>
-                <span className="lc-nom">{l.nom}</span>
-                <span className="lc-theme" style={{ '--couleur': l.themeCouleur }} title={l.themeNom}>
-                  <Icon nom={l.themeIcone} taille={14} />
-                  <span className="lc-theme-nom">{l.themeNom}</span>
+                <span
+                  className="rang"
+                  style={{
+                    color: RANK_COLORS[i] || 'var(--texte-doux)',
+                  }}
+                >
+                  {i + 1}
                 </span>
-                <span className="lc-detail">{detailLigne(l)}</span>
+                <span className="lc-nom">{l.nom}</span>
+                <span
+                  className="lc-theme"
+                  style={{
+                    '--couleur': l.themeColor,
+                  }}
+                  title={l.themeName}
+                >
+                  <Icon nom={l.themeIcon} taille={14} />
+                  <span className="lc-theme-nom">{l.themeName}</span>
+                </span>
+                <span className="lc-detail">{rowDetail(l)}</span>
                 <span className="lc-score">{l.score} pts</span>
               </li>
             ))}
           </ul>
-        )
-      )}
+        ))}
 
       <button className="btn-secondaire" onClick={onStats}>
         <Icon nom="chart" taille={18} /> Mes statistiques
       </button>
-      <button className="btn-secondaire" onClick={onAccueil}>
+      <button className="btn-secondaire" onClick={onHome}>
         <Icon nom="home" taille={18} /> Accueil
       </button>
     </div>

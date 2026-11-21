@@ -18,7 +18,10 @@
   border-radius: var(--radius-pilule);
   cursor: pointer;
   box-shadow: var(--ombre-bouton);
-  transition: transform var(--dur-rapide) ease, box-shadow var(--dur-rapide) ease, opacity var(--dur-rapide) ease;
+  transition:
+    transform var(--dur-rapide) ease,
+    box-shadow var(--dur-rapide) ease,
+    opacity var(--dur-rapide) ease;
 }
 
 .btn-principal:hover:not(:disabled) {
@@ -51,7 +54,9 @@
   border: 1px solid var(--bordure);
   border-radius: var(--radius-pilule);
   cursor: pointer;
-  transition: transform var(--dur-rapide) ease, background var(--dur-rapide) ease;
+  transition:
+    transform var(--dur-rapide) ease,
+    background var(--dur-rapide) ease;
 }
 
 .btn-secondaire:hover {

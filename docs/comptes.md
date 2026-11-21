@@ -4,11 +4,11 @@
 
 - Création : pseudo + e-mail + mot de passe, stockés dans `localStorage`
   (clé `voltquiz_comptes`). Mot de passe **hashé SHA-256 salé** (`crypto.subtle` +
-  sel `crypto.randomUUID`), jamais en clair. Guard `contexteSecurise()` : hors
+  sel `crypto.randomUUID`), jamais en clair. Guard `secureContext()` : hors
   contexte sécurisé (HTTPS/localhost), erreur utilisateur claire au lieu d'un crash.
 - Session : clé `voltquiz_session` (`currentSession()`). Sans session, l'app affiche
   l'écran `Account` (`src/features/account/Account.jsx`).
-- Modération des pseudos à la création (`src/lib/moderation.js`, `pseudoValide`) :
+- Modération des pseudos à la création (`src/lib/moderation.js`, `isValidPseudo`) :
   liste bloquée (nazisme, homophobie, misogynie, racisme, insultes, contenu sexuel),
   normalisation + leetspeak décodé (`n4z1` -> `nazi`), sous-chaîne pour les termes
   >= 4 caractères (évite les faux positifs type « Cassandra »).
@@ -17,7 +17,7 @@
 
 Bouton « Jouer en invité » : pseudo auto `user-xxxxxxx` (`startGuest`), session
 `{ invite: true }`. Un invité n'a **rien de persistant** : pas d'XP, badges, titres,
-classement, stats ni historique (`persistResult` saute tout si `estInvite`), et sa
+classement, stats ni historique (`persistResult` saute tout si `isGuest`), et sa
 partie du jour ne bloque pas la tentative du compte. Records locaux conservés.
 Pastille « Invité », barre d'XP/titre masquée, célébration de déblocage désactivée.
 
@@ -29,8 +29,8 @@ les invités), rouvrable via `?tuto=1` ou le bouton « ? » de la barre utilisat
 
 ## Reset (version d'essai, aucun bouton)
 
-- `?reset=1` : `reinitialiserScores()` (records, parties, XP, séries) puis nettoyage d'URL.
-- `?resetcompte=1` : `reinitialiserProgression()` (`src/lib/reset.js`) — reset total
+- `?reset=1` : `resetScores()` (records, parties, XP, séries) puis nettoyage d'URL.
+- `?resetcompte=1` : `resetProgress()` (`src/lib/reset.js`) — reset total
   (streak jour, badge favori, titre actif) ; les questions perso sont CONSERVÉES, un
   offset `voltquiz_reset_soumissions` est posé pour que les badges « proposer/valider »
   repartent de 0.

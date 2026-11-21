@@ -49,7 +49,7 @@ manifest, JSON ; `public, max-age=31536000, immutable` sur `/assets/*` (hashés)
 - **XSS** : jamais de `dangerouslySetInnerHTML`/`innerHTML`/`eval` (grep en review).
   React échappe par défaut.
 - **Mots de passe** : jamais en clair. Local : SHA-256 salé (`crypto.randomUUID` +
-  `crypto.subtle`, guard `contexteSecurise()` dans `src/lib/accounts.js` -> erreur
+  `crypto.subtle`, guard `secureContext()` dans `src/lib/accounts.js` -> erreur
   claire hors contexte sécurisé). Serveur V2 : PBKDF2 210 000 itérations
   (`worker-api.js`).
 - **Modération pseudos** (`src/lib/moderation.js`) : liste bloquée (nazisme,

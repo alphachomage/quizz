@@ -6,9 +6,8 @@ import { SubmissionsRepo, ApprovedRepo } from './repositories.js';
 
 // Proposer une question dans un thème demande d'y être niveau 3 (débloqueProgressif).
 export const SUBMISSION_LEVEL_THRESHOLD = 3;
-
 export function loadSubmissions() {
-  return SubmissionsRepo.tout();
+  return SubmissionsRepo.all();
 }
 
 // Ajoute une question proposée. q = { themeId, q, reponses, bonne, niveau, info? }
@@ -20,33 +19,33 @@ export function addSubmission(q) {
     ...q,
   };
   list.push(submission);
-  SubmissionsRepo.sauver(list);
+  SubmissionsRepo.save(list);
   return submission;
 }
-
 export function removeSubmission(id) {
-  SubmissionsRepo.sauver(loadSubmissions().filter((s) => s.id !== id));
+  SubmissionsRepo.save(loadSubmissions().filter((s) => s.id !== id));
 }
-
 export function loadApproved() {
-  return ApprovedRepo.tout();
+  return ApprovedRepo.all();
 }
-
 export function approveSubmission(id) {
   const enAttente = loadSubmissions();
-  const aValider = enAttente.find((s) => s.id === id);
-  if (!aValider) return;
+  const toApprove = enAttente.find((s) => s.id === id);
+  if (!toApprove) return;
   const validees = loadApproved();
-  validees.push({ ...aValider, valideLe: new Date().toISOString() });
-  ApprovedRepo.sauver(validees);
-  SubmissionsRepo.sauver(enAttente.filter((s) => s.id !== id));
+  validees.push({
+    ...toApprove,
+    valideLe: new Date().toISOString(),
+  });
+  ApprovedRepo.save(validees);
+  SubmissionsRepo.save(enAttente.filter((s) => s.id !== id));
 }
 
 // Construit le contenu JSON exportable (même format que questions-utilisateur.json)
 // à partir des soumissions locales.
-export function exportSubmissionsJson(soumissions, themes) {
+export function exportSubmissionsJson(submissions, themes) {
   const map = new Map();
-  for (const s of soumissions) {
+  for (const s of submissions) {
     if (!map.has(s.themeId)) {
       const t = themes.find((x) => x.id === s.themeId);
       map.set(s.themeId, {
@@ -66,5 +65,11 @@ export function exportSubmissionsJson(soumissions, themes) {
     if (s.info) entree.info = s.info;
     map.get(s.themeId).questions.push(entree);
   }
-  return JSON.stringify({ themes: [...map.values()] }, null, 2);
+  return JSON.stringify(
+    {
+      themes: [...map.values()],
+    },
+    null,
+    2
+  );
 }

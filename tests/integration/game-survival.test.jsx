@@ -2,60 +2,53 @@
 // mélangés, 1 seule vie, la première mauvaise réponse termine la partie.
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-
 import Game from '@features/game/Game.jsx';
-
 import { makeThemes, mulberry32, TEST_PREFS } from '../fixtures/questions.fixture.js';
-
 function currentQuestion() {
   return document.querySelector('.question').textContent.match(/Question (\S+) \?/)[1];
 }
-
-function repondreBonne() {
+function answerCorrect() {
   fireEvent.click(screen.getByText(`R${currentQuestion()}-0`));
 }
-
-function repondreFaux() {
+function answerWrong() {
   fireEvent.click(screen.getByText(`R${currentQuestion()}-2`));
 }
-
 function avancer() {
   act(() => {
     vi.advanceTimersByTime(2100);
   });
 }
-
 describe('partie survie (flux complet)', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.spyOn(Math, 'random').mockImplementation(mulberry32(99));
   });
-
   afterEach(() => {
     vi.useRealTimers();
     vi.restoreAllMocks();
   });
-
   it('la première mauvaise réponse termine la partie (1 vie)', () => {
     const themes = makeThemes(3, 10); // 90 questions au total
-    const onTerminer = vi.fn();
+    const onFinish = vi.fn();
     render(
       <Game
-        config={{ mode: 'survie', theme: themes[0], tousThemes: themes, players: ['testeur'] }}
+        config={{
+          mode: 'survie',
+          theme: themes[0],
+          allThemes: themes,
+          players: ['testeur'],
+        }}
         prefs={TEST_PREFS}
-        onTerminer={onTerminer}
+        onFinish={onFinish}
       />
     );
-
-    repondreBonne(); // index 0 : 20 pts (pas de bonus de manche en survie)
+    answerCorrect(); // index 0 : 20 pts (pas de bonus de manche en survie)
     avancer();
-    expect(onTerminer).not.toHaveBeenCalled();
-
-    repondreFaux(); // index 1 : raté -> fin de partie
+    expect(onFinish).not.toHaveBeenCalled();
+    answerWrong(); // index 1 : raté -> fin de partie
     avancer();
-
-    expect(onTerminer).toHaveBeenCalledTimes(1);
-    const res = onTerminer.mock.calls[0][0];
+    expect(onFinish).toHaveBeenCalledTimes(1);
+    const res = onFinish.mock.calls[0][0];
     expect(res.mode).toBe('survie');
     expect(res.scores).toEqual([20]);
     expect(res.bonnes).toEqual([1]);
@@ -63,14 +56,18 @@ describe('partie survie (flux complet)', () => {
     expect(res.details).toHaveLength(2);
     expect(res.details[1].correct).toBe(false);
   });
-
   it('le chip "Tous niveaux" est affiché', () => {
     const themes = makeThemes(3, 10);
     render(
       <Game
-        config={{ mode: 'survie', theme: themes[0], tousThemes: themes, players: ['testeur'] }}
+        config={{
+          mode: 'survie',
+          theme: themes[0],
+          allThemes: themes,
+          players: ['testeur'],
+        }}
         prefs={TEST_PREFS}
-        onTerminer={() => {}}
+        onFinish={() => {}}
       />
     );
     expect(screen.getByText('Tous niveaux')).toBeTruthy();

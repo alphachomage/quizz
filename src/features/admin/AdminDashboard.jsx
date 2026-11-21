@@ -4,7 +4,6 @@
 // (/api/* via lib/api.js), et chaque carte a UNE responsabilité dans ./components/.
 import { useAdminMetrics } from './useAdminMetrics.js';
 import { useServerStats } from './useServerStats.js';
-
 import CorpusCard from './components/CorpusCard.jsx';
 import GamesCard from './components/GamesCard.jsx';
 import RecordsCard from './components/RecordsCard.jsx';
@@ -13,11 +12,9 @@ import StreakCard from './components/StreakCard.jsx';
 import StorageCard from './components/StorageCard.jsx';
 import ServerCard from './components/ServerCard.jsx';
 import ActionsCard from './components/ActionsCard.jsx';
-
 export default function AdminDashboard({ themes }) {
   const metrics = useAdminMetrics(themes);
-  const serveur = useServerStats();
-
+  const server = useServerStats();
   return (
     <section className="dashboard-admin" aria-label="Tableau de bord">
       <h2 className="titre-section">Tableau de bord</h2>
@@ -28,7 +25,7 @@ export default function AdminDashboard({ themes }) {
         <ModerationCard moderation={metrics.moderation} />
         <StreakCard streak={metrics.streak} />
         <StorageCard stockage={metrics.stockage} />
-        <ServerCard etat={serveur} />
+        <ServerCard etat={server} />
         <ActionsCard mode={metrics.stockage.mode} />
       </div>
     </section>

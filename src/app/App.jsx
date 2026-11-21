@@ -2,25 +2,22 @@
 // Toute la logique d'état vit dans les hooks (useNavigation, useCelebration) et
 // les contexts (session, prefs, thèmes). Les composants d'écran sont dans routes.js.
 import { Suspense, useEffect, useMemo, useState } from 'react';
-
 import AppProviders from './AppProviders.jsx';
 import Screens from './Screens.jsx';
 import { ROUTES } from './routes.js';
 import { useNavigation } from './useNavigation.js';
 import { useUnlock } from './useUnlock.js';
-import { readUrlFlags, retirerFlagsUrl, urlWithoutAdminFlag, redirigerVers } from './urlFlags.js';
+import { readUrlFlags, clearUrlFlags, urlWithoutAdminFlag, redirigerVers } from './urlFlags.js';
 import { useSession } from './contexts/SessionContext.js';
 import { usePrefs } from './contexts/PrefsContext.js';
 import { useThemes } from './contexts/ThemesContext.js';
-
 import Tutorial from '@features/tutorial/Tutorial.jsx';
 // Deblocage rendu dans app/Ecrans.jsx
 
 import { hasSeenTutorial, markTutorialSeen, currentSession } from '@lib/accounts.js';
-import { reinitialiserScores, reinitialiserProgression } from '@lib/reset.js';
+import { resetScores, resetProgress } from '@lib/reset.js';
 import { persistResult } from '@features/results/persist.js';
-import { telechargerJSON } from '@shared/utils/downloadJson.js';
-
+import { downloadJson } from '@shared/utils/downloadJson.js';
 export default function App() {
   return (
     <AppProviders>
@@ -42,38 +39,45 @@ export default function App() {
     </AppProviders>
   );
 }
-
 function Shell() {
-  const { session, setSession, deconnexion, estInvite } = useSession();
+  const { session, setSession, deconnexion, isGuest: isGuest } = useSession();
   const { prefs, changerPrefs } = usePrefs();
   const {
     themes,
-    toutesQuestions,
-    soumissions,
-    nbValidees,
-    ajouterQuestion,
-    supprimerQuestion,
-    validerQuestion,
+    allQuestions: allQuestions,
+    submissions: submissions,
+    approvedCount: approvedCount,
+    addQuestion: addQuestion,
+    removeQuestion: removeQuestion,
+    approveQuestion: approveQuestion,
     exporterValidees,
   } = useThemes();
   const nav = useNavigation();
-  const { celebration, prendreSnapshot, revelerNouveautes, fermerCelebration } = useUnlock({ estInvite, prefs });
+  const {
+    celebration,
+    prendreSnapshot,
+    revelerNouveautes,
+    closeCelebration: closeCelebration,
+  } = useUnlock({
+    isGuest: isGuest,
+    prefs,
+  });
 
   // Flags d'URL (lus UNE fois) : ?admin=1 ?reset=1 ?resetcompte=1 ?tuto=1
   const flags = useMemo(() => readUrlFlags(), []);
-  const [estAdmin] = useState(flags.admin);
+  const [isAdmin] = useState(flags.admin);
   const [tutoOuvert, setTutoOuvert] = useState(false);
 
   // Reset manuel sur la version d'essai (?reset=1 / ?resetcompte=1), une fois, puis
   // on nettoie l'URL — aucun bouton dans l'appli.
   useEffect(() => {
     if (flags.reset) {
-      reinitialiserScores();
-      retirerFlagsUrl(['reset']);
+      resetScores();
+      clearUrlFlags(['reset']);
     }
     if (flags.resetcompte) {
-      reinitialiserProgression();
-      retirerFlagsUrl(['resetcompte']);
+      resetProgress();
+      clearUrlFlags(['resetcompte']);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -82,39 +86,38 @@ function Shell() {
   // rouvrable à volonté avec ?tuto=1 ou le bouton « ? ».
   const tutorialKey = session ? (session.guest ? 'invite' : session.pseudo) : null;
   useEffect(() => {
-    if (!estAdmin && (flags.tutorial || (tutorialKey && !hasSeenTutorial(tutorialKey)))) setTutoOuvert(true);
+    if (!isAdmin && (flags.tutorial || (tutorialKey && !hasSeenTutorial(tutorialKey))))
+      setTutoOuvert(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session, estAdmin]);
-
-  function fermerTuto() {
+  }, [session, isAdmin]);
+  function closeTutorial() {
     if (tutorialKey) markTutorialSeen(tutorialKey);
     setTutoOuvert(false);
   }
-
   function start(cfg) {
     prendreSnapshot(); // badges/titres débloqués AVANT la partie
     nav.start(cfg);
   }
-
-  function terminer(res) {
+  function finish(res) {
     // Persistance de la partie UNE FOIS ici (record, historique, XP, classement,
     // streak du jour) : le composant Resultat ne fait plus que lire res.persistance.
-    const persistance = persistResult(res, estInvite, prefs);
+    const persistance = persistResult(res, isGuest, prefs);
     revelerNouveautes(); // badges/titres débloqués PENDANT la partie -> animation au retour
-    nav.terminer({ ...res, persistance });
+    nav.finish({
+      ...res,
+      persistance,
+    });
   }
-
   function quitterAdmin() {
     // Recharge la page sans ?admin=1 : les exclusions admin sont alors retirées du pool.
     redirigerVers(urlWithoutAdminFlag());
   }
-
-  const classeApp = prefs.animations === false ? 'app sans-animations' : 'app';
+  const appClass = prefs.animations === false ? 'app sans-animations' : 'app';
 
   // Écran de chargement tant que les questions (chunks lazy) ne sont pas prêtes.
-  if (themes === null && (estAdmin || session)) {
+  if (themes === null && (isAdmin || session)) {
     return (
-      <div className={classeApp}>
+      <div className={appClass}>
         <div className="ecran-centre">
           <p className="vide">Chargement des questions…</p>
         </div>
@@ -122,20 +125,19 @@ function Shell() {
     );
   }
 
-
   // Vue admin (?admin=1) : prioritaire, même sans compte connecté.
-  if (estAdmin) {
+  if (isAdmin) {
     const Admin = ROUTES.admin;
     return (
-      <div className={classeApp}>
+      <div className={appClass}>
         <Admin
-          onQuitter={quitterAdmin}
+          onQuit={quitterAdmin}
           themes={themes}
-          soumissions={soumissions}
-          nbValidees={nbValidees}
-          onValiderSoumission={validerQuestion}
-          onSupprimerSoumission={supprimerQuestion}
-          onExporterValidees={() => telechargerJSON(exporterValidees())}
+          submissions={submissions}
+          approvedCount={approvedCount}
+          onApproveSubmission={approveQuestion}
+          onDeleteSubmission={removeQuestion}
+          onExportApproved={() => downloadJson(exporterValidees())}
         />
       </div>
     );
@@ -145,32 +147,31 @@ function Shell() {
   if (!session) {
     const Account = ROUTES.account;
     return (
-      <div className={classeApp}>
-        {tutoOuvert && <Tutorial onFermer={fermerTuto} estInvite={false} />}
+      <div className={appClass}>
+        {tutoOuvert && <Tutorial onClose={closeTutorial} isGuest={false} />}
         <Account onConnexion={() => setSession(currentSession())} />
       </div>
     );
   }
-
   return (
-    <div className={classeApp}>
+    <div className={appClass}>
       <Screens
         nav={nav}
         themes={themes}
         session={session}
         prefs={prefs}
-        estInvite={estInvite}
+        isGuest={isGuest}
         tutoOuvert={tutoOuvert}
-        fermerTuto={fermerTuto}
+        closeTutorial={closeTutorial}
         deconnexion={deconnexion}
         start={start}
-        terminer={terminer}
+        finish={finish}
         changerPrefs={changerPrefs}
         setTutoOuvert={setTutoOuvert}
-        toutesQuestions={toutesQuestions}
-        ajouterQuestion={ajouterQuestion}
+        allQuestions={allQuestions}
+        addQuestion={addQuestion}
         celebration={celebration}
-        fermerCelebration={fermerCelebration}
+        closeCelebration={closeCelebration}
       />
     </div>
   );

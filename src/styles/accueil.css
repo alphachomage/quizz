@@ -26,7 +26,9 @@
   overflow: hidden;
   cursor: pointer;
   background: var(--carte-2);
-  transition: border-color var(--dur-court) ease, transform var(--dur-court) ease;
+  transition:
+    border-color var(--dur-court) ease,
+    transform var(--dur-court) ease;
 }
 
 .avatar-btn:hover {
@@ -174,7 +176,10 @@
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
-  transition: border-color var(--dur-court) ease, background var(--dur-court) ease, color var(--dur-court) ease;
+  transition:
+    border-color var(--dur-court) ease,
+    background var(--dur-court) ease,
+    color var(--dur-court) ease;
 }
 
 .mode-tab.actif {
@@ -246,7 +251,10 @@
   color: var(--texte);
   cursor: pointer;
   text-align: left;
-  transition: border-color var(--dur-court) ease, transform var(--dur-court) ease, background var(--dur-court) ease;
+  transition:
+    border-color var(--dur-court) ease,
+    transform var(--dur-court) ease,
+    background var(--dur-court) ease;
 }
 
 .theme:hover {
@@ -375,7 +383,10 @@
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: border-color var(--dur-court) ease, transform var(--dur-court) ease, background var(--dur-court) ease;
+  transition:
+    border-color var(--dur-court) ease,
+    transform var(--dur-court) ease,
+    background var(--dur-court) ease;
 }
 
 .niveau:hover {

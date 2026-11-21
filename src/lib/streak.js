@@ -2,7 +2,6 @@
 // { compte: N, dernierJour: 'AAAA-MM-JJ' } — +1 si joué hier, sinon recommence à 1.
 import { DailyStreakRepo } from './repositories.js';
 import { todayDate, dayDate } from './dates.js';
-
 export function loadDailyStreak() {
   return DailyStreakRepo.read();
 }
@@ -10,19 +9,26 @@ export function loadDailyStreak() {
 // Pour l'affichage : si le dernier jour joué est antérieur à hier, la série est rompue.
 export function currentDailyStreak() {
   const s = loadDailyStreak();
-  if (!s.dernierJour || s.dernierJour < dayDate(-1)) return { account: 0, dernierJour: s.dernierJour };
+  if (!s.lastDay || s.lastDay < dayDate(-1))
+    return {
+      account: 0,
+      lastDay: s.lastDay,
+    };
   return s;
 }
 
 // Appelé à la fin d'une partie « quizz du jour » : incrémente la série si joué hier.
 export function recordDailyStreak() {
-  const aujourdhui = todayDate();
-  const hier = dayDate(-1);
+  const today = todayDate();
+  const yesterday = dayDate(-1);
   const s = loadDailyStreak();
   let account = 1;
-  if (s.dernierJour === hier) account = (s.account || 0) + 1;
-  else if (s.dernierJour === aujourdhui) account = s.account || 1;
-  const nouveau = { account, dernierJour: aujourdhui };
-  DailyStreakRepo.sauver(nouveau);
+  if (s.lastDay === yesterday) account = (s.account || 0) + 1;
+  else if (s.lastDay === today) account = s.account || 1;
+  const nouveau = {
+    account,
+    lastDay: today,
+  };
+  DailyStreakRepo.save(nouveau);
   return nouveau;
 }

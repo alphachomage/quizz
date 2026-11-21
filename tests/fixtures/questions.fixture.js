@@ -17,10 +17,15 @@ export function makeQuestion(over = {}) {
 // Fabrique un thème de test avec `parNiveau` questions par niveau de difficulté.
 // Chaque question a un texte unique ("Question T-N ?") et des réponses uniques
 // ("R<T-N>-0".."R<T-N>-3"), bonne réponse = index 0 : facile à cliquer en test.
-export function makeTheme({ id = 'test', nom = 'Thème test', couleur = '#38bdf8', parNiveau = 10 } = {}) {
+export function makeTheme({
+  id = 'test',
+  nom = 'Thème test',
+  couleur = '#38bdf8',
+  perLevel = 10,
+} = {}) {
   const questions = [];
   for (const niveau of ['facile', 'moyen', 'dur']) {
-    for (let i = 0; i < parNiveau; i++) {
+    for (let i = 0; i < perLevel; i++) {
       const tag = `${id}-${niveau}-${i}`;
       questions.push(
         makeQuestion({
@@ -32,13 +37,28 @@ export function makeTheme({ id = 'test', nom = 'Thème test', couleur = '#38bdf8
       );
     }
   }
-  return { id, nom, icone: 'question', couleur, questions };
+  return {
+    id,
+    nom,
+    icone: 'question',
+    couleur,
+    questions,
+  };
 }
 
 // Plusieurs thèmes pour les modes multi-thèmes (survie, quizz du jour).
-export function makeThemes(nb = 3, parNiveau = 10) {
-  return Array.from({ length: nb }, (_, i) =>
-    makeTheme({ id: `theme-${i}`, nom: `Thème ${i}`, couleur: '#38bdf8', parNiveau })
+export function makeThemes(countN = 3, perLevel = 10) {
+  return Array.from(
+    {
+      length: countN,
+    },
+    (_, i) =>
+      makeTheme({
+        id: `theme-${i}`,
+        nom: `Thème ${i}`,
+        couleur: '#38bdf8',
+        perLevel: perLevel,
+      })
   );
 }
 

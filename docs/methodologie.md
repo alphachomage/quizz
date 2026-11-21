@@ -21,7 +21,7 @@
       pas de `dangerouslySetInnerHTML`/`eval`, plafond 200 L souple respecté
 - [ ] **documentation relue** : chemins de fichiers valides (spot-check avec `ls`),
       chiffres du corpus via `npm run count:questions` (jamais en dur), commandes
-      testées (`npm run test:partie`...), cohérence avec le code
+      testées (`npm run test:game`...), cohérence avec le code
 - [ ] pas de nouvelle librairie sans **justification écrite** (pour + contre)
 - [ ] la prod répond après merge : `curl -s https://voltquiz.joris-leo81.workers.dev/api/ping`
 
@@ -47,7 +47,7 @@ Pour les grosses demandes (ex. rédiger un lot de questions), déléguer à des 
 chacun sur SA branche et SES fichiers uniquement, max 3 en parallèle (limite réseau) ;
 le parent relit (code + docs), teste (lint + tests + build), puis merge. Les lots de
 questions rédigés par sub-agents doivent passer un contrôle anti-doublons
-(normalisation minuscules/sans accents, `normalizeQuestionText` dans `src/lib/texte.js`).
+(normalisation minuscules/sans accents, `normalizeQuestionText` dans `src/lib/text.js`).
 
 ## Déploiement
 

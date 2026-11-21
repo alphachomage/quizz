@@ -6,23 +6,22 @@
 // de Vitest ne se résolvent pas. On pré-charge donc le mock + les 9 écrans avec les
 // VRAIS timers AVANT vi.useFakeTimers(), puis on avance les timers manuellement.
 import { act, fireEvent, render, screen } from '@testing-library/react';
-
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-
 import App from '@/app/App.jsx';
-
 import { startGuest } from '@lib/accounts.js';
-
 import { makeThemes, mulberry32 } from '../fixtures/questions.fixture.js';
 
 // Catalogue factice : 3 thèmes x 30 questions (au lieu du vrai corpus).
 vi.mock('@data/questions.js', async () => {
   const { makeThemes } = await import('../fixtures/questions.fixture.js');
-  return { loadThemes: async () => makeThemes(3, 10), THEMES_META: makeThemes(3, 10) };
+  return {
+    loadThemes: async () => makeThemes(3, 10),
+    THEMES_META: makeThemes(3, 10),
+  };
 });
 
 // Attend qu'un texte apparaisse en avançant les fake timers (scheduler React + chunks lazy).
-async function attendreTexte(matcher, max = 100) {
+async function waitForText(matcher, max = 100) {
   for (let i = 0; i < max; i++) {
     await act(async () => {
       await vi.advanceTimersByTimeAsync(20);
@@ -48,8 +47,7 @@ async function preloadModules() {
     import('@features/admin/AdminReports.jsx'),
   ]);
 }
-
-describe('shell de l\'application (app/)', () => {
+describe("shell de l'application (app/)", () => {
   beforeEach(async () => {
     await preloadModules();
     vi.useFakeTimers();
@@ -57,20 +55,23 @@ describe('shell de l\'application (app/)', () => {
     // Préférences silencieuses (pas de musique/sons en test).
     localStorage.setItem(
       'voltquiz_prefs',
-      JSON.stringify({ sons: false, music: false, animations: false, vibrations: false })
+      JSON.stringify({
+        sons: false,
+        music: false,
+        animations: false,
+        vibrations: false,
+      })
     );
     startGuest(); // session invité posée avant le rendu
   });
-
   afterEach(() => {
     vi.useRealTimers();
     vi.restoreAllMocks();
   });
-
   it('parcours invité complet : accueil -> thème -> niveau -> partie -> réponse', async () => {
     render(<App />);
     // Accueil : les thèmes factices apparaissent (catalogue + chunk lazy résolus).
-    await attendreTexte('Thème 0');
+    await waitForText('Thème 0');
     expect(screen.getByText('Thème 1')).toBeTruthy();
 
     // Le tuto de bienvenue s'ouvre à la première connexion : on le ferme.
@@ -84,7 +85,7 @@ describe('shell de l\'application (app/)', () => {
     // Clic sur "C'est parti" DANS LA MODALE (le CTA fixe du bas a le même libellé).
     fireEvent.click(document.querySelector('.modal .btn-principal'));
     // Navigation vers l'écran Partie (lazy) : on avance les timers jusqu'à la 1re question.
-    await attendreTexte(/Question \S+ \?/);
+    await waitForText(/Question \S+ \?/);
     expect(document.querySelector('.question')).toBeTruthy();
     expect(document.querySelectorAll('.reponse')).toHaveLength(4);
 
@@ -99,21 +100,19 @@ describe('shell de l\'application (app/)', () => {
     });
     expect(document.querySelector('.question')).toBeTruthy();
   });
-
-  it('sans session, l\'écran de compte s\'affiche d\'abord', async () => {
+  it("sans session, l'écran de compte s'affiche d'abord", async () => {
     localStorage.clear(); // pas de session
     render(<App />);
     // L'écran compte (chunk lazy) propose le mode invité.
-    await attendreTexte(/invité/i);
+    await waitForText(/invité/i);
     expect(screen.getAllByText(/invité/i).length).toBeGreaterThan(0);
   });
-
   it('vue admin (?admin=1) : tableau de bord en haut + sections de modération', async () => {
     window.history.replaceState(null, '', '/?admin=1');
     try {
       render(<App />);
       // Le tableau de bord apparaît dès que les thèmes factices sont chargés.
-      await attendreTexte('Tableau de bord');
+      await waitForText('Tableau de bord');
       expect(screen.getByText('Parties jouées')).toBeTruthy();
       expect(screen.getByText('Serveur (V2)')).toBeTruthy();
       expect(screen.getByText('Modération')).toBeTruthy();

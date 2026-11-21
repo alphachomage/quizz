@@ -53,7 +53,7 @@
 }
 
 .gain-centre::before {
-  content: "";
+  content: '';
   position: absolute;
   width: min(72vw, 430px);
   aspect-ratio: 1;
@@ -65,7 +65,10 @@
 .gain-centre span {
   position: relative;
   color: var(--blanc);
-  text-shadow: 0 0 18px var(--accent-95), 0 0 55px var(--accent-60), 0 6px 26px rgba(0, 0, 0, 0.65);
+  text-shadow:
+    0 0 18px var(--accent-95),
+    0 0 55px var(--accent-60),
+    0 6px 26px rgba(0, 0, 0, 0.65);
   animation: gainPop var(--dur-demi) cubic-bezier(0.2, 1.6, 0.4, 1) both;
 }
 
@@ -86,14 +89,30 @@
 }
 
 @keyframes gainPop {
-  0% { transform: scale(0.2) rotate(-8deg); opacity: 0; }
-  60% { transform: scale(1.2) rotate(2deg); opacity: 1; }
-  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  0% {
+    transform: scale(0.2) rotate(-8deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2) rotate(2deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
 }
 
 @keyframes halo {
-  0%, 100% { transform: scale(1); opacity: 0.75; }
-  50% { transform: scale(1.14); opacity: 1; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.14);
+    opacity: 1;
+  }
 }
 
 /* --- Bonus de s�rie (streak) --- */

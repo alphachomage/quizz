@@ -1,11 +1,8 @@
 // PrefsContext.js — préférences d'affichage + accessibilité, consommées via usePrefs().
 // Pose les classes de body (thème clair / daltonien / dys) à chaque changement.
 import { createContext, createElement, useContext, useEffect, useState } from 'react';
-
-import { loadPrefs, sauverPrefs } from '@lib/prefs.js';
-
+import { loadPrefs, savePrefs } from '@lib/prefs.js';
 const PrefsContext = createContext(null);
-
 export function PrefsProvider({ children }) {
   const [prefs, setPrefs] = useState(() => loadPrefs());
 
@@ -19,15 +16,21 @@ export function PrefsProvider({ children }) {
       b.classList.remove('theme-clair', 'daltonien', 'dys');
     };
   }, [prefs]);
-
   const changerPrefs = (nouvelles) => {
-    sauverPrefs(nouvelles);
+    savePrefs(nouvelles);
     setPrefs(nouvelles);
   };
-
-  return createElement(PrefsContext.Provider, { value: { prefs, changerPrefs } }, children);
+  return createElement(
+    PrefsContext.Provider,
+    {
+      value: {
+        prefs,
+        changerPrefs,
+      },
+    },
+    children
+  );
 }
-
 export function usePrefs() {
   const ctx = useContext(PrefsContext);
   if (!ctx) throw new Error('usePrefs doit être utilisé sous <PrefsProvider>');

@@ -14,7 +14,7 @@ export function readUrlFlags() {
 }
 
 // Retire des flags de l'URL sans recharger la page (history.replaceState).
-export function retirerFlagsUrl(noms) {
+function clearUrlFlags(noms) {
   const params = new URLSearchParams(window.location.search);
   for (const n of noms) params.delete(n);
   const qs = params.toString();
@@ -23,6 +23,7 @@ export function retirerFlagsUrl(noms) {
 
 // URL de l'appli sans le flag ?admin=1 (utilisée pour quitter la vue admin,
 // avec rechargement complet pour retirer les exclusions du pool).
+export { clearUrlFlags };
 export function urlWithoutAdminFlag() {
   const params = new URLSearchParams(window.location.search);
   params.delete('admin');
@@ -32,15 +33,16 @@ export function urlWithoutAdminFlag() {
 
 // URL de l'appli avec UN paramètre posé (ex. ?reset=1, ?stockage=d1) en conservant
 // les flags déjà présents (admin=1...) — utilisée par le tableau de bord admin.
-export function urlAvecParam(nom, valeur) {
+function urlWithParam(nom, value) {
   const params = new URLSearchParams(window.location.search);
-  params.set(nom, valeur);
+  params.set(nom, value);
   const qs = params.toString();
   return window.location.pathname + (qs ? `?${qs}` : '');
 }
 
 // URL de l'appli avec UN paramètre supprimé (ex. retirer ?stockage=d1).
-export function urlSansParam(nom) {
+export { urlWithParam };
+function urlWithoutParam(nom) {
   const params = new URLSearchParams(window.location.search);
   params.delete(nom);
   const qs = params.toString();
@@ -48,6 +50,7 @@ export function urlSansParam(nom) {
 }
 
 // Recharge la page vers une URL donnée (ex. quitter la vue admin).
+export { urlWithoutParam };
 export function redirigerVers(url) {
   window.location.assign(url);
 }

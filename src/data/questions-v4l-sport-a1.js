@@ -41,7 +41,7 @@ export const QUESTIONS_V4L_SPORT_A1 = [
       { q: "Dans quel jeu de stratégie place-t-on des pièces nommées roi, dame et cavalier sur un échiquier de 64 cases ?", reponses: ["Les dames", "Le go", "Les échecs", "Le backgammon"], bonne: 2, niveau: "facile" },
       { q: "Aux échecs, quelle pièce se déplace exclusivement en diagonale, quelle que soit la distance ?", reponses: ["La tour", "Le cavalier", "Le fou", "Le pion"], bonne: 2, niveau: "facile" },
       { q: "Dans quel jeu de boules français lance-t-on trois boules en métal en direction d'un petit but en bois appelé cochonnet ?", reponses: ["La boule lyonnaise", "La pétanque", "Les fléchettes", "Le bowling"], bonne: 1, niveau: "facile" },
-      { q: "Aux fléchettes, combien de secteurs numérotés comporte la cible officielle ?", reponses: ["Dix", "Vingt", "Trente", "Cinquante"], bonne: 1, niveau: "facile" },
+      { q: "Aux fléchettes, combien de secteurs numérotés comporte la target officielle ?", reponses: ["Dix", "Vingt", "Trente", "Cinquante"], bonne: 1, niveau: "facile" },
       { q: "Quel sport de glace consiste à enchaîner sauts, pirouettes et figures artistiques sur une patinoire ?", reponses: ["Le patinage artistique", "Le hockey sur glace", "Le patinage de vitesse", "Le curling"], bonne: 0, niveau: "facile" },
       { q: "Au basket-ball 3x3, combien de points rapporte un tir réussi depuis l'extérieur de l'arc ?", reponses: ["Un", "Deux", "Trois", "Quatre"], bonne: 1, niveau: "facile" },
       { q: "Comment appelle-t-on la grande cérémonie qui ouvre officiellement les Jeux olympiques ?", reponses: ["La cérémonie d'ouverture", "La cérémonie de clôture", "La parade des athlètes", "Le serment des arbitres"], bonne: 0, niveau: "facile" },

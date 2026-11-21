@@ -1,4 +1,4 @@
-// texte.js — normalisation des textes de questions (comparaisons, exclusions).
+// text.js — normalisation des textes de questions (comparaisons, exclusions).
 // Module PUR.
 export function normalizeQuestionText(s) {
   return (s || '')

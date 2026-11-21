@@ -6,24 +6,39 @@ import { schemaQuestion, validatePersonalFile, validateSubmissions } from '@/lib
 describe('schemaQuestion', () => {
   it('accepte une question valide', () => {
     expect(
-      schemaQuestion.safeParse({ q: 'Capitale de la France ?', reponses: ['Paris', 'Lyon'], bonne: 0, niveau: 'facile' }).success
+      schemaQuestion.safeParse({
+        q: 'Capitale de la France ?',
+        reponses: ['Paris', 'Lyon'],
+        bonne: 0,
+        niveau: 'facile',
+      }).success
     ).toBe(true);
   });
 
   it('rejette une bonne réponse hors limites', () => {
     expect(
-      schemaQuestion.safeParse({ q: 'Capitale ?', reponses: ['Paris', 'Lyon'], bonne: 5, niveau: 'facile' }).success
+      schemaQuestion.safeParse({
+        q: 'Capitale ?',
+        reponses: ['Paris', 'Lyon'],
+        bonne: 5,
+        niveau: 'facile',
+      }).success
     ).toBe(false);
   });
 
   it('rejette moins de 2 réponses et un niveau inconnu', () => {
-    expect(schemaQuestion.safeParse({ q: 'Q ?', reponses: ['a'], bonne: 0, niveau: 'facile' }).success).toBe(false);
-    expect(schemaQuestion.safeParse({ q: 'Q ?', reponses: ['a', 'b'], bonne: 0, niveau: 'expert' }).success).toBe(false);
+    expect(
+      schemaQuestion.safeParse({ q: 'Q ?', reponses: ['a'], bonne: 0, niveau: 'facile' }).success
+    ).toBe(false);
+    expect(
+      schemaQuestion.safeParse({ q: 'Q ?', reponses: ['a', 'b'], bonne: 0, niveau: 'expert' })
+        .success
+    ).toBe(false);
   });
 });
 
 describe('validerFichierPerso', () => {
-  it('valide un fichier perso correct', () => {
+  it('valide un fichier personal correct', () => {
     const data = {
       themes: [
         {
@@ -44,14 +59,31 @@ describe('validerFichierPerso', () => {
     expect(validatePersonalFile(null)).toBe(null);
     expect(validatePersonalFile({ themes: [] })).toBe(null);
     expect(validatePersonalFile({ themes: [{ id: 'x', questions: [] }] })).toBe(null);
-    expect(validatePersonalFile({ themes: [{ id: 'Bad Id!', couleur: 'rouge', questions: [{ q: 'Q ?', reponses: ['a', 'b'], bonne: 0, niveau: 'facile' }] }] })).toBe(null);
+    expect(
+      validatePersonalFile({
+        themes: [
+          {
+            id: 'Bad Id!',
+            couleur: 'rouge',
+            questions: [{ q: 'Q ?', reponses: ['a', 'b'], bonne: 0, niveau: 'facile' }],
+          },
+        ],
+      })
+    ).toBe(null);
   });
 });
 
 describe('validerSoumissions', () => {
   it('ne garde que les soumissions valides', () => {
     const list = [
-      { themeId: 'cuisine', q: 'Question valide ?', reponses: ['a', 'b'], bonne: 0, niveau: 'dur', id: '1' },
+      {
+        themeId: 'cuisine',
+        q: 'Question valide ?',
+        reponses: ['a', 'b'],
+        bonne: 0,
+        niveau: 'dur',
+        id: '1',
+      },
       { themeId: 'cuisine', q: 'Bonne hors limites', reponses: ['a'], bonne: 9, niveau: 'dur' },
       'pas un objet',
     ];

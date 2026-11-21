@@ -8,19 +8,20 @@ import { STORAGE_KEYS, read, write, remove } from './storage.js';
 // --- Fabrique générique : repo simple pour une clé ---
 // Le défaut est CLONÉ à chaque lecture : jamais de mutation du défaut partagé
 // (ex. ajouterPartie fait liste.push sur le retour de tout()).
-function cloneDefaut(defaut) {
-  return defaut === null || defaut === undefined ? defaut : JSON.parse(JSON.stringify(defaut));
+function cloneDefault(defaultValue) {
+  return defaultValue === null || defaultValue === undefined
+    ? defaultValue
+    : JSON.parse(JSON.stringify(defaultValue));
 }
-
-function repoSimple(key, defaut) {
+function repoSimple(key, defaultValue) {
   return {
     key,
-    tout: () => {
+    all: () => {
       const v = read(key, null);
-      return v === null || v === undefined ? cloneDefaut(defaut) : v;
+      return v === null || v === undefined ? cloneDefault(defaultValue) : v;
     },
-    sauver: (valeur) => write(key, valeur),
-    vider: () => remove(key),
+    save: (value) => write(key, value),
+    clear: () => remove(key),
   };
 }
 
@@ -28,13 +29,21 @@ function repoSimple(key, defaut) {
 
 export const PrefsRepo = {
   ...repoSimple(STORAGE_KEYS.prefs, {}),
-  charger: () => ({ sons: true, music: true, animations: true, vibrations: true, themeClair: false, daltonien: false, dys: false, ...(read(STORAGE_KEYS.prefs, {}) || {}) }),
+  load: () => ({
+    sons: true,
+    music: true,
+    animations: true,
+    vibrations: true,
+    themeClair: false,
+    daltonien: false,
+    dys: false,
+    ...(read(STORAGE_KEYS.prefs, {}) || {}),
+  }),
 };
-
 export const RecordsRepo = {
   ...repoSimple(STORAGE_KEYS.records, {}),
-  meilleur: (recordKey) => (read(STORAGE_KEYS.records, {}) || {})[recordKey] || 0,
-  sauverSiMeilleur: (recordKey, score) => {
+  best: (recordKey) => (read(STORAGE_KEYS.records, {}) || {})[recordKey] || 0,
+  saveIfBetter: (recordKey, score) => {
     const records = read(STORAGE_KEYS.records, {}) || {};
     if (score > (records[recordKey] || 0)) {
       records[recordKey] = score;
@@ -44,10 +53,9 @@ export const RecordsRepo = {
     return false;
   },
 };
-
 export const XpRepo = {
   ...repoSimple(STORAGE_KEYS.xp, {}),
-  parTheme: (themeId) => (read(STORAGE_KEYS.xp, {}) || {})[themeId] || 0,
+  perTheme: (themeId) => (read(STORAGE_KEYS.xp, {}) || {})[themeId] || 0,
   add: (themeId, points) => {
     const xp = read(STORAGE_KEYS.xp, {}) || {};
     xp[themeId] = (xp[themeId] || 0) + points;
@@ -55,7 +63,6 @@ export const XpRepo = {
     return xp[themeId];
   },
 };
-
 export const GamesRepo = {
   ...repoSimple(STORAGE_KEYS.games, []),
   LIMITE: 500,
@@ -65,7 +72,6 @@ export const GamesRepo = {
     write(STORAGE_KEYS.games, list.slice(-GamesRepo.LIMITE)); // 500 dernières max
   },
 };
-
 export const SubmissionsRepo = repoSimple(STORAGE_KEYS.submissions, []);
 export const ApprovedRepo = repoSimple(STORAGE_KEYS.approved, []);
 export const ReportsRepo = repoSimple(STORAGE_KEYS.reports, []);
@@ -80,10 +86,18 @@ export const SuggestionsRepo = {
 export const ExcludedRepo = repoSimple(STORAGE_KEYS.excluded, []);
 export const SeriesRepo = repoSimple(STORAGE_KEYS.series, {});
 export const DailyStreakRepo = {
-  ...repoSimple(STORAGE_KEYS.dailyStreak, { account: 0, dernierJour: null }),
+  ...repoSimple(STORAGE_KEYS.dailyStreak, {
+    account: 0,
+    lastDay: null,
+  }),
   read: () => {
     const v = read(STORAGE_KEYS.dailyStreak, null);
-    return v || { account: 0, dernierJour: null };
+    return (
+      v || {
+        account: 0,
+        lastDay: null,
+      }
+    );
   },
 };
 export const FavoriteBadgeRepo = repoSimple(STORAGE_KEYS.favoriteBadge, null);
@@ -91,8 +105,18 @@ export const ActiveTitleRepo = repoSimple(STORAGE_KEYS.activeTitle, null);
 export const ResetSubmissionsRepo = repoSimple(STORAGE_KEYS.resetSubmissions, null);
 
 // Reset global (?reset=1 / ?resetcompte=1) : passe par les repos.
-export function toutVider() {
-  for (const repo of [RecordsRepo, GamesRepo, XpRepo, SeriesRepo, DailyStreakRepo, FavoriteBadgeRepo, ActiveTitleRepo, ReportsRepo]) {
-    repo.vider();
+function clearAll() {
+  for (const repo of [
+    RecordsRepo,
+    GamesRepo,
+    XpRepo,
+    SeriesRepo,
+    DailyStreakRepo,
+    FavoriteBadgeRepo,
+    ActiveTitleRepo,
+    ReportsRepo,
+  ]) {
+    repo.clear();
   }
 }
+export { clearAll };

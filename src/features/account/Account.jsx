@@ -5,40 +5,59 @@ import { createAccount, connect, listPseudos, startGuest } from '@lib/accounts.j
 // Écran de compte : connexion ou création (pseudo + e-mail + mot de passe).
 // 100 % local : les comptes vivent dans le navigateur de ce PC uniquement.
 export default function Account({ onConnexion }) {
-  const [onglet, setOnglet] = useState('connexion');
-  const [pseudo, setPseudo] = useState('');
+  const [tab, setTab] = useState('connexion');
+  const [pseudo, setPseudoN] = useState('');
   const [email, setEmail] = useState('');
-  const [mdp, setMdp] = useState('');
-  const [mdp2, setMdp2] = useState('');
-  const [erreur, setErreur] = useState('');
+  const [password, setPassword] = useState('');
+  const [mdp2, setPasswordConfirm] = useState('');
+  const [error, setError] = useState('');
   const [enCours, setEnCours] = useState(false);
   const pseudos = listPseudos();
-
   async function soumettre() {
-    setErreur('');
-    if (onglet === 'creation' && mdp !== mdp2) {
-      setErreur('Les deux mots de passe ne correspondent pas.');
+    setError('');
+    if (tab === 'creation' && password !== mdp2) {
+      setError('Les deux mots de passe ne correspondent pas.');
       return;
     }
     setEnCours(true);
     const res =
-      onglet === 'creation'
-        ? await createAccount({ pseudo: pseudo.trim(), email: email.trim(), mdp })
-        : await connect(pseudo.trim(), mdp);
+      tab === 'creation'
+        ? await createAccount({
+            pseudo: pseudo.trim(),
+            email: email.trim(),
+            password: password,
+          })
+        : await connect(pseudo.trim(), password);
     setEnCours(false);
     if (!res.ok) {
-      setErreur(res.erreur);
+      setError(res.error);
       return;
     }
     onConnexion(res.pseudo);
   }
-
   return (
     <div className="ecran-centre">
       <div className="carte-compte">
-        <div className="hero" style={{ marginBottom: 18 }}>
-          <div className="logo" style={{ fontSize: '1.9rem' }}>
-            <span className="logo-marque" style={{ width: 46, height: 46, borderRadius: 14 }}>
+        <div
+          className="hero"
+          style={{
+            marginBottom: 18,
+          }}
+        >
+          <div
+            className="logo"
+            style={{
+              fontSize: '1.9rem',
+            }}
+          >
+            <span
+              className="logo-marque"
+              style={{
+                width: 46,
+                height: 46,
+                borderRadius: 14,
+              }}
+            >
               <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
                 <path fill="#fff" d="M13.6 1.5 4.2 13.6h5.6L8.6 22.5l9.4-12.1h-5.6l1.2-8.9z" />
               </svg>
@@ -49,10 +68,22 @@ export default function Account({ onConnexion }) {
         </div>
 
         <div className="onglets">
-          <button className={onglet === 'connexion' ? 'onglet actif' : 'onglet'} onClick={() => { setOnglet('connexion'); setErreur(''); }}>
+          <button
+            className={tab === 'connexion' ? 'onglet actif' : 'onglet'}
+            onClick={() => {
+              setTab('connexion');
+              setError('');
+            }}
+          >
             Connexion
           </button>
-          <button className={onglet === 'creation' ? 'onglet actif' : 'onglet'} onClick={() => { setOnglet('creation'); setErreur(''); }}>
+          <button
+            className={tab === 'creation' ? 'onglet actif' : 'onglet'}
+            onClick={() => {
+              setTab('creation');
+              setError('');
+            }}
+          >
             Créer un compte
           </button>
         </div>
@@ -67,7 +98,7 @@ export default function Account({ onConnexion }) {
           <label>Pseudo</label>
           <input
             value={pseudo}
-            onChange={(e) => setPseudo(e.target.value)}
+            onChange={(e) => setPseudoN(e.target.value)}
             placeholder="Ex : Joris42"
             maxLength={20}
             list="pseudos-existants"
@@ -75,7 +106,7 @@ export default function Account({ onConnexion }) {
           />
         </div>
 
-        {onglet === 'creation' && (
+        {tab === 'creation' && (
           <div className="champ">
             <label>E-mail</label>
             <input
@@ -89,49 +120,55 @@ export default function Account({ onConnexion }) {
         )}
 
         <div className="champ">
-          <label>Mot de passe{onglet === 'creation' ? ' (8 caractères min)' : ''}</label>
+          <label>Mot de passe{tab === 'creation' ? ' (8 caractères min)' : ''}</label>
           <input
             type="password"
-            value={mdp}
-            onChange={(e) => setMdp(e.target.value)}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
-            autoComplete={onglet === 'creation' ? 'new-password' : 'current-password'}
+            autoComplete={tab === 'creation' ? 'new-password' : 'current-password'}
           />
         </div>
 
-        {onglet === 'creation' && (
+        {tab === 'creation' && (
           <div className="champ">
             <label>Confirmer le mot de passe</label>
             <input
               type="password"
               value={mdp2}
-              onChange={(e) => setMdp2(e.target.value)}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
               placeholder="••••••••"
               autoComplete="new-password"
             />
           </div>
         )}
 
-        {erreur && (
-          <p className="erreur"><Icon nom="alert" taille={15} /> {erreur}</p>
+        {error && (
+          <p className="erreur">
+            <Icon nom="alert" taille={15} /> {error}
+          </p>
         )}
 
         <button className="btn-principal" disabled={enCours} onClick={soumettre}>
-          {enCours ? 'Un instant…' : onglet === 'creation' ? 'Créer mon compte' : 'Se connecter'}
+          {enCours ? 'Un instant…' : tab === 'creation' ? 'Créer mon compte' : 'Se connecter'}
         </button>
 
         <button className="btn-secondaire" onClick={() => onConnexion(startGuest())}>
           <Icon nom="user" taille={17} /> Jouer en invité
         </button>
         <p className="note-local">
-          En mode invité tu joues tout de suite, mais <strong>sans XP de compte ni de thèmes, sans badges,
-          sans titres et sans classement</strong> — crée un compte pour débloquer tout ça et tout garder.
+          En mode invité tu joues tout de suite, mais{' '}
+          <strong>
+            sans XP de compte ni de thèmes, sans badges, sans titres et sans classement
+          </strong>{' '}
+          — crée un compte pour débloquer tout ça et tout garder.
         </p>
 
-        {onglet === 'creation' && (
+        {tab === 'creation' && (
           <p className="note-local">
-            Le pseudo est vérifié automatiquement : aucun contenu haineux, discriminatoire ou insultant n'est accepté.
-            Le mot de passe est stocké sous forme de hash salé (SHA-256), jamais en clair.
+            Le pseudo est vérifié automatiquement : aucun contenu haineux, discriminatoire ou
+            insultant n'est accepté. Le mot de passe est stocké sous forme de hash salé (SHA-256),
+            jamais en clair.
           </p>
         )}
       </div>

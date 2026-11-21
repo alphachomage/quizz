@@ -1,8 +1,16 @@
-// fusionThemes.js — fusionne les thèmes perso (fichier JSON) avec la base :
+// fusionThemes.js — fusionne les thèmes personal (fichier JSON) avec la base :
 // même id = questions ajoutées (rien n'est jamais supprimé).
-export function fusionThemes(base, perso) {
-  const map = new Map(base.map((t) => [t.id, { ...t, questions: [...t.questions] }]));
-  for (const t of perso) {
+function mergeThemes(base, personal) {
+  const map = new Map(
+    base.map((t) => [
+      t.id,
+      {
+        ...t,
+        questions: [...t.questions],
+      },
+    ])
+  );
+  for (const t of personal) {
     if (!t || !t.id || !Array.isArray(t.questions)) continue;
     if (map.has(t.id)) {
       const existant = map.get(t.id);
@@ -22,3 +30,4 @@ export function fusionThemes(base, perso) {
   }
   return [...map.values()];
 }
+export { mergeThemes };

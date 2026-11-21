@@ -18,7 +18,7 @@ export const QUESTIONS_V4_MYTHOLOGIE_C1 = [
       { q: "Par quel cataclysme le quatrième soleil aztèque fut-il détruit avant le nôtre ?", reponses: ["Une inondation", "Un ouragan", "Des jaguars", "Un incendie mondial"], bonne: 0, niveau: "dur" },
       { q: "Combien de chapitres compte la Bhagavad-Gita ?", reponses: ["18", "24", "36", "700"], bonne: 0, niveau: "dur" },
       { q: "Qui est l'auteur traditionnellement attribué du Mahabharata ?", reponses: ["Vyasa", "Valmiki", "Kalidasa", "Patanjali"], bonne: 0, niveau: "dur" },
-      { q: "Quelle fraction du dharma resterait-il à l'humanité durant le Kali Yuga, l'âge actuel ?", reponses: ["Un quart", "La moitié", "Les trois quarts", "Un cinquième"], bonne: 0, niveau: "dur" },
+      { q: "Quelle fraction du dharma resterait-il à l'humanité durant le Kali Yuga, l'âge current ?", reponses: ["Un quart", "La moitié", "Les trois quarts", "Un cinquième"], bonne: 0, niveau: "dur" },
       { q: "Combien d'années dure un kalpa, c'est-à-dire un jour de Brahma, dans la cosmologie hindoue ?", reponses: ["4,32 milliards d'années", "1 milliard d'années", "100 millions d'années", "10 milliards d'années"], bonne: 0, niveau: "dur" },
       { q: "Pendant combien d'années Rama vécut-il en exil dans la forêt selon le Ramayana ?", reponses: ["14 ans", "12 ans", "10 ans", "16 ans"], bonne: 0, niveau: "dur" },
       { q: "Combien de bras possédait Ravana, le roi-démon de Lanka, dans le Ramayana ?", reponses: ["Vingt bras", "Dix bras", "Douze bras", "Huit bras"], bonne: 0, niveau: "dur" },

@@ -3,6 +3,16 @@
 Toutes les évolutions notables du projet sont documentées ici, de la plus récente à la plus ancienne.
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage sémantique.
 
+## Non publié
+
+### Nettoyé
+- Barrel `src/lib/index.js` supprimé : tous les imports pointent directement vers le module concerné (ex. `@lib/scoring.js`).
+- Code mort supprimé : repos inutilisés (`SessionRepo`, `AccountsRepo`, `TutorialRepo`) et exports internes non utilisés retirés de `export`.
+- Identifiants français renommés en anglais dans tout `src/`, `tests/`, `scripts/`, `worker*.js` (ex. `jouerSon` -> `playSound`, `sabonner` -> `subscribe`, `estInvite` -> `isGuest`, props `onFermer` -> `onClose`...). Exceptions documentées (inchangées) : clés du schéma de données/persistées (`q`, `reponses`, `bonne`, `niveau`, `statut`, `bonnes`...) et noms de classes CSS.
+- Fichiers renommés : `src/lib/texte.js` -> `text.js`, `scripts/test-unitaire.mjs` -> `legacy-tests.mjs`, tests `tirage/similarite/comptes/quotidien.test.js` -> `draw/similarity/accounts/daily.test.js`. Scripts npm : `test:partie*` -> `test:game*`, `test:tirage` -> `test:draw`, `test:similarite` -> `test:similarity`, `test:comptes` -> `test:accounts`.
+- Racine : `COMPARAISON-QUIZUP.md` déplacé dans `docs/veille-quizup.md` ; changesets retiré (CHANGELOG manuel) ; branches git mergées supprimées (y compris `origin/safety/pre-codemod`, ancêtre de main).
+- Commentaires de chemins périmés corrigés (ex. `features/partie/tirage.js` -> `features/game/draw.js`).
+
 ## 0.1.0 — 2026-11-20
 
 Première version publiée (WPA installable + hors-ligne, déployée sur Cloudflare Workers).

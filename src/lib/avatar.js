@@ -27,7 +27,17 @@ async function imageToResizedDataUrl(dataUrl, taille = AVATAR_SIZE) {
   canvas.height = taille;
   const cote = Math.min(img.width, img.height);
   const ctx = canvas.getContext('2d');
-  ctx.drawImage(img, (img.width - cote) / 2, (img.height - cote) / 2, cote, cote, 0, 0, taille, taille);
+  ctx.drawImage(
+    img,
+    (img.width - cote) / 2,
+    (img.height - cote) / 2,
+    cote,
+    cote,
+    0,
+    0,
+    taille,
+    taille
+  );
   return canvas.toDataURL('image/jpeg', 0.85);
 }
 
@@ -37,7 +47,9 @@ async function ratioPeau(dataUrl, taille = 64) {
   const canvas = document.createElement('canvas');
   canvas.width = taille;
   canvas.height = taille;
-  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: true,
+  });
   ctx.drawImage(img, 0, 0, taille, taille);
   const { data } = ctx.getImageData(0, 0, taille, taille);
   let peau = 0;
@@ -58,7 +70,9 @@ async function aHash(dataUrl, taille = 8) {
   const canvas = document.createElement('canvas');
   canvas.width = taille;
   canvas.height = taille;
-  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: true,
+  });
   ctx.drawImage(img, 0, 0, taille, taille);
   const { data } = ctx.getImageData(0, 0, taille, taille);
   const gris = [];
@@ -70,7 +84,6 @@ async function aHash(dataUrl, taille = 8) {
   for (const v of gris) bits += v >= moy ? '1' : '0';
   return parseInt(bits, 2).toString(16).padStart(16, '0');
 }
-
 function hamming(a, b) {
   let x = BigInt(`0x${a}`) ^ BigInt(`0x${b}`);
   let d = 0;
@@ -84,11 +97,22 @@ function hamming(a, b) {
 // Validation complète d'un fichier image proposé comme avatar.
 // Retourne { ok: true, dataUrl, hash } ou { ok: false, erreur }.
 export async function validateAvatar(file) {
-  if (!file) return { ok: false, erreur: 'Aucun fichier sélectionné.' };
+  if (!file)
+    return {
+      ok: false,
+      error: 'Aucun fichier sélectionné.',
+    };
   if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-    return { ok: false, erreur: 'Formats autorisés : JPEG, PNG ou WebP (les SVG sont interdits).' };
+    return {
+      ok: false,
+      error: 'Formats autorisés : JPEG, PNG ou WebP (les SVG sont interdits).',
+    };
   }
-  if (file.size > 3 * 1024 * 1024) return { ok: false, erreur: 'Image trop lourde (3 Mo maximum).' };
+  if (file.size > 3 * 1024 * 1024)
+    return {
+      ok: false,
+      error: 'Image trop lourde (3 Mo maximum).',
+    };
   const dataUrl = await new Promise((resolve, reject) => {
     const r = new FileReader();
     r.onload = () => resolve(r.result);
@@ -96,31 +120,45 @@ export async function validateAvatar(file) {
     r.readAsDataURL(file);
   });
   const img = await loadImage(dataUrl);
-  if (img.width < 32 || img.height < 32) return { ok: false, erreur: 'Image trop petite (32 px minimum).' };
+  if (img.width < 32 || img.height < 32)
+    return {
+      ok: false,
+      error: 'Image trop petite (32 px minimum).',
+    };
 
   // 1) Détection de nudité (heuristique peau)
   const ratio = await ratioPeau(dataUrl);
   if (ratio > SKIN_THRESHOLD) {
-    return { ok: false, erreur: "Image refusée : contenu possiblement inapproprié (nudité) détecté." };
+    return {
+      ok: false,
+      error: 'Image refusée : contenu possiblement inapproprié (nudité) détecté.',
+    };
   }
 
   // 2) Personnages / contenus bloqués (hash perceptuel vs liste locale)
   const hash = await aHash(dataUrl);
   try {
     const res = await fetch('/avatars-bloques.json');
-    const list = res.ok ? await res.json() : { images: [] };
+    const list = res.ok
+      ? await res.json()
+      : {
+          images: [],
+        };
     for (const entry of list.images || []) {
       if (entry.hash && hamming(hash, entry.hash) <= MAX_HASH_DISTANCE) {
         return {
           ok: false,
-          erreur: `Image refusée : personnage ou contenu bloqué par la modération (${entry.label || 'liste bloquée'}).`,
+          error: `Image refusée : personnage ou contenu bloqué par la modération (${entry.label || 'liste bloquée'}).`,
         };
       }
     }
   } catch {
     // pas de liste disponible = pas de blocage par hash
   }
-
   const reduite = await imageToResizedDataUrl(dataUrl);
-  return { ok: true, dataUrl: reduite, hash };
+  return {
+    ok: true,
+    dataUrl: reduite,
+    hash,
+  };
 }

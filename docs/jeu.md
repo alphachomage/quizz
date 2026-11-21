@@ -31,10 +31,10 @@ Toutes les constantes vivent dans `src/lib/scoring.js`, `src/lib/draw.js`,
 ## Tirage diversifié + anti-répétition
 
 - `drawSeries(pool, nb, maxParSujet=2, maxParTheme, rand)` dans `src/lib/draw.js` :
-  max 2 questions du même « sujet » (nom propre détecté par `sujetDe`, ex. « One
+  max 2 questions du même « sujet » (nom propre détecté par `subjectOf`, ex. « One
   Piece »), et en multi-thèmes (survie) un plafond par thème. Construction de la
   partie : `drawGameQuestions(config)` dans `src/features/game/draw.js`, ordre des
-  réponses mélangé par `withShuffledAnswers`, thème tagué par `taguerTheme`.
+  réponses mélangé par `withShuffledAnswers`, thème tagué par `tagTheme`.
 - Anti-répétition : la dernière série jouée est mémorisée (`src/lib/series.js`,
   `poolWithoutPreviousSeries`) -> « Rejouer » tire hors de la série précédente.
 - Records : clé `<mode>:<niveau|mix>:<themeId>` (`recordKey` dans `src/lib/records.js`).

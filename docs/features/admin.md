@@ -17,7 +17,7 @@ sections de modération. Les métriques sont calculées par des fonctions PURES 
 (règle R5 : jamais `localStorage` en direct) : le hook `src/features/admin/useAdminMetrics.js`
 lit chaque clé avec `useStorage(STORAGE_KEYS.*)` (qui appelle `read()` de
 `src/lib/storage.js`) + `STORAGE_MODE`, et se rafraîchit à chaque écriture
-(`sabonner()` dans `src/lib/storage.js`) : valider une soumission ou traiter un
+(`subscribe()` dans `src/lib/storage.js`) : valider une soumission ou traiter un
 signalement met à jour le tableau de bord sans rechargement. Les métriques serveur
 passent par `src/lib/api.js` (`apiHealth`, `apiStats`) via le hook
 `src/features/admin/useServerStats.js`, avec gestion d'erreur gracieuse : V2 off ou
@@ -49,14 +49,14 @@ Dans les sections de modération (comportement existant, inchangé) :
   ; « retirer » ajoute une exclusion (`voltquiz_exclues`, appliquée dans `chargerThemes`,
   retrait effectif au rechargement ; fichiers source jamais modifiés).
 - **Supprimer une suggestion** : `SuggestionsSection.jsx` -> `removeSuggestion(id)`.
-- **Exporter les questions validées en JSON** : `telechargerJSON(exportSubmissionsJson(...))`.
+- **Exporter les questions validées en JSON** : `downloadJson(exportSubmissionsJson(...))`.
 - **Exporter / vider tous les signalements** : `ReportedSection.jsx`.
 
 Dans `ActionsCard.jsx` (tableau de bord) :
 
-- **Remettre les scores à zéro** -> recharge avec `?reset=1` (`reinitialiserScores()`,
+- **Remettre les scores à zéro** -> recharge avec `?reset=1` (`resetScores()`,
   `src/lib/reset.js`, déclenché dans `App.jsx`).
-- **Reset compte complet** -> recharge avec `?resetcompte=1` (`reinitialiserProgression()`).
+- **Reset compte complet** -> recharge avec `?resetcompte=1` (`resetProgress()`).
 - **Activer / désactiver le stockage D1** -> recharge avec / sans `?stockage=d1`
   (`urlAvecParam` / `urlSansParam` de `src/app/urlFlags.js` + `redirigerVers`) ;
   le mode courant est celui de `STORAGE_MODE` (`src/lib/storage.js`).

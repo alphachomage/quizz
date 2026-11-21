@@ -29,7 +29,7 @@ export const QUESTIONS_V4G_SCIENCES_C1 = [
       { q: "Quelle particule élémentaire porte une charge électrique élémentaire négative ?", reponses: ["Le proton", "Le neutron", "L'électron", "Le neutrino"], bonne: 2, niveau: "dur" },
       { q: "Quel est le numéro atomique de l'uranium ?", reponses: ["92", "88", "90", "94"], bonne: 0, niveau: "dur" },
       { q: "Quel type de rayonnement électromagnétique, découvert en 1895, est utilisé en radiographie médicale ?", reponses: ["Les rayons gamma", "Les rayons X", "Les ultraviolets", "Les ondes radio"], bonne: 1, niveau: "dur" },
-      { q: "Quel est le pH moyen actuel des océans, légèrement basique ?", reponses: ["Environ 8,1", "Environ 7,0", "Environ 6,5", "Environ 9,5"], bonne: 0, niveau: "dur" },
+      { q: "Quel est le pH moyen current des océans, légèrement basique ?", reponses: ["Environ 8,1", "Environ 7,0", "Environ 6,5", "Environ 9,5"], bonne: 0, niveau: "dur" },
       { q: "Quelle est la formule brute du glucose ?", reponses: ["C6H12O6", "C12H22O11", "C2H5OH", "CH4"], bonne: 0, niveau: "dur" },
       { q: "Quel physicien allemand a découvert les rayons X en 1895 ?", reponses: ["Wilhelm Röntgen", "Albert Einstein", "Max Planck", "Heinrich Hertz"], bonne: 0, niveau: "dur" },
       { q: "Environ combien de battements par minute le cœur d'un adulte effectue-t-il au repos ?", reponses: ["Environ 30", "Environ 70", "Environ 150", "Environ 200"], bonne: 1, niveau: "dur" },

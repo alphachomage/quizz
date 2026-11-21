@@ -48,7 +48,7 @@ export const QUESTIONS_V4F_MUSIQUE_C1 = [
       { q: "Combien de mouvements compte la « Symphonie fantastique » de Berlioz ?", reponses: ["5", "4", "3", "6"], bonne: 0, niveau: "dur" },
       { q: "Combien d'actes compte l'opéra « Carmen » de Bizet ?", reponses: ["4", "3", "5", "2"], bonne: 0, niveau: "dur" },
       { q: "Combien de couplets compte « La Marseillaise » dans sa version complète originale ?", reponses: ["7", "6", "5", "8"], bonne: 0, niveau: "dur" },
-      { q: "Quel est l'hymne national actuel du Royaume-Uni ?", reponses: ["God Save the King", "Rule Britannia", "Land of Hope and Glory", "Jerusalem"], bonne: 0, niveau: "dur" },
+      { q: "Quel est l'hymne national current du Royaume-Uni ?", reponses: ["God Save the King", "Rule Britannia", "Land of Hope and Glory", "Jerusalem"], bonne: 0, niveau: "dur" },
       { q: "De quelle œuvre de Beethoven l'hymne européen est-il tiré ?", reponses: ["La 9e symphonie", "La 5e symphonie", "La Sonate au clair de lune", "L'opéra Fidelio"], bonne: 0, niveau: "dur" },
       { q: "Qui a composé l'opéra « Tristan et Isolde » ?", reponses: ["Richard Wagner", "Giuseppe Verdi", "Richard Strauss", "Carl Maria von Weber"], bonne: 0, niveau: "dur" },
       { q: "Quel instrument incarne le grand-père dans « Pierre et le Loup » de Prokofiev ?", reponses: ["Le basson", "La flûte", "Le hautbois", "Les cordes"], bonne: 0, niveau: "dur" },

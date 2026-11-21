@@ -2,45 +2,51 @@
 // rechargent la page avec un flag d'URL (?reset=1, ?resetcompte=1, ?stockage=d1).
 // La navigation passe par app/urlFlags.js (R5 : jamais window.location en direct).
 import Icon from '@shared/ui/Icon.jsx';
-
-import { redirigerVers, urlAvecParam, urlSansParam } from '@app/urlFlags.js';
-
+import { redirigerVers, urlWithParam, urlWithoutParam } from '@app/urlFlags.js';
 import MetricCard from './MetricCard.jsx';
-
 export default function ActionsCard({ mode }) {
   function resetScores() {
     if (window.confirm('Remettre à zéro scores, records, historique et XP (?reset=1) ?')) {
-      redirigerVers(urlAvecParam('reset', '1'));
+      redirigerVers(urlWithParam('reset', '1'));
     }
   }
-
-  function resetCompte() {
-    if (window.confirm('Reset COMPLET de la progression (?resetcompte=1) : scores + streak + badges + titres ?')) {
-      redirigerVers(urlAvecParam('resetcompte', '1'));
+  function resetAccountFlag() {
+    if (
+      window.confirm(
+        'Reset COMPLET de la progression (?resetcompte=1) : scores + streak + badges + titres ?'
+      )
+    ) {
+      redirigerVers(urlWithParam('resetcompte', '1'));
     }
   }
-
   function basculerStockage() {
     if (mode === 'd1') {
       if (window.confirm('Revenir au stockage 100 % local (retire ?stockage=d1) ?')) {
-        redirigerVers(urlSansParam('stockage'));
+        redirigerVers(urlWithoutParam('stockage'));
       }
-    } else if (window.confirm('Activer le stockage D1 (?stockage=d1) : synchro serveur via /api/kv ?')) {
-      redirigerVers(urlAvecParam('stockage', 'd1'));
+    } else if (
+      window.confirm('Activer le stockage D1 (?stockage=d1) : synchro serveur via /api/kv ?')
+    ) {
+      redirigerVers(urlWithParam('stockage', 'd1'));
     }
   }
-
   return (
-    <MetricCard icone="sliders" titre="Actions" valeur="" sous="rechargent la page avec un flag d'URL">
+    <MetricCard
+      icone="sliders"
+      title="Actions"
+      value=""
+      sous="rechargent la page avec un flag d'URL"
+    >
       <div className="metric-actions">
         <button className="filtre" onClick={resetScores}>
           <Icon nom="replay" taille={14} /> Remettre les scores à zéro (?reset=1)
         </button>
-        <button className="filtre" onClick={resetCompte}>
+        <button className="filtre" onClick={resetAccountFlag}>
           <Icon nom="trash" taille={14} /> Reset compte complet (?resetcompte=1)
         </button>
         <button className="filtre" onClick={basculerStockage}>
-          <Icon nom="device" taille={14} /> {mode === 'd1' ? 'Revenir au stockage local' : 'Activer le stockage D1 (?stockage=d1)'}
+          <Icon nom="device" taille={14} />{' '}
+          {mode === 'd1' ? 'Revenir au stockage local' : 'Activer le stockage D1 (?stockage=d1)'}
         </button>
       </div>
     </MetricCard>

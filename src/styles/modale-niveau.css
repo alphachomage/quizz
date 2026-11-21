@@ -20,7 +20,10 @@
   border: 1px solid var(--bordure);
   border-radius: var(--radius-grand);
   cursor: pointer;
-  transition: border-color var(--dur-court) ease, background var(--dur-court) ease, transform var(--dur-court) ease;
+  transition:
+    border-color var(--dur-court) ease,
+    background var(--dur-court) ease,
+    transform var(--dur-court) ease;
 }
 
 .niveau-modal:hover {

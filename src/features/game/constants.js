@@ -1,4 +1,4 @@
-// features/partie/constantes.js — constantes d'affichage de l'écran de jeu.
+// features/game/constants.js — constantes d'affichage de l'écran de jeu.
 
 // Les 4 couleurs des réponses, comme dans QuizUp.
 export const ANSWER_COLORS = ['#5b8def', '#ff5d73', '#ffb020', '#2fd27a'];

@@ -2,20 +2,19 @@
 // + vibrations (API Vibration, sur mobile surtout).
 // Tout est piloté par les préférences utilisateur (voir chargerPrefs dans lib/prefs.js).
 
-let contexte = null;
-
+let context = null;
 function audio() {
-  if (!contexte) {
+  if (!context) {
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return null;
-    contexte = new AC();
+    context = new AC();
   }
-  if (contexte.state === 'suspended') contexte.resume();
-  return contexte;
+  if (context.state === 'suspended') context.resume();
+  return context;
 }
 
 // Joue une petite séquence de notes. freq = hertz, duree en secondes.
-function note(freq, debut, duration, type = 'sine', volume = 0.18) {
+function note(freq, debut, duration, type = 'sine', volumeLevel = 0.18) {
   const ctx = audio();
   if (!ctx) return;
   const osc = ctx.createOscillator();
@@ -24,7 +23,7 @@ function note(freq, debut, duration, type = 'sine', volume = 0.18) {
   osc.frequency.value = freq;
   const t0 = ctx.currentTime + debut;
   gain.gain.setValueAtTime(0.0001, t0);
-  gain.gain.exponentialRampToValueAtTime(volume, t0 + 0.02);
+  gain.gain.exponentialRampToValueAtTime(volumeLevel, t0 + 0.02);
   gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
   osc.connect(gain).connect(ctx.destination);
   osc.start(t0);
@@ -32,15 +31,15 @@ function note(freq, debut, duration, type = 'sine', volume = 0.18) {
 }
 
 // Joue plusieurs notes en même temps (accord riche).
-function accord(freqs, debut, duration, type = 'sine', volume = 0.08) {
-  for (const f of freqs) note(f, debut, duration, type, volume);
+function accord(freqs, debut, duration, type = 'sine', volumeLevel = 0.08) {
+  for (const f of freqs) note(f, debut, duration, type, volumeLevel);
 }
 
 // Son de "confirmation" GRAVE dans l'esprit d'un kill feed (100 % original, pas une copie) :
 // onde triangle douce dans les graves (aucun buzz), hauteur qui monte en glissando,
 // filtre passe-bas très sombre, double oscillateur légèrement detuné, et un gros
 // coup de basse (sine, une octave sous la note) pour le "boom".
-function chirp(f0, f1, debut, duration, volume = 0.22) {
+function chirp(f0, f1, debut, duration, volumeLevel = 0.22) {
   const ctx = audio();
   if (!ctx) return;
   const t0 = ctx.currentTime + debut;
@@ -52,7 +51,7 @@ function chirp(f0, f1, debut, duration, volume = 0.22) {
   filtre.frequency.exponentialRampToValueAtTime(550, t0 + duration);
   const gain = ctx.createGain();
   gain.gain.setValueAtTime(0.0001, t0);
-  gain.gain.exponentialRampToValueAtTime(volume, t0 + 0.008);
+  gain.gain.exponentialRampToValueAtTime(volumeLevel, t0 + 0.008);
   gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
   filtre.connect(gain).connect(ctx.destination);
   for (const det of [-4, 4]) {
@@ -66,12 +65,14 @@ function chirp(f0, f1, debut, duration, volume = 0.22) {
     osc.stop(t0 + duration + 0.05);
   }
   // gros coup de basse une octave en dessous
-  note(f0 / 2, debut, duration * 1.2, 'sine', volume * 0.9);
+  note(f0 / 2, debut, duration * 1.2, 'sine', volumeLevel * 0.9);
 }
-
 const SOUNDS = {
   // Bonne réponse : un "boum" grave montant (Sol3 -> Re4) + une octave de basse.
-  correct: () => { chirp(196, 293.66, 0, 0.13); note(587.33, 0.08, 0.08, 'sine', 0.05); },
+  correct: () => {
+    chirp(196, 293.66, 0, 0.13);
+    note(587.33, 0.08, 0.08, 'sine', 0.05);
+  },
   // Sons de SÉRIE (streak) de plus en plus satisfaisants : chaque palier ajoute
   // un chirp grave montant de plus, puis un accord grave et un aigu discret.
   streak3: () => {
@@ -94,7 +95,10 @@ const SOUNDS = {
     accord([196, 246.94, 293.66, 392, 587.33], 0.24, 0.42, 'sine', 0.06);
     note(1567.98, 0.3, 0.3, 'sine', 0.06);
   },
-  faux: () => { note(160, 0, 0.28, 'sawtooth', 0.14); note(110, 0.12, 0.3, 'sawtooth', 0.12); },
+  faux: () => {
+    note(160, 0, 0.28, 'sawtooth', 0.14);
+    note(110, 0.12, 0.3, 'sawtooth', 0.12);
+  },
   // Grondement d'éclair DOUX (déblocage badge/titre) : crack aigu très bref +
   // bruit filtré qui s'assourdit + sine grave qui descend. Volume contenu, pas agressif.
   tonnerre: () => {
@@ -131,10 +135,23 @@ const SOUNDS = {
     osc.start(t0);
     osc.stop(t0 + 0.65);
   },
-  tick: () => { note(1200, 0, 0.05, 'square', 0.06); },
-  clic: () => { note(500, 0, 0.06, 'triangle', 0.1); },
-  fin: () => { note(523, 0, 0.14); note(659, 0.12, 0.14); note(784, 0.24, 0.22); },
-  record: () => { note(784, 0, 0.12); note(988, 0.1, 0.12); note(1175, 0.2, 0.12); note(1568, 0.3, 0.3); },
+  tick: () => {
+    note(1200, 0, 0.05, 'square', 0.06);
+  },
+  clic: () => {
+    note(500, 0, 0.06, 'triangle', 0.1);
+  },
+  fin: () => {
+    note(523, 0, 0.14);
+    note(659, 0.12, 0.14);
+    note(784, 0.24, 0.22);
+  },
+  record: () => {
+    note(784, 0, 0.12);
+    note(988, 0.1, 0.12);
+    note(1175, 0.2, 0.12);
+    note(1568, 0.3, 0.3);
+  },
 };
 
 // Nom du son de bonne réponse selon la série en cours : plus la streak monte,
@@ -148,7 +165,7 @@ export function soundForStreak(streak) {
 }
 
 // nom : 'correct' | 'streak3' | 'streak6' | 'streak10' | 'faux' | 'tick' | 'clic' | 'fin' | 'record'
-export function jouerSon(nom, prefs) {
+function playSound(nom, prefs) {
   if (!prefs || prefs.sons === false) return;
   try {
     (SOUNDS[nom] || SOUNDS.clic)();
@@ -160,29 +177,29 @@ export function jouerSon(nom, prefs) {
 // --- Musique de fond de partie : nappe d'accords lente et douce (Web Audio, rien d'externe) ---
 // Progression Am7 - Fa maj7 - Do - Sol, oscillateurs triangle légèrement detunés,
 // une petite note aiguë pentatonique de temps en temps. Volume très bas, fondu in/out.
+export { playSound };
 let musicPlaying = null;
-
 export function startMusic(prefs) {
   if (!prefs || prefs.music === false) return;
   stopMusic();
   const ctx = audio();
   if (!ctx) return;
-
   const master = ctx.createGain();
   master.gain.value = 0.0001;
   master.gain.linearRampToValueAtTime(0.055, ctx.currentTime + 1.8); // fondu entrant
   master.connect(ctx.destination);
-
   const accords = [
-    [220.0, 261.63, 329.63, 392.0],    // La m7
-    [174.61, 220.0, 261.63, 349.23],   // Fa maj7
-    [130.81, 196.0, 261.63, 329.63],   // Do
-    [196.0, 246.94, 293.66, 392.0],    // Sol
+    [220.0, 261.63, 329.63, 392.0],
+    // La m7
+    [174.61, 220.0, 261.63, 349.23],
+    // Fa maj7
+    [130.81, 196.0, 261.63, 329.63],
+    // Do
+    [196.0, 246.94, 293.66, 392.0], // Sol
   ];
   const penta = [440.0, 523.25, 587.33, 659.25, 783.99];
   let index = 0;
-
-  const jouerAccord = () => {
+  const playChord = () => {
     const notes = accords[index % accords.length];
     index += 1;
     const t0 = ctx.currentTime;
@@ -207,9 +224,8 @@ export function startMusic(prefs) {
       note(f, 0.6 + Math.random() * 2.6, 0.6, 'sine', 0.03);
     }
   };
-
-  jouerAccord();
-  const timer = setInterval(jouerAccord, 4000);
+  playChord();
+  const timer = setInterval(playChord, 4000);
   musicPlaying = {
     stop() {
       clearInterval(timer);
@@ -217,14 +233,19 @@ export function startMusic(prefs) {
         master.gain.cancelScheduledValues(ctx.currentTime);
         master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
         master.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
-        setTimeout(() => { try { master.disconnect(); } catch { /* nœud déjà déconnecté */ } }, 700);
+        setTimeout(() => {
+          try {
+            master.disconnect();
+          } catch {
+            /* nœud déjà déconnecté */
+          }
+        }, 700);
       } catch {
-        // le contexte audio était déjà fermé : rien à faire
+        // le context audio était déjà fermé : rien à faire
       }
     },
   };
 }
-
 export function stopMusic() {
   if (musicPlaying) {
     musicPlaying.stop();

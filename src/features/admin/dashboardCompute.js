@@ -7,33 +7,57 @@ import { levelName } from '@lib/scoring.js';
 
 // Libellés + icônes des modes de jeu (clés de l'historique = ids internes).
 const MODE_LABELS = {
-  solo: { nom: 'Solo', icone: 'timer' },
-  duel: { nom: 'Duel 1v1', icone: 'swords' },
-  survie: { nom: 'Survie', icone: 'skull' },
-  quotidien: { nom: 'Quizz du jour', icone: 'calendar' },
+  solo: {
+    nom: 'Solo',
+    icone: 'timer',
+  },
+  duel: {
+    nom: 'Duel 1v1',
+    icone: 'swords',
+  },
+  survie: {
+    nom: 'Survie',
+    icone: 'skull',
+  },
+  quotidien: {
+    nom: 'Quizz du jour',
+    icone: 'calendar',
+  },
 };
-
 export function modeLabel(mode) {
-  return (MODE_LABELS[mode] || { nom: mode, icone: 'question' }).nom;
+  return (
+    MODE_LABELS[mode] || {
+      nom: mode,
+      icone: 'question',
+    }
+  ).nom;
 }
-
-export function modeIcone(mode) {
-  return (MODE_LABELS[mode] || { icone: 'question' }).icone;
+function modeIcon(mode) {
+  return (
+    MODE_LABELS[mode] || {
+      icone: 'question',
+    }
+  ).icone;
 }
 
 // Décompose une clé de record `mode:niveau:themeId` (voir lib/records.js recordKey).
+export { modeIcon };
 export function parseRecordKey(key) {
-  const [mode, niveau, ...reste] = String(key).split(':');
-  return { mode, niveau, themeId: reste.join(':') };
+  const [mode, niveau, ...remainingN] = String(key).split(':');
+  return {
+    mode,
+    niveau,
+    themeId: remainingN.join(':'),
+  };
 }
 
 // Corpus jouable : thèmes + questions (la prop `themes` a déjà les exclusions
 // retirées et les questions validées ajoutées — voir ThemesContext).
 export function computeCorpus(themes) {
-  const liste = Array.isArray(themes) ? themes : [];
+  const list = Array.isArray(themes) ? themes : [];
   return {
-    nbThemes: liste.length,
-    nbQuestions: liste.reduce((a, t) => a + ((t.questions && t.questions.length) || 0), 0),
+    themeCount: list.length,
+    nbQuestions: list.reduce((a, t) => a + ((t.questions && t.questions.length) || 0), 0),
   };
 }
 
@@ -41,49 +65,69 @@ export function computeCorpus(themes) {
 // Même convention que l'historique : repondues = total x nb joueurs, bonnes = somme
 // des « bonnes » des joueurs (voir features/stats/statsCompute.js computeStats).
 export function computeGamesMetrics(games) {
-  const liste = Array.isArray(games) ? games : [];
+  const list = Array.isArray(games) ? games : [];
   let repondues = 0;
   let bonnes = 0;
-  const parMode = {};
-  for (const p of liste) {
+  const perMode = {};
+  for (const p of list) {
     const nbJ = (p.players || []).length || 1;
     const rep = (p.total || 0) * nbJ;
     const bon = (p.players || []).reduce((a, j) => a + (j.bonnes || 0), 0);
     repondues += rep;
     bonnes += bon;
-    const m = parMode[p.mode] || (parMode[p.mode] = { games: 0, repondues: 0, bonnes: 0 });
+    const m =
+      perMode[p.mode] ||
+      (perMode[p.mode] = {
+        games: 0,
+        repondues: 0,
+        bonnes: 0,
+      });
     m.games += 1;
     m.repondues += rep;
     m.bonnes += bon;
   }
-  const parModeListe = Object.entries(parMode)
-    .map(([mode, v]) => ({ mode, ...v, pct: v.repondues ? Math.round((v.bonnes / v.repondues) * 100) : 0 }))
+  const parModeListe = Object.entries(perMode)
+    .map(([mode, v]) => ({
+      mode,
+      ...v,
+      pct: v.repondues ? Math.round((v.bonnes / v.repondues) * 100) : 0,
+    }))
     .sort((a, b) => b.games - a.games || b.bonnes - a.bonnes);
   return {
-    total: liste.length,
+    total: list.length,
     repondues,
     bonnes,
     pct: repondues ? Math.round((bonnes / repondues) * 100) : 0,
-    parMode: parModeListe,
+    perMode: parModeListe,
   };
 }
 
 // Top N des records locaux (objet clé -> valeur), triés par valeur décroissante.
 export function computeRecordsTop(records, n = 5) {
   return Object.entries(records || {})
-    .map(([key, valeur]) => ({ key, valeur, ...parseRecordKey(key) }))
-    .sort((a, b) => b.valeur - a.valeur)
+    .map(([key, value]) => ({
+      key,
+      value: value,
+      ...parseRecordKey(key),
+    }))
+    .sort((a, b) => b.value - a.value)
     .slice(0, n);
 }
 
 // Compteurs de modération : signalements (total + en attente de vérification),
 // soumissions en attente, validées, suggestions joueurs, exclusions du pool.
-export function computeModeration({ reports = [], submissions = [], approved = [], suggestions = [], excluded = [] } = {}) {
-  const liste = Array.isArray(reports) ? reports : [];
+export function computeModeration({
+  reports = [],
+  submissions = [],
+  approved = [],
+  suggestions = [],
+  excluded = [],
+} = {}) {
+  const list = Array.isArray(reports) ? reports : [];
   return {
-    signalementsTotal: liste.length,
-    signalementsEnAttente: liste.filter((r) => !r.statut).length,
-    soumissions: (Array.isArray(submissions) ? submissions : []).length,
+    signalementsTotal: list.length,
+    signalementsEnAttente: list.filter((r) => !r.statut).length,
+    submissions: (Array.isArray(submissions) ? submissions : []).length,
     validees: (Array.isArray(approved) ? approved : []).length,
     suggestions: (Array.isArray(suggestions) ? suggestions : []).length,
     exclusions: (Array.isArray(excluded) ? excluded : []).length,
@@ -94,14 +138,23 @@ export function computeModeration({ reports = [], submissions = [], approved = [
 // (hier est dérivé de `now`, pas de l'horloge réelle). Une série dont le dernier jour
 // joué est antérieur à hier est rompue (compte = 0), même règle que currentDailyStreak.
 export function computeStreak(streak, games, now = new Date()) {
-  const s = streak || { compte: 0, dernierJour: null };
-  const hier = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-  const cleHier = localDayKey(hier);
-  const compte = s.dernierJour && s.dernierJour >= cleHier ? s.compte || 0 : 0;
-  const cleAujourdhui = localDayKey(now);
-  const liste = Array.isArray(games) ? games : [];
-  const partiesAujourdhui = liste.filter((g) => g.date && localDayKey(new Date(g.date)) === cleAujourdhui).length;
-  return { compte, dernierJour: s.dernierJour || null, partiesAujourdhui };
+  const s = streak || {
+    compte: 0,
+    lastDay: null,
+  };
+  const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+  const yesterdayKey = localDayKey(yesterday);
+  const compte = s.lastDay && s.lastDay >= yesterdayKey ? s.compte || 0 : 0;
+  const todayKey = localDayKey(now);
+  const list = Array.isArray(games) ? games : [];
+  const gamesToday = list.filter(
+    (g) => g.date && localDayKey(new Date(g.date)) === todayKey
+  ).length;
+  return {
+    compte,
+    lastDay: s.lastDay || null,
+    gamesToday,
+  };
 }
 
 // Libellé d'une ligne de record pour l'affichage : « Solo · Moyen · Histoire ».

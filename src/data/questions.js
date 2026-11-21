@@ -11,7 +11,7 @@
 // reclassées dans les autres thèmes via questions-redistribution.js.
 
 import { loadExcluded } from '@lib/exclusions.js';
-import { normalizeQuestionText } from '@lib/texte.js';
+import { normalizeQuestionText } from '@lib/text.js';
 
 import { THEME_MANIFEST } from './theme-manifest.js';
 

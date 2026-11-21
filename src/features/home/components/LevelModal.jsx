@@ -3,20 +3,27 @@
 import Icon, { Bars } from '@shared/ui/Icon.jsx';
 import Modal from '@shared/ui/Modal.jsx';
 import { LEVELS, levelName } from '@lib/scoring.js';
-
 export default function LevelModal({ a }) {
   const theme = a.theme;
   if (!theme) return null;
   return (
-    <Modal title={theme.nom} onFermer={() => a.setModalNiveau(false)}>
+    <Modal title={theme.nom} onClose={() => a.setLevelModal(false)}>
       <div className="modal-titre">
         <h2>
-          <span className="theme-icone" style={{ '--couleur': theme.couleur, width: 34, height: 34, borderRadius: 10 }}>
+          <span
+            className="theme-icone"
+            style={{
+              '--couleur': theme.couleur,
+              width: 34,
+              height: 34,
+              borderRadius: 10,
+            }}
+          >
             <Icon nom={theme.icone} taille={18} />
           </span>
           {theme.nom}
         </h2>
-        <button className="btn-suppr" onClick={() => a.setModalNiveau(false)} title="Fermer">
+        <button className="btn-suppr" onClick={() => a.setLevelModal(false)} title="Fermer">
           <Icon nom="x" taille={18} />
         </button>
       </div>
@@ -26,8 +33,10 @@ export default function LevelModal({ a }) {
           <button
             key={n.id}
             className={a.niveau === n.id ? 'niveau-modal actif' : 'niveau-modal'}
-            style={{ '--couleur': n.couleur }}
-            onClick={() => a.setNiveau(n.id)}
+            style={{
+              '--couleur': n.couleur,
+            }}
+            onClick={() => a.setLevel(n.id)}
           >
             <Bars actives={i + 1} couleur={n.couleur} taille={18} />
             <span>{n.nom}</span>
@@ -36,7 +45,10 @@ export default function LevelModal({ a }) {
       </div>
       <button
         className="btn-principal"
-        onClick={() => { a.setModalNiveau(false); a.lancer(); }}
+        onClick={() => {
+          a.setLevelModal(false);
+          a.lancer();
+        }}
       >
         C'est parti — niveau {levelName(a.niveau)} !
       </button>

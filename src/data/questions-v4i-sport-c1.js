@@ -10,7 +10,7 @@ export const QUESTIONS_V4I_SPORT_C1 = [
     questions: [
       { q: "Qui détient le record du monde du 800 m masculin (1 min 40 s 91) depuis 2012 ?", reponses: ["David Rudisha", "Wilson Kipketer", "Sebastian Coe", "Hicham El Guerrouj"], bonne: 0, niveau: "dur" },
       { q: "Quel athlète britannique a été le premier à courir le mile en moins de quatre minutes, en 1954 ?", reponses: ["Roger Bannister", "Steve Ovett", "Sebastian Coe", "John Landy"], bonne: 0, niveau: "dur" },
-      { q: "Quel est le record du monde actuel du 5 000 m féminin, établi en 2024 ?", reponses: ["14 min 01 s 29", "14 min 06 s 62", "14 min 11 s 15", "13 min 58 s 06"], bonne: 0, niveau: "dur" },
+      { q: "Quel est le record du monde current du 5 000 m féminin, établi en 2024 ?", reponses: ["14 min 01 s 29", "14 min 06 s 62", "14 min 11 s 15", "13 min 58 s 06"], bonne: 0, niveau: "dur" },
       { q: "Qui détient le record du monde du 3 000 m steeple masculin (7 min 53 s 63) depuis 2004 ?", reponses: ["Saif Saaeed Shaheen", "Bernard Biwott", "Moses Kiptanui", "Paul Koech"], bonne: 0, niveau: "dur" },
       { q: "Quelle est la meilleure performance de Carl Lewis au saut en longueur ?", reponses: ["8,91 m", "8,95 m", "8,87 m", "9,00 m"], bonne: 0, niveau: "dur" },
       { q: "Qui détient le record du monde du 110 m haies masculin (12 s 80) depuis 2012 ?", reponses: ["Aries Merritt", "Grant Holloway", "Liu Xiang", "Colin Jackson"], bonne: 0, niveau: "dur" },
@@ -49,7 +49,7 @@ export const QUESTIONS_V4I_SPORT_C1 = [
       { q: "En quelle année Joe Frazier a-t-il battu Muhammad Ali pour la première fois ?", reponses: ["1971", "1974", "1975", "1967"], bonne: 0, niveau: "dur" },
       { q: "Dans quelle catégorie de poids Teddy Riner a-t-il été champion olympique à Paris 2024 ?", reponses: ["Plus de 100 kg", "Moins de 100 kg", "Moins de 81 kg", "Toutes catégories confondues"], bonne: 0, niveau: "dur" },
       { q: "Combien de titres olympiques l'escrimeur français Christian d'Oriola a-t-il remportés ?", reponses: ["Quatre", "Cinq", "Trois", "Six"], bonne: 0, niveau: "dur" },
-      { q: "Au tir à l'arc, combien de points rapporte la zone blanche extérieure de la cible ?", reponses: ["Un", "Deux", "Zéro", "Cinq"], bonne: 0, niveau: "dur" },
+      { q: "Au tir à l'arc, combien de points rapporte la zone blanche extérieure de la target ?", reponses: ["Un", "Deux", "Zéro", "Cinq"], bonne: 0, niveau: "dur" },
       { q: "Quelle golfeuse américaine détient le record absolu de victoires en tournois majeurs avec quinze titres ?", reponses: ["Patty Berg", "Mickey Wright", "Louise Suggs", "Babe Zaharias"], bonne: 0, niveau: "dur" },
       { q: "Quel athlète sud-africain a couru le 400 m en 43 s 03 en 2016, record du monde ?", reponses: ["Wayde van Niekerk", "Michael Johnson", "Butch Reynolds", "Jeremy Wariner"], bonne: 0, niveau: "dur" },
       { q: "Qui détient le record du monde du 1 500 m nage libre masculin (14 min 30 s 67) depuis 2012 ?", reponses: ["Sun Yang", "Gregorio Paltrinieri", "Daniel Wiffen", "Ian Thorpe"], bonne: 0, niveau: "dur" },

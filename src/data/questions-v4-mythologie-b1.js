@@ -54,7 +54,7 @@ export const QUESTIONS_V4_MYTHOLOGIE_B1 = [
       { q: "Combien d'années un jeune Gaulois devait-il étudier auprès des druides avant d'être initié, selon la tradition ?", reponses: ["Vingt ans", "Dix ans", "Sept ans", "Treize ans"], bonne: 0, niveau: "moyen" },
       { q: "Quelle fête celtique du 31 octobre au 1er novembre, ancêtre d'Halloween, célébrait le retour des morts parmi les vivants ?", reponses: ["Samhain", "Beltane", "Lughnasadh", "Imbolc"], bonne: 0, niveau: "moyen" },
       { q: "Quelle fête celtique du 1er mai célébrait le retour de l'été et a donné son nom au mois de mai ?", reponses: ["Beltane", "Samhain", "Yule", "Ostara"], bonne: 0, niveau: "moyen" },
-      { q: "Comment s'appelle la lance légendaire de Cú Chulainn, qui ne manque jamais sa cible ?", reponses: ["La Gae Bolg", "La Gae Buide", "La lance d'Odin", "L'épée de Fergus"], bonne: 0, niveau: "moyen" },
+      { q: "Comment s'appelle la lance légendaire de Cú Chulainn, qui ne manque jamais sa target ?", reponses: ["La Gae Bolg", "La Gae Buide", "La lance d'Odin", "L'épée de Fergus"], bonne: 0, niveau: "moyen" },
       { q: "Quel petit être irlandais au bonnet rouge garde un trésor d'or au pied d'un arc-en-ciel ?", reponses: ["Le leprechaun", "Le farfadet", "Le korrigan", "Le lutin"], bonne: 0, niveau: "moyen" },
       { q: "Quel alphabet antique des peuples celtiques était gravé de traits sur des pierres dressées ?", reponses: ["L'ogham", "Le runique", "Le cunéiforme", "Le hiéroglyphe"], bonne: 0, niveau: "moyen" },
       { q: "Comment s'appelle la déesse sumérienne de l'amour et de la guerre, dont le grand temple dominait la ville d'Uruk ?", reponses: ["Inanna", "Ereshkigal", "Ninhursag", "Nanshe"], bonne: 0, niveau: "moyen" },

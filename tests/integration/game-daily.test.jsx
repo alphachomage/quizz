@@ -2,53 +2,50 @@
 // (identique pour tout le monde le même jour), 10 questions, pas de manche bonus.
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-
 import Game from '@features/game/Game.jsx';
-
 import { makeThemes, mulberry32, TEST_PREFS } from '../fixtures/questions.fixture.js';
-
 function currentQuestion() {
   return document.querySelector('.question').textContent.match(/Question (\S+) \?/)[1];
 }
-
-function repondreBonne() {
+function answerCorrect() {
   fireEvent.click(screen.getByText(`R${currentQuestion()}-0`));
 }
-
 function avancer() {
   act(() => {
     vi.advanceTimersByTime(2100);
   });
 }
-
 describe('quizz du jour (flux complet)', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.spyOn(Math, 'random').mockImplementation(mulberry32(11));
   });
-
   afterEach(() => {
     vi.useRealTimers();
     vi.restoreAllMocks();
   });
-
   it('10 questions seedées, 10 bonnes réponses, score 245 (20 x 10 + bonus de série)', () => {
     const themes = makeThemes(6, 10); // 180 questions brassées par le tirage seedé
-    const onTerminer = vi.fn();
+    const onFinish = vi.fn();
     render(
       <Game
-        config={{ mode: 'quotidien', theme: themes[0], tousThemes: themes, niveau: '2026-05-05', players: ['testeur'] }}
+        config={{
+          mode: 'quotidien',
+          theme: themes[0],
+          allThemes: themes,
+          niveau: '2026-05-05',
+          players: ['testeur'],
+        }}
         prefs={TEST_PREFS}
-        onTerminer={onTerminer}
+        onFinish={onFinish}
       />
     );
 
     // Le tirage du jour est déterministe : il dépend de la date, pas de Math.random.
     expect(screen.getByText(/Quizz du 2026-05-05/)).toBeTruthy();
-
     const gains = [];
     for (let i = 0; i < 10; i++) {
-      repondreBonne();
+      answerCorrect();
       const el = document.querySelector('.gain');
       gains.push(Number(el.textContent.match(/\+(\d+) pts/)[1]));
       avancer();
@@ -57,9 +54,8 @@ describe('quizz du jour (flux complet)', () => {
     // Pas de manche bonus en quotidien : 20 pts + bonus de série (0..9), pas de x1,5
     // (série de jours à 0 dans les tests).
     expect(gains).toEqual([20, 21, 22, 23, 24, 25, 26, 27, 28, 29]);
-
-    expect(onTerminer).toHaveBeenCalledTimes(1);
-    const res = onTerminer.mock.calls[0][0];
+    expect(onFinish).toHaveBeenCalledTimes(1);
+    const res = onFinish.mock.calls[0][0];
     expect(res.mode).toBe('quotidien');
     expect(res.scores).toEqual([245]);
     expect(res.bonnes).toEqual([10]);
