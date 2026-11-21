@@ -15,7 +15,7 @@ Chiffres du corpus : toujours `npm run count:questions`, jamais un nombre en dur
 | Sons & partage | `docs/sons-partage.md` | audio, vibrations, partage | `lib/sounds.js`, `lib/share.js`, `results/useShare.js` |
 | Sécurité | `docs/securite.md` | worker.js, données externes | CSP report-only, V2_ENABLED, CORS, 64 Ko, 429, hash timing-safe, WebSocket 101 |
 | Stockage D1 | `docs/stockage-d1.md` | persistance, V2 serveur | `lib/storage.js` (STORAGE_KEYS), `lib/repositories.js`, `lib/api.js`, migrations, `/api/*`, décision mobile |
-| Déploiement | `docs/deploiement.md` | publier, CI | 4 environnements (dev 5173 / preview 4173 / deploy:preview / deploy), CI, secrets |
+| Déploiement | `docs/deploiement.md` | publier | 4 environnements (dev 5173 / preview 4173 / deploy:preview / deploy), déploiement auto Cloudflare depuis `main` (Workers Builds, sans GitHub Action) |
 | Tests | `docs/tests.md` | ajouter un test | arborescence tests/, commandes par feature, couverture à seuils (ratchet) |
 | Méthodologie | `docs/methodologie.md` | git, review, subagents | branches + worktrees, review code+docs, décisions techniques documentées |
 | Mobile | `docs/mobile.md` | roadmap appli | Capacitor, PWA -> Android/iOS, stockage natif |

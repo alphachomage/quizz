@@ -67,8 +67,9 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
 13. Git : une branche `feature/<phase>-<slug>` par étape depuis `origin/main`, worktree
     dédié par sous-agent, review du diff (code + docs), merge sur `main`, push.
     Commits conventionnels (`feat:` `fix:` `perf:` `refactor:` `docs:` `chore:`).
-    CI : lint+tests+couverture+build sur chaque PR, deploy preview sur PR, deploy prod
-    auto sur `main`.
+    Pas de CI GitHub (supprimée) : Cloudflare déploie automatiquement chaque push sur
+    `main` (Workers Builds, aucun secret dans GitHub) ; les vérifications de la règle 11
+    se font en local avant chaque push.
 14. Pas de `console.log` dans `src/` (scripts/ exceptés), pas de code mort.
 
 ## Commandes
