@@ -7,9 +7,10 @@
 import { read, write, STORAGE_KEYS } from './storage.js';
 import { loadXp, themeLevel } from './xp.js';
 import { badgeStats } from './badges.js';
+import type { BadgeStats } from './badges.js';
 
 // [niveau 3, niveau 5, niveau 10] pour chaque thème (id du thème -> 3 titres)
-const TITLES_PER_THEME = {
+const TITLES_PER_THEME: Record<string, [string, string, string]> = {
   'culture-generale': ['Touche-à-tout', 'Érudit', 'Encyclopédie vivante'],
   'cinema-series': ['Fan de ciné', 'Cinéaste', 'Légende du 7e art'],
   musique: ['Mélomane', 'Oreille absolue', 'Virtuose'],
@@ -23,10 +24,17 @@ const TITLES_PER_THEME = {
   sciences: ['Apprenti savant', 'Chercheur', 'Prix Nobel'],
   'mangas-animes': ['Otaku', 'Sensei', 'Légende du manga'],
 };
-const TITLE_TIERS = [3, 5, 10];
+const TITLE_TIERS: number[] = [3, 5, 10];
+
+// Titre général (condition sur les stats globales).
+interface GeneralTitleDef {
+  id: string;
+  nom: string;
+  test: (s: BadgeStats) => boolean;
+}
 
 // 14 titres généraux (conditions sur les stats globales)
-const GENERAL_TITLES = [
+const GENERAL_TITLES: GeneralTitleDef[] = [
   {
     id: 'gen-parties-1',
     nom: 'Bleu',
@@ -99,11 +107,21 @@ const GENERAL_TITLES = [
   },
 ];
 
+// Titre calculé, avec son état débloqué et ses métadonnées d'affichage.
+export interface ComputedTitle {
+  id: string;
+  nom: string;
+  themeId: string | null;
+  palier: number | null;
+  general: boolean;
+  debloque: boolean;
+}
+
 // Liste complète des titres avec état débloqué (36 par thème + 14 généraux = 50).
-export function computeTitles() {
-  const xp = loadXp();
+export function computeTitles(): ComputedTitle[] {
+  const xp = loadXp() as Record<string, number>;
   const s = badgeStats();
-  const list = [];
+  const list: ComputedTitle[] = [];
   for (const [themeId, noms] of Object.entries(TITLES_PER_THEME)) {
     const niv = themeLevel(xp[themeId] || 0);
     TITLE_TIERS.forEach((palier, i) => {
@@ -130,10 +148,20 @@ export function computeTitles() {
   return list;
 }
 
+// Titre verrouillé le plus proche de son déblocage, avec sa progression.
+interface NextTitle {
+  id: string;
+  nom: string;
+  themeId: string;
+  current: number;
+  target: number;
+  pct: number;
+}
+
 // Le titre verrouillé le PLUS PROCHE de son déblocage (niveau de thème le plus avancé).
-function nextTitle() {
-  const xp = loadXp();
-  let best = null;
+function nextTitle(): NextTitle | null {
+  const xp = loadXp() as Record<string, number>;
+  let best: NextTitle | null = null;
   for (const [themeId, noms] of Object.entries(TITLES_PER_THEME)) {
     const niv = themeLevel(xp[themeId] || 0);
     for (let i = 0; i < TITLE_TIERS.length; i++) {
@@ -157,27 +185,30 @@ function nextTitle() {
 
 // --- Titre affiché sous la barre d'XP du profil ---
 export { nextTitle };
-export function activeTitleId() {
+export function activeTitleId(): string | null {
   try {
-    return read(STORAGE_KEYS.activeTitle, null);
+    return read(STORAGE_KEYS.activeTitle, null) as string | null;
   } catch {
     return null;
   }
 }
 
 // Sélectionne le titre à afficher (uniquement s'il est débloqué).
-export function setActiveTitle(id) {
+export function setActiveTitle(id: string): void {
   const t = computeTitles().find((x) => x.id === id);
   if (t && t.debloque) write(STORAGE_KEYS.activeTitle, id);
 }
 
 // Titre à afficher : celui choisi s'il est encore débloqué, sinon le plus haut palier débloqué.
-export function displayedTitle() {
+export function displayedTitle(): string | null {
   const list = computeTitles();
   const active = list.find((t) => t.id === activeTitleId());
   if (active && active.debloque) return active.nom;
   const debloques = list.filter((t) => t.debloque);
   if (debloques.length === 0) return null;
-  const perTheme = debloques.filter((t) => !t.general).sort((a, b) => b.palier - a.palier)[0];
+  // palier est toujours renseigné pour un titre de thème (jamais pour un titre général).
+  const perTheme = debloques
+    .filter((t) => !t.general)
+    .sort((a, b) => (b.palier ?? 0) - (a.palier ?? 0))[0];
   return (perTheme || debloques[debloques.length - 1]).nom;
 }

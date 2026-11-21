@@ -5,20 +5,47 @@
 
 import { currentOrigin } from './nav.js';
 
+// Données du quizz du jour à partager (niveau = date du jour pour le quizz quotidien).
+export interface SharePayload {
+  pseudo?: string | null;
+  date: string | null;
+  score: number;
+  bonnes: number;
+  total: number;
+  streak: number;
+}
+
+// Liens directs de partage, par réseau.
+interface ShareLinks {
+  x: string;
+  facebook: string;
+  whatsapp: string;
+  messenger: string;
+  messengerApp: string;
+}
+
+// Données du partage natif (équivalent local de ShareData de lib.dom, nommé localement
+// car ESLint no-undef ne résout pas les types globaux du DOM en TS).
+interface NativeShareData {
+  text?: string;
+  url?: string;
+  files?: File[];
+}
+
 // Texte du message de partage.
-function shareText({ pseudo, date, score, bonnes, total, streak }) {
+function shareText({ pseudo, date, score, bonnes, total, streak }: SharePayload): string {
   let t = `${pseudo || "Quelqu'un"} a marqué ${score} pts au Quizz du jour VoltQuiz du ${date} (${bonnes}/${total} bonnes réponses)`;
   if (streak > 1) t += ` — série de ${streak} jours (éclair x${streak})`;
   t += `. Peux-tu faire mieux ?`;
   return t;
 }
 export { shareText };
-export function appUrl() {
+export function appUrl(): string {
   return currentOrigin();
 }
 
 // Liens directs des réseaux (texte + URL pré-remplis).
-function shareLinks(text, url) {
+function shareLinks(text: string, url: string): ShareLinks {
   const t = encodeURIComponent(text);
   const u = encodeURIComponent(url);
   return {
@@ -34,13 +61,15 @@ function shareLinks(text, url) {
 // Image "story" 1080x1920 générée en direct, palette sobre (canvas = pas de var() CSS, valeurs en dur
 // à synchroniser avec src/styles/tokens.css) : fond #000000, carte #26262B, accent sable #D9D0B8.
 export { shareLinks };
-export async function storyImage({ pseudo, date, score, bonnes, total, streak }) {
+export async function storyImage({ pseudo, date, score, bonnes, total, streak }: SharePayload): Promise<File> {
   const L = 1080,
     H = 1920;
   const c = document.createElement('canvas');
   c.width = L;
   c.height = H;
-  const ctx = c.getContext('2d');
+  // getContext('2d') renvoie null seulement si le canvas est indisponible : on garde le comportement
+  // historique (échec explicite) plutôt qu'un retour silencieux.
+  const ctx = c.getContext('2d')!;
 
   // fond noir (60%)
   ctx.fillStyle = '#000000';
@@ -58,7 +87,7 @@ export async function storyImage({ pseudo, date, score, bonnes, total, streak })
 
   // éclair sable (10%) : polygone du logo, centré en haut de la carte
   ctx.fillStyle = '#D9D0B8';
-  const pts = [
+  const pts: [number, number][] = [
     [13.6, 1.5],
     [4.2, 13.6],
     [9.8, 13.6],
@@ -97,17 +126,25 @@ export async function storyImage({ pseudo, date, score, bonnes, total, streak })
   ctx.fillStyle = '#9C9C94';
   ctx.font = '600 34px Verdana, sans-serif';
   ctx.fillText('voltquiz — le quiz rapide', L / 2, H - 90);
-  const blob = await new Promise((r) => c.toBlob(r, 'image/png'));
+  const blob = await new Promise<Blob>((r) => c.toBlob((b) => r(b as Blob), 'image/png'));
   return new File([blob], 'voltquiz-quizz-du-jour.png', {
     type: 'image/png',
   });
 }
 
 // Partage natif (feuille de partage du téléphone/PC : stories, amis, etc.).
-export async function shareNative({ text: text, url, file: file }) {
+export async function shareNative({
+  text: text,
+  url,
+  file: file,
+}: {
+  text: string;
+  url: string;
+  file?: File | null;
+}): Promise<boolean> {
   if (!navigator.share) return false;
   try {
-    const data = {
+    const data: NativeShareData = {
       text: text,
       url,
     };
@@ -125,7 +162,7 @@ export async function shareNative({ text: text, url, file: file }) {
     return false; // annulé par l'utilisateur
   }
 }
-async function copyToClipboard(text) {
+async function copyToClipboard(text: string): Promise<boolean> {
   try {
     await navigator.clipboard.writeText(text);
     return true;

@@ -7,7 +7,8 @@
 // Les termes très courts (< 4 caractères) ne bloquent qu'en égalité exacte,
 // pour éviter les faux positifs.
 
-const LEET = {
+// Décodage leetspeak : chiffre/symbole -> lettre remplacée.
+const LEET: Record<string, string> = {
   0: 'o',
   1: 'i',
   3: 'e',
@@ -26,7 +27,7 @@ const LEET = {
   '£': 'l',
   '%': 'o',
 };
-export function normalizePseudo(p) {
+export function normalizePseudo(p: string): string {
   return (p || '')
     .toLowerCase()
     .normalize('NFD')
@@ -37,9 +38,15 @@ export function normalizePseudo(p) {
     .replace(/[^a-z0-9]/g, '');
 }
 
+// Terme bloqué avec sa catégorie (affichée dans le message d'erreur).
+interface BlockedTerm {
+  terme: string;
+  categorie: string;
+}
+
 // Liste de modération par catégorie. Les termes sont volontairement écrits tels quels :
 // c'est la liste qui permet de LES bloquer.
-const BLOCKLIST = [
+const BLOCKLIST: BlockedTerm[] = [
   // nazisme / suprémacisme / négationnisme
   {
     terme: 'nazi',
@@ -289,7 +296,7 @@ const BLOCKLIST = [
 ];
 
 // Retourne { terme, categorie } si le pseudo contient un terme bloqué, sinon null.
-export function trouverTermeBloque(pseudo) {
+export function trouverTermeBloque(pseudo: string): BlockedTerm | null {
   const n = normalizePseudo(pseudo);
   if (!n) return null;
   for (const { terme, categorie } of BLOCKLIST) {
@@ -312,7 +319,7 @@ export function trouverTermeBloque(pseudo) {
 }
 
 // Validation complète du pseudo. Retourne null si OK, sinon le message d'erreur.
-function isValidPseudo(pseudo) {
+function isValidPseudo(pseudo: string): string | null {
   if (!pseudo || pseudo.length < 3 || pseudo.length > 20) {
     return 'Le pseudo doit faire entre 3 et 20 caractères.';
   }

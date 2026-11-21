@@ -3,34 +3,45 @@
 // hash SHA-256 salé (crypto.subtle, dispo en local sur http://localhost).
 import { normalizePseudo, isValidPseudo } from './moderation.js';
 import { read, write, remove, STORAGE_KEYS } from './storage.js';
+import type { Account, Session } from './types.js';
+
+// Compte tel que persisté : le champ `date` historique est conservé tel quel.
+type StoredAccount = Account & { date?: string };
+
+// Session telle que persistée : le mode invité pose `guest: true` (champ historique).
+type StoredSession = Session & { guest?: boolean };
+
+// Résultat d'une création de compte ou d'une connexion.
+type AccountResult = { ok: true; pseudo: string } | { ok: false; error: string };
 
 // Guard crypto : crypto.subtle n'existe que dans un context sécurisé (HTTPS ou
 // localhost). Sur HTTP non-local, on renvoie une erreur claire au lieu de planter.
-function secureContext() {
+function secureContext(): boolean {
   return !!(
     globalThis.crypto &&
     globalThis.crypto.subtle &&
     typeof globalThis.crypto.randomUUID === 'function'
   );
 }
-export function loadAccounts() {
-  return read(STORAGE_KEYS.accounts, []) || [];
+export function loadAccounts(): StoredAccount[] {
+  // read() vient de storage.js (JS) : sa valeur par défaut est inférée `null`, d'où le cast.
+  return (read(STORAGE_KEYS.accounts, null) || []) as StoredAccount[];
 }
-function saveAccounts(list) {
+function saveAccounts(list: StoredAccount[]): void {
   write(STORAGE_KEYS.accounts, list);
 }
-export function listPseudos() {
+export function listPseudos(): string[] {
   return loadAccounts().map((c) => c.pseudo);
 }
-function pseudoExists(pseudo) {
+function pseudoExists(pseudo: string): boolean {
   const n = normalizePseudo(pseudo);
   return loadAccounts().some((c) => c.pseudoNormalise === n);
 }
 export { pseudoExists };
-function isValidEmail(email) {
+function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email || '');
 }
-async function hashPassword(password, sel) {
+async function hashPassword(password: string, sel: string): Promise<string> {
   const buf = await crypto.subtle.digest(
     'SHA-256',
     new TextEncoder().encode(`${sel}::${password}`)
@@ -39,7 +50,15 @@ async function hashPassword(password, sel) {
 }
 
 // Crée un compte local. Retourne { ok: true, pseudo } ou { ok: false, erreur }.
-export async function createAccount({ pseudo, email, password: password }) {
+export async function createAccount({
+  pseudo,
+  email,
+  password: password,
+}: {
+  pseudo: string;
+  email: string;
+  password: string;
+}): Promise<AccountResult> {
   if (!secureContext()) {
     return {
       ok: false,
@@ -92,7 +111,7 @@ export async function createAccount({ pseudo, email, password: password }) {
 }
 
 // Connexion : vérifie le hash du mot de passe. Retourne { ok, pseudo? , erreur? }.
-export async function connect(pseudo, password) {
+export async function connect(pseudo: string, password: string): Promise<AccountResult> {
   if (!secureContext()) {
     return {
       ok: false,
@@ -121,9 +140,9 @@ export async function connect(pseudo, password) {
     pseudo: account.pseudo,
   };
 }
-export function currentSession() {
+export function currentSession(): StoredSession | null {
   try {
-    return read(STORAGE_KEYS.session, null);
+    return read(STORAGE_KEYS.session, null) as StoredSession | null;
   } catch {
     return null;
   }
@@ -131,7 +150,7 @@ export function currentSession() {
 
 // Mode invité : pseudo automatique "user-xxxxxxx", session marquée invite:true.
 // Un invité joue tout de suite, mais SANS XP (compte ni thèmes), badges, titres ni leaderboard.
-export function startGuest() {
+export function startGuest(): string {
   const caracteres = 'abcdefghjkmnpqrstuvwxyz23456789';
   let alea = '';
   for (let i = 0; i < 7; i++) alea += caracteres[Math.floor(Math.random() * caracteres.length)];
@@ -143,14 +162,14 @@ export function startGuest() {
   });
   return pseudo;
 }
-function isGuest() {
+function isGuest(): boolean {
   const s = currentSession();
   return !!(s && s.guest);
 }
 
 // Avatar du compte connecté (dataURL stockée dans le compte).
 export { isGuest };
-export function currentAvatar() {
+export function currentAvatar(): string | null {
   const s = currentSession();
   if (!s) return null;
   if (s.avatar) return s.avatar;
@@ -159,7 +178,7 @@ export function currentAvatar() {
 }
 
 // Enregistre l'avatar (déjà validé et réduit) sur le compte + la session.
-export function setAvatar(pseudo, dataUrl) {
+export function setAvatar(pseudo: string, dataUrl: string): void {
   const accounts = loadAccounts();
   const c = accounts.find((x) => x.pseudoNormalise === normalizePseudo(pseudo));
   if (c) {
@@ -173,23 +192,23 @@ export function setAvatar(pseudo, dataUrl) {
       avatar: dataUrl,
     });
 }
-export function disconnect() {
+export function disconnect(): void {
   remove(STORAGE_KEYS.session);
 }
 
 // Tuto de bienvenue : affiché UNE SEULE FOIS par compte (première connexion).
 
-export function hasSeenTutorial(pseudo) {
+export function hasSeenTutorial(pseudo: string): boolean {
   try {
-    const vu = read(STORAGE_KEYS.tutorial, {}) || {};
+    const vu = (read(STORAGE_KEYS.tutorial, null) || {}) as Record<string, boolean>;
     return !!vu[normalizePseudo(pseudo)];
   } catch {
     return false;
   }
 }
-export function markTutorialSeen(pseudo) {
+export function markTutorialSeen(pseudo: string): void {
   try {
-    const vu = read(STORAGE_KEYS.tutorial, {}) || {};
+    const vu = (read(STORAGE_KEYS.tutorial, null) || {}) as Record<string, boolean>;
     vu[normalizePseudo(pseudo)] = true;
     write(STORAGE_KEYS.tutorial, vu);
   } catch {
