@@ -1,5 +1,6 @@
-// scoring.js — constantes du jeu, niveaux de difficulté, score arcade, manches.
+// scoring.ts — constantes du jeu, niveaux de difficulté, score arcade, manches.
 // Module PUR : aucune dépendance au stockage ni au DOM.
+import type { LevelId } from './types.js';
 
 export const SECONDS_PER_QUESTION = 10; // secondes par question
 export const SOLO_QUESTIONS = 10; // plafond de questions en solo (le pool réel peut être plus court)
@@ -7,8 +8,15 @@ export const DUEL_QUESTIONS = 6; // nombre de questions PAR JOUEUR en mode duel
 export const DAILY_QUESTIONS = 10; // questions du quizz du jour
 export const SURVIVAL_MAX = 30; // plafond de questions en mode survie (1re faute = fin)
 
+/** Un niveau de difficulté (utilisé en mode solo). */
+export interface Level {
+  id: LevelId;
+  nom: string;
+  couleur: string;
+}
+
 // Les 3 niveaux de difficulté (utilisés en mode solo).
-export const LEVELS = [
+export const LEVELS: Level[] = [
   {
     id: 'facile',
     nom: 'Facile',
@@ -25,11 +33,11 @@ export const LEVELS = [
     couleur: '#fb7185',
   },
 ];
-export function levelName(id) {
+export function levelName(id: string | null | undefined): string {
   const n = LEVELS.find((x) => x.id === id);
   return n ? n.nom : 'Tous niveaux'; // survie = tous niveaux mélangés (clé "mix")
 }
-function levelColor(id) {
+function levelColor(id: string | null | undefined): string {
   const n = LEVELS.find((x) => x.id === id);
   return n ? n.couleur : '#a78bfa';
 }
@@ -39,15 +47,21 @@ function levelColor(id) {
 // Faux ou temps écoulé : 0 pt. En manche bonus, les points sont doublés.
 // (max solo : 8x20 + 2x40 = 240 pts, hors bonus de série)
 export { levelColor };
-export function pointsFor(correct, secondsElapsed, bonus = false) {
+export function pointsFor(correct: boolean, secondsElapsed: number, bonus = false): number {
   if (!correct) return 0;
   const base = Math.max(10, 20 - Math.floor(secondsElapsed));
   return bonus ? base * 2 : base;
 }
 
+/** Manche d'une question : numéro de manche (1 à 3) et indicateur bonus (3e manche). */
+export interface RoundInfo {
+  round: number;
+  bonus: boolean;
+}
+
 // --- Structure en manches ---
 // Une partie = 3 manches ; la 3e manche est « bonus » (points x2).
-export function roundInfo(index, total) {
+export function roundInfo(index: number, total: number): RoundInfo {
   const taille = Math.ceil(total / 3);
   const round = Math.min(3, Math.floor(index / taille) + 1);
   return {
