@@ -4,30 +4,30 @@
 .signaler {
   display: flex;
   justify-content: center;
-  margin-top: 16px;
+  margin-top: var(--esp-16);
 }
 
 .btn-signaler {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: var(--esp-7);
   padding: 7px 14px;
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
   border: 1px solid var(--bordure);
   background: transparent;
-  color: #8f87b3;
+  color: var(--texte-doux);
   font-size: 0.82rem;
   cursor: pointer;
 }
 
 .btn-signaler:hover {
-  border-color: rgba(255, 93, 115, 0.5);
-  color: #ff8fa3;
+  border-color: var(--erreur-50);
+  color: var(--erreur-texte);
 }
 
 .btn-signaler.actif {
-  border-color: #ff5d73;
-  background: rgba(255, 93, 115, 0.14);
-  color: #ff8fa3;
+  border-color: var(--erreur-fort);
+  background: var(--erreur-14);
+  color: var(--erreur-texte);
   font-weight: 600;
 }

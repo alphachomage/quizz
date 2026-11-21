@@ -58,7 +58,7 @@ body.theme-clair :focus-visible { outline-color: #3A3A3A; }
 body.theme-clair .btn-principal:focus-visible, body.theme-clair .btn-petit:focus-visible,
 body.theme-clair .mode-tab:focus-visible, body.theme-clair .theme.actif:focus-visible,
 body.theme-clair .niveau-modal.actif:focus-visible, body.theme-clair .onglet.actif:focus-visible,
-body.theme-clair .filtre.actif:focus-visible { outline-color: #141414; }
+body.theme-clair .filtre.actif:focus-visible { outline-color: var(--texte-sur-accent); }
 
 /* --- prefers-reduced-motion : si l'OS demande moins d'animations, on les coupe --- */
 /* (complète le réglage manuel "Animations OFF" de l'appli) */

@@ -8,6 +8,7 @@ body.theme-clair {
   --carte: #ECECF1;
   --carte-2: #E2E2E9;
   --bordure: rgba(0, 0, 0, 0.14);
+  --bordure-fine: rgba(0, 0, 0, 0.1);
   --texte: #1A1A1A;
   --texte-doux: #595959;
   --texte-carte: #1A1A1A;
@@ -31,8 +32,8 @@ body.theme-clair {
 
 /* Accent sable (#D9D0B8) en fond -> texte et ic�nes fonc�s pour le contraste */
 .btn-principal, .onglet.actif, .filtre.actif, .record.top10, .avatar-defaut, .logo-marque, .tuto-icone {
-  color: #141414;
+  color: var(--texte-sur-accent);
 }
 .switch.on i {
-  background: #141414;
+  background: var(--texte-sur-accent);
 }
