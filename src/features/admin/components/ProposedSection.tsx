@@ -1,15 +1,27 @@
-// SectionProposees.jsx — vue admin : questions proposées par les joueurs, en attente de
+// ProposedSection.tsx — vue admin : questions proposées par les joueurs, en attente de
 // validation manuelle (elles deviennent jouables au clic sur valider).
+import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import { levelName } from '@lib/scoring.js';
+import type { Submission } from '@lib/types.js';
+
+interface ProposedSectionProps {
+  submissions: Submission[];
+  approvedCount: number;
+  themeName: (themeId: string) => string | undefined;
+  onApprove: (id: string) => void;
+  onDelete: (id: string) => void;
+  onExportApproved: () => void;
+}
+
 export default function ProposedSection({
-  submissions: submissions,
-  approvedCount: approvedCount,
+  submissions,
+  approvedCount,
   themeName,
-  onApprove: onApprove,
-  onDelete: onDelete,
-  onExportApproved: onExportApproved,
-}) {
+  onApprove,
+  onDelete,
+  onExportApproved,
+}: ProposedSectionProps): ReactElement {
   return (
     <>
       <h2
@@ -46,14 +58,14 @@ export default function ProposedSection({
               <button
                 className="btn-valider"
                 title="Valider : la question devient jouable et disparaît de cette liste"
-                onClick={() => onApprove(s.id)}
+                onClick={() => onApprove(s.id as string)}
               >
                 <Icon nom="check" taille={16} />
               </button>
               <button
                 className="btn-suppr"
                 title="Supprimer cette proposition"
-                onClick={() => onDelete(s.id)}
+                onClick={() => onDelete(s.id as string)}
               >
                 <Icon nom="trash" taille={16} />
               </button>

@@ -1,8 +1,11 @@
-// ServerCard.jsx — carte "Serveur (V2)" du tableau de bord admin : interroge
+// ServerCard.tsx — carte "Serveur (V2)" du tableau de bord admin : interroge
 // /api/health (ouvert) et /api/stats (rooms KV, rapports CSP, hits 429) via le hook
 // useServerStats. V2 off ou API injoignable -> affichage dégradé, jamais d'erreur.
+import type { ReactElement, ReactNode } from 'react';
+import type { ServerEtat } from '../useServerStats.js';
 import MetricCard from './MetricCard.jsx';
-function row(nom, val) {
+
+function row(nom: string, val: ReactNode): ReactElement {
   return (
     <li key={nom}>
       <span className="metric-ligne-nom">{nom}</span>
@@ -10,7 +13,12 @@ function row(nom, val) {
     </li>
   );
 }
-export default function ServerCard({ etat }) {
+
+interface ServerCardProps {
+  etat: ServerEtat;
+}
+
+export default function ServerCard({ etat }: ServerCardProps): ReactElement {
   if (etat.statut === 'chargement') {
     return (
       <MetricCard
@@ -31,7 +39,8 @@ export default function ServerCard({ etat }) {
       />
     );
   }
-  const { health, stats } = etat;
+  // Ici statut = 'v2-inactive' | 'ok' : le health est toujours renseigné.
+  const { health } = etat;
   const hour = health.hour ? new Date(health.hour).toLocaleString('fr-FR') : null;
   const sous = `VoltQuiz ${health.version || '?'}${hour ? ` · ${hour}` : ''}`;
   if (etat.statut === 'v2-inactive') {
@@ -48,6 +57,8 @@ export default function ServerCard({ etat }) {
       </MetricCard>
     );
   }
+  // statut === 'ok' : les stats sont renseignées.
+  const stats = etat.stats;
   return (
     <MetricCard icone="globe" title="Serveur (V2)" value="V2 active" sous={sous}>
       <ul className="metric-liste">

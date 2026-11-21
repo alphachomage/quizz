@@ -1,8 +1,15 @@
-// RecordsCard.jsx — carte "Records" du tableau de bord admin : record global en valeur
+// RecordsCard.tsx — carte "Records" du tableau de bord admin : record global en valeur
 // principale + top 5 des records locaux (clé mode:niveau:themeId -> points).
+import type { ReactElement } from 'react';
 import { recordLabel } from '../dashboardCompute.js';
+import type { RecordEntry } from '../dashboardCompute.js';
 import MetricCard from './MetricCard.jsx';
-export default function RecordsCard({ top }) {
+
+interface RecordsCardProps {
+  top: RecordEntry[];
+}
+
+export default function RecordsCard({ top }: RecordsCardProps): ReactElement {
   const best = top[0] || null;
   return (
     <MetricCard

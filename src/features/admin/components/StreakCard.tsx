@@ -1,7 +1,14 @@
-// StreakCard.jsx — carte "Quizz du jour" du tableau de bord admin : série de jours
+// StreakCard.tsx — carte "Quizz du jour" du tableau de bord admin : série de jours
 // consécutifs en valeur principale + nombre de parties jouées aujourd'hui.
+import type { ReactElement } from 'react';
+import type { StreakMetrics } from '../dashboardCompute.js';
 import MetricCard from './MetricCard.jsx';
-export default function StreakCard({ streak }) {
+
+interface StreakCardProps {
+  streak: StreakMetrics;
+}
+
+export default function StreakCard({ streak }: StreakCardProps): ReactElement {
   return (
     <MetricCard
       icone="flame"

@@ -1,7 +1,18 @@
-// SectionSuggestions.jsx — vue admin : remontées des joueurs (bouton « Une suggestion ? »),
+// SuggestionsSection.tsx — vue admin : remontées des joueurs (bouton « Une suggestion ? »),
 // visibles UNIQUEMENT ici, jamais dans l'interface joueur.
+import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
-export default function SuggestionsSection({ suggestions, onDelete: onDelete }) {
+import type { StoredSuggestion } from '@lib/suggestions.js';
+
+interface SuggestionsSectionProps {
+  suggestions: StoredSuggestion[];
+  onDelete: (id: string) => void;
+}
+
+export default function SuggestionsSection({
+  suggestions,
+  onDelete,
+}: SuggestionsSectionProps): ReactElement {
   return (
     <>
       <h2
@@ -25,7 +36,8 @@ export default function SuggestionsSection({ suggestions, onDelete: onDelete }) 
               <div className="prop-corps">
                 <span className="prop-texte-suggestion">{s.text}</span>
                 <span className="prop-meta">
-                  par <strong>{s.pseudo}</strong> · {new Date(s.date).toLocaleString('fr-FR')}
+                  par <strong>{s.pseudo}</strong> ·{' '}
+                  {new Date(s.date || '').toLocaleString('fr-FR')}
                 </span>
               </div>
               <button
