@@ -41,8 +41,10 @@ manifest, JSON ; `public, max-age=31536000, immutable` sur `/assets/*` (hashés)
   envoyé que dans le header (jamais en clair dans un body).
 - **Namespacing par compte** : `/api/kv/<cle>` stocke en réalité `<pseudo>:<cle>` en
   table `sync_client` — un client ne lit/écrit que son propre espace. Idem pour
-  `parties`, `records`, `xp`, `soumissions` : le **pseudo est forcé = celui du token**
-  (jamais celui du body), un client ne peut pas usurper un autre compte.
+  `parties` (colonne `pseudo`), `records` (clé `<pseudo>:<cle>`), `xp`
+  (`pseudo_theme = <pseudo>:<themeId>` ; le segment d'URL `/api/xp/<pseudo>/…` est
+  ignoré côté serveur) et `soumissions` : le **pseudo est forcé = celui du token**
+  (jamais celui du body ni de l'URL), un client ne peut pas usurper un autre compte.
 - **Routes ouvertes** (pas de session) : `/api/ping`, `/api/health`, `/api/csp-report`,
   `/api/auth/*`. Toutes les autres (`/api/kv/*`, `/api/parties`, `/api/records`,
   `/api/xp`, `/api/soumissions`, `/api/room*`, `/api/duel/*`, `/api/admin/check`,

@@ -347,7 +347,11 @@ async function routeRecords(
   const s = await exigerSession(request, env);
   if (s instanceof Response) return s;
   if (request.method === 'GET' && key) {
-    const row = await env.DB.prepare('SELECT * FROM records WHERE cle = ?').bind(key).first();
+    // Clé namespacée par compte (comme sync_client) : un joueur ne lit que SES records.
+    const row = await env.DB
+      .prepare('SELECT * FROM records WHERE cle = ?')
+      .bind(`${normalizePseudo(s.pseudo)}:${key}`)
+      .first();
     return json({
       ok: true,
       record: row || null,
@@ -360,8 +364,14 @@ async function routeRecords(
     await env.DB.prepare(
       'INSERT INTO records (cle, valeur, pseudo, date) VALUES (?, ?, ?, ?) ON CONFLICT(cle) DO UPDATE SET valeur = excluded.valeur, pseudo = excluded.pseudo, date = excluded.date'
     )
-      // pseudo forcé = compte du token (pas celui du body).
-      .bind(body.key, body.value, normalizePseudo(s.pseudo), new Date().toISOString())
+      // cle namespacée + pseudo forcé = compte du token (jamais celui du body :
+      // un client ne peut ni lire ni écraser les records d'un autre compte).
+      .bind(
+        `${normalizePseudo(s.pseudo)}:${body.key}`,
+        body.value,
+        normalizePseudo(s.pseudo),
+        new Date().toISOString()
+      )
       .run();
     return json({
       ok: true,
@@ -373,15 +383,16 @@ async function routeXp(
   request: Request,
   env: Env,
   url: URL,
-  pseudo: string | null,
   themeId: string | null
 ): Promise<Response> {
   if (!env.DB) return jsonError('Base non configurée.', 503);
   const s = await exigerSession(request, env);
   if (s instanceof Response) return s;
-  if (request.method === 'GET' && pseudo && themeId) {
+  if (request.method === 'GET' && themeId) {
+    // pseudo forcé = compte du token : le segment d'URL /api/xp/<pseudo>/... est
+    // conservé pour compatibilité client mais IGNORÉ (pas de lecture cross-joueurs).
     const row = await env.DB.prepare('SELECT xp FROM xp WHERE pseudo_theme = ?')
-      .bind(`${normalizePseudo(pseudo)}:${themeId}`)
+      .bind(`${normalizePseudo(s.pseudo)}:${themeId}`)
       .first<{ xp: number }>();
     return json({
       ok: true,
@@ -617,16 +628,12 @@ export async function apiRouter(request: Request, env: Env, url: URL): Promise<R
     return routeRecords(request, env, url, decodeURIComponent(p.slice('/api/records/'.length)));
   if (p === '/api/records') return routeRecords(request, env, url, null);
   if (p.startsWith('/api/xp/')) {
-    const [, , , pseudo, themeId] = p.split('/');
-    return routeXp(
-      request,
-      env,
-      url,
-      decodeURIComponent(pseudo || ''),
-      decodeURIComponent(themeId || '')
-    );
+    // /api/xp/<pseudo>/<themeId> : le segment <pseudo> est ignoré côté serveur
+    // (le pseudo vient du token Bearer dans routeXp — jamais de la confiance à l'URL).
+    const [, , , , themeId] = p.split('/');
+    return routeXp(request, env, url, decodeURIComponent(themeId || ''));
   }
-  if (p === '/api/xp') return routeXp(request, env, url, null, null);
+  if (p === '/api/xp') return routeXp(request, env, url, null);
   if (p === '/api/room' || p === '/api/room/rejoindre' || p.startsWith('/api/room/')) {
     const segment =
       p === '/api/room'
