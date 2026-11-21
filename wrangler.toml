@@ -6,16 +6,16 @@
 # compilés dans dist/client et le Worker dans dist/voltquiz.
 
 name = "voltquiz"                  # -> https://voltquiz.joris-leo81.workers.dev
-main = "worker.js"                 # point d'entrée du Worker
+main = "worker.ts"                 # point d'entrée du Worker (esbuild compile le TS nativement)
 compatibility_date = "2025-11-19"  # date de compatibilité de l'API Workers
 
 [assets]
 directory = "./public"             # assets servis tels quels en dev (icônes, JSON...)
-binding = "ASSETS"                 # utilisé dans worker.js via env.ASSETS
-run_worker_first = true            # CHAQUE requête passe d'abord par worker.js
+binding = "ASSETS"                 # utilisé dans worker.ts via env.ASSETS
+run_worker_first = true            # CHAQUE requête passe d'abord par worker.ts
                                    # (sinon Cloudflare sert les fichiers directement)
 
-# Variables d'environnement du Worker (lue dans worker.js via env.*)
+# Variables d'environnement du Worker (lue dans worker.ts via env.*)
 
 # --- Bindings V2 (préparés, activés quand la V2 démarre) ---
 # D1 = base de données serveur (comptes, parties, records, XP, soumissions, kv).
