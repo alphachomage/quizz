@@ -1,5 +1,12 @@
-// ChampReponses.jsx — saisie des 2 à 4 réponses proposées, avec le radio « bonne réponse ».
-export default function AnswersField({ reponses, bonne, setReponse, setBonne }) {
+// AnswersField.tsx — saisie des 2 à 4 réponses proposées, avec le radio « bonne réponse ».
+interface AnswersFieldProps {
+  reponses: string[];
+  bonne: number | null;
+  setReponse: (index: number, valeur: string) => void;
+  setBonne: (index: number) => void;
+}
+
+export default function AnswersField({ reponses, bonne, setReponse, setBonne }: AnswersFieldProps) {
   return (
     <div className="champ">
       <label>Les réponses (2 à 4) — coche la bonne</label>

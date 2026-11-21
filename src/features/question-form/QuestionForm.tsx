@@ -1,11 +1,27 @@
 import { useEffect, useMemo, useState } from 'react';
+import type { CSSProperties } from 'react';
 import Icon, { Bars } from '@shared/ui/Icon.jsx';
 import { LEVELS } from '@lib/scoring.js';
 import { loadXp, themeLevel } from '@lib/xp.js';
 import { SUBMISSION_LEVEL_THRESHOLD } from '@lib/submissions.js';
 import { buildIndex, trouverSimilairesIndex, THRESHOLD_SIMILAR } from '@lib/similarity.js';
+import type { LevelId, Submission, TaggedQuestion, Theme } from '@lib/types.js';
 import SimilarityAlert from './components/SimilarityAlert.jsx';
 import AnswersField from './components/AnswersField.jsx';
+
+// Une question similaire trouvée dans l'index (question d'origine + score 0..1).
+// Défini localement car similarity.ts ne l'exporte pas (type interne).
+interface SimilarHit {
+  question: TaggedQuestion;
+  score: number;
+}
+
+interface QuestionFormProps {
+  themes: Theme[] | null;
+  allQuestions: TaggedQuestion[];
+  onAdd: (q: Submission) => void;
+  onCancel: () => void;
+}
 
 // Formulaire « Proposer une question ».
 // À la validation, on compare la question à TOUTES les questions connues
@@ -16,18 +32,20 @@ export default function QuestionForm({
   allQuestions: allQuestions,
   onAdd: onAdd,
   onCancel: onCancel,
-}) {
+}: QuestionFormProps) {
   const xp = loadXp();
-  const levelOf = (id) => themeLevel(xp[id] || 0);
-  const premierDebloque = themes.find((t) => levelOf(t.id) >= SUBMISSION_LEVEL_THRESHOLD);
-  const [themeId, setThemeId] = useState(premierDebloque?.id || themes[0]?.id || '');
-  const [niveau, setLevel] = useState('moyen');
+  const levelOf = (id: string): number => themeLevel(xp[id] || 0);
+  // `themes` vaut null pendant le chargement, mais l'écran n'est rendu qu'une fois les thèmes prêts.
+  const listeThemes = themes || [];
+  const premierDebloque = listeThemes.find((t) => levelOf(t.id) >= SUBMISSION_LEVEL_THRESHOLD);
+  const [themeId, setThemeId] = useState(premierDebloque?.id || listeThemes[0]?.id || '');
+  const [niveau, setLevel] = useState<LevelId>('moyen');
   const [text, setText] = useState('');
-  const [reponses, setReponses] = useState(['', '', '', '']);
-  const [bonne, setBonne] = useState(null); // index dans le tableau `reponses`
+  const [reponses, setReponses] = useState<string[]>(['', '', '', '']);
+  const [bonne, setBonne] = useState<number | null>(null); // index dans le tableau `reponses`
   const [info, setInfo] = useState('');
   const [error, setError] = useState('');
-  const [avertissement, setAvertissement] = useState(null); // [{ question, score }]
+  const [avertissement, setAvertissement] = useState<SimilarHit[] | null>(null); // [{ question, score }]
 
   // Index de similarité pré-calculé UNE FOIS pour les 13 000+ questions connues :
   // recalculer la normalisation de tout le corpus à chaque frappe serait trop lent.
@@ -45,10 +63,10 @@ export default function QuestionForm({
     const res = trouverSimilairesIndex(liveText, indexSim, THRESHOLD_SIMILAR, 1);
     return res.length > 0 ? res[0] : null;
   }, [liveText, indexSim]);
-  function setReponse(i, v) {
+  function setReponse(i: number, v: string): void {
     setReponses((r) => r.map((x, j) => (j === i ? v : x)));
   }
-  function validate() {
+  function validate(): string | null {
     if (!themeId) return 'Choisis un thème.';
     if (levelOf(themeId) < SUBMISSION_LEVEL_THRESHOLD) {
       return `Il faut être niveau ${SUBMISSION_LEVEL_THRESHOLD} dans ce thème pour proposer une question (tu es niv. ${levelOf(themeId)}). Joue pour gagner de l'XP !`;
@@ -59,7 +77,7 @@ export default function QuestionForm({
     if (bonne === null || reponses[bonne].trim() === '') return 'Coche la bonne réponse.';
     return null;
   }
-  function soumettre() {
+  function soumettre(): void {
     const err = validate();
     if (err) {
       setError(err);
@@ -74,10 +92,11 @@ export default function QuestionForm({
     }
     add();
   }
-  function add() {
+  function add(): void {
     const rep = reponses.map((r) => r.trim());
     const filtrees = rep.filter((r) => r !== '');
-    const bonneFiltre = filtrees.indexOf(rep[bonne]); // index dans la liste nettoyée
+    // `bonne` est forcément renseigné ici : add() n'est appelée qu'après un validate() concluant.
+    const bonneFiltre = filtrees.indexOf(rep[bonne ?? -1]); // index dans la liste nettoyée
     onAdd({
       themeId,
       q: text.trim(),
@@ -118,7 +137,7 @@ export default function QuestionForm({
       <div className="champ">
         <label>Thème</label>
         <select value={themeId} onChange={(e) => setThemeId(e.target.value)}>
-          {themes.map((t) => {
+          {listeThemes.map((t) => {
             const n = levelOf(t.id);
             const bloque = n < SUBMISSION_LEVEL_THRESHOLD;
             return (
@@ -143,9 +162,11 @@ export default function QuestionForm({
               key={n.id}
               type="button"
               className={niveau === n.id ? 'niveau actif' : 'niveau'}
-              style={{
-                '--couleur': n.couleur,
-              }}
+              style={
+                {
+                  '--couleur': n.couleur,
+                } as CSSProperties
+              }
               onClick={() => setLevel(n.id)}
             >
               <Bars actives={i + 1} couleur={n.couleur} />
