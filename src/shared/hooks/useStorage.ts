@@ -1,12 +1,15 @@
-// shared/hooks/useStockage.js — hook réactif sur une clé du stockage.
+// shared/hooks/useStorage.ts — hook réactif sur une clé du stockage.
 // Lit via lib/storage.js (lire) et se met à jour à chaque écriture (notify)
 // ou à chaque événement 'storage' (autre onglet du même navigateur).
 import { useCallback, useSyncExternalStore } from 'react';
 import { read, subscribe } from '@lib/storage.js';
-export function useStorage(key, defaultValue = null) {
-  const readCurrent = useCallback(() => read(key, defaultValue), [key, defaultValue]);
+
+// Hook réactif générique sur une clé du stockage : la valeur lue est `T`
+// (ou la chaîne brute de l'ancien format, ou `defaultValue`).
+export function useStorage<T = unknown>(key: string, defaultValue: T | null = null): T | string | null {
+  const readCurrent = useCallback(() => read<T>(key, defaultValue), [key, defaultValue]);
   return useSyncExternalStore(
-    useCallback((onChange) => {
+    useCallback((onChange: () => void) => {
       const desabo = subscribe(onChange);
       window.addEventListener('storage', onChange);
       return () => {

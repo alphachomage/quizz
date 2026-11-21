@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import Modal from '@shared/ui/Modal.jsx';
 import { addSuggestion } from '@lib/suggestions.js';
@@ -7,10 +8,15 @@ import { addSuggestion } from '@lib/suggestions.js';
 // part dans localStorage (voltquiz_suggestions) et n'est visible QUE dans la
 // vue admin (?admin=1). Le joueur ne voit jamais la liste, juste un merci.
 
-export default function Suggestions({ pseudo, onClose: onClose }) {
+interface SuggestionsProps {
+  pseudo: string;
+  onClose: () => void;
+}
+
+export default function Suggestions({ pseudo, onClose }: SuggestionsProps): ReactElement {
   const [text, setText] = useState('');
   const [envoyee, setEnvoyee] = useState(false);
-  function send() {
+  function send(): void {
     const t = text.trim();
     if (!t) return;
     addSuggestion(t, pseudo);

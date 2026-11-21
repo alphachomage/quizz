@@ -2,27 +2,44 @@
 // Si un composant plante pendant le rendu, on affiche un écran de secours
 // en français (palette sobre, aucun emoji) au lieu d'un écran noir.
 import { Component } from 'react';
+import type { ReactNode } from 'react';
 import { reloadPage } from '@lib/nav.js';
-export default class ErrorBoundary extends Component {
-  constructor(props) {
+
+interface ErrorBoundaryProps {
+  children: ReactNode;
+}
+
+interface ErrorBoundaryState {
+  error: Error | null;
+}
+
+// Détail d'erreur conservé pour le diagnostic (champ de classe, comme dans la version JS).
+interface ErrorDetail {
+  message: string;
+  composant?: string;
+}
+
+export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  private detail: ErrorDetail | null = null;
+  constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = {
       error: null,
     };
   }
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
     return {
       error: error,
     };
   }
-  componentDidCatch(error, info) {
+  componentDidCatch(error: Error, info?: { componentStack?: string }): void {
     // Détail de l'erreur conservé pour le diagnostic (pas de console en prod).
     this.detail = {
       message: String(error),
       composant: info?.componentStack,
     };
   }
-  render() {
+  render(): ReactNode {
     if (this.state.error) {
       return (
         <div

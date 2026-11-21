@@ -3,15 +3,25 @@
 // (Tab boucle dans la modale), focus sur le 1er élément à l'ouverture et
 // restauration du focus précédent à la fermeture. Clic sur le voile = fermer.
 import { useEffect, useRef } from 'react';
+import type { KeyboardEvent as ReactKeyboardEvent, ReactElement, ReactNode } from 'react';
+
 const SELECTEUR_FOCUS = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
-export default function Modal({ title, onClose: onClose, classe, children }) {
-  const ref = useRef(null);
-  const focusAvant = useRef(null);
+
+interface ModalProps {
+  title?: string;
+  onClose: () => void;
+  classe?: string;
+  children: ReactNode;
+}
+
+export default function Modal({ title, onClose, classe, children }: ModalProps): ReactElement {
+  const ref = useRef<HTMLDivElement>(null);
+  const focusAvant = useRef<HTMLElement | null>(null);
   useEffect(() => {
-    focusAvant.current = document.activeElement;
-    const premier = ref.current?.querySelector(SELECTEUR_FOCUS);
+    focusAvant.current = document.activeElement as HTMLElement | null;
+    const premier = ref.current?.querySelector<HTMLElement>(SELECTEUR_FOCUS);
     if (premier) premier.focus();
-    const onKey = (e) => {
+    const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
     document.addEventListener('keydown', onKey);
@@ -22,9 +32,9 @@ export default function Modal({ title, onClose: onClose, classe, children }) {
   }, [onClose]);
 
   // Piège à focus : Tab / Maj+Tab bouclent dans la modale.
-  function onKeyDown(e) {
+  function onKeyDown(e: ReactKeyboardEvent<HTMLDivElement>): void {
     if (e.key !== 'Tab' || !ref.current) return;
-    const focusables = ref.current.querySelectorAll(SELECTEUR_FOCUS);
+    const focusables = ref.current.querySelectorAll<HTMLElement>(SELECTEUR_FOCUS);
     if (!focusables.length) return;
     const premier = focusables[0];
     const last = focusables[focusables.length - 1];
