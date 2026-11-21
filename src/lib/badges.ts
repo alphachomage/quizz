@@ -10,38 +10,101 @@ import { loadXp, themeLevel } from './xp.js';
 import { loadApproved, loadSubmissions } from './submissions.js';
 import { currentDailyStreak } from './streak.js';
 
+// Joueur d'une partie persistée dans l'historique (lib/game-history.js).
+interface StoredGamePlayer {
+  nom?: string;
+  score?: number;
+  bonnes?: number;
+}
+
+// Partie telle que persistée dans l'historique local.
+interface StoredGame {
+  id?: string;
+  date?: string;
+  mode?: string;
+  niveau?: string | null;
+  themeId?: string;
+  themeName?: string;
+  total?: number;
+  players?: StoredGamePlayer[];
+  scores?: number[];
+  bonnes?: number[];
+  details?: unknown[];
+}
+
+// Données injectables dans badgeStats (tests / recalcul ciblé depuis l'accueil).
+interface BadgeStatsInput {
+  games?: StoredGame[];
+  records?: Record<string, number>;
+  xp?: Record<string, number>;
+}
+
 // Statistiques agrégées servant aux conditions des badges.
-export function badgeStats(data) {
-  const games = data?.games ?? loadGames();
-  const records = data?.records ?? loadRecords();
-  const xp = data?.xp ?? loadXp();
+export interface BadgeStats {
+  games: number;
+  repondues: number;
+  bonnes: number;
+  successPct: number;
+  points: number;
+  perfectSolo: boolean;
+  duelsWon: number;
+  dailyGames: number;
+  playedThemes: number;
+  recordSolo: number;
+  recordSurvie: number;
+  recordDuel: number;
+  maxNiveauTheme: number;
+  nbThemesNiv3: number;
+  dailyStreak: number;
+  nbProposees: number;
+  approvedCount: number;
+}
+
+// Définition d'un badge : test(s) reçoit les stats agrégées.
+interface BadgeDef {
+  id: string;
+  nom: string;
+  desc: string;
+  icone: string;
+  test: (s: BadgeStats) => boolean;
+}
+
+// Badge calculé (définition + état débloqué).
+export type ComputedBadge = BadgeDef & { debloque: boolean };
+
+// Statistiques agrégées servant aux conditions des badges.
+export function badgeStats(data?: BadgeStatsInput): BadgeStats {
+  const games = data?.games ?? (loadGames() as StoredGame[]);
+  const records = data?.records ?? (loadRecords() as Record<string, number>);
+  const xp = data?.xp ?? (loadXp() as Record<string, number>);
   let repondues = 0;
   let bonnes = 0;
   let points = 0;
   let perfectSolo = false;
   let duelsWon = 0;
   let dailyGames = 0;
-  const playedThemes = new Set();
+  const playedThemes = new Set<string>();
   for (const p of games) {
-    const nbJ = (p.players || []).length || 1;
+    const players = p.players || [];
+    const nbJ = players.length || 1;
     repondues += (p.total || 0) * nbJ;
-    for (const j of p.players || []) {
+    for (const j of players) {
       bonnes += j.bonnes || 0;
       points += j.score || 0;
     }
     if (p.themeId && p.themeId !== 'tous') playedThemes.add(p.themeId);
-    if (p.mode === 'solo' && p.total >= 10 && (p.players || []).some((j) => j.bonnes === p.total))
+    if (p.mode === 'solo' && (p.total || 0) >= 10 && players.some((j) => j.bonnes === p.total))
       perfectSolo = true;
     if (
       p.mode === 'duel' &&
-      (p.players || []).length === 2 &&
-      p.players[0].score > p.players[1].score
+      players.length === 2 &&
+      (players[0].score || 0) > (players[1].score || 0)
     )
       duelsWon += 1;
     if (p.mode === 'quotidien') dailyGames += 1;
   }
   const successPct = repondues ? Math.round((bonnes / repondues) * 100) : 0;
-  const maxRecord = (prefix) =>
+  const maxRecord = (prefix: string): number =>
     Math.max(
       0,
       ...Object.entries(records)
@@ -74,9 +137,12 @@ export function badgeStats(data) {
 
 // Offset des compteurs de soumissions enregistré lors d'un reset de progression
 // (clé posée dans storage.js — literal ici pour éviter l'import circulaire).
-function resetSubmissionsFlag() {
+function resetSubmissionsFlag(): { proposees: number; validees: number } {
   try {
-    const o = read(STORAGE_KEYS.resetSubmissions, {}) || {};
+    const o = (read(STORAGE_KEYS.resetSubmissions, null) || {}) as {
+      proposees?: number;
+      validees?: number;
+    };
     return {
       proposees: o.proposees || 0,
       validees: o.validees || 0,
@@ -90,7 +156,7 @@ function resetSubmissionsFlag() {
 }
 
 // Les 30 premiers badges. test(s) reçoit les stats agrégées.
-export const BADGES = [
+export const BADGES: BadgeDef[] = [
   {
     id: 'parties-1',
     nom: 'Premier pas',
@@ -304,7 +370,7 @@ export const BADGES = [
 ];
 
 // Retourne la liste des badges avec leur état débloqué ou non.
-export function computeBadges() {
+export function computeBadges(): ComputedBadge[] {
   const s = badgeStats();
   return BADGES.map((b) => ({
     ...b,
@@ -313,7 +379,7 @@ export function computeBadges() {
 }
 
 // Progression vers chaque badge à seuil numérique (pour l'affichage « prochain badge »).
-const PROGRES_BADGES = {
+const PROGRES_BADGES: Record<string, (s: BadgeStats) => [number, number]> = {
   'parties-1': (s) => [s.games, 1],
   'parties-10': (s) => [s.games, 10],
   'parties-50': (s) => [s.games, 50],
@@ -343,9 +409,20 @@ const PROGRES_BADGES = {
   'validees-3': (s) => [s.approvedCount, 3],
 };
 
+// Badge verrouillé le plus proche de son déblocage, avec sa progression.
+interface NextBadge {
+  id: string;
+  nom: string;
+  desc: string;
+  icone: string;
+  current: number;
+  target: number;
+  pct: number;
+}
+
 // Le badge verrouillé le PLUS PROCHE de son déblocage (effet « reviens-y » sur l'accueil).
-function nextBadge(s = badgeStats()) {
-  let best = null;
+function nextBadge(s: BadgeStats = badgeStats()): NextBadge | null {
+  let best: NextBadge | null = null;
   for (const b of computeBadges()) {
     if (b.debloque) continue;
     const p = PROGRES_BADGES[b.id];
@@ -368,20 +445,20 @@ function nextBadge(s = badgeStats()) {
 
 // --- Badge favori affiché sur la carte profil (1 badge choisi parmi les débloqués) ---
 export { nextBadge };
-function favoriteBadgeId() {
+function favoriteBadgeId(): string | null {
   try {
-    return read(STORAGE_KEYS.favoriteBadge, null);
+    return read(STORAGE_KEYS.favoriteBadge, null) as string | null;
   } catch {
     return null;
   }
 }
-export function setFavoriteBadge(id) {
+export function setFavoriteBadge(id: string): void {
   const b = computeBadges().find((x) => x.id === id);
   if (b && b.debloque) write(STORAGE_KEYS.favoriteBadge, id);
 }
 
 // Badge favori si toujours débloqué, sinon null.
-export function favoriteBadge() {
+export function favoriteBadge(): ComputedBadge | null {
   const id = favoriteBadgeId();
   if (!id) return null;
   const b = computeBadges().find((x) => x.id === id);

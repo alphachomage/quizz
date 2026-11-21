@@ -10,7 +10,16 @@ const AVATAR_SIZE = 128; // l'avatar stocké est recadré en carré et réduit �
 const SKIN_THRESHOLD = 0.5; // ratio max de pixels "peau" accepté
 const MAX_HASH_DISTANCE = 6; // distance de Hamming max pour un hash bloqué
 
-function loadImage(dataUrl) {
+// Résultat de la validation d'un avatar.
+type AvatarResult = { ok: true; dataUrl: string; hash: string } | { ok: false; error: string };
+
+// Entrée de la liste bloquée (public/avatars-bloques.json).
+interface BlockedAvatarEntry {
+  hash?: string;
+  label?: string;
+}
+
+function loadImage(dataUrl: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
@@ -20,13 +29,14 @@ function loadImage(dataUrl) {
 }
 
 // Recadre en carré centré et réduit à `taille` px (JPEG qualité 0.85) -> dataURL compact pour localStorage.
-async function imageToResizedDataUrl(dataUrl, taille = AVATAR_SIZE) {
+async function imageToResizedDataUrl(dataUrl: string, taille: number = AVATAR_SIZE): Promise<string> {
   const img = await loadImage(dataUrl);
   const canvas = document.createElement('canvas');
   canvas.width = taille;
   canvas.height = taille;
   const cote = Math.min(img.width, img.height);
-  const ctx = canvas.getContext('2d');
+  // getContext('2d') : on garde le comportement historique (échec explicite si indisponible).
+  const ctx = canvas.getContext('2d')!;
   ctx.drawImage(
     img,
     (img.width - cote) / 2,
@@ -42,14 +52,14 @@ async function imageToResizedDataUrl(dataUrl, taille = AVATAR_SIZE) {
 }
 
 // Ratio de pixels "couleur peau" (heuristique classique RGB).
-async function ratioPeau(dataUrl, taille = 64) {
+async function ratioPeau(dataUrl: string, taille = 64): Promise<number> {
   const img = await loadImage(dataUrl);
   const canvas = document.createElement('canvas');
   canvas.width = taille;
   canvas.height = taille;
   const ctx = canvas.getContext('2d', {
     willReadFrequently: true,
-  });
+  })!;
   ctx.drawImage(img, 0, 0, taille, taille);
   const { data } = ctx.getImageData(0, 0, taille, taille);
   let peau = 0;
@@ -65,17 +75,17 @@ async function ratioPeau(dataUrl, taille = 64) {
 }
 
 // aHash 8×8 (64 bits) en hexadécimal.
-async function aHash(dataUrl, taille = 8) {
+async function aHash(dataUrl: string, taille = 8): Promise<string> {
   const img = await loadImage(dataUrl);
   const canvas = document.createElement('canvas');
   canvas.width = taille;
   canvas.height = taille;
   const ctx = canvas.getContext('2d', {
     willReadFrequently: true,
-  });
+  })!;
   ctx.drawImage(img, 0, 0, taille, taille);
   const { data } = ctx.getImageData(0, 0, taille, taille);
-  const gris = [];
+  const gris: number[] = [];
   for (let i = 0; i < data.length; i += 4) {
     gris.push(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
   }
@@ -84,7 +94,7 @@ async function aHash(dataUrl, taille = 8) {
   for (const v of gris) bits += v >= moy ? '1' : '0';
   return parseInt(bits, 2).toString(16).padStart(16, '0');
 }
-function hamming(a, b) {
+function hamming(a: string, b: string): number {
   let x = BigInt(`0x${a}`) ^ BigInt(`0x${b}`);
   let d = 0;
   while (x > 0n) {
@@ -96,7 +106,7 @@ function hamming(a, b) {
 
 // Validation complète d'un fichier image proposé comme avatar.
 // Retourne { ok: true, dataUrl, hash } ou { ok: false, erreur }.
-export async function validateAvatar(file) {
+export async function validateAvatar(file: File | null): Promise<AvatarResult> {
   if (!file)
     return {
       ok: false,
@@ -113,9 +123,9 @@ export async function validateAvatar(file) {
       ok: false,
       error: 'Image trop lourde (3 Mo maximum).',
     };
-  const dataUrl = await new Promise((resolve, reject) => {
+  const dataUrl = await new Promise<string>((resolve, reject) => {
     const r = new FileReader();
-    r.onload = () => resolve(r.result);
+    r.onload = () => resolve(r.result as string);
     r.onerror = reject;
     r.readAsDataURL(file);
   });
@@ -139,7 +149,7 @@ export async function validateAvatar(file) {
   const hash = await aHash(dataUrl);
   try {
     const res = await fetch('/avatars-bloques.json');
-    const list = res.ok
+    const list: { images?: BlockedAvatarEntry[] } = res.ok
       ? await res.json()
       : {
           images: [],

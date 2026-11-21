@@ -2,10 +2,19 @@
 // + vibrations (API Vibration, sur mobile surtout).
 // Tout est piloté par les préférences utilisateur (voir chargerPrefs dans lib/prefs.js).
 
-let context = null;
-function audio() {
+import type { Prefs } from './types.js';
+
+// Forme d'onde d'un oscillateur (sous-ensemble d'OscillatorType de lib.dom, nommé
+// localement car ESLint no-undef ne résout pas les types globaux du DOM en TS).
+type OndeType = 'sine' | 'square' | 'sawtooth' | 'triangle' | 'custom';
+
+let context: AudioContext | null = null;
+function audio(): AudioContext | null {
   if (!context) {
-    const AC = window.AudioContext || window.webkitAudioContext;
+    // webkitAudioContext n'existe pas dans lib.dom : préfixe legacy Safari, d'où le cast.
+    const AC =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!AC) return null;
     context = new AC();
   }
@@ -14,7 +23,13 @@ function audio() {
 }
 
 // Joue une petite séquence de notes. freq = hertz, duree en secondes.
-function note(freq, debut, duration, type = 'sine', volumeLevel = 0.18) {
+function note(
+  freq: number,
+  debut: number,
+  duration: number,
+  type: OndeType = 'sine',
+  volumeLevel = 0.18
+): void {
   const ctx = audio();
   if (!ctx) return;
   const osc = ctx.createOscillator();
@@ -31,7 +46,13 @@ function note(freq, debut, duration, type = 'sine', volumeLevel = 0.18) {
 }
 
 // Joue plusieurs notes en même temps (accord riche).
-function accord(freqs, debut, duration, type = 'sine', volumeLevel = 0.08) {
+function accord(
+  freqs: number[],
+  debut: number,
+  duration: number,
+  type: OndeType = 'sine',
+  volumeLevel = 0.08
+): void {
   for (const f of freqs) note(f, debut, duration, type, volumeLevel);
 }
 
@@ -39,7 +60,7 @@ function accord(freqs, debut, duration, type = 'sine', volumeLevel = 0.08) {
 // onde triangle douce dans les graves (aucun buzz), hauteur qui monte en glissando,
 // filtre passe-bas très sombre, double oscillateur légèrement detuné, et un gros
 // coup de basse (sine, une octave sous la note) pour le "boom".
-function chirp(f0, f1, debut, duration, volumeLevel = 0.22) {
+function chirp(f0: number, f1: number, debut: number, duration: number, volumeLevel = 0.22): void {
   const ctx = audio();
   if (!ctx) return;
   const t0 = ctx.currentTime + debut;
@@ -67,7 +88,7 @@ function chirp(f0, f1, debut, duration, volumeLevel = 0.22) {
   // gros coup de basse une octave en dessous
   note(f0 / 2, debut, duration * 1.2, 'sine', volumeLevel * 0.9);
 }
-const SOUNDS = {
+const SOUNDS: Record<string, () => void> = {
   // Bonne réponse : un "boum" grave montant (Sol3 -> Re4) + une octave de basse.
   correct: () => {
     chirp(196, 293.66, 0, 0.13);
@@ -157,7 +178,7 @@ const SOUNDS = {
 // Nom du son de bonne réponse selon la série en cours : plus la streak monte,
 // plus le son devient riche et satisfaisant (1-2 = chirp, 3-5 = 2 chirps montants,
 // 6-9 = 3 chirps + accord + étincelle, 10+ = 4 chirps + accord large + aigu cristallin).
-export function soundForStreak(streak) {
+export function soundForStreak(streak: number): string {
   if (streak >= 10) return 'streak10';
   if (streak >= 6) return 'streak6';
   if (streak >= 3) return 'streak3';
@@ -165,7 +186,7 @@ export function soundForStreak(streak) {
 }
 
 // nom : 'correct' | 'streak3' | 'streak6' | 'streak10' | 'faux' | 'tick' | 'clic' | 'fin' | 'record'
-function playSound(nom, prefs) {
+function playSound(nom: string, prefs?: Prefs | null): void {
   if (!prefs || prefs.sons === false) return;
   try {
     (SOUNDS[nom] || SOUNDS.clic)();
@@ -178,8 +199,11 @@ function playSound(nom, prefs) {
 // Progression Am7 - Fa maj7 - Do - Sol, oscillateurs triangle légèrement detunés,
 // une petite note aiguë pentatonique de temps en temps. Volume très bas, fondu in/out.
 export { playSound };
-let musicPlaying = null;
-export function startMusic(prefs) {
+interface MusicHandle {
+  stop: () => void;
+}
+let musicPlaying: MusicHandle | null = null;
+export function startMusic(prefs?: Prefs | null): void {
   if (!prefs || prefs.music === false) return;
   stopMusic();
   const ctx = audio();
@@ -188,7 +212,7 @@ export function startMusic(prefs) {
   master.gain.value = 0.0001;
   master.gain.linearRampToValueAtTime(0.055, ctx.currentTime + 1.8); // fondu entrant
   master.connect(ctx.destination);
-  const accords = [
+  const accords: number[][] = [
     [220.0, 261.63, 329.63, 392.0],
     // La m7
     [174.61, 220.0, 261.63, 349.23],
@@ -246,7 +270,7 @@ export function startMusic(prefs) {
     },
   };
 }
-export function stopMusic() {
+export function stopMusic(): void {
   if (musicPlaying) {
     musicPlaying.stop();
     musicPlaying = null;
@@ -254,7 +278,7 @@ export function stopMusic() {
 }
 
 // pattern : nombre (ms) ou tableau de ms (alternance vibre/pause)
-export function vibrate(pattern, prefs) {
+export function vibrate(pattern: number | number[], prefs?: Prefs | null): void {
   if (!prefs || prefs.vibrations === false) return;
   try {
     if (navigator.vibrate) navigator.vibrate(pattern);
