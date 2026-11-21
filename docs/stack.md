@@ -75,7 +75,7 @@ Alias Vite/Vitest : `@app` `@lib` `@shared` `@features` `@data` `@` -> `src/...`
 ## Politique TypeScript
 
 Tout le code applicatif est en **TypeScript** (`src/**/*.{ts,tsx}`, `strict: true` via
-`tsconfig.json`, vérifié par `npm run typecheck` en CI). Vite/esbuild compile le TS
+`tsconfig.json`, vérifié par `npm run typecheck`, règle 11). Vite/esbuild compile le TS
 nativement : aucun changement de build. Les 263 fichiers `src/data/questions-*.js`
 restent en **JS pur** (règle 7) : leur forme est déclarée dans `src/data/questions.d.ts`
 et validée au runtime par zod (`src/lib/schema.ts`, `z.infer` pour les types).

@@ -30,7 +30,7 @@
 ### 2026-11 — Passage à TypeScript (validé)
 
 **Décision** : tout `src/` passe en `.ts`/`.tsx` (migration incrémentale : `lib/` d'abord,
-puis `shared/`, `app/`, puis `features/`), `tsc --noEmit` strict en CI (`npm run typecheck`).
+puis `shared/`, `app/`, puis `features/`), `tsc --noEmit` strict, vérifié avant chaque merge (`npm run typecheck`, règle 11).
 Les 263 fichiers `src/data/questions-*.js` restent en JS (règle 7) avec le type déclaré dans
 `src/data/questions.d.ts` ; le schéma zod (`src/lib/schema.ts`) reste la source de vérité
 runtime (`z.infer` donne les types).
@@ -67,7 +67,6 @@ questions rédigés par sub-agents doivent passer un contrôle anti-doublons
 
 ## Déploiement
 
-La CI (`.github/workflows/ci.yml`) déploie automatiquement : preview sur chaque PR
-(`deploy:preview`), prod à chaque push sur `main` (secrets `CLOUDFLARE_API_TOKEN` /
-`CLOUDFLARE_ACCOUNT_ID`). Manuellement : `npm run deploy` / `npm run deploy:preview`
-(voir `docs/deploiement.md`).
+**Cloudflare Workers Builds** déploie automatiquement chaque push sur `main` en prod
+(pas de GitHub Action, aucun secret Cloudflare dans GitHub — voir `docs/deploiement.md`).
+Manuellement : `npm run deploy` / `npm run deploy:preview` (`npx wrangler login` en local).

@@ -5,6 +5,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 
 ## Non publié
 
+### Supprimé
+- GitHub Action `.github/workflows/ci.yml` (et `.github/`) : redondante — Cloudflare Workers Builds déploie automatiquement chaque push sur `main`. Plus aucun secret Cloudflare (`CLOUDFLARE_API_TOKEN`…) dans GitHub. Les vérifications (lint, typecheck, lint:arch, tests, build, `wrangler deploy --dry-run`) restent obligatoires en local avant chaque push (règle 11). Docs mises à jour : `docs/deploiement.md`, `docs/methodologie.md`, `docs/tests.md`, `docs/stack.md`, `docs/INDEX.md`, `AGENTS.md`.
+
+
 ### Modifié
 - **D1 activée** : `V2_ENABLED="true"` en prod et preview (`wrangler.toml`), mode stockage `d1` par défaut dans `src/lib/storage.ts` (échappatoire `?stockage=local`), scripts `npm run db:migrate:local` / `db:migrate`. Dev local = workerd + D1 locale sqlite (`.wrangler/state`), migrations locales appliquées. Smoke test local OK (POST/GET `/api/kv/*` sur D1, 400 sans `value`). Bug corrigé au passage : `routeKv` lisait `body.value` mais testait `'valeur' in body` -> 400/500 incohérents.
 

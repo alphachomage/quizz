@@ -1,4 +1,4 @@
-# Déploiement (Cloudflare Workers) + CI — 4 environnements
+# Déploiement (Cloudflare Workers) — 4 environnements
 
 | Environnement | Commande | URL / vars | V2_ENABLED |
 |---|---|---|---|
@@ -16,51 +16,39 @@ npm run dev             # DEV local -> http://localhost:5173
 npm run build           # build prod (dist/)
 npm run preview         # sert la prod en local -> http://localhost:4173
 npm run deploy:preview  # vite build + wrangler deploy --env preview (V2 activée)
-npm run deploy          # vite build + wrangler deploy (prod, V2 désactivée)
+npm run deploy          # vite build + wrangler deploy (prod, V2 activée)
 npx wrangler login      # première fois
-npx wrangler deploy --dry-run   # valide worker.js + wrangler.toml sans déployer
+npx wrangler deploy --dry-run   # valide worker.ts + wrangler.toml sans déployer
 npm run tail            # wrangler tail --format pretty (logs temps réel)
 ```
 
-- `worker.js` sert les assets (`env.ASSETS`, `run_worker_first = true`), pose les
-  headers de sécurité + le cache sur CHAQUE réponse, route `/api/*` (`worker-api.js`).
+- `worker.ts` sert les assets (`env.ASSETS`, `run_worker_first = true`), pose les
+  headers de sécurité + le cache sur CHAQUE réponse, route `/api/*` (`worker-api.ts`).
 - Repli SPA : URL sans extension -> `index.html` (sauf `/api/*`, `navigateFallbackDenylist`
-  dans `vite.config.js`).
+  dans `vite.config.ts`).
 - PWA : `vite-plugin-pwa`, `registerType: 'autoUpdate'`, precache
   `globPatterns: ['**/*.{js,css,html,png,json}']` (plafond 8 Mo,
   `maximumFileSizeToCacheInBytes`), `devOptions.enabled: false` (pas de SW en dev).
 
-## CI (`.github/workflows/ci.yml`)
+## Déploiement automatique (Cloudflare Workers Builds)
 
-- Job **lint-test-build** (chaque push/PR) : `npm ci` puis `npm run lint`,
-  `npm run lint:arch`, `npm run test:unit`, `npm run test:data`,
-  `npm run build`.
-- Job **integration** (chaque push/PR) : matrice `game: [game-solo, game-duel,
-  game-survival, game-daily]` -> `npx vitest run tests/integration/<game>.test.tsx`
-  en parallèle (`fail-fast: false`).
-- Job **coverage** (chaque push/PR) : `npm run test:coverage` — échoue si les seuils de
-  `vitest.config.js` ne sont pas atteints (ratchet) — puis upload de l'artifact
-  `coverage/`.
-- Job **deploy-preview** (PR uniquement, `needs: lint-test-build`) : `npm run
-  deploy:preview` -> environnement preview Cloudflare (V2_ENABLED=true).
-- Job **deploy** (push sur `main` uniquement, `needs: [lint-test-build, integration,
-  coverage]`, `environment: production`) : `npm run deploy` -> prod.
-- Secrets GitHub requis : `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` (sinon le job
-  deploy échoue avec une erreur explicite — étape « Vérifier les secrets Cloudflare »).
-  Procédure unique :
-  1. Cloudflare Dashboard > profil > **API Tokens** > *Create Token* > modèle
-     **Edit Cloudflare Workers** > Create Token -> copier la valeur.
-  2. L'**Account ID** est dans l'URL du dashboard Cloudflare
-     (`https://dash.cloudflare.com/<account_id>/...`) ou Dashboard > Workers & Pages > Overview (colonne de droite).
-  3. Sur GitHub : repo > **Settings > Secrets and variables > Actions** > *New repository
-     secret* -> `CLOUDFLARE_API_TOKEN` et `CLOUDFLARE_ACCOUNT_ID`.
+**Plus de GitHub Action** (`.github/` supprimé) : Cloudflare est connecté au dépôt GitHub
+(Workers & Pages > *Builds*) et **déploie automatiquement chaque push sur `main`** en
+production. Aucun secret Cloudflare n'est stocké dans GitHub.
+
+- Avant chaque push, en local : les vérifications de la règle 11 d'`AGENTS.md` (`lint`,
+  `typecheck`, `lint:arch`, `test`, `build`, `wrangler deploy --dry-run`) — c'est le
+  contrat de merge, il n'y a plus de filet CI côté GitHub.
+- Déploiement manuel de secours : `npm run deploy` / `npm run deploy:preview`, avec
+  `npx wrangler login` (navigateur, une fois) ou la variable d'environnement
+  `CLOUDFLARE_API_TOKEN` posée sur le poste local. **Ne jamais mettre ce token dans le dépôt.**
 - La prod doit répondre : `curl -s https://voltquiz.joris-leo81.workers.dev/api/ping`.
 
 ## Variables (`wrangler.toml`)
 
 `[vars]` (prod) : `ENVIRONMENT`, `APP_VERSION`, `CSP_REPORT_ONLY` (true = CSP en
 observation 48 h avec rapports sur `/api/csp-report`, puis false pour appliquer),
-`V2_ENABLED = "false"`, `ALLOWED_ORIGINS`.
+`V2_ENABLED = "true"`, `ALLOWED_ORIGINS`.
 `[env.preview]` : `ENVIRONMENT = "preview"`, `CSP_REPORT_ONLY = "true"`,
 `V2_ENABLED = "true"`.
 Bindings : `DB` (D1), `ROOMS` (KV), `DUEL_ROOMS` (Durable Object) — voir

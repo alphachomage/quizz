@@ -9,20 +9,20 @@ npm run test:game:duel / :survival / :daily   # game-duel / game-survival / game
 npm run test:unit        # tests/unit/**  ·  npm run test:integration  ·  npm run test:data
 npm run test:scoring / :draw / :similarity / :accounts
 npm run test:coverage    # couverture avec seuils appliqués (échoue si en dessous)
-npm run typecheck        # tsc --noEmit (strict TS) — aussi en CI
+npm run typecheck        # tsc --noEmit (strict TS) — avant chaque merge
 ```
 
 ## Couverture (seuils + ratchet)
 
 `vitest.config.js` (séparé de `vite.config.js`) définit les seuils appliqués par
-`npm run test:coverage` et en CI (job `coverage`) :
+`npm run test:coverage` avant chaque merge :
 
 - global : statements 45 %, branches 40 %, functions 48 %, lignes 50 % ;
 - `src/lib/**` : statements 50 %, branches 35 %, functions 55 %, lignes 50 % ;
 - exclus : `src/data/**` (validé par `test:data`) et `src/main.tsx` (bootstrap PWA).
 
 C'est un **plancher, à relever (ratchet)** quand la couverture monte — ne jamais le
-baisser. La CI échoue si les seuils ne sont pas atteints.
+baisser. La commande échoue si les seuils ne sont pas atteints.
 
 ## Arborescence
 
@@ -53,6 +53,7 @@ tests/
 - Seuls les tests `tests/data/` chargent le vrai corpus : les autres utilisent les fixtures.
 - Les scores exacts sont vérifiés (solo 285 pts/10 bonnes, duel 175/joueur,
   quotidien 245).
-- CI : `npm run lint` + `lint:arch` + `test:unit` + `test:data` + `build` +
-  matrice d'intégration + couverture sur chaque push/PR (voir `docs/deploiement.md`).
+- Avant chaque merge (règle 11, en local — plus de CI GitHub) : `npm run lint` +
+  `typecheck` + `lint:arch` + `test` + `build` + `wrangler deploy --dry-run`
+  (voir `docs/deploiement.md`).
 - Une seule façon de tester : Vitest (`npm test`). Plus de suite « legacy » séparée.
