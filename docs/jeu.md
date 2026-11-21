@@ -17,7 +17,7 @@ Toutes les constantes vivent dans `src/lib/scoring.ts`, `src/lib/draw.ts`,
 
 ## Minuteur, score, manches
 
-- `SECONDS_PER_QUESTION = 10` s. Le minuteur fait 1 setState/seconde (`useTimer.js`),
+- `SECONDS_PER_QUESTION = 10` s. Le minuteur fait 1 setState/seconde (`useTimer.ts`),
   la barre est lissée en CSS (`transition: width 1s linear`).
 - Bonne réponse : `pointsFor` = `max(10, 20 - floor(secondes))`, **0 si faux/temps
   écoulé**. Max solo sans streak : 240 pts (8x20 + 2x40).

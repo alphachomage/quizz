@@ -53,10 +53,10 @@ puis `curl localhost:5173/api/kv/test` -> `{"ok":true,"key":"test","value":42}`.
 - `worker-api.ts` : routes `/api/kv/:cle`, `/api/auth/*` (PBKDF2 210k), `/api/parties`,
   `/api/records`, `/api/xp`, `/api/room*` (KV), `/api/duel/:room` (WebSocket -> DO),
   `/api/ping|health`, `/api/csp-report`. Toutes : validation, body cap 64 Ko,
-  `Cache-Control: no-store`, rate limit 30/min/IP (dans `worker.js`), porte
+  `Cache-Control: no-store`, rate limit 30/min/IP (dans `worker.ts`), porte
   **V2_ENABLED** (hors routes de santé -> 503 si désactivé).
 - `durable-objects/DuelRoom.ts` : room de duel temps réel (présence + relais d'actions).
-- `src/lib/api.ts` : client fetch de ces routes (`kvGet`/`kvSet` utilisés par storage.js,
+- `src/lib/api.ts` : client fetch de ces routes (`kvGet`/`kvSet` utilisés par storage.ts,
   `authSignup`/`authLogin`, `apiAddGame`/`apiGames`, `apiRecord`/`apiSaveRecord`,
   `apiXp`/`apiSaveXp`, `apiCreateRoom`/`apiJoinRoom`/`apiRoom`, `apiDuelSocket`).
 
@@ -67,7 +67,7 @@ puis `curl localhost:5173/api/kv/test` -> `{"ok":true,"key":"test","value":42}`.
 
 - **Web (POC actuel)** : localStorage comme **cache local** (rapide, hors-ligne, zéro
   serveur). Coût : un PC = une « base », pas de synchro multi-appareils.
-- **Mobile (Capacitor natif, V3)** : remplacer la couche `storage.js` par
+- **Mobile (Capacitor natif, V3)** : remplacer la couche `storage.ts` par
   `@capacitor/preferences` (données simples) et `@capacitor/secure-storage` (données
   sensibles) — **jamais de hash ni de mot de passe en clair** dans Preferences. Le web
   garde localStorage ; le natif garde le même contrat `read`/`write`/`remove`.

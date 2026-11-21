@@ -33,7 +33,7 @@ Une responsabilité par carte, composants dans `src/features/admin/components/` 
 | `RecordsCard.tsx` | top 5 des records locaux depuis `loadRecords()` (clé `mode:niveau:themeId`) |
 | `ModerationCard.tsx` | signalements en attente, soumissions en attente, questions validées, suggestions, exclusions |
 | `StreakCard.tsx` | série du quizz du jour (`currentDailyStreak()`) + parties jouées aujourd'hui |
-| `StorageCard.tsx` | mode de stockage actuel (`local` ou `d1` via `?stockage=d1`), clés présentes (n/17), comptes locaux |
+| `StorageCard.tsx` | mode de stockage actuel (`d1` par défaut, `local` via `?stockage=local`), clés présentes (n/17), comptes locaux |
 | `ServerCard.tsx` | V2 : `/api/health` (ok, version, heure, `v2`), `/api/stats` (rooms KV ouvertes, rapports CSP reçus, hits rate-limit 429), lien vers `/api/health` |
 | `ActionsCard.tsx` | actions globales (voir ci-dessous) |
 
@@ -57,17 +57,17 @@ Dans `ActionsCard.tsx` (tableau de bord) :
 - **Remettre les scores à zéro** -> recharge avec `?reset=1` (`resetScores()`,
   `src/lib/reset.ts`, déclenché dans `App.tsx`).
 - **Reset compte complet** -> recharge avec `?resetcompte=1` (`resetProgress()`).
-- **Activer / désactiver le stockage D1** -> recharge avec / sans `?stockage=d1`
+- **Forcer le stockage local / revenir à D1** -> recharge avec / sans `?stockage=local`
   (`urlAvecParam` / `urlSansParam` de `src/app/urlFlags.ts` + `redirigerVers`) ;
   le mode courant est celui de `STORAGE_MODE` (`src/lib/storage.ts`).
 
 ## Métriques serveur (V2)
 
 - `GET /api/health` (route ouverte) renvoie désormais aussi `v2` (`V2_ENABLED === 'true'`).
-- `GET /api/stats` (gated V2 comme les autres routes : 503 si V2 off, `worker-api.js`) :
+- `GET /api/stats` (gated V2 comme les autres routes : 503 si V2 off, `worker-api.ts`) :
   `v2`, `rooms` (clés `room:` du KV `ROOMS`), `rapportsCsp` et `hits429` (compteurs en
-  mémoire dans l'isolate, remis à zéro au redémarrage ; incrémentés dans `worker-api.js`
-  pour les rapports CSP et dans `worker.js` pour le rate-limit 30 req/min/IP).
+  mémoire dans l'isolate, remis à zéro au redémarrage ; incrémentés dans `worker-api.ts`
+  pour les rapports CSP et dans `worker.ts` pour le rate-limit 30 req/min/IP).
 - Côté client : `apiHealth()` / `apiStats()` dans `src/lib/api.ts`, chargées par le hook
   `src/features/admin/useServerStats.ts`.
 
