@@ -9,15 +9,29 @@ import './styles.css';
 
 import { registerSW } from 'virtual:pwa-register';
 
-import { preloadFromServer } from '@lib/storage.js';
+import { preloadFromServer, flushPendingWrites } from '@lib/storage.js';
 
 // registerSW = enregistre le "service worker" : c'est le morceau de code
 // qui permet à l'appli de s'installer (WPA) et de fonctionner hors-ligne.
-registerSW({ immediate: true });
+// autoUpdate vérifie les mises à jour du SW environ toutes les heures : on resserre
+// à 5 min pour qu'un onglet ouvert longtemps ne reste pas sur un vieux bundle
+// (un vieux SW servait indéfiniment son ancien precache, d'où « ça ne marche
+// qu'après avoir vidé le cache »).
+registerSW({
+  immediate: true,
+  onRegisteredSW(_swUrl, r) {
+    if (r) setInterval(() => r.update(), 5 * 60 * 1000);
+  },
+});
 
 // En mode stockage 'd1' (défaut ; ?stockage=local pour forcer le local) : pré-charge les clés depuis le serveur
-// dans le cache local AVANT le rendu (en 'local', c'est un no-op).
+// dans le cache local AVANT le rendu (en 'local', c'est un no-op). Les écritures locales
+// en attente d'envoi serveur (file pending) sont poussées juste après, et à chaque
+// reconnexion ('online').
 preloadFromServer();
+window.addEventListener('online', () => {
+  void flushPendingWrites();
+});
 
 const rootEl = document.getElementById('root');
 if (!rootEl) throw new Error('Élément #root introuvable dans index.html');

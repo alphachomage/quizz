@@ -31,8 +31,9 @@ tests/
 ├── setup.ts                      # mocks : localStorage nettoyé, AudioContext, vibrate,
 │                                 # matchMedia, crypto.subtle (webcrypto), fetch, canvas
 ├── fixtures/questions.fixture.ts # makeQuestion/makeTheme/mulberry32 — JAMAIS les vrais fichiers
-├── unit/lib/                     # scoring, draw, daily, similarity, accounts, suggestions, badges, titles, schema, repositories
+├── unit/lib/                     # scoring, draw, daily, similarity, accounts, suggestions, badges, titles, schema, repositories, storage-d1 (file d'attente D1)
 ├── unit/shared/                  # useStorage : snapshots stables (régression React #185)
+├── unit/worker/                  # api-kv : route /api/kv (D1 factice) — POST/GET/DELETE, plafonds body
 ├── unit/features/                # game-draw, result-persist, stats-compute
 ├── integration/                  # game-solo, game-duel, game-survival, game-daily,
 │                                 # app-shell (parcours complet invité -> partie)

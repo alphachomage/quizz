@@ -126,6 +126,8 @@ export const kvSet = (key: string, value: unknown): Promise<KvSetResponse> =>
       value: value,
     }),
   });
+export const kvDelete = (key: string): Promise<OkResponse> =>
+  appel(`/kv/${encodeURIComponent(key)}`, { method: 'DELETE' });
 
 // Santé de l'API (route ouverte, répond même V2 off) + stats V2 (rooms KV,
 // rapports CSP, hits 429 — 503 si V2 off, à gérer côté appelant).
