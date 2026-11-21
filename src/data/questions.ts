@@ -12,22 +12,32 @@
 
 import { loadExcluded } from '@lib/exclusions.js';
 import { normalizeQuestionText } from '@lib/text.js';
+import type { Theme } from '@lib/types.js';
 
 import { THEME_MANIFEST } from './theme-manifest.js';
 
-// Chargeurs lazy : chemin -> fonction() -> Promise<module>
-const chargeurs = import.meta.glob('./questions-*.js');
+// Chargeurs lazy : chemin -> fonction() -> Promise<module>.
+// Les modules eux-mêmes sont des chunks JS non typés : leur forme est déclarée
+// dans questions.d.ts (contrat) et narrowée ici vers Theme[].
+const chargeurs: Record<string, () => Promise<unknown>> = import.meta.glob('./questions-*.js');
 
 const RETIRED_THEMES = ['insolite', 'pop-culture'];
 
 // Métadonnées seules (id, nom, icône, couleur), dispo immédiatement au chargement.
-export const THEMES_META = THEME_MANIFEST.filter((t) => !RETIRED_THEMES.includes(t.id));
+export const THEMES_META: Array<Omit<Theme, 'questions'>> = THEME_MANIFEST.filter(
+  (t) => !RETIRED_THEMES.includes(t.id)
+);
 
-function fusionner(a, b) {
-  const map = new Map(a.map((t) => [t.id, { ...t, questions: [...t.questions] }]));
+// Garde de type : un chunk de données est un tableau de thèmes (voir questions.d.ts).
+function isThemeArray(value: unknown): value is Theme[] {
+  return Array.isArray(value);
+}
+
+function fusionner(a: Theme[], b: Theme[]): Theme[] {
+  const map = new Map<string, Theme>(a.map((t) => [t.id, { ...t, questions: [...t.questions] }]));
   for (const t of b) {
-    if (map.has(t.id)) {
-      const ex = map.get(t.id);
+    const ex = map.get(t.id);
+    if (ex) {
       ex.questions.push(...t.questions);
       // si le thème a été créé sans métadonnées (ex: via la redistribution), on les complète
       if (!ex.nom && t.nom) {
@@ -43,12 +53,12 @@ function fusionner(a, b) {
 }
 
 // Charge TOUTES les questions (tous les chunks) et applique les exclusions admin.
-export async function loadThemes() {
+export async function loadThemes(): Promise<Theme[]> {
   const modules = await Promise.all(Object.values(chargeurs).map((f) => f()));
-  let tous = [];
+  let tous: Theme[] = [];
   for (const mod of modules) {
-    const lot = Object.values(mod)[0]; // chaque fichier exporte un seul tableau
-    if (Array.isArray(lot)) tous = fusionner(tous, lot);
+    const lot = Object.values(mod as Record<string, unknown>)[0]; // chaque fichier exporte un seul tableau
+    if (isThemeArray(lot)) tous = fusionner(tous, lot);
   }
   // Questions retirées du pool par l'admin (signalées puis vérifiées comme mauvaises) :
   // elles ne sont plus jamais tirées, mais les fichiers source ne sont pas modifiés.
