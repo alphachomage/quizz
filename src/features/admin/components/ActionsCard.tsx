@@ -1,5 +1,5 @@
 // ActionsCard.tsx — carte "Actions" du tableau de bord admin : actions globales qui
-// rechargent la page avec un flag d'URL (?reset=1, ?resetcompte=1, ?stockage=d1).
+// rechargent la page avec un flag d'URL (?reset=1, ?resetcompte=1, ?stockage=local).
 // La navigation passe par app/urlFlags.js (R5 : jamais window.location en direct).
 import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
@@ -28,13 +28,13 @@ export default function ActionsCard({ mode }: ActionsCardProps): ReactElement {
   }
   function basculerStockage(): void {
     if (mode === 'd1') {
-      if (window.confirm('Revenir au stockage 100 % local (retire ?stockage=d1) ?')) {
-        redirigerVers(urlWithoutParam('stockage'));
+      if (window.confirm('Passer en stockage 100 % local hors-ligne (?stockage=local) ?')) {
+        redirigerVers(urlWithParam('stockage', 'local'));
       }
     } else if (
-      window.confirm('Activer le stockage D1 (?stockage=d1) : synchro serveur via /api/kv ?')
+      window.confirm('Revenir au stockage D1 (synchro serveur via /api/kv, défaut) ?')
     ) {
-      redirigerVers(urlWithParam('stockage', 'd1'));
+      redirigerVers(urlWithoutParam('stockage'));
     }
   }
   return (
@@ -53,7 +53,7 @@ export default function ActionsCard({ mode }: ActionsCardProps): ReactElement {
         </button>
         <button className="filtre" onClick={basculerStockage}>
           <Icon nom="device" taille={14} />{' '}
-          {mode === 'd1' ? 'Revenir au stockage local' : 'Activer le stockage D1 (?stockage=d1)'}
+          {mode === 'd1' ? 'Forcer le stockage local (?stockage=local)' : 'Revenir à D1 (défaut)'}
         </button>
       </div>
     </MetricCard>

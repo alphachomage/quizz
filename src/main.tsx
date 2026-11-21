@@ -15,7 +15,7 @@ import { preloadFromServer } from '@lib/storage.js';
 // qui permet à l'appli de s'installer (WPA) et de fonctionner hors-ligne.
 registerSW({ immediate: true });
 
-// En mode stockage 'd1' (?stockage=d1) : pré-charge les clés depuis le serveur
+// En mode stockage 'd1' (défaut ; ?stockage=local pour forcer le local) : pré-charge les clés depuis le serveur
 // dans le cache local AVANT le rendu (en 'local', c'est un no-op).
 preloadFromServer();
 

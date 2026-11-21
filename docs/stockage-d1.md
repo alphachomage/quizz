@@ -1,8 +1,23 @@
-# Stockage local -> Cloudflare D1 (migration V2)
+# Stockage local <-> Cloudflare D1 (ACTIVÉ)
 
-**Principe : le localStorage reste le cache local.** Toute la persistance passe par une
-couche d'abstraction (`src/lib/storage.ts` + `src/lib/repositories.ts`) qui peut basculer
-sur D1 via l'API sans toucher aux composants.
+**Principe : le localStorage reste le cache local, D1 est la base serveur.** Toute la
+persistance passe par une couche d'abstraction (`src/lib/storage.ts` + `src/lib/repositories.ts`) :
+aucun composant ne touche au stockage directement.
+
+## Dev local (D1 locale)
+
+`npm run dev` tourne dans **workerd** (via `@cloudflare/vite-plugin`) avec une **D1 locale**
+(sqlite dans `.wrangler/state/`, simulée par miniflare) : `V2_ENABLED=true` hérité des
+`[vars]` top-level de `wrangler.toml`, donc `/api/*` répond en local comme en prod.
+
+```bash
+npm run db:migrate:local   # applique migrations/ sur la D1 LOCALE (une fois, puis à chaque nouvelle migration)
+npm run dev                # http://localhost:5173 — /api/kv fonctionne contre la D1 locale
+npm run db:migrate         # applique sur la D1 distante (prod) — nécessite wrangler login ou CLOUDFLARE_API_TOKEN
+```
+
+Smoke test local : `curl -X POST localhost:5173/api/kv/test -d '{"value":42}' -H 'Content-Type: application/json'`
+puis `curl localhost:5173/api/kv/test` -> `{"ok":true,"key":"test","value":42}`.
 
 ## Côté client
 
@@ -16,12 +31,14 @@ sur D1 via l'API sans toucher aux composants.
   ReportsRepo, SuggestionsRepo, ExcludedRepo, SeriesRepo, DailyStreakRepo, TutorialRepo,
   FavoriteBadgeRepo, ActiveTitleRepo, ResetSubmissionsRepo) + `clearAll()`. Aucun appel
   direct `read(STORAGE_KEYS.*)` hors storage/repositories. Le défaut est cloné à la lecture.
-- **Flag** : `STORAGE_MODE` dans `storage.js` = `'local'` par défaut, `'d1'` avec
-  `?stockage=d1` dans l'URL (test). En `'d1'` :
+- **Mode par défaut** : `STORAGE_MODE` dans `src/lib/storage.ts` = `'d1'` (synchro serveur
+  active). Échappatoire hors-ligne : `?stockage=local` dans l'URL. En `'d1'` :
   - `write()` pousse aussi au serveur en arrière-plan : `POST /api/kv/<cle>` (best-effort) ;
   - `preloadFromServer()` (appelé dans `src/main.tsx`) remplit le cache local depuis
     `GET /api/kv/<cle>` pour chaque clé STORAGE_KEYS au démarrage (no-op en `'local'`).
-  L'appli reste 100 % utilisable hors-ligne ; la synchro serveur reprend au prochain write.
+  L'appli reste 100 % utilisable hors-ligne (cache localStorage + write best-effort) ;
+  la synchro serveur reprend au prochain write. `npm run preview` (vite preview sans worker)
+  n'a pas d'API : le mode d1 y retombe silencieusement sur le cache local.
 - R5 (lint en error) : aucun composant n'appelle le stockage ni `localStorage` directement.
 
 ## Côté serveur (en place, testé)
@@ -33,7 +50,7 @@ sur D1 via l'API sans toucher aux composants.
 - `migrations/0001_init.sql` : tables comptes, parties, records, xp, soumissions, kv.
   Appliquée en local ET en remote :
   `npx wrangler d1 migrations apply voltquiz --local` puis `--remote`.
-- `worker-api.js` : routes `/api/kv/:cle`, `/api/auth/*` (PBKDF2 210k), `/api/parties`,
+- `worker-api.ts` : routes `/api/kv/:cle`, `/api/auth/*` (PBKDF2 210k), `/api/parties`,
   `/api/records`, `/api/xp`, `/api/room*` (KV), `/api/duel/:room` (WebSocket -> DO),
   `/api/ping|health`, `/api/csp-report`. Toutes : validation, body cap 64 Ko,
   `Cache-Control: no-store`, rate limit 30/min/IP (dans `worker.js`), porte
@@ -43,9 +60,8 @@ sur D1 via l'API sans toucher aux composants.
   `authSignup`/`authLogin`, `apiAddGame`/`apiGames`, `apiRecord`/`apiSaveRecord`,
   `apiXp`/`apiSaveXp`, `apiCreateRoom`/`apiJoinRoom`/`apiRoom`, `apiDuelSocket`).
 
-**Testé en local** (wrangler dev + D1/miniflare, env preview `V2_ENABLED=true`) :
-`POST /api/kv/voltquiz_test` -> `{"ok":true}`, puis `GET /api/kv/voltquiz_test` ->
-`{"ok":true,"valeur":42}`.
+**Testé en local** (dev workerd + D1 locale, `V2_ENABLED=true`) : POST puis GET
+`/api/kv/<cle>` -> valeur persistée en D1 ; POST sans `value` -> 400.
 
 ## DÉCISION localStorage (POC web) vs mobile
 
@@ -55,6 +71,6 @@ sur D1 via l'API sans toucher aux composants.
   `@capacitor/preferences` (données simples) et `@capacitor/secure-storage` (données
   sensibles) — **jamais de hash ni de mot de passe en clair** dans Preferences. Le web
   garde localStorage ; le natif garde le même contrat `read`/`write`/`remove`.
-- **`?stockage=d1`** pousse le cache local vers `/api/kv/<cle>` (D1 côté serveur) ;
-  la porte **V2_ENABLED** est posée côté serveur (prod `false`, preview `true`).
-  Ne PAS activer la V2 en prod tant que les comptes serveur ne sont pas validés.
+- **Activé partout** (2026-11) : `V2_ENABLED="true"` en prod et preview ; `?stockage=local`
+  pour forcer le mode hors-ligne. La porte V2 reste dans `worker-api.ts` (routes de santé
+  ouvertes, le reste -> 503 si `V2_ENABLED` repasse à `"false"`).

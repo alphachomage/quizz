@@ -5,7 +5,7 @@
 | dev local | `npm run dev` | http://localhost:5173 (predev = gen-manifest) | n/a (local) |
 | preview local | `npm run preview` | http://localhost:4173 (build prod servie) | n/a (local) |
 | preview Cloudflare | `npm run deploy:preview` | `wrangler deploy --env preview` (`ENVIRONMENT=preview`) | **true** |
-| prod | `npm run deploy` | https://voltquiz.joris-leo81.workers.dev (`ENVIRONMENT=production`) | **false** |
+| prod | `npm run deploy` (ou auto par Cloudflare) | https://voltquiz.joris-leo81.workers.dev (`ENVIRONMENT=production`) | **true** |
 
 Ne jamais déployer la prod depuis une branche non reviewée.
 
