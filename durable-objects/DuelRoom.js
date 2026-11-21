@@ -8,7 +8,7 @@ export class DuelRoom {
   constructor(state, env) {
     this.state = state; // stockage isolé du DO (SQLite côté Cloudflare)
     this.env = env;
-    this.joueurs = []; // connexions WebSocket actives
+    this.players = []; // connexions WebSocket actives
   }
 
   async fetch(request) {
@@ -20,8 +20,8 @@ export class DuelRoom {
       const [client, serveur] = Object.values(paire);
       this.state.acceptWebSocket(serveur);
       const pseudo = url.searchParams.get('pseudo') || 'Joueur';
-      this.joueurs.push({ ws: serveur, pseudo });
-      this.diffuser({ type: 'presence', joueurs: this.joueurs.map((j) => j.pseudo) });
+      this.players.push({ ws: serveur, pseudo });
+      this.diffuser({ type: 'presence', players: this.players.map((j) => j.pseudo) });
       return new Response(null, { status: 101, webSocket: client });
     }
 
@@ -29,7 +29,7 @@ export class DuelRoom {
     if (request.method === 'GET') {
       return Response.json({
         ok: true,
-        joueurs: this.joueurs.map((j) => j.pseudo),
+        players: this.players.map((j) => j.pseudo),
         etat: await this.state.storage.get('etat') || 'attente',
       });
     }
@@ -56,13 +56,13 @@ export class DuelRoom {
 
   // Connexion fermée : on retire le joueur.
   async webSocketClose(ws) {
-    this.joueurs = this.joueurs.filter((j) => j.ws !== ws);
-    this.diffuser({ type: 'presence', joueurs: this.joueurs.map((j) => j.pseudo) });
+    this.players = this.players.filter((j) => j.ws !== ws);
+    this.diffuser({ type: 'presence', players: this.players.map((j) => j.pseudo) });
   }
 
   diffuser(message, sauf = null) {
     const texte = JSON.stringify(message);
-    for (const j of this.joueurs) {
+    for (const j of this.players) {
       if (j.ws !== sauf) {
         try { j.ws.send(texte); } catch { /* socket fermé : ignoré */ }
       }

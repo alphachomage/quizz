@@ -11,14 +11,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import App from '@/app/App.jsx';
 
-import { demarrerInvite } from '@lib/comptes.js';
+import { startGuest } from '@lib/accounts.js';
 
 import { makeThemes, mulberry32 } from '../fixtures/questions.fixture.js';
 
 // Catalogue factice : 3 thèmes x 30 questions (au lieu du vrai corpus).
 vi.mock('@data/questions.js', async () => {
   const { makeThemes } = await import('../fixtures/questions.fixture.js');
-  return { chargerThemes: async () => makeThemes(3, 10), THEMES_META: makeThemes(3, 10) };
+  return { loadThemes: async () => makeThemes(3, 10), THEMES_META: makeThemes(3, 10) };
 });
 
 // Attend qu'un texte apparaisse en avançant les fake timers (scheduler React + chunks lazy).
@@ -34,32 +34,32 @@ async function attendreTexte(matcher, max = 100) {
 }
 
 // Pré-chargement (vrais timers) : le vi.mock de @data/questions.js + les 9 écrans lazy.
-async function prechargerModules() {
+async function preloadModules() {
   await import('@data/questions.js');
   await Promise.all([
-    import('@features/accueil/Accueil.jsx'),
-    import('@features/compte/Compte.jsx'),
-    import('@features/partie/Partie.jsx'),
-    import('@features/resultat/Resultat.jsx'),
-    import('@features/classement/Classement.jsx'),
+    import('@features/home/Home.jsx'),
+    import('@features/account/Account.jsx'),
+    import('@features/game/Game.jsx'),
+    import('@features/results/Results.jsx'),
+    import('@features/leaderboard/Leaderboard.jsx'),
     import('@features/stats/Stats.jsx'),
     import('@features/badges/Badges.jsx'),
-    import('@features/formulaire/FormulaireQuestion.jsx'),
-    import('@features/admin/AdminSignales.jsx'),
+    import('@features/question-form/QuestionForm.jsx'),
+    import('@features/admin/AdminReports.jsx'),
   ]);
 }
 
 describe('shell de l\'application (app/)', () => {
   beforeEach(async () => {
-    await prechargerModules();
+    await preloadModules();
     vi.useFakeTimers();
     vi.spyOn(Math, 'random').mockImplementation(mulberry32(2026));
     // Préférences silencieuses (pas de musique/sons en test).
     localStorage.setItem(
       'voltquiz_prefs',
-      JSON.stringify({ sons: false, musique: false, animations: false, vibrations: false })
+      JSON.stringify({ sons: false, music: false, animations: false, vibrations: false })
     );
-    demarrerInvite(); // session invité posée avant le rendu
+    startGuest(); // session invité posée avant le rendu
   });
 
   afterEach(() => {
@@ -74,8 +74,8 @@ describe('shell de l\'application (app/)', () => {
     expect(screen.getByText('Thème 1')).toBeTruthy();
 
     // Le tuto de bienvenue s'ouvre à la première connexion : on le ferme.
-    const boutonTuto = screen.queryByText("C'est parti");
-    if (boutonTuto) fireEvent.click(boutonTuto);
+    const tutorialButton = screen.queryByText("C'est parti");
+    if (tutorialButton) fireEvent.click(tutorialButton);
 
     // Clic sur un thème -> modale de choix du niveau (solo).
     fireEvent.click(screen.getByText('Thème 0'));
@@ -106,5 +106,22 @@ describe('shell de l\'application (app/)', () => {
     // L'écran compte (chunk lazy) propose le mode invité.
     await attendreTexte(/invité/i);
     expect(screen.getAllByText(/invité/i).length).toBeGreaterThan(0);
+  });
+
+  it('vue admin (?admin=1) : tableau de bord en haut + sections de modération', async () => {
+    window.history.replaceState(null, '', '/?admin=1');
+    try {
+      render(<App />);
+      // Le tableau de bord apparaît dès que les thèmes factices sont chargés.
+      await attendreTexte('Tableau de bord');
+      expect(screen.getByText('Parties jouées')).toBeTruthy();
+      expect(screen.getByText('Serveur (V2)')).toBeTruthy();
+      expect(screen.getByText('Modération')).toBeTruthy();
+      // Les sections existantes restent présentes sous le dashboard.
+      expect(screen.getByText('Questions signalées')).toBeTruthy();
+      expect(screen.getByText('Suggestions des joueurs')).toBeTruthy();
+    } finally {
+      window.history.replaceState(null, '', '/');
+    }
   });
 });

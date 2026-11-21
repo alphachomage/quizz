@@ -48,6 +48,14 @@ class AudioContextFactice {
 window.AudioContext = AudioContextFactice;
 window.webkitAudioContext = AudioContextFactice;
 
+// --- Presse-papiers (src/lib/share.js : copier le résultat) ---
+if (!window.navigator.clipboard) {
+  Object.defineProperty(window.navigator, 'clipboard', {
+    value: { writeText: () => Promise.resolve(), readText: () => Promise.resolve('') },
+    configurable: true,
+  });
+}
+
 // --- Vibrations ---
 Object.defineProperty(window.navigator, 'vibrate', {
   value: () => true,

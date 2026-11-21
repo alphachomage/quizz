@@ -10,17 +10,17 @@
 // Les thèmes "insolite" et "pop-culture" ont été retirés : leurs questions ont été
 // reclassées dans les autres thèmes via questions-redistribution.js.
 
-import { chargerExclues, normaliserTexteQuestion } from '@lib/index.js';
+import { loadExcluded, normalizeQuestionText } from '@lib/index.js';
 
-import { MANIFEST_THEMES } from './manifest-themes.js';
+import { THEME_MANIFEST } from './theme-manifest.js';
 
 // Chargeurs lazy : chemin -> fonction() -> Promise<module>
 const chargeurs = import.meta.glob('./questions-*.js');
 
-const THEMES_RETIRES = ['insolite', 'pop-culture'];
+const RETIRED_THEMES = ['insolite', 'pop-culture'];
 
 // Métadonnées seules (id, nom, icône, couleur), dispo immédiatement au chargement.
-export const THEMES_META = MANIFEST_THEMES.filter((t) => !THEMES_RETIRES.includes(t.id));
+export const THEMES_META = THEME_MANIFEST.filter((t) => !RETIRED_THEMES.includes(t.id));
 
 function fusionner(a, b) {
   const map = new Map(a.map((t) => [t.id, { ...t, questions: [...t.questions] }]));
@@ -42,7 +42,7 @@ function fusionner(a, b) {
 }
 
 // Charge TOUTES les questions (tous les chunks) et applique les exclusions admin.
-export async function chargerThemes() {
+export async function loadThemes() {
   const modules = await Promise.all(Object.values(chargeurs).map((f) => f()));
   let tous = [];
   for (const mod of modules) {
@@ -51,11 +51,11 @@ export async function chargerThemes() {
   }
   // Questions retirées du pool par l'admin (signalées puis vérifiées comme mauvaises) :
   // elles ne sont plus jamais tirées, mais les fichiers source ne sont pas modifiés.
-  const exclues = new Set(chargerExclues());
+  const exclues = new Set(loadExcluded());
   if (exclues.size > 0) {
     for (const t of tous) {
-      t.questions = t.questions.filter((q) => !exclues.has(normaliserTexteQuestion(q.q)));
+      t.questions = t.questions.filter((q) => !exclues.has(normalizeQuestionText(q.q)));
     }
   }
-  return tous.filter((t) => !THEMES_RETIRES.includes(t.id));
+  return tous.filter((t) => !RETIRED_THEMES.includes(t.id));
 }

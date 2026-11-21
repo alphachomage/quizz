@@ -3,7 +3,7 @@
 .partage-liste {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--esp-8);
 }
 
 .partage-liste .btn-secondaire,

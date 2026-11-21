@@ -6,11 +6,11 @@
 // Limite connue : sans modèle d'IA, la détection de personnes précises repose sur cette liste de
 // hachés. La V2 (serveur) passera par une vraie API de modération d'images.
 
-export const TAILLE_AVATAR = 128; // l'avatar stocké est recadré en carré et réduit à 128 px
-export const SEUIL_PEAU = 0.5; // ratio max de pixels "peau" accepté
-export const DISTANCE_HASH_MAX = 6; // distance de Hamming max pour un hash bloqué
+export const AVATAR_SIZE = 128; // l'avatar stocké est recadré en carré et réduit à 128 px
+export const SKIN_THRESHOLD = 0.5; // ratio max de pixels "peau" accepté
+export const MAX_HASH_DISTANCE = 6; // distance de Hamming max pour un hash bloqué
 
-function chargerImage(dataUrl) {
+function loadImage(dataUrl) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
@@ -20,8 +20,8 @@ function chargerImage(dataUrl) {
 }
 
 // Recadre en carré centré et réduit à `taille` px (JPEG qualité 0.85) -> dataURL compact pour localStorage.
-export async function imageVersDataUrlReduite(dataUrl, taille = TAILLE_AVATAR) {
-  const img = await chargerImage(dataUrl);
+export async function imageToResizedDataUrl(dataUrl, taille = AVATAR_SIZE) {
+  const img = await loadImage(dataUrl);
   const canvas = document.createElement('canvas');
   canvas.width = taille;
   canvas.height = taille;
@@ -33,7 +33,7 @@ export async function imageVersDataUrlReduite(dataUrl, taille = TAILLE_AVATAR) {
 
 // Ratio de pixels "couleur peau" (heuristique classique RGB).
 export async function ratioPeau(dataUrl, taille = 64) {
-  const img = await chargerImage(dataUrl);
+  const img = await loadImage(dataUrl);
   const canvas = document.createElement('canvas');
   canvas.width = taille;
   canvas.height = taille;
@@ -54,7 +54,7 @@ export async function ratioPeau(dataUrl, taille = 64) {
 
 // aHash 8×8 (64 bits) en hexadécimal.
 export async function aHash(dataUrl, taille = 8) {
-  const img = await chargerImage(dataUrl);
+  const img = await loadImage(dataUrl);
   const canvas = document.createElement('canvas');
   canvas.width = taille;
   canvas.height = taille;
@@ -83,7 +83,7 @@ function hamming(a, b) {
 
 // Validation complète d'un fichier image proposé comme avatar.
 // Retourne { ok: true, dataUrl, hash } ou { ok: false, erreur }.
-export async function validerAvatar(file) {
+export async function validateAvatar(file) {
   if (!file) return { ok: false, erreur: 'Aucun fichier sélectionné.' };
   if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
     return { ok: false, erreur: 'Formats autorisés : JPEG, PNG ou WebP (les SVG sont interdits).' };
@@ -95,12 +95,12 @@ export async function validerAvatar(file) {
     r.onerror = reject;
     r.readAsDataURL(file);
   });
-  const img = await chargerImage(dataUrl);
+  const img = await loadImage(dataUrl);
   if (img.width < 32 || img.height < 32) return { ok: false, erreur: 'Image trop petite (32 px minimum).' };
 
   // 1) Détection de nudité (heuristique peau)
   const ratio = await ratioPeau(dataUrl);
-  if (ratio > SEUIL_PEAU) {
+  if (ratio > SKIN_THRESHOLD) {
     return { ok: false, erreur: "Image refusée : contenu possiblement inapproprié (nudité) détecté." };
   }
 
@@ -108,9 +108,9 @@ export async function validerAvatar(file) {
   const hash = await aHash(dataUrl);
   try {
     const res = await fetch('/avatars-bloques.json');
-    const liste = res.ok ? await res.json() : { images: [] };
-    for (const entry of liste.images || []) {
-      if (entry.hash && hamming(hash, entry.hash) <= DISTANCE_HASH_MAX) {
+    const list = res.ok ? await res.json() : { images: [] };
+    for (const entry of list.images || []) {
+      if (entry.hash && hamming(hash, entry.hash) <= MAX_HASH_DISTANCE) {
         return {
           ok: false,
           erreur: `Image refusée : personnage ou contenu bloqué par la modération (${entry.label || 'liste bloquée'}).`,
@@ -121,6 +121,6 @@ export async function validerAvatar(file) {
     // pas de liste disponible = pas de blocage par hash
   }
 
-  const reduite = await imageVersDataUrlReduite(dataUrl);
+  const reduite = await imageToResizedDataUrl(dataUrl);
   return { ok: true, dataUrl: reduite, hash };
 }

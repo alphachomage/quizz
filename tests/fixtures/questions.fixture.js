@@ -56,9 +56,9 @@ export function mulberry32(graine) {
 }
 
 // Préférations de test : tout coupé (pas de son, pas d'animation) pour des tests silencieux.
-export const PREFS_TEST = {
+export const TEST_PREFS = {
   sons: false,
-  musique: false,
+  music: false,
   animations: false,
   vibrations: false,
   themeClair: false,

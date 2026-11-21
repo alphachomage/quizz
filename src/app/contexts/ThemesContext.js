@@ -2,24 +2,24 @@
 // + questions validées (localStorage), et la liste plate pour la détection de similarité.
 import { createContext, createElement, useContext, useEffect, useMemo, useState } from 'react';
 
-import { chargerThemes } from '@data/questions.js';
+import { loadThemes } from '@data/questions.js';
 import {
-  chargerSoumissions,
-  ajouterSoumission,
-  supprimerSoumission,
-  chargerValidees,
-  validerSoumission,
-  exporterSoumissionsJSON,
-} from '@lib/soumissions.js';
-import { validerFichierPerso, validerSoumissions } from '@lib/schema.js';
-import { fusionThemes } from '@shared/utils/fusionThemes.js';
+  loadSubmissions,
+  addSubmission,
+  removeSubmission,
+  loadApproved,
+  approveSubmission,
+  exportSubmissionsJson,
+} from '@lib/submissions.js';
+import { validatePersonalFile, validateSubmissions } from '@lib/schema.js';
+import { fusionThemes } from '@shared/utils/mergeThemes.js';
 
 const ThemesContext = createContext(null);
 
 export function ThemesProvider({ children }) {
   const [themesBase, setThemesBase] = useState(null); // null = questions en cours de chargement (chunks lazy)
-  const [soumissions, setSoumissions] = useState(() => validerSoumissions(chargerSoumissions())); // en attente de validation
-  const [validees, setValidees] = useState(() => validerSoumissions(chargerValidees())); // validées = jouables
+  const [soumissions, setSoumissions] = useState(() => validateSubmissions(loadSubmissions())); // en attente de validation
+  const [validees, setValidees] = useState(() => validateSubmissions(loadApproved())); // validées = jouables
 
   // Au chargement : on charge les questions (chunks lazy) puis on fusionne le
   // fichier questions-utilisateur.json par-dessus la base intégrée.
@@ -28,13 +28,13 @@ export function ThemesProvider({ children }) {
     const controleur = new AbortController();
     (async () => {
       try {
-        const base = await chargerThemes();
+        const base = await loadThemes();
         const persoBrut = await fetch('/questions-utilisateur.json', { signal: controleur.signal })
           .then((r) => (r.ok ? r.json() : null))
           .catch(() => null);
         if (!actif) return;
         // Donnée externe (fetch) : validée par schéma zod avant usage.
-        const perso = validerFichierPerso(persoBrut);
+        const perso = validatePersonalFile(persoBrut);
         setThemesBase(perso ? fusionThemes(base, perso.themes) : base);
       } catch {
         if (actif) setThemesBase([]); // échec de chargement : catalogue vide plutôt que crash
@@ -92,19 +92,19 @@ export function ThemesProvider({ children }) {
   const actions = useMemo(
     () => ({
       ajouterQuestion: (q) => {
-        ajouterSoumission(q);
-        setSoumissions(chargerSoumissions());
+        addSubmission(q);
+        setSoumissions(loadSubmissions());
       },
       supprimerQuestion: (id) => {
-        supprimerSoumission(id);
-        setSoumissions(chargerSoumissions());
+        removeSubmission(id);
+        setSoumissions(loadSubmissions());
       },
       validerQuestion: (id) => {
-        validerSoumission(id);
-        setSoumissions(chargerSoumissions());
-        setValidees(chargerValidees());
+        approveSubmission(id);
+        setSoumissions(loadSubmissions());
+        setValidees(loadApproved());
       },
-      exporterValidees: () => exporterSoumissionsJSON(validees, themes),
+      exporterValidees: () => exportSubmissionsJson(validees, themes),
     }),
     [validees, themes]
   );

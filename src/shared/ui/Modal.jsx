@@ -6,7 +6,7 @@ import { useEffect, useRef } from 'react';
 
 const SELECTEUR_FOCUS = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
-export default function Modal({ titre, onFermer, classe, children }) {
+export default function Modal({ title, onFermer, classe, children }) {
   const ref = useRef(null);
   const focusAvant = useRef(null);
 
@@ -46,7 +46,7 @@ export default function Modal({ titre, onFermer, classe, children }) {
         className={classe ? `modal ${classe}` : 'modal'}
         role="dialog"
         aria-modal="true"
-        aria-label={typeof titre === 'string' ? titre : undefined}
+        aria-label={typeof title === 'string' ? title : undefined}
         ref={ref}
         onClick={(e) => e.stopPropagation()}
         onKeyDown={onKeyDown}

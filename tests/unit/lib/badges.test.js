@@ -1,30 +1,30 @@
 // Tests des badges (src/lib/badges.js) : calcul depuis l'historique local.
 import { describe, expect, it } from 'vitest';
 
-import { ajouterPartie } from '@lib/index.js';
+import { addGame } from '@lib/index.js';
 
-import { BADGES, calculerBadges, prochainBadge } from '@/lib/badges.js';
+import { BADGES, computeBadges, prochainBadge } from '@/lib/badges.js';
 
 describe('calculerBadges', () => {
   it('aucune partie = tous les badges verrouillés', () => {
-    const badges = calculerBadges();
+    const badges = computeBadges();
     expect(badges).toHaveLength(BADGES.length);
     expect(badges.every((b) => !b.debloque)).toBe(true);
   });
 
   it('une partie jouée débloque le badge "première partie"', () => {
-    ajouterPartie({
+    addGame({
       mode: 'solo',
       niveau: 'facile',
       themeId: 'test',
-      joueurs: ['testeur'],
+      players: ['testeur'],
       scores: [100],
       bonnes: [8],
       total: 10,
       details: [],
       date: new Date().toISOString(),
     });
-    const badges = calculerBadges();
+    const badges = computeBadges();
     const premiere = badges.find((b) => b.id === 'parties-1');
     expect(premiere.debloque).toBe(true);
   });

@@ -3,15 +3,15 @@
 .streak-jour {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--esp-4);
   background: var(--accent1);
-  color: #141414;
+  color: var(--texte-sur-accent);
   font-weight: 900;
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
   padding: 2px 10px;
   font-size: 0.8rem;
-  margin-left: 8px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  margin-left: var(--esp-8);
+  box-shadow: var(--ombre-petite);
 }
 
 .streak-jour.gros {

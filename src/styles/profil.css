@@ -23,19 +23,19 @@
 .profil-header {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 6px;
+  gap: var(--esp-14);
+  margin-bottom: var(--esp-6);
 }
 
 .profil-avatar {
   width: 64px;
   height: 64px;
-  border-radius: 50%;
+  border-radius: var(--radius-rond);
   overflow: hidden;
   flex-shrink: 0;
   border: 3px solid var(--accent1);
   background: var(--accent1);
-  color: #141414;
+  color: var(--texte-sur-accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -50,7 +50,7 @@
 .profil-id {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: var(--esp-5);
   min-width: 0;
   flex: 1;
 }
@@ -64,15 +64,15 @@
 .profil-titre {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: var(--esp-5);
   align-self: flex-start;
   background: var(--accent1);
-  color: #141414;
+  color: var(--texte-sur-accent);
   font-weight: 900;
   font-size: 0.82rem;
   padding: 4px 12px;
-  border-radius: 999px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  border-radius: var(--radius-pilule);
+  box-shadow: var(--ombre-petite);
 }
 
 .profil-theme .rang {
@@ -84,18 +84,18 @@
 .profil-badge-favori {
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: rgba(128, 128, 128, 0.18);
+  gap: var(--esp-12);
+  background: var(--desactive-18);
   border: 1px dashed var(--bordure);
-  border-radius: 14px;
+  border-radius: var(--radius-petit);
   padding: 10px 14px;
-  margin-bottom: 10px;
+  margin-bottom: var(--esp-10);
   color: var(--texte-carte);
 }
 
 .profil-badge-favori .badge-icone.favori {
   background: var(--accent1);
-  color: #141414;
+  color: var(--texte-sur-accent);
   width: 52px;
   height: 52px;
 }
@@ -107,7 +107,7 @@
 
 .badges-grille.petite {
   grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  margin-bottom: 10px;
+  margin-bottom: var(--esp-10);
 }
 
 .badge-choisir-li {
@@ -115,11 +115,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  gap: var(--esp-5);
   background: var(--carte);
   color: var(--texte-carte);
   border: 1px solid var(--bordure);
-  border-radius: 12px;
+  border-radius: var(--radius-mini);
   padding: 10px 6px;
   cursor: pointer;
   font-size: 0.75rem;
@@ -138,12 +138,12 @@
 .avatar-preview {
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  border-radius: var(--radius-rond);
   overflow: hidden;
   flex-shrink: 0;
   border: 2px solid var(--accent1);
   background: var(--accent1);
-  color: #141414;
+  color: var(--texte-sur-accent);
   display: flex;
   align-items: center;
   justify-content: center;

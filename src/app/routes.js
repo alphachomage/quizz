@@ -4,13 +4,13 @@
 import { lazy } from 'react';
 
 export const ROUTES = {
-  accueil: lazy(() => import('@features/accueil/Accueil.jsx')),
-  admin: lazy(() => import('@features/admin/AdminSignales.jsx')),
+  home: lazy(() => import('@features/home/Home.jsx')),
+  admin: lazy(() => import('@features/admin/AdminReports.jsx')),
   badges: lazy(() => import('@features/badges/Badges.jsx')),
-  classement: lazy(() => import('@features/classement/Classement.jsx')),
-  compte: lazy(() => import('@features/compte/Compte.jsx')),
-  formulaire: lazy(() => import('@features/formulaire/FormulaireQuestion.jsx')),
-  partie: lazy(() => import('@features/partie/Partie.jsx')),
-  resultat: lazy(() => import('@features/resultat/Resultat.jsx')),
+  leaderboard: lazy(() => import('@features/leaderboard/Leaderboard.jsx')),
+  account: lazy(() => import('@features/account/Account.jsx')),
+  form: lazy(() => import('@features/question-form/QuestionForm.jsx')),
+  game: lazy(() => import('@features/game/Game.jsx')),
+  result: lazy(() => import('@features/results/Results.jsx')),
   stats: lazy(() => import('@features/stats/Stats.jsx')),
 };

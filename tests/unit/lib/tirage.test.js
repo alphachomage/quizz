@@ -3,16 +3,16 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  cleSerie,
+  seriesKey,
   generateurGraine,
-  hashTexte,
-  melanger,
-  melangerSeed,
-  poolSansSeriePrecedente,
+  hashText,
+  shuffle,
+  shuffleSeeded,
+  poolWithoutPreviousSeries,
   sauverSerie,
-  chargerSerie,
+  loadSeries,
   sujetDe,
-  tirerSerie,
+  drawSeries,
 } from '@lib/index.js';
 
 import { makeQuestion, mulberry32 } from '../../fixtures/questions.fixture.js';
@@ -35,7 +35,7 @@ describe('sujetDe', () => {
 describe('tirerSerie', () => {
   it('tire le nombre de questions demandé', () => {
     const pool = Array.from({ length: 30 }, (_, i) => makeQuestion({ q: `Question ${i} ?` }));
-    const serie = tirerSerie(pool, 10, 2, 0, mulberry32(42));
+    const serie = drawSeries(pool, 10, 2, 0, mulberry32(42));
     expect(serie).toHaveLength(10);
   });
 
@@ -45,10 +45,10 @@ describe('tirerSerie', () => {
       ...Array.from({ length: 10 }, (_, i) => makeQuestion({ q: `Question ${i} de Zelda ?` })),
       ...Array.from({ length: 10 }, (_, i) => makeQuestion({ q: `Question ${i} diverse ${i} ?` })),
     ];
-    const serie = tirerSerie(pool, 10, 2, 0, mulberry32(7));
-    const compte = (sujet) => serie.filter((q) => sujetDe(q.q) === sujet).length;
-    expect(compte('one piece')).toBeLessThanOrEqual(2);
-    expect(compte('zelda')).toBeLessThanOrEqual(2);
+    const serie = drawSeries(pool, 10, 2, 0, mulberry32(7));
+    const account = (sujet) => serie.filter((q) => sujetDe(q.q) === sujet).length;
+    expect(account('one piece')).toBeLessThanOrEqual(2);
+    expect(account('zelda')).toBeLessThanOrEqual(2);
   });
 
   it('respecte le plafond par thème quand maxParTheme est positif et le pool assez grand', () => {
@@ -57,23 +57,23 @@ describe('tirerSerie', () => {
     const pool = Array.from({ length: 6 }, (_, t) =>
       Array.from({ length: 8 }, (_, i) => makeQuestion({ q: `Question T${t} ${i} ?`, themeId: `t${t}` }))
     ).flat();
-    const serie = tirerSerie(pool, 10, 2, 2, mulberry32(3));
-    const compte = new Map();
-    for (const q of serie) compte.set(q.themeId, (compte.get(q.themeId) || 0) + 1);
-    for (const [, n] of compte) expect(n).toBeLessThanOrEqual(2);
+    const serie = drawSeries(pool, 10, 2, 2, mulberry32(3));
+    const account = new Map();
+    for (const q of serie) account.set(q.themeId, (account.get(q.themeId) || 0) + 1);
+    for (const [, n] of account) expect(n).toBeLessThanOrEqual(2);
   });
 
   it('est déterministe avec un générateur seedé', () => {
     const pool = Array.from({ length: 30 }, (_, i) => makeQuestion({ q: `Question ${i} ?` }));
-    const a = tirerSerie(pool, 10, 2, 0, generateurGraine(123));
-    const b = tirerSerie(pool, 10, 2, 0, generateurGraine(123));
+    const a = drawSeries(pool, 10, 2, 0, generateurGraine(123));
+    const b = drawSeries(pool, 10, 2, 0, generateurGraine(123));
     expect(a.map((q) => q.q)).toEqual(b.map((q) => q.q));
   });
 
   it('ne modifie pas le pool d\'origine', () => {
     const pool = Array.from({ length: 10 }, (_, i) => makeQuestion({ q: `Q${i}` }));
     const copie = [...pool];
-    tirerSerie(pool, 5, 2, 0, mulberry32(1));
+    drawSeries(pool, 5, 2, 0, mulberry32(1));
     expect(pool).toEqual(copie);
   });
 });
@@ -81,38 +81,38 @@ describe('tirerSerie', () => {
 describe('melanger / melangerSeed / hash', () => {
   it('melanger conserve les éléments', () => {
     const t = [1, 2, 3, 4, 5, 6, 7, 8];
-    const m = melanger(t);
+    const m = shuffle(t);
     expect([...m].sort()).toEqual(t);
     expect(t).toEqual([1, 2, 3, 4, 5, 6, 7, 8]); // original intact
   });
 
   it('melangerSeed est déterministe et conserve les éléments', () => {
     const t = [1, 2, 3, 4, 5];
-    const a = melangerSeed(t, generateurGraine(9));
-    const b = melangerSeed(t, generateurGraine(9));
+    const a = shuffleSeeded(t, generateurGraine(9));
+    const b = shuffleSeeded(t, generateurGraine(9));
     expect(a).toEqual(b);
     expect([...a].sort()).toEqual(t);
   });
 
   it('hashTexte est stable et distinct pour deux textes', () => {
-    expect(hashTexte('voltquiz-2026-01-01')).toBe(hashTexte('voltquiz-2026-01-01'));
-    expect(hashTexte('a')).not.toBe(hashTexte('b'));
+    expect(hashText('voltquiz-2026-01-01')).toBe(hashText('voltquiz-2026-01-01'));
+    expect(hashText('a')).not.toBe(hashText('b'));
   });
 });
 
 describe('anti-répétition (séries mémorisées)', () => {
   it('sauvegarde et recharge une série (textes normalisés)', () => {
-    const cle = cleSerie('solo', 'facile', 'test');
-    sauverSerie(cle, [makeQuestion({ q: 'Question A ?' }), makeQuestion({ q: 'Question B ?' })]);
+    const key = seriesKey('solo', 'facile', 'test');
+    sauverSerie(key, [makeQuestion({ q: 'Question A ?' }), makeQuestion({ q: 'Question B ?' })]);
     // la série est stockée sous forme de textes normalisés (minuscules, sans ponctuation)
-    expect(chargerSerie(cle)).toEqual(['question a', 'question b']);
+    expect(loadSeries(key)).toEqual(['question a', 'question b']);
   });
 
   it('retire du pool les questions de la dernière série jouée', () => {
     const pool = Array.from({ length: 20 }, (_, i) => makeQuestion({ q: `Q${i}` }));
-    const cle = cleSerie('solo', 'facile', 'test');
-    sauverSerie(cle, pool.slice(0, 10));
-    const restant = poolSansSeriePrecedente(pool, cle, 10);
+    const key = seriesKey('solo', 'facile', 'test');
+    sauverSerie(key, pool.slice(0, 10));
+    const restant = poolWithoutPreviousSeries(pool, key, 10);
     expect(restant).toHaveLength(10);
     expect(restant.some((q) => q.q === 'Q0')).toBe(false);
   });

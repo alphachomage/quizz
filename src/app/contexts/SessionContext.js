@@ -1,15 +1,15 @@
 // SessionContext.js — compte local connecté (ou mode invité), consommé via useSession().
 import { createContext, createElement, useCallback, useContext, useState } from 'react';
 
-import { sessionActuelle, deconnecter } from '@lib/comptes.js';
+import { currentSession, disconnect } from '@lib/accounts.js';
 
 const SessionContext = createContext(null);
 
 export function SessionProvider({ children }) {
-  const [session, setSession] = useState(() => sessionActuelle());
+  const [session, setSession] = useState(() => currentSession());
 
   const deconnexion = useCallback(() => {
-    deconnecter();
+    disconnect();
     setSession(null);
   }, []);
 
@@ -17,7 +17,7 @@ export function SessionProvider({ children }) {
     session,
     setSession,
     deconnexion,
-    estInvite: !!(session && session.invite), // invité : pas d'XP, badges, titres ni classement
+    estInvite: !!(session && session.guest), // invité : pas d'XP, badges, titres ni classement
   };
   return createElement(SessionContext.Provider, { value: valeur }, children);
 }

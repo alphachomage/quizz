@@ -6,13 +6,13 @@
 import { useCallback, useState, startTransition } from 'react';
 
 export function useNavigation() {
-  const [ecran, setEcran] = useState('accueil'); // accueil | partie | resultat | formulaire | classement | stats | badges
+  const [screen, setEcran] = useState('accueil'); // accueil | partie | resultat | formulaire | classement | stats | badges
   const [config, setConfig] = useState(null); // { mode, niveau, theme, joueurs, tousThemes? }
-  const [resultat, setResultat] = useState(null); // récapitulatif de la dernière partie
+  const [result, setResultat] = useState(null); // récapitulatif de la dernière partie
 
   const allerVers = useCallback((e) => startTransition(() => setEcran(e)), []);
 
-  const demarrer = useCallback((cfg) => {
+  const start = useCallback((cfg) => {
     startTransition(() => {
       setConfig(cfg);
       setEcran('partie');
@@ -26,5 +26,5 @@ export function useNavigation() {
     });
   }, []);
 
-  return { ecran, config, resultat, allerVers, demarrer, terminer };
+  return { screen, config, result, allerVers, start, terminer };
 }

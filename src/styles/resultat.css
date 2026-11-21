@@ -1,21 +1,21 @@
 /* VoltQuiz — resultat (extrait de l'ancien styles.css, ordre conservé) */
 /* --- �cran de r�sultats : XP gagn�e (globale + par th�me) et top 10 --- */
 .record.top10 {
-  margin-top: 8px;
+  margin-top: var(--esp-8);
   background: var(--accent1);
   border: 1px solid var(--accent1);
-  color: #fff;
+  color: var(--blanc);
 }
 
 .xp-bloc {
-  margin-top: 16px;
+  margin-top: var(--esp-16);
   text-align: left;
 }
 
 .xp-globale {
   background: var(--carte);
   border: 1px solid var(--bordure);
-  border-radius: 12px;
+  border-radius: var(--radius-mini);
   padding: 10px 12px;
 }
 
@@ -23,40 +23,40 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: var(--esp-8);
   font-weight: 700;
   font-size: 0.92rem;
 }
 
 .xp-globale-val {
-  color: var(--or, #fbbf24);
+  color: var(--or);
 }
 
 .xp-globale-sous {
-  margin-top: 4px;
+  margin-top: var(--esp-4);
   font-size: 0.78rem;
-  color: var(--texte-doux, #a79ecb);
+  color: var(--texte-doux);
 }
 
 .xp-barre {
-  margin-top: 6px;
+  margin-top: var(--esp-6);
   height: 10px;
-  border-radius: 999px;
-  background: rgba(128, 128, 128, 0.3);
+  border-radius: var(--radius-pilule);
+  background: var(--desactive-30);
   overflow: hidden;
 }
 
 .xp-barre i {
   display: block;
   height: 100%;
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
   background: var(--accent1);
-  transition: width 0.6s ease;
+  transition: width var(--dur-lent) ease;
 }
 
 .xp-barre.petite {
   height: 6px;
-  margin-top: 4px;
+  margin-top: var(--esp-4);
 }
 
 .xp-themes {
@@ -65,24 +65,24 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--esp-8);
 }
 
 .xp-theme {
   background: var(--carte);
   border: 1px solid var(--bordure);
-  border-radius: 12px;
+  border-radius: var(--radius-mini);
   padding: 8px 12px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--esp-8);
   flex-wrap: wrap;
 }
 
 .xp-theme-nom {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--esp-6);
   font-weight: 600;
   font-size: 0.88rem;
   flex: 1;
@@ -90,54 +90,54 @@
 }
 
 .xp-theme-gain {
-  color: var(--or, #fbbf24);
+  color: var(--or);
   font-weight: 800;
   font-size: 0.88rem;
 }
 
 .xp-theme-niv {
   font-size: 0.78rem;
-  color: var(--texte-doux, #a79ecb);
+  color: var(--texte-doux);
 }
 
 .xp-theme .xp-barre {
   flex-basis: 100%;
-  margin-top: 2px;
+  margin-top: var(--esp-2);
 }
 
 .reglages {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--esp-10);
 }
 
 .reglage {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--esp-12);
   width: 100%;
   padding: 12px 14px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-petit);
+  border: 1px solid var(--bordure-fine);
   background: var(--carte);
-  color: #ece8ff;
+  color: var(--texte);
   cursor: pointer;
   text-align: left;
 }
 
 .reglage:hover {
-  background: rgba(128, 128, 128, 0.14);
+  background: var(--desactive-14);
 }
 
 .reglage-icone {
   display: inline-flex;
   width: 38px;
   height: 38px;
-  border-radius: 11px;
+  border-radius: var(--radius-11);
   align-items: center;
   justify-content: center;
   background: var(--accent1);
-  color: #141414;
+  color: var(--texte-sur-accent);
   flex-shrink: 0;
 }
 
@@ -148,17 +148,17 @@
 }
 
 .reglage-texte small {
-  color: #a79ecb;
+  color: var(--texte-doux);
 }
 
 .switch {
   width: 46px;
   height: 26px;
-  border-radius: 999px;
-  background: rgba(128, 128, 128, 0.35);
+  border-radius: var(--radius-pilule);
+  background: var(--desactive-35);
   position: relative;
   flex-shrink: 0;
-  transition: background 0.2s ease;
+  transition: background var(--dur-moyen) ease;
 }
 
 .switch i {
@@ -167,9 +167,9 @@
   left: 3px;
   width: 20px;
   height: 20px;
-  border-radius: 50%;
-  background: #fff;
-  transition: left 0.2s ease;
+  border-radius: var(--radius-rond);
+  background: var(--blanc);
+  transition: left var(--dur-moyen) ease;
 }
 
 .switch.on {
