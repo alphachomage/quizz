@@ -4,16 +4,16 @@
 .filtres-niveau {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--esp-8);
   margin: 4px 0 16px;
 }
 
 .filtre {
   padding: 7px 14px;
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
   border: 1px solid var(--bordure);
   background: var(--carte);
-  color: #cfc8ee;
+  color: var(--texte-doux);
   cursor: pointer;
   font-size: 0.88rem;
 }
@@ -21,12 +21,12 @@
 .filtre.actif {
   background: var(--accent1);
   border-color: transparent;
-  color: #fff;
+  color: var(--blanc);
   font-weight: 700;
 }
 
 .onglet {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--esp-6);
 }

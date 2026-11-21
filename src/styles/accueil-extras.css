@@ -6,16 +6,16 @@
   letter-spacing: 0.4px;
   text-transform: uppercase;
   background: var(--accent1);
-  color: #141414;
-  border-radius: 999px;
+  color: var(--texte-sur-accent);
+  border-radius: var(--radius-pilule);
   padding: 2px 8px;
 }
 
 .a-venir {
   font-weight: 800;
   background: var(--accent1);
-  color: #141414;
-  border-radius: 999px;
+  color: var(--texte-sur-accent);
+  border-radius: var(--radius-pilule);
   padding: 1px 9px;
   font-size: 0.78rem;
 }
@@ -35,12 +35,12 @@
 .tab-streak {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--esp-2);
   background: var(--accent1);
-  color: #141414;
+  color: var(--texte-sur-accent);
   font-weight: 900;
   font-size: 0.68rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
   padding: 2px 8px;
   animation: bolt-pulse 1.6s ease-in-out infinite;
 }
@@ -60,11 +60,11 @@
   display: flex;
   align-items: center;
   gap: 9px;
-  margin-top: 10px;
+  margin-top: var(--esp-10);
   padding: 7px 12px;
   background: var(--carte);
   border: 1px solid var(--bordure);
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
 }
 
 .pb-icone {
@@ -74,9 +74,9 @@
   width: 26px;
   height: 26px;
   flex-shrink: 0;
-  border-radius: 50%;
+  border-radius: var(--radius-rond);
   background: var(--accent1);
-  color: #141414;
+  color: var(--texte-sur-accent);
 }
 
 .pb-texte {
@@ -98,8 +98,8 @@
   width: 80px;
   height: 5px;
   flex-shrink: 0;
-  background: rgba(128, 128, 128, 0.3);
-  border-radius: 999px;
+  background: var(--desactive-30);
+  border-radius: var(--radius-pilule);
   overflow: hidden;
 }
 
@@ -107,20 +107,20 @@
   display: block;
   height: 100%;
   background: var(--accent1);
-  border-radius: 999px;
-  transition: width 0.3s ease;
+  border-radius: var(--radius-pilule);
+  transition: width var(--dur-standard) ease;
 }
 
 /* Pastille "Invite" (mode invite : pas d'XP, badges, titres ni leaderboard) */
 .chip-invite {
   background: var(--accent1);
-  color: #141414;
+  color: var(--texte-sur-accent);
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   padding: 2px 9px;
-  border-radius: 999px;
-  margin-left: 6px;
+  border-radius: var(--radius-pilule);
+  margin-left: var(--esp-6);
   vertical-align: middle;
 }

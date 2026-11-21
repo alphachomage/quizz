@@ -4,12 +4,12 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(5, 3, 15, 0.7);
-  backdrop-filter: blur(4px);
+  background: var(--voile-modal);
+  backdrop-filter: var(--flou-modal);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: var(--z-modal);
   padding: 20px;
 }
 
@@ -17,23 +17,23 @@
   width: 100%;
   max-width: 420px;
   background: var(--carte);
-  border: 1px solid rgba(0, 0, 0, 0.35);
-  border-radius: 18px;
+  border: 1px solid var(--bordure-foncee);
+  border-radius: var(--radius-moyen);
   padding: 18px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  box-shadow: var(--ombre-modal);
 }
 
 .modal-titre {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: var(--esp-12);
 }
 
 .modal-titre h2 {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--esp-8);
   margin: 0;
   font-size: 1.15rem;
 }

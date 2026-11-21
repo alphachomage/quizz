@@ -6,18 +6,18 @@
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 12px;
+  gap: var(--esp-12);
 }
 
 .badge {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: var(--esp-6);
   text-align: center;
   background: var(--carte);
   border: 1px solid var(--bordure);
-  border-radius: 16px;
+  border-radius: var(--radius-16);
   padding: 16px 12px;
   color: var(--texte-carte);
 }
@@ -27,7 +27,7 @@
 }
 
 .badge.verrouille .badge-icone {
-  background: rgba(128, 128, 128, 0.35);
+  background: var(--desactive-35);
   color: var(--texte-carte);
   filter: grayscale(1);
 }
@@ -38,18 +38,18 @@
 
 .badge.debloque .badge-icone {
   background: var(--accent1);
-  color: #141414;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  color: var(--texte-sur-accent);
+  box-shadow: var(--ombre-moyenne);
 }
 
 .badge-icone {
   width: 52px;
   height: 52px;
-  border-radius: 50%;
+  border-radius: var(--radius-rond);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(128, 128, 128, 0.25);
+  background: var(--desactive-25);
   color: var(--texte-carte);
 }
 
@@ -67,19 +67,19 @@
 .badge-statut {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  margin-top: 4px;
+  gap: var(--esp-5);
+  margin-top: var(--esp-4);
   font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   padding: 3px 10px;
-  border-radius: 999px;
-  background: rgba(128, 128, 128, 0.3);
+  border-radius: var(--radius-pilule);
+  background: var(--desactive-30);
   color: var(--texte-carte);
 }
 
 .badge.debloque .badge-statut {
   background: var(--accent1);
-  color: #141414;
+  color: var(--texte-sur-accent);
 }

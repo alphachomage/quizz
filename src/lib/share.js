@@ -30,7 +30,8 @@ export function liensPartage(texte, url) {
   };
 }
 
-// Image "story" 1080x1920 générée en direct (fond noir, carte violette, éclair jaune PEPS).
+// Image "story" 1080x1920 générée en direct, palette sobre (canvas = pas de var() CSS, valeurs en dur
+// à synchroniser avec src/styles/tokens.css) : fond #000000, carte #26262B, accent sable #D9D0B8.
 export async function storyImage({ pseudo, date, score, bonnes, total, streak }) {
   const L = 1080, H = 1920;
   const c = document.createElement('canvas');
@@ -42,15 +43,15 @@ export async function storyImage({ pseudo, date, score, bonnes, total, streak })
   ctx.fillStyle = '#000000';
   ctx.fillRect(0, 0, L, H);
 
-  // carte violette (30%) centrée
+  // carte gris ardoise (30%) centrée
   const m = 70, cw = L - m * 2, ch = 900, cy = 380;
-  ctx.fillStyle = '#A48DFF';
+  ctx.fillStyle = '#26262B';
   ctx.beginPath();
   ctx.roundRect(m, cy, cw, ch, 48);
   ctx.fill();
 
-  // éclair jaune PEPS (10%) : polygone du logo, centré en haut de la carte
-  ctx.fillStyle = '#FFD60A';
+  // éclair sable (10%) : polygone du logo, centré en haut de la carte
+  ctx.fillStyle = '#D9D0B8';
   const pts = [[13.6, 1.5], [4.2, 13.6], [9.8, 13.6], [8.6, 22.5], [18, 10.4], [12.4, 10.4]];
   const s = 16, ox = m + cw / 2 - 12 * s, oy = cy + 90;
   ctx.beginPath();
@@ -58,23 +59,26 @@ export async function storyImage({ pseudo, date, score, bonnes, total, streak })
   ctx.closePath();
   ctx.fill();
 
-  // textes
+  // textes (clairs sur carte sombre, contraste WCAG AA)
   ctx.textAlign = 'center';
-  ctx.fillStyle = '#000000';
+  ctx.fillStyle = '#D9D0B8';
   ctx.font = '900 64px Verdana, sans-serif';
   ctx.fillText('VOLTQUIZ', L / 2, cy + 480);
+  ctx.fillStyle = '#ECECEC';
   ctx.font = '700 44px Verdana, sans-serif';
   ctx.fillText(`Quizz du jour — ${date}`, L / 2, cy + 550);
+  ctx.fillStyle = '#D9D0B8';
   ctx.font = '900 150px Verdana, sans-serif';
-  ctx.fillStyle = '#000000';
   ctx.fillText(`${score} pts`, L / 2, cy + 720);
+  ctx.fillStyle = '#ECECEC';
   ctx.font = '700 40px Verdana, sans-serif';
   ctx.fillText(`${bonnes}/${total} bonnes réponses`, L / 2, cy + 790);
   if (streak > 1) ctx.fillText(`Série de ${streak} jours (éclair x${streak})`, L / 2, cy + 850);
 
-  ctx.fillStyle = '#FFD60A';
+  ctx.fillStyle = '#D9D0B8';
   ctx.font = '800 42px Verdana, sans-serif';
   ctx.fillText(pseudo || '', L / 2, H - 140);
+  ctx.fillStyle = '#9C9C94';
   ctx.font = '600 34px Verdana, sans-serif';
   ctx.fillText('voltquiz — le quiz rapide', L / 2, H - 90);
 

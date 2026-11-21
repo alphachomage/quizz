@@ -1,19 +1,17 @@
-/* VoltQuiz — tokens (extrait de l'ancien styles.css, ordre conservé) */
-/* ===== VoltQuiz — feuille de style globale (thème sombre moderne, effet verre) ===== */
+/* VoltQuiz — tokens : SEUL endroit où vivent les valeurs brutes de design.
+   Refonte en profondeur : on modifie ici, les 30 modules de src/styles/ suivent.
+   L'ordre des @import de src/styles.css doit rester identique (cascade) — voir docs/design.md. */
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
+/* ===== 1. Couleurs ===== */
 :root {
   /* 60-30-10 SOMBRE sobre : 60% noir #000000, 30% gris ardoise #26262B, 10% sable #D9D0B8 */
-  /* (palette "vivante" violet/jaune #FFD60A sauvegardee dans PALETTES.md) */
+  /* (palette "vivante" violet/jaune #FFD60A archivée dans PALETTES.md) */
   --fond: #000000;
   --carte: #26262B;
   --carte-2: #1D1D23;
   --bordure: rgba(255, 255, 255, 0.14);
+  --bordure-fine: rgba(255, 255, 255, 0.1); /* filets discrets (stats, réglages) */
+  --bordure-foncee: rgba(0, 0, 0, 0.35); /* bordure de la modale */
   --texte: #ECECEC;
   --texte-doux: #9C9C94;
   --texte-carte: #F4F4F2;
@@ -21,6 +19,118 @@
   --accent1: #D9D0B8;
   --accent2: #D9D0B8;
   --or: #D9D0B8;
+
+  /* Sable #D9D0B8 à alpha (remplace les anciens ambres/violets "vivants") */
+  --accent-08: rgba(217, 208, 184, 0.08);
+  --accent-12: rgba(217, 208, 184, 0.12);
+  --accent-16: rgba(217, 208, 184, 0.16);
+  --accent-35: rgba(217, 208, 184, 0.35);
+  --accent-45: rgba(217, 208, 184, 0.45);
+  --accent-50: rgba(217, 208, 184, 0.5);
+  --accent-55: rgba(217, 208, 184, 0.55);
+  --accent-60: rgba(217, 208, 184, 0.6);
+  --accent-65: rgba(217, 208, 184, 0.65);
+  --accent-85: rgba(217, 208, 184, 0.85);
+  --accent-95: rgba(217, 208, 184, 0.95);
+
+  /* Sémantique fonctionnelle (hors 60-30-10 mais requise pour lire le feedback ;
+     le mode daltonien la remplace par Okabe-Ito dans accessibilite.css) */
+  --texte-sur-accent: #141414; /* texte foncé sur fond accent sable (contraste WCAG AA) */
+  --blanc: #FFFFFF;
+  --blanc-doux: rgba(255, 255, 255, 0.25);
+  --blanc-40: rgba(255, 255, 255, 0.4);
+  --succes: #4ade80;
+  --succes-fond: #16a34a;
+  --succes-15: rgba(74, 222, 128, 0.15);
+  --erreur: #f87171;
+  --erreur-fort: #ff5d73;
+  --erreur-texte: #ff8fa3;
+  --erreur-fond: #7f1d1d;
+  --erreur-12: rgba(248, 113, 113, 0.12);
+  --erreur-14: rgba(248, 113, 113, 0.14);
+  --erreur-15: rgba(248, 113, 113, 0.15);
+  --erreur-40: rgba(248, 113, 113, 0.4);
+  --erreur-50: rgba(248, 113, 113, 0.5);
+
+  /* Gris neutre : états désactivés, fonds de barres vides */
+  --desactive-12: rgba(128, 128, 128, 0.12);
+  --desactive-14: rgba(128, 128, 128, 0.14);
+  --desactive-15: rgba(128, 128, 128, 0.15);
+  --desactive-18: rgba(128, 128, 128, 0.18);
+  --desactive-25: rgba(128, 128, 128, 0.25);
+  --desactive-30: rgba(128, 128, 128, 0.3);
+  --desactive-35: rgba(128, 128, 128, 0.35);
+
+  /* Voile noir neutre derrière la modale */
+  --voile-modal: rgba(0, 0, 0, 0.7);
+
+  /* ===== 2. Rayons ===== */
+  --radius-pilule: 999px;
+  --radius-carte: 26px;
+  --radius-grand: 22px;
+  --radius-moyen: 18px;
+  --radius-petit: 14px;
+  --radius-mini: 12px;
+  --radius-micro: 10px;
+  --radius-rond: 50%;
+  --radius-2: 2px;
+  --radius-9: 9px;
+  --radius-11: 11px;
+  --radius-15: 15px;
+  --radius-16: 16px;
+  --radius-28: 28px;
+
+  /* ===== 3. Ombres (toujours neutres rgba(0,0,0,...), jamais colorées) ===== */
+  --ombre-3d: 0 4px 0 rgba(0, 0, 0, 0.35);
+  --ombre-3d-presse: 0 1px 0 rgba(0, 0, 0, 0.35);
+  --ombre-petite: 0 3px 10px rgba(0, 0, 0, 0.25);
+  --ombre-moyenne: 0 4px 14px rgba(0, 0, 0, 0.25);
+  --ombre-carte: 0 6px 18px rgba(0, 0, 0, 0.3);
+  --ombre-bouton: 0 10px 26px rgba(0, 0, 0, 0.35);
+  --ombre-bouton-hover: 0 14px 32px rgba(0, 0, 0, 0.45);
+  --ombre-modal: 0 24px 60px rgba(0, 0, 0, 0.55);
+  --filtre-glow: drop-shadow(0 8px 30px rgba(0, 0, 0, 0.45));
+
+  /* ===== 4. Durées de transition / animation ===== */
+  --dur-rapide: 0.12s;
+  --dur-court: 0.15s;
+  --dur-moyen: 0.2s;
+  --dur-pop: 0.25s;
+  --dur-standard: 0.3s;
+  --dur-demi: 0.5s;
+  --dur-lent: 0.6s;
+
+  /* ===== 5. Z-index ===== */
+  --z-infobulle: 5;
+  --z-fixe: 40;
+  --z-confettis: 50;
+  --z-gain: 60;
+  --z-modal: 100;
+
+  /* ===== 6. Espacements (nommés en px : --esp-8 = 8px) ===== */
+  --esp-2: 2px;
+  --esp-4: 4px;
+  --esp-5: 5px;
+  --esp-6: 6px;
+  --esp-7: 7px;
+  --esp-8: 8px;
+  --esp-10: 10px;
+  --esp-12: 12px;
+  --esp-14: 14px;
+  --esp-16: 16px;
+  --esp-18: 18px;
+  --esp-20: 20px;
+  --esp-24: 24px;
+
+  /* ===== 7. Effets divers ===== */
+  --flou-carte: blur(12px);
+  --flou-modal: blur(4px);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html,
@@ -39,7 +149,7 @@ body {
 .app {
   max-width: 720px;
   margin: 0 auto;
-  /* padding-bottom r�serve la place de la barre d'action fixe (bouton "C'est parti") */
+  /* padding-bottom réserve la place de la barre d'action fixe (bouton "C'est parti") */
   padding: 36px 20px calc(110px + env(safe-area-inset-bottom));
   min-height: 100vh;
   display: flex;

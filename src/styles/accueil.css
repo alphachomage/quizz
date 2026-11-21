@@ -5,14 +5,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 18px;
+  gap: var(--esp-8);
+  margin-bottom: var(--esp-18);
 }
 
 .user-bloc {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--esp-10);
   min-width: 0;
 }
 
@@ -22,11 +22,11 @@
   flex-shrink: 0;
   padding: 0;
   border: 2px solid var(--bordure);
-  border-radius: 50%;
+  border-radius: var(--radius-rond);
   overflow: hidden;
   cursor: pointer;
   background: var(--carte-2);
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  transition: border-color var(--dur-court) ease, transform var(--dur-court) ease;
 }
 
 .avatar-btn:hover {
@@ -47,15 +47,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #141414;
+  color: var(--texte-sur-accent);
   background: var(--accent1);
-  color: #fff;
 }
 
 .user-infos {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: var(--esp-5);
   min-width: 0;
 }
 
@@ -64,16 +63,16 @@
   font-size: 0.98rem;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--esp-8);
 }
 
 .user-niv {
   padding: 1px 8px;
   font-size: 0.7rem;
   font-weight: 800;
-  color: #1a0b2e;
+  color: var(--texte-sur-accent);
   background: var(--accent1);
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
 }
 
 .user-xpbar {
@@ -81,8 +80,8 @@
   width: 150px;
   max-width: 40vw;
   height: 6px;
-  background: rgba(128, 128, 128, 0.3);
-  border-radius: 999px;
+  background: var(--desactive-30);
+  border-radius: var(--radius-pilule);
   overflow: hidden;
 }
 
@@ -90,12 +89,12 @@
   display: block;
   height: 100%;
   background: var(--accent1);
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
 }
 
 .avatar-erreur {
   font-size: 0.75rem;
-  color: #ff8fa3;
+  color: var(--erreur-texte);
   max-width: 240px;
 }
 
@@ -104,14 +103,14 @@
   max-width: 420px;
   background: var(--carte);
   border: 1px solid var(--bordure);
-  border-radius: 26px;
+  border-radius: var(--radius-carte);
   padding: 30px 24px;
-  backdrop-filter: blur(12px);
-  animation: pop 0.3s ease;
+  backdrop-filter: var(--flou-carte);
+  animation: pop var(--dur-standard) ease;
 }
 
 .note-local {
-  margin-top: 14px;
+  margin-top: var(--esp-14);
   font-size: 0.8rem;
   color: var(--texte-doux);
   line-height: 1.5;
@@ -126,7 +125,7 @@
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--esp-12);
   font-family: Georgia, 'Palatino Linotype', 'Book Antiqua', serif;
   font-size: 2.2rem;
   font-weight: 400;
@@ -140,14 +139,14 @@
   justify-content: center;
   width: 44px;
   height: 44px;
-  border-radius: 15px;
+  border-radius: var(--radius-15);
   background: var(--accent1);
-  color: #141414;
+  color: var(--texte-sur-accent);
 }
 
 .tagline {
   color: var(--texte-doux);
-  margin-top: 10px;
+  margin-top: var(--esp-10);
   font-size: 0.98rem;
   line-height: 1.55;
   max-width: 480px;
@@ -158,7 +157,7 @@
 /* S�lecteur de mode en onglets (UX : un seul endroit compact pour choisir le mode) */
 .modes-tabs {
   display: flex;
-  gap: 8px;
+  gap: var(--esp-8);
 }
 
 .mode-tab {
@@ -170,12 +169,12 @@
   padding: 12px 4px;
   background: var(--carte);
   border: 1px solid var(--bordure);
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
   color: var(--texte-doux);
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  transition: border-color var(--dur-court) ease, background var(--dur-court) ease, color var(--dur-court) ease;
 }
 
 .mode-tab.actif {
@@ -195,8 +194,8 @@
 .noms {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 16px;
+  gap: var(--esp-10);
+  margin-top: var(--esp-16);
 }
 
 .noms input {
@@ -206,9 +205,9 @@
   color: var(--texte);
   background: var(--carte);
   border: 1px solid var(--bordure);
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: border-color var(--dur-court) ease;
 }
 
 .noms input:focus {
@@ -232,22 +231,22 @@
 .themes {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: var(--esp-14);
 }
 
 .theme {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 5px;
+  gap: var(--esp-5);
   padding: 14px;
   background: var(--carte);
   border: 1px solid var(--bordure);
-  border-radius: 22px;
+  border-radius: var(--radius-grand);
   color: var(--texte);
   cursor: pointer;
   text-align: left;
-  transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+  transition: border-color var(--dur-court) ease, transform var(--dur-court) ease, background var(--dur-court) ease;
 }
 
 .theme:hover {
@@ -264,7 +263,7 @@
 .theme-haut {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--esp-10);
   width: 100%;
 }
 
@@ -275,11 +274,11 @@
   width: 38px;
   height: 38px;
   flex-shrink: 0;
-  border-radius: 12px;
-  color: #fff;
+  border-radius: var(--radius-mini);
+  color: var(--blanc);
   background: var(--couleur, var(--accent1));
   box-shadow:
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.4),
+    inset 0 1.5px 0 var(--blanc-40),
     inset 0 -8px 14px rgba(0, 0, 0, 0.22),
     0 6px 14px rgba(0, 0, 0, 0.32);
 }
@@ -298,7 +297,7 @@
   color: var(--texte-doux);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--esp-8);
   flex-wrap: wrap;
 }
 
@@ -311,9 +310,9 @@
   padding: 2px 9px;
   font-size: 0.72rem;
   font-weight: 800;
-  color: #fff;
+  color: var(--blanc);
   background: var(--couleur, var(--accent1));
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
 }
 
 .theme-nb {
@@ -327,16 +326,16 @@
   display: block;
   width: 100%;
   height: 5px;
-  margin-top: 4px;
-  background: rgba(128, 128, 128, 0.3);
-  border-radius: 999px;
+  margin-top: var(--esp-4);
+  background: var(--desactive-30);
+  border-radius: var(--radius-pilule);
   overflow: hidden;
 }
 
 .theme-xpbar i {
   display: block;
   height: 100%;
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
 }
 
 /* --- Manche / bonus --- */
@@ -346,11 +345,11 @@
 }
 
 .chip.manche.bonus {
-  color: #1a0b2e;
+  color: var(--texte-sur-accent);
   font-weight: 900;
   background: var(--accent1);
   border: none;
-  animation: pop 0.3s ease;
+  animation: pop var(--dur-standard) ease;
 }
 
 /* --- Sélecteur de niveau --- */
@@ -358,7 +357,7 @@
 .niveaux {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: var(--esp-10);
 }
 
 .niveau {
@@ -366,17 +365,17 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: var(--esp-7);
   padding: 10px 6px;
   font-size: 0.9rem;
   background: var(--carte);
   border: 1px solid var(--bordure);
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
   color: var(--texte);
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+  transition: border-color var(--dur-court) ease, transform var(--dur-court) ease, background var(--dur-court) ease;
 }
 
 .niveau:hover {
@@ -387,5 +386,5 @@
   border-color: var(--couleur);
   background: var(--carte-2);
   transform: scale(1.04);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--ombre-carte);
 }

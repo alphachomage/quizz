@@ -5,25 +5,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: var(--esp-10);
   width: 100%;
-  margin-top: 24px;
+  margin-top: var(--esp-24);
   padding: 18px 24px;
   font-size: 1.1rem;
   font-weight: 600;
   letter-spacing: 0.3px;
-  color: #141414;
+  color: var(--texte-sur-accent);
   background: var(--accent1);
   border: none;
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
   cursor: pointer;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
-  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+  box-shadow: var(--ombre-bouton);
+  transition: transform var(--dur-rapide) ease, box-shadow var(--dur-rapide) ease, opacity var(--dur-rapide) ease;
 }
 
 .btn-principal:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.45);
+  box-shadow: var(--ombre-bouton-hover);
 }
 
 .btn-principal:active:not(:disabled) {
@@ -40,18 +40,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--esp-8);
   width: 100%;
-  margin-top: 12px;
+  margin-top: var(--esp-12);
   padding: 14px 20px;
   font-size: 1rem;
   font-weight: 500;
   color: var(--texte);
   background: var(--carte);
   border: 1px solid var(--bordure);
-  border-radius: 999px;
+  border-radius: var(--radius-pilule);
   cursor: pointer;
-  transition: transform 0.12s ease, background 0.12s ease;
+  transition: transform var(--dur-rapide) ease, background var(--dur-rapide) ease;
 }
 
 .btn-secondaire:hover {
