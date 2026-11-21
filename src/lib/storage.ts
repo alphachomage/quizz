@@ -1,5 +1,6 @@
-// storage.ts — UNIQUE point d'accès au stockage persistant (localStorage aujourd'hui,
-// demain Cloudflare D1 via fetch('/api/kv/<cle>') derrière le même contrat lire/ecrire).
+// storage.ts — UNIQUE point d'accès au stockage persistant : localStorage en cache
+// local + miroir serveur D1 (table sync_client) via fetch('/api/kv/<cle>') derrière
+// le même contrat read/write/remove.
 //
 // RÈGLES :
 // - Aucun composant ne touche localStorage directement : tout passe par lire/ecrire.

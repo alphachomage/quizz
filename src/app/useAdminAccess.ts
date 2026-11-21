@@ -1,0 +1,54 @@
+// useAdminAccess.ts — gate de la vue admin. Le flag ?admin=1 SEUL ne suffit plus
+// (n'importe qui avec le lien y avait accès) : il faut une session compte (pas invité)
+// dont le pseudo figure dans la var d'env ADMIN_PSEUDOS côté serveur, vérifiée via
+// GET /api/admin/check (la liste des admins ne sort jamais du serveur).
+// En mode stockage 'local' (?stockage=local, hors-ligne), aucune vérification serveur
+// n'est possible -> la vue admin est indisponible.
+import { useEffect, useState } from 'react';
+import { STORAGE_MODE } from '@lib/storage.js';
+import { apiAdminCheck } from '@lib/api.js';
+import type { SessionStockee } from './contexts/SessionContext.js';
+
+/** État d'accès à la vue admin. */
+export interface AdminAccess {
+  isAdmin: boolean;
+  /** true tant que la vérification serveur est en cours (écran de chargement). */
+  enCours: boolean;
+}
+
+export function useAdminAccess(flagAdmin: boolean, session: SessionStockee | null): AdminAccess {
+  const [autorise, setAutorise] = useState(false);
+  const [enCours, setEnCours] = useState(flagAdmin);
+  useEffect(() => {
+    if (!flagAdmin) {
+      setAutorise(false);
+      setEnCours(false);
+      return;
+    }
+    // Invité ou mode hors-ligne : pas d'admin (vérification serveur impossible).
+    if (!session || session.guest || STORAGE_MODE !== 'd1') {
+      setAutorise(false);
+      setEnCours(false);
+      return;
+    }
+    let actif = true;
+    setEnCours(true);
+    apiAdminCheck(session.pseudo)
+      .then((r) => {
+        if (actif) setAutorise(r.admin === true);
+      })
+      .catch(() => {
+        if (actif) setAutorise(false);
+      })
+      .finally(() => {
+        if (actif) setEnCours(false);
+      });
+    return () => {
+      actif = false;
+    };
+  }, [flagAdmin, session]);
+  return {
+    isAdmin: flagAdmin && autorise,
+    enCours: flagAdmin && enCours,
+  };
+}

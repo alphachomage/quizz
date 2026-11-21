@@ -1,5 +1,9 @@
-// xp.ts — XP et niveaux par thème (courbe racine). Stockée via lib/storage.js.
+// xp.ts — XP et niveaux par thème (courbe racine). Stockée en local (sync_client)
+// et, en mode 'd1', aussi dans la table D1 « xp » (clé pseudo:themeId).
 import { XpRepo } from './repositories.js';
+import { STORAGE_MODE } from './storage.js';
+import { apiSaveXp } from './api.js';
+import { currentSession } from './accounts.js';
 
 /** XP cumulée par thème (clé = themeId, valeur = XP totale). */
 export type XpMap = Record<string, number>;
@@ -13,6 +17,11 @@ export function addXp(themeId: string, montant: number): number {
   const xp = loadXp();
   xp[themeId] = (xp[themeId] || 0) + montant;
   XpRepo.save(xp);
+  // Mode 'd1' : l'XP part aussi dans la table D1 « xp » (best-effort).
+  if (STORAGE_MODE === 'd1') {
+    const pseudo = currentSession()?.pseudo;
+    if (pseudo) void apiSaveXp(pseudo, themeId, xp[themeId]).catch(() => {});
+  }
   return xp[themeId];
 }
 

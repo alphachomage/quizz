@@ -1,27 +1,25 @@
-// api.ts — client HTTP de l'API VoltQuiz (V2). Aujourd'hui l'appli fonctionne
-// 100 % en local ; quand le flag VOLTQUIZ_STOCKAGE=d1 est posé, lib/storage.js
-// bascule lire/ecrire sur ces appels. Zéro dépendance, fetch natif.
+// api.ts — client HTTP de l'API VoltQuiz (worker-api.ts). La base D1 est le stockage
+// par défaut (mode 'd1' de lib/storage.ts) : ce fichier expose toutes les routes
+// (sync_client, auth, parties, records, XP, soumissions, admin check, rooms).
+// Zéro dépendance, fetch natif.
 import { currentOrigin } from './nav.js';
-import type { GameResult } from './types.js';
 
 const BASE = '/api';
 
-// --- Formes des réponses JSON du worker (worker-api.js) ---
+// --- Formes des réponses JSON du worker (worker-api.ts) ---
 // Chaque route répond { ok: true, ... } ou { ok: false, error } (voir jsonError).
 
-/** /api/ping et /api/health (routes ouvertes, répondent même V2 off). */
+/** /api/ping et /api/health (routes de santé, toujours ouvertes). */
 export interface HealthResponse {
   ok: boolean;
   app?: string;
   version?: string;
-  v2?: boolean;
   hour?: string;
 }
 
-/** /api/stats : rooms KV, rapports CSP, hits 429 (503 si V2 off, géré côté appelant). */
+/** /api/stats : rooms KV, rapports CSP, hits 429 (tableau de bord admin). */
 export interface StatsResponse {
   ok: boolean;
-  v2?: boolean;
   rooms?: number;
   rapportsCsp?: number;
   hits429?: number;
@@ -48,6 +46,46 @@ export interface AuthResponse {
 export interface AddGameResponse {
   ok: boolean;
   id: string;
+}
+
+/** Partie envoyée à POST /api/parties (table D1 « parties », colonne pseudo indexée). */
+export interface GamePayload {
+  id?: string;
+  mode: string;
+  niveau: string | null;
+  themeId: string | null;
+  /** Compte connecté (normalisé côté serveur) : filtre GET /api/parties?pseudo=. */
+  pseudo?: string | null;
+  players: { nom: string; score: number; bonnes: number }[];
+  scores: number[];
+  bonnes: number[];
+  total: number;
+  details?: unknown[];
+  date?: string;
+}
+
+/** Soumission de question envoyée à POST /api/soumissions. */
+export interface SubmissionPayload {
+  id: string;
+  pseudo?: string | null;
+  themeId: string;
+  q: string;
+  reponses: string[];
+  bonne: number;
+  niveau: string;
+  info?: string;
+  date?: string;
+}
+
+export interface SubmissionsResponse {
+  ok: boolean;
+  soumissions: unknown[];
+}
+
+/** Réponse de GET /api/admin/check?pseudo=... : admin:true si le pseudo est dans ADMIN_PSEUDOS. */
+export interface AdminCheckResponse {
+  ok: boolean;
+  admin: boolean;
 }
 
 export interface GamesResponse {
@@ -116,7 +154,7 @@ async function appel<T = unknown>(chemin: string, options: AppelOptions = {}): P
   return data as T;
 }
 
-// Stockage clé/valeur générique (sync localStorage -> D1/KV côté serveur).
+// Stockage clé/valeur générique : miroir serveur (table D1 sync_client) du localStorage.
 export const kvGet = (key: string): Promise<KvGetResponse> =>
   appel(`/kv/${encodeURIComponent(key)}`);
 export const kvSet = (key: string, value: unknown): Promise<KvSetResponse> =>
@@ -129,10 +167,22 @@ export const kvSet = (key: string, value: unknown): Promise<KvSetResponse> =>
 export const kvDelete = (key: string): Promise<OkResponse> =>
   appel(`/kv/${encodeURIComponent(key)}`, { method: 'DELETE' });
 
-// Santé de l'API (route ouverte, répond même V2 off) + stats V2 (rooms KV,
-// rapports CSP, hits 429 — 503 si V2 off, à gérer côté appelant).
+// Santé de l'API (routes ouvertes) + stats (rooms KV, rapports CSP, hits 429).
 export const apiHealth = (): Promise<HealthResponse> => appel('/health');
 export const apiStats = (): Promise<StatsResponse> => appel('/stats');
+
+// Accès admin : 200 { admin: true } si le pseudo est dans ADMIN_PSEUDOS (serveur), 403 sinon.
+export const apiAdminCheck = (pseudo: string): Promise<AdminCheckResponse> =>
+  appel(`/admin/check?pseudo=${encodeURIComponent(pseudo)}`);
+
+// Soumissions de questions (table D1 soumissions, modération admin cross-device).
+export const apiSubmissions = (etat?: string): Promise<SubmissionsResponse> =>
+  appel(`/soumissions${etat ? `?etat=${encodeURIComponent(etat)}` : ''}`);
+export const apiAddSubmission = (s: SubmissionPayload): Promise<AddGameResponse> =>
+  appel('/soumissions', {
+    method: 'POST',
+    body: JSON.stringify(s),
+  });
 
 // Auth (hash vérifié côté serveur, PBKDF2 en V2).
 export const authSignup = (
@@ -158,7 +208,7 @@ export const authLogin = (pseudo: string, password: string): Promise<AuthRespons
   });
 
 // Parties / records / XP.
-export const apiAddGame = (game: GameResult): Promise<AddGameResponse> =>
+export const apiAddGame = (game: GamePayload): Promise<AddGameResponse> =>
   appel('/parties', {
     method: 'POST',
     body: JSON.stringify(game),

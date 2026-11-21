@@ -1,6 +1,6 @@
-// ServerCard.tsx — carte "Serveur (V2)" du tableau de bord admin : interroge
-// /api/health (ouvert) et /api/stats (rooms KV, rapports CSP, hits 429) via le hook
-// useServerStats. V2 off ou API injoignable -> affichage dégradé, jamais d'erreur.
+// ServerCard.tsx — carte "Serveur (API)" du tableau de bord admin : interroge
+// /api/health (route de santé) et /api/stats (rooms KV, rapports CSP, hits 429) via
+// le hook useServerStats. API injoignable -> affichage dégradé, jamais d'erreur.
 import type { ReactElement, ReactNode } from 'react';
 import type { ServerEtat } from '../useServerStats.js';
 import MetricCard from './MetricCard.jsx';
@@ -23,7 +23,7 @@ export default function ServerCard({ etat }: ServerCardProps): ReactElement {
     return (
       <MetricCard
         icone="globe"
-        title="Serveur (V2)"
+        title="Serveur (API)"
         value="…"
         sous="interrogation de /api/health"
       />
@@ -33,39 +33,27 @@ export default function ServerCard({ etat }: ServerCardProps): ReactElement {
     return (
       <MetricCard
         icone="globe"
-        title="Serveur (V2)"
+        title="Serveur (API)"
         value="API injoignable"
         sous="hors ligne ou sans worker"
       />
     );
   }
-  // Ici statut = 'v2-inactive' | 'ok' : le health est toujours renseigné.
-  const { health } = etat;
+  // statut === 'ok' : le health est renseigné, les stats peuvent manquer (réseau).
+  const { health, stats } = etat;
   const hour = health.hour ? new Date(health.hour).toLocaleString('fr-FR') : null;
   const sous = `VoltQuiz ${health.version || '?'}${hour ? ` · ${hour}` : ''}`;
-  if (etat.statut === 'v2-inactive') {
-    return (
-      <MetricCard icone="globe" title="Serveur (V2)" value="V2 inactive" sous={sous}>
-        <p className="metric-note">
-          Routes D1/KV/DO désactivées (V2_ENABLED != "true") : /api/stats renvoie 503.
-        </p>
-        <p className="metric-lien">
-          <a href="/api/health" target="_blank" rel="noreferrer">
-            ouvrir /api/health
-          </a>
-        </p>
-      </MetricCard>
-    );
-  }
-  // statut === 'ok' : les stats sont renseignées.
-  const stats = etat.stats;
   return (
-    <MetricCard icone="globe" title="Serveur (V2)" value="V2 active" sous={sous}>
-      <ul className="metric-liste">
-        {row('Rooms de duel ouvertes (KV)', stats.rooms)}
-        {row('Rapports CSP reçus', stats.rapportsCsp)}
-        {row('Hits rate-limit (429)', stats.hits429)}
-      </ul>
+    <MetricCard icone="globe" title="Serveur (API)" value="API active" sous={sous}>
+      {stats ? (
+        <ul className="metric-liste">
+          {row('Rooms de duel ouvertes (KV)', stats.rooms)}
+          {row('Rapports CSP reçus', stats.rapportsCsp)}
+          {row('Hits rate-limit (429)', stats.hits429)}
+        </ul>
+      ) : (
+        <p className="metric-note">/api/stats indisponible pour le moment.</p>
+      )}
       <p className="metric-lien">
         <a href="/api/health" target="_blank" rel="noreferrer">
           ouvrir /api/health

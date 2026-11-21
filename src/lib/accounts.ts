@@ -1,12 +1,51 @@
-// Comptes locaux : e-mail + mot de passe + pseudo, stockés UNIQUEMENT sur ce PC
-// (localStorage). Le mot de passe n'est JAMAIS stocké en clair : on stocke un
-// hash SHA-256 salé (crypto.subtle, dispo en local sur http://localhost).
+// Comptes : en mode 'd1' (défaut), inscription/connexion passent par le serveur
+// (POST /api/auth/*, hash PBKDF2 210k côté worker) ; le localStorage ne garde qu'un
+// CACHE du profil (pseudo, e-mail, avatar — JAMAIS de hash ni mot de passe).
+// En mode 'local' (?stockage=local, hors-ligne) : hash SHA-256 salé 100 % local,
+// le mot de passe n'est JAMAIS stocké en clair.
 import { normalizePseudo, isValidPseudo } from './moderation.js';
-import { read, write, remove, STORAGE_KEYS } from './storage.js';
+import { read, write, remove, STORAGE_KEYS, STORAGE_MODE } from './storage.js';
+import { authSignup, authLogin } from './api.js';
 import type { Account, Session } from './types.js';
 
-// Compte tel que persisté : le champ `date` historique est conservé tel quel.
-type StoredAccount = Account & { date?: string };
+// Compte tel que persisté en cache local : hash/sel/email ne sont présents qu'en
+// mode 'local' (en mode 'd1' le serveur détient le hash PBKDF2). Le champ `date`
+// historique est conservé tel quel.
+type StoredAccount = Omit<Account, 'hash' | 'sel' | 'email'> & {
+  hash?: string;
+  sel?: string;
+  email?: string;
+  date?: string;
+};
+
+// Traduit une erreur de l'appel API serveur en message utilisateur.
+function messageErreurServeur(e: unknown): string {
+  if (e instanceof TypeError) {
+    return "Serveur injoignable — réessaie, ou ouvre l'appli avec ?stockage=local.";
+  }
+  return e instanceof Error ? e.message : 'Erreur serveur.';
+}
+
+// Met à jour le cache local du profil (sans secret) à partir d'un compte serveur.
+function upsertCompteLocal(compte: {
+  pseudo: string;
+  pseudoNormalise: string;
+  email?: string;
+  avatar?: string | null;
+}): void {
+  const accounts = loadAccounts();
+  const i = accounts.findIndex((c) => c.pseudoNormalise === compte.pseudoNormalise);
+  const entree: StoredAccount = {
+    pseudo: compte.pseudo,
+    pseudoNormalise: compte.pseudoNormalise,
+    email: compte.email ?? (i >= 0 ? accounts[i].email : undefined),
+    avatar: compte.avatar ?? (i >= 0 ? accounts[i].avatar : null),
+    date: i >= 0 ? accounts[i].date : new Date().toISOString(),
+  };
+  if (i >= 0) accounts[i] = entree;
+  else accounts.push(entree);
+  saveAccounts(accounts);
+}
 
 // Session telle que persistée : le mode invité pose `guest: true` (champ historique).
 type StoredSession = Session & { guest?: boolean };
@@ -49,7 +88,9 @@ async function hashPassword(password: string, sel: string): Promise<string> {
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-// Crée un compte local. Retourne { ok: true, pseudo } ou { ok: false, erreur }.
+// Crée un compte. Mode 'd1' (défaut) : inscription serveur (PBKDF2, /api/auth/inscription)
+// + cache local du profil sans secret. Mode 'local' : hash SHA-256 salé 100 % local.
+// Retourne { ok: true, pseudo } ou { ok: false, erreur }.
 export async function createAccount({
   pseudo,
   email,
@@ -59,13 +100,6 @@ export async function createAccount({
   email: string;
   password: string;
 }): Promise<AccountResult> {
-  if (!secureContext()) {
-    return {
-      ok: false,
-      error:
-        "Contexte non sécurisé : ouvre l'appli en https ou sur localhost pour créer un compte.",
-    };
-  }
   const pseudoError = isValidPseudo(pseudo);
   if (pseudoError)
     return {
@@ -82,6 +116,38 @@ export async function createAccount({
       ok: false,
       error: 'Le mot de passe doit faire au moins 8 caractères.',
     };
+  if (STORAGE_MODE === 'd1') {
+    try {
+      await authSignup(pseudo, email, password);
+    } catch (e) {
+      return {
+        ok: false,
+        error: messageErreurServeur(e),
+      };
+    }
+    upsertCompteLocal({
+      pseudo,
+      pseudoNormalise: normalizePseudo(pseudo),
+      email,
+      avatar: null,
+    });
+    write(STORAGE_KEYS.session, {
+      pseudo,
+      avatar: null,
+    });
+    return {
+      ok: true,
+      pseudo,
+    };
+  }
+  // --- mode 'local' (hors-ligne) ---
+  if (!secureContext()) {
+    return {
+      ok: false,
+      error:
+        "Contexte non sécurisé : ouvre l'appli en https ou sur localhost pour créer un compte.",
+    };
+  }
   if (pseudoExists(pseudo))
     return {
       ok: false,
@@ -110,22 +176,48 @@ export async function createAccount({
   };
 }
 
-// Connexion : vérifie le hash du mot de passe. Retourne { ok, pseudo? , erreur? }.
+// Connexion : mode 'd1' -> vérification serveur (PBKDF2, /api/auth/connexion, hash
+// comparé en temps constant) ; mode 'local' -> hash SHA-256 local.
+// Retourne { ok, pseudo? , erreur? }.
 export async function connect(pseudo: string, password: string): Promise<AccountResult> {
+  const n = normalizePseudo(pseudo);
+  if (STORAGE_MODE === 'd1') {
+    try {
+      const r = await authLogin(pseudo, password || '');
+      upsertCompteLocal({
+        pseudo: r.pseudo,
+        pseudoNormalise: n,
+        avatar: currentAvatarCache(n),
+      });
+      write(STORAGE_KEYS.session, {
+        pseudo: r.pseudo,
+        avatar: currentAvatarCache(n),
+      });
+      return {
+        ok: true,
+        pseudo: r.pseudo,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: messageErreurServeur(e),
+      };
+    }
+  }
+  // --- mode 'local' ---
   if (!secureContext()) {
     return {
       ok: false,
       error: 'Contexte non sécurisé : la connexion nécessite https ou localhost.',
     };
   }
-  const n = normalizePseudo(pseudo);
   const account = loadAccounts().find((c) => c.pseudoNormalise === n);
   if (!account)
     return {
       ok: false,
       error: 'Aucun compte avec ce pseudo sur ce PC.',
     };
-  const hash = await hashPassword(password || '', account.sel);
+  const hash = await hashPassword(password || '', account.sel || '');
   if (hash !== account.hash)
     return {
       ok: false,
@@ -139,6 +231,12 @@ export async function connect(pseudo: string, password: string): Promise<Account
     ok: true,
     pseudo: account.pseudo,
   };
+}
+
+// Avatar en cache local pour un pseudo normalisé (évite de relire toute la liste).
+function currentAvatarCache(pseudoNormalise: string): string | null {
+  const c = loadAccounts().find((x) => x.pseudoNormalise === pseudoNormalise);
+  return c?.avatar || null;
 }
 export function currentSession(): StoredSession | null {
   try {

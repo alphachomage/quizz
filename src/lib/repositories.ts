@@ -1,8 +1,9 @@
 // repositories.ts — repositories métier au-dessus de storage.ts (R7/R8).
-// Chaque "repo" encapsule UNE clé de stockage (CLES) et expose des méthodes métier :
-// plus aucun appel direct lire(CLES.x)/ecrire(CLES.x) dans le reste du code.
-// Demain (V2, MODE_STOCKAGE='d1'), on branche ces repos sur l'API serveur
-// (api.ts) sans toucher aux appelants.
+// Chaque "repo" encapsule UNE clé de stockage (STORAGE_KEYS) et expose des méthodes
+// métier : plus aucun appel direct read(STORAGE_KEYS.x)/write(...) dans le reste du code.
+// En mode 'd1', chaque write part aussi dans la table D1 sync_client (via storage.ts) ;
+// les données métier structurées (comptes, parties, records, XP, soumissions) partent
+// en plus vers leurs tables dédiées via api.ts (voir accounts/game-history/records/xp/submissions).
 import { STORAGE_KEYS, read, write, remove } from './storage.js';
 import type {
   GameDetail,
