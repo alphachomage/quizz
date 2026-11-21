@@ -1,4 +1,4 @@
-// vitest.config.js — configuration de la suite de tests, SÉPARÉE de vite.config.js.
+// vitest.config.ts — configuration de la suite de tests, SÉPARÉE de vite.config.ts.
 // Aucun plugin Cloudflare/PWA ici : les tests tournent en jsdom pur.
 // Alias identique à l'appli : '@' -> src/.
 import { fileURLToPath } from 'node:url';
@@ -27,7 +27,7 @@ export default defineConfig({
     coverage: {
       reporter: ['text', 'json-summary'],
       include: ['src/**/*.{js,jsx,ts,tsx}'],
-      exclude: ['src/data/**', 'src/main.jsx'], // data = validé par test:data ; main = bootstrap PWA
+      exclude: ['src/data/**', 'src/main.tsx'], // data = validé par test:data ; main = bootstrap PWA
       // Seuils appliqués en CI (npm run test:coverage) : plancher actuel, à relever
       // (ratchet) quand la couverture monte. Ne jamais les baisser.
       thresholds: {

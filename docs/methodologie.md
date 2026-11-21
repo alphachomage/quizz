@@ -63,7 +63,7 @@ Pour les grosses demandes (ex. rédiger un lot de questions), déléguer à des 
 chacun sur SA branche et SES fichiers uniquement, max 3 en parallèle (limite réseau) ;
 le parent relit (code + docs), teste (lint + tests + build), puis merge. Les lots de
 questions rédigés par sub-agents doivent passer un contrôle anti-doublons
-(normalisation minuscules/sans accents, `normalizeQuestionText` dans `src/lib/text.js`).
+(normalisation minuscules/sans accents, `normalizeQuestionText` dans `src/lib/text.ts`).
 
 ## Déploiement
 

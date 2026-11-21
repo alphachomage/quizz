@@ -12,8 +12,8 @@ npx cap sync            # après chaque build : npm run build && npx cap sync
 npx cap open android    # ouvre Android Studio
 ```
 
-- Le routing par état (`src/app/useNavigation.js`, PAS de react-router d'URL) est
+- Le routing par état (`src/app/useNavigation.ts`, PAS de react-router d'URL) est
   volontaire : 100 % compatible PWA + Capacitor.
 - PWA déjà installable + hors-ligne ; Capacitor embarque la même build (`dist/`).
 - V2 (duel en ligne) d'abord : WebSocket `/api/duel/:room` (Durable Object
-  `durable-objects/DuelRoom.js`) + comptes D1 — le mobile en profite directement.
+  `durable-objects/DuelRoom.ts`) + comptes D1 — le mobile en profite directement.

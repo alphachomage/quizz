@@ -10,7 +10,7 @@
 | @cloudflare/vite-plugin + wrangler | déploiement Workers (`worker.js`, `wrangler.toml`) |
 | Vitest + Testing Library + jsdom | tests (`vitest.config.js` séparé de `vite.config.js`) |
 | ESLint flat + Prettier + madge | lint (règles R1-R5 en erreur, 0 erreur 0 warning toléré), format, imports circulaires (`npm run lint:arch`) |
-| zod | validation des données externes (`src/lib/schema.js`) |
+| zod | validation des données externes (`src/lib/schema.ts`) |
 
 Conventions de langue : **code en anglais, commentaires en français** ; UI et contenus
 en français ; les **clés du schéma de données** (`q`, `reponses`, `bonne`, `niveau`,
@@ -21,39 +21,39 @@ français (format documenté pour le client, compatibilité avec les données ex
 
 ```
 src/
-├── main.jsx                # StrictMode + ErrorBoundary + registerSW + preloadFromServer() + <App/>
+├── main.tsx                # StrictMode + ErrorBoundary + registerSW + preloadFromServer() + <App/>
 ├── styles.css              # UNIQUEMENT des @import vers styles/ (ordre = cascade conservée)
 ├── app/                    # shell
-│   ├── App.jsx             # ~176 L : early returns + délègue le rendu à Screens.jsx
-│   ├── Screens.jsx         # rendu des écrans connectés (routes lazy) + Tutorial + UnlockModal
-│   ├── AppProviders.jsx    # SessionProvider + PrefsProvider + ThemesProvider
+│   ├── App.tsx             # early returns + délègue le rendu à Screens.tsx
+│   ├── Screens.tsx         # rendu des écrans connectés (routes lazy) + Tutorial + UnlockModal
+│   ├── AppProviders.tsx    # SessionProvider + PrefsProvider + ThemesProvider
 │   ├── routes.js           # 9 écrans en React.lazy (1 chunk JS par écran)
 │   ├── useNavigation.js    # routing par état, setState en startTransition (pas de flash)
 │   ├── useUnlock.js        # snapshot badges/titres -> modale de déblocage à la fin
 │   ├── urlFlags.js         # flags URL (?admin=1, ?tuto=1, ?reset=1...) + redirigerVers
 │   └── contexts/           # SessionContext.js · PrefsContext.js · ThemesContext.js (3 max)
 ├── features/               # UNE feature = UN dossier autonome (jamais features/X -> features/Y, R4)
-│   ├── home/               # Home.jsx + useHome.js + components/ (ModeTabs, ThemeGrid,
+│   ├── home/               # Home.tsx + useHome.ts + components/ (ModeTabs, ThemeGrid,
 │   │                       #   LevelModal, FixedCta, UserBar, BadgeBanner, DuelNames)
-│   ├── game/               # Game.jsx + useGame.js + useTimer.js + draw.js + constants.js
+│   ├── game/               # Game.tsx + useGame.ts + useTimer.ts + draw.ts + constants.ts
 │   │                       #   + components/ (TopBar, TimerLine, Answers, Feedback,
 │   │                       #   PassDevice, Confetti, ReportButton)
-│   ├── results/            # Results.jsx + persist.js + gameStats.js + useShare.js
-│   │                       #   + components/ShareModal.jsx
-│   ├── leaderboard/        # Leaderboard.jsx
-│   ├── account/            # Account.jsx
-│   ├── admin/              # AdminReports.jsx + components/ (ReportedSection, ProposedSection,
+│   ├── results/            # Results.tsx + persist.ts + gameStats.ts + useShare.ts
+│   │                       #   + components/ShareModal.tsx
+│   ├── leaderboard/        # Leaderboard.tsx
+│   ├── account/            # Account.tsx
+│   ├── admin/              # AdminReports.tsx + components/ (ReportedSection, ProposedSection,
 │   │                       #   SuggestionsSection, ThemesSection)
-│   ├── question-form/      # QuestionForm.jsx + components/ (AnswersField, SimilarityAlert)
-│   ├── tutorial/           # Tutorial.jsx
-│   ├── unlock/             # UnlockModal.jsx
-│   ├── badges/             # Badges.jsx
-│   └── stats/              # Stats.jsx + statsCompute.js + components/ (StatCards, StatLists,
+│   ├── question-form/      # QuestionForm.tsx + components/ (AnswersField, SimilarityAlert)
+│   ├── tutorial/           # Tutorial.tsx
+│   ├── unlock/             # UnlockModal.tsx
+│   ├── badges/             # Badges.tsx
+│   └── stats/              # Stats.tsx + statsCompute.js + components/ (StatCards, StatLists,
 │                           #   XpProgress, Last30Days, MonthCalendar)
 ├── shared/                 # transversal (n'importe que lib/ + react, R3)
-│   ├── ui/                 # Icon.jsx (dictionnaire SVG, zéro emoji, ~360 L : plafond souple)
-│   │                       #   · Modal.jsx (role=dialog, Échap, focus trap) · ErrorBoundary.jsx
-│   ├── modals/             # Settings.jsx · Profile.jsx · Suggestions.jsx (modales transverses)
+│   ├── ui/                 # Icon.tsx (dictionnaire SVG, zéro emoji, ~360 L : plafond souple)
+│   │                       #   · Modal.tsx (role=dialog, Échap, focus trap) · ErrorBoundary.tsx
+│   ├── modals/             # Settings.tsx · Profile.tsx · Suggestions.tsx (modales transverses)
 │   ├── hooks/useStorage.js # useSyncExternalStore sur lib/storage.js
 │   └── utils/              # mergeThemes.js · downloadJson.js
 ├── lib/                    # PUR (pas de React) : 29 modules .ts + types.ts, imports directs (pas de barrel)
@@ -79,8 +79,9 @@ Tout le code applicatif est en **TypeScript** (`src/**/*.{ts,tsx}`, `strict: tru
 nativement : aucun changement de build. Les 263 fichiers `src/data/questions-*.js`
 restent en **JS pur** (règle 7) : leur forme est déclarée dans `src/data/questions.d.ts`
 et validée au runtime par zod (`src/lib/schema.ts`, `z.infer` pour les types).
-Migration en cours : `allowJs: true` + `checkJs: false`, un fichier converti passe en
-strict — c'est le ratchet.
+Migration **terminée** (2026-11) : tout `src/` + `tests/` + worker sont en `.ts`/`.tsx`
+strict. Restent en JS : les 263 chunks `questions-*.js` + `theme-manifest.js` (généré),
+`eslint.config.js`, `scripts/*.mjs`.
 
 ## Règles de dépendance (en ERREUR via ESLint, testées négativement)
 
@@ -94,7 +95,7 @@ strict — c'est le ratchet.
   restreinte à ces 3 fichiers).
 - R6 pas d'import circulaire (madge, `npm run lint:arch`) ; 1 fichier = 1 responsabilité ;
   plafond indicatif 200 L **souple** (un fichier peut dépasser si les lignes ont du sens
-  ensemble, ex. `Icon.jsx`, `sounds.js`).
+  ensemble, ex. `Icon.tsx`, `sounds.js`).
 - R9 3 contexts max, consommés via hooks (`useSession`/`usePrefs`/`useThemes`).
 - R10 routing par état (`useNavigation`), PAS de react-router d'URL (compatible PWA + Capacitor).
 - ESLint : **0 erreur ET 0 warning** tolérés (`npm run lint`) — `no-console` error,
@@ -102,10 +103,10 @@ strict — c'est le ratchet.
 
 ## Chargement lazy (deux niveaux)
 
-- **Écrans** : `routes.js` = `React.lazy` par écran + `<Suspense>` global dans `App.jsx`
+- **Écrans** : `routes.js` = `React.lazy` par écran + `<Suspense>` global dans `App.tsx`
   (fallback « Chargement… ») ; `useNavigation` en `startTransition` garde l'écran
   précédent visible pendant le chargement.
-- **Questions** : `src/data/questions.js` découpe les 263 fichiers `questions-*.js` en
+- **Questions** : `src/data/questions.ts` découpe les 263 fichiers `questions-*.js` en
   chunks (~10 Ko chacun) via `import.meta.glob` non eager, MAIS `loadThemes()` charge
   TOUS les chunks au démarrage (voir `docs/questions.md`). La PWA précache tous les
   chunks -> hors-ligne OK.

@@ -1,8 +1,8 @@
 # Feature accueil
 
-`src/features/home/Home.jsx` (render-only) + `useHome.js` + `components/` (7
+`src/features/home/Home.tsx` (render-only) + `useHome.js` + `components/` (7
 sous-composants). Modales transverses dans `src/shared/modals/`. Écran chargé en
-React.lazy (`src/app/routes.js`, clé `home`).
+React.lazy (`src/app/routes.ts`, clé `home`).
 
 - 4 onglets pilule de modes (`ModeTabs` : Solo, Duel, Survie, Quizz du jour avec
   pastille série).

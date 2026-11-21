@@ -1,17 +1,17 @@
 # Stockage local -> Cloudflare D1 (migration V2)
 
 **Principe : le localStorage reste le cache local.** Toute la persistance passe par une
-couche d'abstraction (`src/lib/storage.js` + `src/lib/repositories.js`) qui peut basculer
+couche d'abstraction (`src/lib/storage.ts` + `src/lib/repositories.ts`) qui peut basculer
 sur D1 via l'API sans toucher aux composants.
 
 ## Côté client
 
-- `src/lib/storage.js` — **unique point d'accès** : registre `STORAGE_KEYS` (17 clés,
+- `src/lib/storage.ts` — **unique point d'accès** : registre `STORAGE_KEYS` (17 clés,
   noms français conservés : `voltquiz_prefs`, `voltquiz_comptes`, `voltquiz_parties`...),
   `read` / `write` / `remove` (JSON, compat ancien format brut), `subscribe`/`notifier`.
-  Le hook réactif est `useStorage` (`src/shared/hooks/useStorage.js`,
+  Le hook réactif est `useStorage` (`src/shared/hooks/useStorage.ts`,
   `useSyncExternalStore` + event `storage` cross-onglet).
-- `src/lib/repositories.js` — **1 repo par clé STORAGE_KEYS** (PrefsRepo, SessionRepo,
+- `src/lib/repositories.ts` — **1 repo par clé STORAGE_KEYS** (PrefsRepo, SessionRepo,
   AccountsRepo, RecordsRepo, XpRepo, GamesRepo (500 max), SubmissionsRepo, ApprovedRepo,
   ReportsRepo, SuggestionsRepo, ExcludedRepo, SeriesRepo, DailyStreakRepo, TutorialRepo,
   FavoriteBadgeRepo, ActiveTitleRepo, ResetSubmissionsRepo) + `clearAll()`. Aucun appel
@@ -19,7 +19,7 @@ sur D1 via l'API sans toucher aux composants.
 - **Flag** : `STORAGE_MODE` dans `storage.js` = `'local'` par défaut, `'d1'` avec
   `?stockage=d1` dans l'URL (test). En `'d1'` :
   - `write()` pousse aussi au serveur en arrière-plan : `POST /api/kv/<cle>` (best-effort) ;
-  - `preloadFromServer()` (appelé dans `src/main.jsx`) remplit le cache local depuis
+  - `preloadFromServer()` (appelé dans `src/main.tsx`) remplit le cache local depuis
     `GET /api/kv/<cle>` pour chaque clé STORAGE_KEYS au démarrage (no-op en `'local'`).
   L'appli reste 100 % utilisable hors-ligne ; la synchro serveur reprend au prochain write.
 - R5 (lint en error) : aucun composant n'appelle le stockage ni `localStorage` directement.
@@ -38,8 +38,8 @@ sur D1 via l'API sans toucher aux composants.
   `/api/ping|health`, `/api/csp-report`. Toutes : validation, body cap 64 Ko,
   `Cache-Control: no-store`, rate limit 30/min/IP (dans `worker.js`), porte
   **V2_ENABLED** (hors routes de santé -> 503 si désactivé).
-- `durable-objects/DuelRoom.js` : room de duel temps réel (présence + relais d'actions).
-- `src/lib/api.js` : client fetch de ces routes (`kvGet`/`kvSet` utilisés par storage.js,
+- `durable-objects/DuelRoom.ts` : room de duel temps réel (présence + relais d'actions).
+- `src/lib/api.ts` : client fetch de ces routes (`kvGet`/`kvSet` utilisés par storage.js,
   `authSignup`/`authLogin`, `apiAddGame`/`apiGames`, `apiRecord`/`apiSaveRecord`,
   `apiXp`/`apiSaveXp`, `apiCreateRoom`/`apiJoinRoom`/`apiRoom`, `apiDuelSocket`).
 

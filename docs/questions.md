@@ -11,7 +11,7 @@ npm run count:questions   # node scripts/count-questions.mjs
 Résultat actuel : **14 thèmes en fichiers, 13 561 questions** (263 fichiers
 `src/data/questions-*.js`), 73 doublons exacts, 0 question invalide. Parmi ces 14
 thèmes, **2 sont retirés du jeu** (`RETIRED_THEMES = ['insolite', 'pop-culture']` dans
-`src/data/questions.js` : leurs 150 questions chacune ont été reclassées dans les
+`src/data/questions.ts` : leurs 150 questions chacune ont été reclassées dans les
 autres thèmes via `questions-redistribution.js`) -> **12 thèmes actifs**.
 
 ```bash
@@ -24,7 +24,7 @@ régénère `src/data/theme-manifest.js` (auto via `predev`/`prebuild`, ou à la
 
 ## Chargement : chunks lazy, mais tout est chargé au démarrage
 
-`src/data/questions.js` utilise `import.meta.glob('./questions-*.js')` **non eager** :
+`src/data/questions.ts` utilise `import.meta.glob('./questions-*.js')` **non eager** :
 chaque fichier `questions-*.js` est découpé en un chunk (~10 Ko) par le bundler, et la
 PWA précache tous les chunks (hors-ligne OK). **Mais** `loadThemes()` (appelée par
 `ThemesContext` au démarrage) charge **tous les chunks** via `Promise.all` : le lazy
@@ -51,9 +51,9 @@ sont disponibles immédiatement.
 ```
 
 `bonne` = index (0-based) dans `reponses` ; 2 à 4 réponses ; `niveau` obligatoire
-(`facile` | `moyen` | `dur`) ; `icone` = nom d'une icône de `src/shared/ui/Icon.jsx`.
+(`facile` | `moyen` | `dur`) ; `icone` = nom d'une icône de `src/shared/ui/Icon.tsx`.
 Même `id` qu'un thème existant = questions ajoutées à ce thème (fusion par
-`mergeThemes` dans `src/shared/utils/mergeThemes.js`).
+`mergeThemes` dans `src/shared/utils/mergeThemes.ts`).
 
 ## Thèmes et couleurs (ne jamais inventer de couleur)
 
@@ -77,19 +77,19 @@ Même `id` qu'un thème existant = questions ajoutées à ce thème (fusion par
 ## Deux façons d'ajouter ses questions
 
 1. **Depuis l'appli** (« Proposer une question », débloqué au niveau 3 du thème,
-   `SUBMISSION_LEVEL_THRESHOLD` dans `src/lib/submissions.js`) : détection de
-   similarité (`src/lib/similarity.js`, Jaccard mots+bigrammes, seuil 0.4
+   `SUBMISSION_LEVEL_THRESHOLD` dans `src/lib/submissions.ts`) : détection de
+   similarité (`src/lib/similarity.ts`, Jaccard mots+bigrammes, seuil 0.4
    `THRESHOLD_SIMILAR`, quasi-identique 0.85 `THRESHOLD_IDENTICAL`), puis
    **validation manuelle** dans `?admin=1` : la proposition passe de « en attente »
    (`voltquiz_soumissions`) à « validées » (`voltquiz_validees`, jouables,
    exportables en JSON via `downloadJson`) et disparaît de la liste des propositions.
 2. **Via le fichier** `public/questions-utilisateur.json` (fetch au démarrage, validé
-   par zod `validatePersonalFile` dans `src/lib/schema.js`, puis fusionné dans
+   par zod `validatePersonalFile` dans `src/lib/schema.ts`, puis fusionné dans
    `ThemesContext`).
 
 ## Admin (`?admin=1`)
 
-`src/features/admin/AdminReports.jsx`. Signalements (pouce rouge en partie, clé
+`src/features/admin/AdminReports.tsx`. Signalements (pouce rouge en partie, clé
 `voltquiz_signales`) : « Garder » ou « Retirer du pool » (exclusion via
 `voltquiz_exclues`, appliquée dans `loadThemes()`, retrait effectif au rechargement ;
 les fichiers source ne sont jamais modifiés). Propositions en attente, suggestions

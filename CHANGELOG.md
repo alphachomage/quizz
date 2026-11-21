@@ -6,6 +6,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 ## Non publié
 
 ### Modifié
+- **Migration TypeScript terminée** : `tests/` en `.ts`/`.tsx` (20 fichiers), `vite.config.ts` + `vitest.config.ts`. Le projet est 100 % TS hors `src/data/questions-*.js` + `theme-manifest.js` (généré), `eslint.config.js` et `scripts/*.mjs`. `tsc --noEmit` strict = 0 erreur, lint 0/0, 130 tests OK, build + dry-run OK.
+
+
+### Modifié
 - **Phases 2-3 de la migration TS mergées : `src/` est 100 % TypeScript** (lib, data loader + questions.d.ts, shared, app, toutes les features, main.tsx ; seul `src/data/theme-manifest.js` généré reste en JS). Worker aussi en TS (`worker.ts`, `worker-api.ts`, `DuelRoom.ts`, `main = "worker.ts"` dans wrangler.toml, types locaux `durable-objects/workers-env.d.ts`). `@types/react`/`@types/react-dom` ajoutés. `tsc --noEmit` strict = 0 erreur, lint 0/0, 130 tests OK, build + dry-run OK.
 
 

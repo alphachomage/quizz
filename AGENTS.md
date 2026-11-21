@@ -19,12 +19,12 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
 ## Règles absolues (non négociables)
 
 1. **UI et contenus en français. AUCUN emoji** (ni UI ni doc, y compris README) : icônes
-   SVG uniquement dans `src/shared/ui/Icon.jsx`.
+   SVG uniquement dans `src/shared/ui/Icon.tsx`.
 2. **Code en anglais, commentaires en français** (uniquement quand une décision n'est pas
-   limpide — ne pas commenter l'évident). **TypeScript partout** (`src/**/*.{ts,tsx}`) :
-   migration en cours, `checkJs: false` tant que tout n'est pas converti ; `npm run typecheck`
-   (`tsc --noEmit`, strict sur les fichiers TS) doit rester vert. Les 263 fichiers
-   `src/data/questions-*.js` restent en JS pur (type déclaré dans `src/data/questions.d.ts`). Exception documentée : les **clés du schéma de
+   limpide — ne pas commenter l'évident). **TypeScript partout** : `src/`, `tests/`, `worker*.ts`, `durable-objects/`, `vite.config.ts`,
+   `vitest.config.ts` sont en `.ts`/`.tsx` strict (`npm run typecheck` = `tsc --noEmit`, vert requis).
+   Restent en JS pur : les 263 fichiers `src/data/questions-*.js` + `theme-manifest.js` généré
+   (règle 7 ; type déclaré dans `src/data/questions.d.ts`), `eslint.config.js` et `scripts/*.mjs`. Exception documentée : les **clés du schéma de
    données** (`q`, `reponses`, `bonne`, `niveau`, `info`, `nom`, `icone`, `couleur`) restent
    en français car c'est le format JSON documenté pour le client
    (`docs/questions.md`) et les clés localStorage existantes.
@@ -35,11 +35,11 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
    `src/styles/tokens.css`).
 4. **1 responsabilité par fichier** ; plafond indicatif 200 lignes, **souple** : un fichier
    peut dépasser 200 L si les lignes ont du sens ensemble (ex. dictionnaire d'icônes
-   `Icon.jsx`, synthétiseurs `sounds.js`) — sinon découper. Logique en hooks `useX.js`,
-   fonctions pures dans `src/lib/` (zéro import React/DOM hors `sounds.js`).
+   `Icon.tsx`, synthétiseurs `sounds.ts`) — sinon découper. Logique en hooks `useX.ts`,
+   fonctions pures dans `src/lib/` (zéro import React/DOM hors `sounds.ts`).
 5. **Aucun composant ne touche `localStorage`/`document`/`window.location`/`location`
-   directement** : passer par `src/lib/storage.js` (read/write/remove/useStorage),
-   `src/lib/nav.js` (origine/params URL/reload) et `src/app/urlFlags.js` (flags URL).
+   directement** : passer par `src/lib/storage.ts` (read/write/remove/useStorage),
+   `src/lib/nav.ts` (origine/params URL/reload) et `src/app/urlFlags.ts` (flags URL).
    Règle R5 appliquée en ERREUR par ESLint (exemption UNIQUEMENT pour `storage.js`,
    `nav.js`, `urlFlags.js`).
 6. **ESLint : 0 erreur ET 0 warning tolérés** (`npm run lint`). Règles revues pour React :

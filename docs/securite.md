@@ -42,20 +42,20 @@ manifest, JSON ; `public, max-age=31536000, immutable` sur `/assets/*` (hashés)
 
 ## Données externes (client)
 
-- **zod** (`src/lib/schema.js`) : `public/questions-utilisateur.json` (fetch) et
+- **zod** (`src/lib/schema.ts`) : `public/questions-utilisateur.json` (fetch) et
   soumissions/validées (localStorage) validés avant usage (`validatePersonalFile`,
   `validateSubmissions`) ; `bonne < reponses.length` garanti. La base intégrée est
   validée par `npm run test:data`.
 - **XSS** : jamais de `dangerouslySetInnerHTML`/`innerHTML`/`eval` (grep en review).
   React échappe par défaut.
 - **Mots de passe** : jamais en clair. Local : SHA-256 salé (`crypto.randomUUID` +
-  `crypto.subtle`, guard `secureContext()` dans `src/lib/accounts.js` -> erreur
+  `crypto.subtle`, guard `secureContext()` dans `src/lib/accounts.ts` -> erreur
   claire hors contexte sécurisé). Serveur V2 : PBKDF2 210 000 itérations
   (`worker-api.js`).
-- **Modération pseudos** (`src/lib/moderation.js`) : liste bloquée (nazisme,
+- **Modération pseudos** (`src/lib/moderation.ts`) : liste bloquée (nazisme,
   homophobie, misogynie, racisme, insultes, sexuel), leetspeak décodé, sous-chaîne
   >= 4 caractères.
-- **Avatars** (`src/lib/avatar.js`) : JPEG/PNG/WebP <= 3 Mo, recadré 128 px,
+- **Avatars** (`src/lib/avatar.ts`) : JPEG/PNG/WebP <= 3 Mo, recadré 128 px,
   heuristique de nudité + hash perceptuel aHash comparé à `public/avatars-bloques.json`.
 
 ## Règles d'architecture (ESLint, en ERREUR)
@@ -65,7 +65,7 @@ manifest, JSON ; `public, max-age=31536000, immutable` sur `/assets/*` (hashés)
 R4 features/X jamais features/Y, seuls `app/urlFlags.js` + `app/contexts/` autorisés
 depuis features/) et `no-restricted-globals` localStorage/sessionStorage/location +
 `no-restricted-properties` window.location/window.history/document.location (R5 :
-exemption UNIQUEMENT pour `src/lib/storage.js`, `src/lib/nav.js`, `src/app/urlFlags.js`).
+exemption UNIQUEMENT pour `src/lib/storage.ts`, `src/lib/nav.ts`, `src/app/urlFlags.ts`).
 ESLint 0 erreur 0 warning exigé (`npm run lint`). Madge vérifie l'absence d'imports
 circulaires (`npm run lint:arch`).
 

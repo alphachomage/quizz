@@ -2,7 +2,7 @@
 
 `src/features/game/` :
 
-- `Game.jsx` (~88 L, render seul) + `components/` : TopBar, TimerLine, Answers,
+- `Game.tsx` (~88 L, render seul) + `components/` : TopBar, TimerLine, Answers,
   Feedback, PassDevice, Confetti, ReportButton.
 - `useGame.js` : toute la logique (états, `answer`/`suivant`/`pret`/`finir`/
   `signalerQuestion`, effets musique/tick/auto-advance, guard pool vide).
@@ -11,5 +11,5 @@
 - `constants.js` : palettes de réponses (`ANSWER_COLORS`, Okabe-Ito `COLORBLIND_COLORS`)
   et confettis (`CONFETTI_COLORS`).
 
-Règles du jeu : voir `docs/jeu.md`. Tests : `tests/integration/game-*.test.jsx` +
-`tests/unit/features/game-draw.test.js`.
+Règles du jeu : voir `docs/jeu.md`. Tests : `tests/integration/game-*.test.tsx` +
+`tests/unit/features/game-draw.test.ts`.

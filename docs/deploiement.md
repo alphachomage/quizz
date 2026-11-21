@@ -36,7 +36,7 @@ npm run tail            # wrangler tail --format pretty (logs temps réel)
   `npm run lint:arch`, `npm run test:unit`, `npm run test:data`,
   `npm run build`.
 - Job **integration** (chaque push/PR) : matrice `game: [game-solo, game-duel,
-  game-survival, game-daily]` -> `npx vitest run tests/integration/<game>.test.jsx`
+  game-survival, game-daily]` -> `npx vitest run tests/integration/<game>.test.tsx`
   en parallèle (`fail-fast: false`).
 - Job **coverage** (chaque push/PR) : `npm run test:coverage` — échoue si les seuils de
   `vitest.config.js` ne sont pas atteints (ratchet) — puis upload de l'artifact

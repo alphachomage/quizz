@@ -3,15 +3,15 @@
 `src/features/results/` :
 
 - `persist.js` : `persistResult(result, isGuest, prefs)` — appelée UNE FOIS depuis
-  `App.terminer` (`src/app/App.jsx`, PAS un useEffect du composant d'affichage) :
+  `App.terminer` (`src/app/App.tsx`, PAS un useEffect du composant d'affichage) :
   record, historique, XP par thème + globale, rang top 10, streak du jour, sons
   record/fin. Résultat passé au composant via `res.persistance`.
 - `gameStats.js` (pur) : `computeGameStats` (temps moyen/question, meilleure série),
   `levelPercent`.
-- `useShare.js` + `components/ShareModal.jsx` : partage du quizz du jour
-  (`src/lib/share.js`).
-- `Results.jsx` (~200 L, render seul) : score, gagnant duel, record (avec « avant »),
+- `useShare.js` + `components/ShareModal.tsx` : partage du quizz du jour
+  (`src/lib/share.ts`).
+- `Results.tsx` (~200 L, render seul) : score, gagnant duel, record (avec « avant »),
   stats de la partie, bloc XP, top 10, boutons Rejouer (hors série précédente) /
   Accueil.
 
-Tests : `tests/unit/features/result-persist.test.js`.
+Tests : `tests/unit/features/result-persist.test.ts`.

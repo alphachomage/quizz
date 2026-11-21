@@ -3,7 +3,7 @@
 ## Règles absolues
 
 - **Aucun emoji** nulle part (UI ni doc). Toutes les icônes sont des SVG 24x24 dans
-  `src/shared/ui/Icon.jsx` (duotone : forme pleine `currentColor` + détails découpés
+  `src/shared/ui/Icon.tsx` (duotone : forme pleine `currentColor` + détails découpés
   via `--couleur` du parent).
 - **Palette 60-30-10, AUCUN dégradé** (`linear-gradient` interdit, vérifié par grep en review).
   60 % fond, 30 % cartes, 10 % accent. Texte foncé `#141414` sur les fonds accent.
@@ -156,8 +156,8 @@ Vérifié avant/après chaque commit par `npm run lint && npm test && npm run bu
   concerné.
 - `accessibilite.css` : palette Okabe-Ito du mode daltonien, `#3A3A3A` (focus en thème clair),
   `#ffffff`/`#111111` (lettres daltonien) — intentionnels.
-- `src/lib/share.js` : l'image "story" est dessinée en canvas (pas de var() CSS) avec la
+- `src/lib/share.ts` : l'image "story" est dessinée en canvas (pas de var() CSS) avec la
   palette sobre en dur (`#000000`, `#26262B`, `#D9D0B8`, `#ECECEC`, `#9C9C94`) — à
   synchroniser avec `tokens.css` si la palette change.
-- `src/features/game/Game.jsx` : barre de points en dur (`#2fd27a` / `#FFD60A` / `#ff5d73`)
+- `src/features/game/Game.tsx` : barre de points en dur (`#2fd27a` / `#FFD60A` / `#ff5d73`)
   — candidat à migrer vers des tokens (hors périmètre de cette passe).
