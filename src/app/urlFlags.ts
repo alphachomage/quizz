@@ -1,9 +1,17 @@
-// urlFlags.js — SEUL module habilité à lire window.location / window.history
+// urlFlags.ts — SEUL module habilité à lire window.location / window.history
 // (règle R5 : aucun composant ne touche window.location directement).
 // Gère les flags d'URL de la version d'essai : ?admin=1 ?reset=1 ?resetcompte=1 ?tuto=1
 
+/** Flags d'URL lus au démarrage de l'appli. */
+export interface UrlFlags {
+  admin: boolean;
+  reset: boolean;
+  resetcompte: boolean;
+  tutorial: boolean;
+}
+
 // Lit les flags présents dans l'URL actuelle.
-export function readUrlFlags() {
+export function readUrlFlags(): UrlFlags {
   const params = new URLSearchParams(window.location.search);
   return {
     admin: params.get('admin') === '1',
@@ -14,7 +22,7 @@ export function readUrlFlags() {
 }
 
 // Retire des flags de l'URL sans recharger la page (history.replaceState).
-function clearUrlFlags(noms) {
+function clearUrlFlags(noms: string[]): void {
   const params = new URLSearchParams(window.location.search);
   for (const n of noms) params.delete(n);
   const qs = params.toString();
@@ -24,7 +32,7 @@ function clearUrlFlags(noms) {
 // URL de l'appli sans le flag ?admin=1 (utilisée pour quitter la vue admin,
 // avec rechargement complet pour retirer les exclusions du pool).
 export { clearUrlFlags };
-export function urlWithoutAdminFlag() {
+export function urlWithoutAdminFlag(): string {
   const params = new URLSearchParams(window.location.search);
   params.delete('admin');
   const qs = params.toString();
@@ -33,7 +41,7 @@ export function urlWithoutAdminFlag() {
 
 // URL de l'appli avec UN paramètre posé (ex. ?reset=1, ?stockage=d1) en conservant
 // les flags déjà présents (admin=1...) — utilisée par le tableau de bord admin.
-function urlWithParam(nom, value) {
+function urlWithParam(nom: string, value: string): string {
   const params = new URLSearchParams(window.location.search);
   params.set(nom, value);
   const qs = params.toString();
@@ -42,7 +50,7 @@ function urlWithParam(nom, value) {
 
 // URL de l'appli avec UN paramètre supprimé (ex. retirer ?stockage=d1).
 export { urlWithParam };
-function urlWithoutParam(nom) {
+function urlWithoutParam(nom: string): string {
   const params = new URLSearchParams(window.location.search);
   params.delete(nom);
   const qs = params.toString();
@@ -51,11 +59,11 @@ function urlWithoutParam(nom) {
 
 // Recharge la page vers une URL donnée (ex. quitter la vue admin).
 export { urlWithoutParam };
-export function redirigerVers(url) {
+export function redirigerVers(url: string): void {
   window.location.assign(url);
 }
 
 // Lit UN paramètre de l'URL actuelle (ex. ?jour=libre) sans recharger.
-// Implémentation dans lib/nav.js (R1 : lib n'importe pas app, l'inverse est OK) :
+// Implémentation dans lib/nav.ts (R1 : lib n'importe pas app, l'inverse est OK) :
 // on la réexporte ici pour garder le point d'entrée unique côté app.
 export { readUrlParam } from '@lib/nav.js';

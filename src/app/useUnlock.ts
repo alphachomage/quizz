@@ -1,13 +1,43 @@
-// useCelebration.js — animation de déblocage (badge/titre nouveau) affichée sur
+// useUnlock.ts — animation de déblocage (badge/titre nouveau) affichée sur
 // l'accueil au retour d'une partie : snapshot des déblocages au LANCEMENT de la
 // partie, diff au moment où elle se termine.
 import { useCallback, useRef, useState } from 'react';
 import { computeBadges } from '@lib/badges.js';
+import type { ComputedBadge } from '@lib/badges.js';
 import { computeTitles } from '@lib/titles.js';
+import type { ComputedTitle } from '@lib/titles.js';
 import { playSound, vibrate } from '@lib/sounds.js';
-export function useUnlock({ isGuest: isGuest, prefs }) {
-  const snapshotRef = useRef(null);
-  const [celebration, setCelebration] = useState(null); // { badges: [...], titres: [...] }
+import type { Prefs } from '@lib/types.js';
+
+/** Déblocages photographiés au lancement d'une partie. */
+interface UnlockSnapshot {
+  badges: Set<string>;
+  titles: Set<string>;
+}
+
+/** Nouveautés à célébrer (transmises à UnlockModal). */
+export interface Celebration {
+  badges: ComputedBadge[];
+  titles: ComputedTitle[];
+}
+
+/** Paramètres du hook : mode invité (pas de célébration) + préférences (sons/vibrations). */
+export interface UnlockParams {
+  isGuest: boolean;
+  prefs: Prefs;
+}
+
+/** Contrat du hook consommé par App et Screens. */
+export interface UnlockState {
+  celebration: Celebration | null;
+  prendreSnapshot: () => void;
+  revelerNouveautes: () => boolean;
+  closeCelebration: () => void;
+}
+
+export function useUnlock({ isGuest, prefs }: UnlockParams): UnlockState {
+  const snapshotRef = useRef<UnlockSnapshot | null>(null);
+  const [celebration, setCelebration] = useState<Celebration | null>(null);
 
   // Appelé au démarrage d'une partie : on photographie les déblocages actuels.
   const prendreSnapshot = useCallback(() => {
@@ -28,8 +58,8 @@ export function useUnlock({ isGuest: isGuest, prefs }) {
   // Appelé à la fin d'une partie : calcule les nouveautés et déclenche la célébration.
   const revelerNouveautes = useCallback(() => {
     const snap = snapshotRef.current || {
-      badges: new Set(),
-      titles: new Set(),
+      badges: new Set<string>(),
+      titles: new Set<string>(),
     };
     const nouveauxBadges = computeBadges().filter((b) => b.debloque && !snap.badges.has(b.id));
     const nouveauxTitres = computeTitles().filter((t) => t.debloque && !snap.titles.has(t.id));
@@ -49,6 +79,6 @@ export function useUnlock({ isGuest: isGuest, prefs }) {
     celebration,
     prendreSnapshot,
     revelerNouveautes,
-    closeCelebration: closeCelebration,
+    closeCelebration,
   };
 }

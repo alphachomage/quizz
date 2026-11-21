@@ -1,4 +1,4 @@
-// routes.js — table écran -> composant. Chaque écran est chargé À LA DEMANDE
+// routes.ts — table écran -> composant. Chaque écran est chargé À LA DEMANDE
 // (React.lazy) : le bundle initial ne contient plus que le shell, l'écran courant
 // part dans son propre chunk (voir le build : index ne fait plus que ~300 Ko).
 import { lazy } from 'react';
