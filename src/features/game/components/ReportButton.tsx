@@ -1,7 +1,15 @@
-// SignalerBouton.jsx — pouce rouge : signaler la question courante (compteur admin,
+// SignalerBouton.tsx — pouce rouge : signaler la question courante (compteur admin,
 // jamais affiché côté joueur).
+import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
-export default function ReportButton({ isReported: isReported, onSignaler }) {
+
+/** Props : déjà signalée ? + callback de signalement. */
+interface ReportButtonProps {
+  isReported: boolean;
+  onSignaler: () => void;
+}
+
+export default function ReportButton({ isReported, onSignaler }: ReportButtonProps): ReactElement {
   return (
     <div className="signaler">
       <button

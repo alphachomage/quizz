@@ -1,14 +1,21 @@
-// Reponses.jsx — les 2 à 4 boutons de réponse. En phase 'reponse', la bonne est
+// Reponses.tsx — les 2 à 4 boutons de réponse. En phase 'reponse', la bonne est
 // marquée, la mauvaise sélectionnée aussi, les autres estompées.
+import type { CSSProperties } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import { LETTERS } from '../constants.js';
-export default function Answers({
-  question,
-  phase,
-  selection,
-  answerColor: answerColor,
-  onAnswer: onAnswer,
-}) {
+import type { DrawnQuestion } from '../draw.js';
+import type { GamePhase } from '../useGame.js';
+
+/** Props des boutons de réponse : question courante, phase, sélection et couleur par réponse. */
+interface AnswersProps {
+  question: DrawnQuestion;
+  phase: GamePhase;
+  selection: number | null;
+  answerColor: (r: string, i: number) => string;
+  onAnswer: (i: number) => void;
+}
+
+export default function Answers({ question, phase, selection, answerColor, onAnswer }: AnswersProps) {
   return (
     <div className="reponses">
       {question.reponses.map((r, i) => {
@@ -18,13 +25,13 @@ export default function Answers({
           else if (i === selection) classe += ' mauvaise';
           else classe += ' estompee';
         }
+        // '--couleur' est une propriété CSS custom : csstype ne la connaît pas, d'où le cast.
+        const style = { '--couleur': answerColor(r, i) } as CSSProperties;
         return (
           <button
             key={i}
             className={classe}
-            style={{
-              '--couleur': answerColor(r, i),
-            }}
+            style={style}
             disabled={phase !== 'question'}
             onClick={() => onAnswer(i)}
           >

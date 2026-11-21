@@ -1,7 +1,16 @@
-// PasseAppareil.jsx — écran « passe l'appareil » entre deux tours (mode duel uniquement :
+// PasseAppareil.tsx — écran « passe l'appareil » entre deux tours (mode duel uniquement :
 // clic obligatoire pour garder le secret entre les joueurs).
+import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
-export default function PassDevice({ joueur, themeColor: themeColor, onPret }) {
+
+/** Props : nom du joueur à qui passer l'appareil, couleur du thème et callback « prêt ». */
+interface PassDeviceProps {
+  joueur: string;
+  themeColor?: string;
+  onPret: () => void;
+}
+
+export default function PassDevice({ joueur, themeColor, onPret }: PassDeviceProps): ReactElement {
   return (
     <div className="ecran-centre">
       <div className="passe-appareil">

@@ -1,16 +1,92 @@
-// features/game/useGame.js — TOUTE la logique d'une partie (états, actions, effets).
-// effets), extraite de l'ancien god composant Partie.jsx. Testable hors React.
+// features/game/useGame.ts — TOUTE la logique d'une partie (états, actions, effets).
+// extraite de l'ancien god composant Partie.jsx. Testable hors React.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { roundInfo, pointsFor, SECONDS_PER_QUESTION } from '@lib/scoring.js';
 import { addReport, loadReports } from '@lib/reports.js';
+import type { StoredReport } from '@lib/reports.js';
 import { seriesKey, saveSeries } from '@lib/series.js';
 import { currentDailyStreak } from '@lib/streak.js';
 import { playSound, soundForStreak, vibrate, startMusic, stopMusic } from '@lib/sounds.js';
+import type { GameDetail, GameMode, GameResult, LevelId, Prefs, Theme } from '@lib/types.js';
 import { CONFETTI_COLORS } from './constants.js';
 import { drawGameQuestions } from './draw.js';
+import type { DrawnQuestion, GameLaunchConfig } from './draw.js';
 import { useTimer } from './useTimer.js';
-export function useGame({ config, prefs, onFinish: onFinish }) {
-  const { mode, niveau, theme, players } = config;
+
+/** Phases d'une partie : attente de l'autre joueur (duel), question en cours, réponse verrouillée. */
+export type GamePhase = 'attente' | 'question' | 'reponse';
+
+/** Un morceau de confetti (positions/taille/couleur calculés au lancement). */
+export interface ConfettiPiece {
+  id: string;
+  left: number;
+  delay: number;
+  couleur: string;
+  taille: number;
+  rotation: number;
+}
+
+/** Détail interne d'une question jouée : GameDetail + champs de stats avancées. */
+interface DetailPartie extends GameDetail {
+  streak: number;
+  bonusStreak: number;
+  secondes: number;
+}
+
+/** Paramètres du hook useGame (identiques aux props de l'écran Game). */
+export interface UseGameParams {
+  config: GameLaunchConfig;
+  prefs: Prefs;
+  onFinish: (result: GameResult) => void;
+}
+
+/** État complet d'une partie exposé aux composants d'affichage. */
+export interface GameState {
+  config: GameLaunchConfig;
+  mode: GameMode;
+  niveau: LevelId | string | null;
+  theme: Theme;
+  players: string[];
+  nbJoueurs: number;
+  questions: DrawnQuestion[];
+  question: DrawnQuestion;
+  index: number;
+  currentPlayer: number;
+  phase: GamePhase;
+  time: number;
+  second: number;
+  selection: number | null;
+  scores: number[];
+  bonnes: number[];
+  lastGain: number;
+  lastBonus: number;
+  streaks: number[];
+  confetti: ConfettiPiece[];
+  isReported: boolean;
+  answer: (i: number | null) => void;
+  suivant: () => void;
+  pret: () => void;
+  finir: () => void;
+  reportQuestion: () => void;
+}
+
+/** Pastille de thème affichée dans la barre du haut (champs optionnels : thème courant variable). */
+export interface ThemeBadge {
+  nom?: string;
+  icone?: string;
+  couleur?: string;
+}
+
+/** État de jeu enrichi pour l'affichage : GameState + manche en cours et thème courant. */
+export interface GameViewState extends GameState {
+  round: number;
+  bonus: boolean;
+  withRounds: boolean;
+  currentTheme: ThemeBadge;
+}
+
+export function useGame({ config, prefs, onFinish }: UseGameParams): GameState {
+  const { mode, niveau, theme, players = [] } = config;
   const nbJoueurs = mode === 'duel' ? 2 : 1;
 
   // ALEATOIRE : à chaque partie, chaque joueur reçoit son propre tirage au hasard.
@@ -18,17 +94,17 @@ export function useGame({ config, prefs, onFinish: onFinish }) {
 
   const [index, setIndex] = useState(0); // question courante (0..n-1)
   const [currentPlayer, setCurrentPlayer] = useState(0);
-  const [phase, setPhase] = useState(mode === 'duel' ? 'attente' : 'question'); // 'attente' | 'question' | 'reponse'
-  const [selection, setSelection] = useState(null);
-  const [scores, setScores] = useState([0, 0]);
-  const [bonnes, setBonnes] = useState([0, 0]);
+  const [phase, setPhase] = useState<GamePhase>(mode === 'duel' ? 'attente' : 'question'); // 'attente' | 'question' | 'reponse'
+  const [selection, setSelection] = useState<number | null>(null);
+  const [scores, setScores] = useState<number[]>([0, 0]);
+  const [bonnes, setBonnes] = useState<number[]>([0, 0]);
   const [lastGain, setLastGain] = useState(0);
   const [lastBonus, setLastBonus] = useState(0); // bonus de série (streak)
-  const [streaks, setStreaks] = useState([0, 0]); // bonnes réponses enchaînées, par joueur
+  const [streaks, setStreaks] = useState<number[]>([0, 0]); // bonnes réponses enchaînées, par joueur
   const [lastCorrect, setLastCorrect] = useState(true);
-  const [details, setDetails] = useState([]); // historique question par question (stats)
-  const [confetti, setConfettis] = useState([]);
-  const [signales, setSignales] = useState(() => loadReports()); // questions signalées (pouce rouge)
+  const [details, setDetails] = useState<DetailPartie[]>([]); // historique question par question (stats)
+  const [confetti, setConfettis] = useState<ConfettiPiece[]>([]);
+  const [signales, setSignales] = useState<StoredReport[]>(() => loadReports()); // questions signalées (pouce rouge)
 
   const questions = questionsPerPlayer[currentPlayer]; // tirage du joueur courant
   const question = questions[Math.min(index, questions.length - 1)];
@@ -43,9 +119,7 @@ export function useGame({ config, prefs, onFinish: onFinish }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questions.length]);
-  const { time, setTime: setTime } = useTimer(phase === 'question', SECONDS_PER_QUESTION, () =>
-    answer(null)
-  );
+  const { time, setTime } = useTimer(phase === 'question', SECONDS_PER_QUESTION, () => answer(null));
 
   // Ambiance sonore de la partie (nappe douce), selon le réglage « Musique de fond ».
   const musicOn = !!(prefs && prefs.music !== false);
@@ -71,7 +145,7 @@ export function useGame({ config, prefs, onFinish: onFinish }) {
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, index, currentPlayer]);
-  function answer(i) {
+  function answer(i: number | null) {
     if (phase !== 'question') return;
     const correct = i !== null && i === question.bonne;
     const secondsElapsed = SECONDS_PER_QUESTION - time;
@@ -102,7 +176,9 @@ export function useGame({ config, prefs, onFinish: onFinish }) {
       {
         themeId: question.themeId || theme.id,
         themeName: question.themeName || theme.nom,
-        niveau: question.niveau || niveau,
+        // question.niveau est toujours renseigné (schéma requis) : le || ne sert
+        // que pour le type, la valeur runtime est toujours question.niveau.
+        niveau: (question.niveau || niveau) as LevelId | string,
         correct,
         gain,
         streak: nouveauStreak,
@@ -141,19 +217,14 @@ export function useGame({ config, prefs, onFinish: onFinish }) {
     setPhase('reponse');
   }
   function lancerConfettis() {
-    const pieces = Array.from(
-      {
-        length: 26,
-      },
-      (_, k) => ({
-        id: `${Date.now()}-${k}`,
-        left: Math.random() * 100,
-        delay: Math.random() * 0.25,
-        couleur: CONFETTI_COLORS[k % CONFETTI_COLORS.length],
-        taille: 6 + Math.random() * 6,
-        rotation: Math.random() * 360,
-      })
-    );
+    const pieces: ConfettiPiece[] = Array.from({ length: 26 }, (_, k) => ({
+      id: `${Date.now()}-${k}`,
+      left: Math.random() * 100,
+      delay: Math.random() * 0.25,
+      couleur: CONFETTI_COLORS[k % CONFETTI_COLORS.length],
+      taille: 6 + Math.random() * 6,
+      rotation: Math.random() * 360,
+    }));
     setConfettis(pieces);
     setTimeout(() => setConfettis([]), 1500);
   }
@@ -223,19 +294,19 @@ export function useGame({ config, prefs, onFinish: onFinish }) {
     questions,
     question,
     index,
-    currentPlayer: currentPlayer,
+    currentPlayer,
     phase,
     time,
-    second: second,
+    second,
     selection,
     scores,
     bonnes,
-    lastGain: lastGain,
-    lastBonus: lastBonus,
+    lastGain,
+    lastBonus,
     streaks,
     confetti,
-    isReported: isReported,
-    answer: answer,
+    isReported,
+    answer,
     suivant,
     pret,
     finir,
