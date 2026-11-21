@@ -93,3 +93,12 @@ describe('validerSoumissions', () => {
     expect(validateSubmissions(null)).toEqual([]);
   });
 });
+
+describe('config zod globale', () => {
+  it('jitless = true : aucun eval/new Function (compatible CSP script-src self)', async () => {
+    const { z } = await import('zod');
+    // Posé par src/lib/schema.ts à l'import : zod ne compile jamais ses schémas
+    // via new Function() (la CSP de prod interdit eval, rapports /api/csp-report).
+    expect(z.config().jitless).toBe(true);
+  });
+});

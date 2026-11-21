@@ -5,6 +5,12 @@
 import { z } from 'zod';
 import type { Submission, Theme } from './types.js';
 
+// Mode « jitless » : zod ne compile JAMAIS ses schémas via new Function()/eval, car la
+// CSP de prod est script-src 'self' (sans 'unsafe-eval') — les rapports CSP montraient
+// sinon des blocs eval sur le bundle. Le mode interprété est un peu plus lent au
+// premier parse, mais compatible CSP et sans eval du tout.
+z.config({ jitless: true });
+
 const LEVEL_IDS = ['facile', 'moyen', 'dur'] as const;
 
 // Une question valide : texte non vide, 2 à 4 réponses non vides, bonne réponse
