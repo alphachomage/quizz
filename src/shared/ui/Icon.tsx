@@ -1,8 +1,10 @@
 // Iconothèque de l'appli : des SVG "app-icon" modernes (traits épais, formes pleines
 // avec découpes), sans aucun emoji.
 // Pour ajouter une icône : dessiner un chemin 24×24 (inspiré de lucide.dev) et l'ajouter à CHEMINS.
+import type { ReactElement, ReactNode } from 'react';
 
-const CHEMINS = {
+// nom d'icône -> fragment SVG (24×24). Une icône inconnue retombe sur « question ».
+const CHEMINS: Record<string, ReactNode> = {
   // logo
   bolt: (
     <path
@@ -360,8 +362,14 @@ const CHEMINS = {
   ),
 };
 
+interface IconProps {
+  nom?: string;
+  taille?: number;
+  className?: string;
+}
+
 // <Icone nom="globe" taille={28} /> — couleur héritée de `currentColor`, trait épais (2.4).
-export default function Icon({ nom, taille = 24, className = '' }) {
+export default function Icon({ nom, taille = 24, className = '' }: IconProps): ReactElement {
   return (
     <svg
       className={`icone ${className}`}
@@ -375,13 +383,19 @@ export default function Icon({ nom, taille = 24, className = '' }) {
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      {CHEMINS[nom] || CHEMINS.question}
+      {CHEMINS[nom ?? 'question'] || CHEMINS.question}
     </svg>
   );
 }
 
+interface BarsProps {
+  actives: number;
+  taille?: number;
+  couleur?: string;
+}
+
 // Petite jauge de difficulté : 3 barres, les `actives` premières sont allumées.
-export function Bars({ actives, taille = 20, couleur = 'currentColor' }) {
+export function Bars({ actives, taille = 20, couleur = 'currentColor' }: BarsProps): ReactElement {
   return (
     <svg width={taille} height={taille} viewBox="0 0 24 24" className="barres" aria-hidden="true">
       {[0, 1, 2].map((i) => {

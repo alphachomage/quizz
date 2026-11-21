@@ -1,15 +1,25 @@
 import { useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import Modal from '@shared/ui/Modal.jsx';
 import { loadXp, themeLevel, xpForLevel } from '@lib/xp.js';
 import { computeBadges, favoriteBadge, setFavoriteBadge } from '@lib/badges.js';
 import { displayedTitle } from '@lib/titles.js';
+import type { Theme } from '@lib/types.js';
 
 // Carte profil (au clic sur l'avatar) : photo, pseudo, niveau global + barre d'XP,
 // TITRE dans un emplacement dédié, top 3 des thèmes par XP, progression badges
 // et badge favori choisi parmi les débloqués.
 
-export default function Profile({ pseudo, avatar, themes, onClose: onClose, onBadges }) {
+interface ProfileProps {
+  pseudo: string;
+  avatar?: string | null;
+  themes?: Theme[];
+  onClose: () => void;
+  onBadges: () => void;
+}
+
+export default function Profile({ pseudo, avatar, themes, onClose, onBadges }: ProfileProps): ReactElement {
   const xp = useMemo(() => loadXp(), []);
   const badges = useMemo(() => computeBadges(), []);
   const [favori, setFavori] = useState(() => favoriteBadge());
@@ -37,7 +47,7 @@ export default function Profile({ pseudo, avatar, themes, onClose: onClose, onBa
     .slice(0, 3);
   const nbBadges = badges.filter((b) => b.debloque).length;
   const unlockedBadges = badges.filter((b) => b.debloque);
-  function pickBadge(b) {
+  function pickBadge(b: (typeof unlockedBadges)[number]): void {
     setFavoriteBadge(b.id);
     setFavori(favoriteBadge());
     setPick(false);
