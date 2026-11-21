@@ -33,7 +33,7 @@ npm run tail            # wrangler tail --format pretty (logs temps réel)
 ## CI (`.github/workflows/ci.yml`)
 
 - Job **lint-test-build** (chaque push/PR) : `npm ci` puis `npm run lint`,
-  `npm run lint:arch`, `npm run test:unit`, `npm run test:data`, `npm run test:legacy`,
+  `npm run lint:arch`, `npm run test:unit`, `npm run test:data`,
   `npm run build`.
 - Job **integration** (chaque push/PR) : matrice `game: [game-solo, game-duel,
   game-survival, game-daily]` -> `npx vitest run tests/integration/<game>.test.jsx`

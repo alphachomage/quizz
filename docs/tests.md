@@ -7,8 +7,7 @@ npm test                 # toute la suite Vitest (tests/unit + tests/integration
 npm run test:game      # UNIQUEMENT le flux solo (tests/integration/game-solo.test.jsx)
 npm run test:game:duel / :survival / :daily   # game-duel / game-survival / game-daily
 npm run test:unit        # tests/unit/**  ·  npm run test:integration  ·  npm run test:data
-npm run test:scoring / :tirage / :similarite / :comptes
-npm run test:legacy      # 26 tests historiques node (scripts/legacy-tests.mjs)
+npm run test:scoring / :draw / :similarity / :accounts
 npm run test:coverage    # couverture avec seuils appliqués (échoue si en dessous)
 ```
 
@@ -31,11 +30,13 @@ tests/
 ├── setup.js                      # mocks : localStorage nettoyé, AudioContext, vibrate,
 │                                 # matchMedia, crypto.subtle (webcrypto), fetch, canvas
 ├── fixtures/questions.fixture.js # makeQuestion/makeTheme/mulberry32 — JAMAIS les vrais fichiers
-├── unit/lib/                     # scoring, tirage, quotidien, similarite, comptes, badges, schema, repositories
+├── unit/lib/                     # scoring, draw, daily, similarity, accounts, suggestions, badges, titles, schema, repositories
 ├── unit/features/                # game-draw, result-persist, stats-compute
 ├── integration/                  # game-solo, game-duel, game-survival, game-daily,
 │                                 # app-shell (parcours complet invité -> partie)
-└── data/questions-schema.test.js # SEUL test sur le vrai corpus (schéma zod + doublons)
+└── data/                         # questions-schema.test.js + corpus-draw.test.js :
+                                  #   seuls tests sur le vrai corpus (schéma zod, doublons,
+                                  #   diversité du tirage : sujets / thèmes)
 ```
 
 ## Règles
@@ -48,9 +49,9 @@ tests/
   import() dynamiques de Vitest et le scheduler React restent bloqués.
 - Timers factices (`vi.useFakeTimers()`) pour le minuteur ; `Math.random` mocké
   (`mulberry32(seed)`) pour des tirages déterministes ; `localStorage.clear()` entre tests.
-- Un seul test charge le vrai corpus (`tests/data/`) : les autres utilisent les fixtures.
+- Seuls les tests `tests/data/` chargent le vrai corpus : les autres utilisent les fixtures.
 - Les scores exacts sont vérifiés (solo 285 pts/10 bonnes, duel 175/joueur,
   quotidien 245).
-- CI : `npm run lint` + `lint:arch` + `test:unit` + `test:data` + `test:legacy` +
-  `build` + matrice d'intégration + couverture sur chaque push/PR (voir
-  `docs/deploiement.md`).
+- CI : `npm run lint` + `lint:arch` + `test:unit` + `test:data` + `build` +
+  matrice d'intégration + couverture sur chaque push/PR (voir `docs/deploiement.md`).
+- Une seule façon de tester : Vitest (`npm test`). Plus de suite « legacy » séparée.

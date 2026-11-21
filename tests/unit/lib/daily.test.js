@@ -2,7 +2,7 @@
 // le même jour, diversifié (max 2 par sujet, max 2 par thème), et qui change de jour.
 import { describe, expect, it } from 'vitest';
 import { DAILY_QUESTIONS } from '@lib/scoring.js';
-import { todayDate } from '@lib/dates.js';
+import { isThisWeek, localDayKey, todayDate } from '@lib/dates.js';
 import { dailyQuestions, subjectOf } from '@lib/draw.js';
 import { makeThemes } from '../../fixtures/questions.fixture.js';
 const themes = makeThemes(6, 10); // 6 thèmes x 30 questions = 180 questions
@@ -46,5 +46,27 @@ describe('questionsQuotidien', () => {
   });
   it('dateAujourdhui est au format AAAA-MM-JJ', () => {
     expect(todayDate()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+});
+
+describe('semaine en cours (lundi -> dimanche)', () => {
+  const now = new Date();
+  const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+  const tenDaysAgo = new Date(now);
+  tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
+  const nextMonday = new Date(monday);
+  nextMonday.setDate(nextMonday.getDate() + 7);
+
+  it('aujourd’hui et lundi de cette semaine sont dedans', () => {
+    expect(isThisWeek(now.toISOString())).toBe(true);
+    expect(isThisWeek(monday.toISOString())).toBe(true);
+  });
+  it('il y a 10 jours et lundi prochain sont dehors', () => {
+    expect(isThisWeek(tenDaysAgo.toISOString())).toBe(false);
+    expect(isThisWeek(nextMonday.toISOString())).toBe(false);
+  });
+  it('localDayKey est au format AAAA-MM-JJ', () => {
+    expect(localDayKey(now)).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 });

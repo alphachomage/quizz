@@ -22,7 +22,6 @@ jobs:
       - run: npm run lint:arch
       - run: npm run test:unit
       - run: npm run test:data
-      - run: npm run test:legacy
       - run: npm run build
 
   integration: # chaque flux de partie en job parallèle

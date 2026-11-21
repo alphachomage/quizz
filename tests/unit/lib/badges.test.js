@@ -5,6 +5,7 @@ import { BADGES, computeBadges, nextBadge } from '@/lib/badges.js';
 describe('calculerBadges', () => {
   it('aucune partie = tous les badges verrouillés', () => {
     const badges = computeBadges();
+    expect(badges).toHaveLength(30);
     expect(badges).toHaveLength(BADGES.length);
     expect(badges.every((b) => !b.debloque)).toBe(true);
   });

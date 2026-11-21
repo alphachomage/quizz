@@ -55,7 +55,7 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
     `npm run deploy` = Cloudflare **prod**. Ne jamais déployer la prod depuis une branche
     non reviewée.
 11. **Avant chaque merge** : `npm run lint` + `npm run lint:arch` + `npm test` +
-    `npm run test:legacy` + `npm run build` + `npx wrangler deploy --dry-run` tous verts.
+    `npm run build` + `npx wrangler deploy --dry-run` tous verts.
 12. **Review de chaque étape/commit** (par l'agent parent) : relire le **code** (règles
     ci-dessus + bonnes pratiques React) **ET la documentation** (docs/ à jour ? chemins
     de fichiers valides ? chiffres à jour via `npm run count:questions` ? cohérence avec
@@ -78,7 +78,6 @@ npm run deploy           # déploiement Cloudflare PROD
 npm run lint             # eslint (0 erreur, 0 warning) ; lint:arch = pas de cycle
 npm test                 # tous les tests Vitest ; test:game = flux solo seul (~2 s)
 npm run test:coverage    # couverture avec seuils appliqués (échoue si en dessous)
-npm run test:legacy      # 26 tests historiques (scripts/legacy-tests.mjs)
 npm run count:questions  # comptage réel du corpus (thèmes, questions, doublons)
 npx wrangler deploy --dry-run   # valide worker.js + wrangler.toml sans déployer
 ```

@@ -6,6 +6,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 ## Non publié
 
 ### Nettoyé
+- Suite de tests « legacy » supprimée (`scripts/legacy-tests.mjs`, `npm run test:legacy`) : une seule façon de tester, Vitest (`npm test`). Les vérifications non couvertes ont été portées : `tests/data/corpus-draw.test.js` (diversité du tirage sur le vrai corpus : sujets, plafond par thème, quizz du jour), `tests/unit/lib/titles.test.js` (50 titres, nextTitle), `tests/unit/lib/suggestions.test.js` (ajout/ordre/refus du vide/suppression), + assertions 30 badges et semaine en cours dans `badges.test.js` / `daily.test.js`.
+
+
+### Nettoyé
 - Barrel `src/lib/index.js` supprimé : tous les imports pointent directement vers le module concerné (ex. `@lib/scoring.js`).
 - Code mort supprimé : repos inutilisés (`SessionRepo`, `AccountsRepo`, `TutorialRepo`) et exports internes non utilisés retirés de `export`.
 - Identifiants français renommés en anglais dans tout `src/`, `tests/`, `scripts/`, `worker*.js` (ex. `jouerSon` -> `playSound`, `sabonner` -> `subscribe`, `estInvite` -> `isGuest`, props `onFermer` -> `onClose`...). Exceptions documentées (inchangées) : clés du schéma de données/persistées (`q`, `reponses`, `bonne`, `niveau`, `statut`, `bonnes`...) et noms de classes CSS.

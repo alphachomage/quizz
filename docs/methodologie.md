@@ -13,7 +13,7 @@
 
 - [ ] `npm run lint` **0 erreur 0 warning**, `npm run lint:arch` 0 cycle
 - [ ] `npm test` + `npm run test:coverage` (seuils `vitest.config.js`, ratchet) +
-      `npm run test:legacy` + `npm run build` verts
+      `npm run build` verts
 - [ ] si `worker.js`/`wrangler.toml` touchés : `npx wrangler deploy --dry-run` OK
 - [ ] diff relu : code en anglais/commentaires français, UI en français, zéro emoji,
       pas de `linear-gradient`, pas de `console.log` dans `src/`, pas d'accès

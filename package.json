@@ -21,7 +21,6 @@
     "test:integration": "vitest run tests/integration",
     "test:data": "vitest run tests/data",
     "test:scoring": "vitest run tests/unit/lib/scoring.test.js",
-    "test:legacy": "node scripts/legacy-tests.mjs",
     "count:questions": "node scripts/count-questions.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
