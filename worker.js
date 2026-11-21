@@ -19,7 +19,9 @@ function entetesSecurite(env, hote = '') {
     "style-src 'self' 'unsafe-inline'", // styles inline React (attributs style)
     "img-src 'self' data: blob:",
     "font-src 'self' data:",
-    "connect-src 'self' ws: wss:", // HMR en dev, WebSocket V2 plus tard
+    // Prod : connect-src 'self' suffit (le wss:// vers la même origine est couvert par 'self').
+    // Dev : on autorise ws:/wss: pour le HMR Vite.
+    estProd ? "connect-src 'self'" : "connect-src 'self' ws: wss:",
     "worker-src 'self' blob:",
     "manifest-src 'self'",
     "media-src 'self' blob:",
@@ -48,6 +50,14 @@ function entetesSecurite(env, hote = '') {
 
 // Pose les en-têtes de sécurité + cache sur une réponse existante.
 function securiser(answer, env, cacheControl, hote = '') {
+  // Réponse 101 (WebSocket upgrade) : on recrée la Response SANS body mais en copiant
+  // la propriété webSocket, sinon le socket est perdu côté workerd.
+  if (answer.status === 101 && answer.webSocket) {
+    const headers = new Headers();
+    for (const [key, valeur] of entetesSecurite(env, hote)) headers.set(key, valeur);
+    headers.set('Cache-Control', 'no-store');
+    return new Response(null, { status: 101, webSocket: answer.webSocket, headers });
+  }
   const headers = new Headers(answer.headers);
   for (const [key, valeur] of entetesSecurite(env, hote)) headers.set(key, valeur);
   if (cacheControl) headers.set('Cache-Control', cacheControl);
@@ -89,7 +99,9 @@ export default {
     // --- Service worker de la WPA : ne jamais le mettre en cache ---
     if (url.pathname === '/sw.js') {
       const r = await env.ASSETS.fetch(request);
-      return securiser(r, env, 'no-cache', url.host);
+      const rep = securiser(r, env, 'no-cache', url.host);
+      rep.headers.set('Service-Worker-Allowed', '/'); // autorise le scope racine
+      return rep;
     }
 
     // --- Fichiers statiques (contenu du dossier dist/client) ---

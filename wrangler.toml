@@ -43,6 +43,7 @@ new_sqlite_classes = ["DuelRoom"]
 [env.preview]
 ENVIRONMENT = "preview"
 CSP_REPORT_ONLY = "true"
+V2_ENABLED = "false"   # V2 (D1/KV/DO) désactivée en prod tant que non testée ; passer à "true" pour activer
 
 [vars]
 ENVIRONMENT = "production"

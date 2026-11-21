@@ -12,12 +12,47 @@ function jsonErreur(erreur, status = 400) {
   return json({ ok: false, erreur }, status);
 }
 
+const MAX_BODY = 64 * 1024; // 64 Ko max par body JSON (anti-gros payloads)
+
 async function readBody(request) {
   try {
-    return await request.json();
+    const texte = await request.text();
+    if (texte.length > MAX_BODY) return null; // -> 400 côté appelant
+    return JSON.parse(texte);
   } catch {
     return null;
   }
+}
+
+// --- CORS : autorise same-origin + les origines de ALLOWED_ORIGINS (env) ---
+function originesAutorisees(env, url) {
+  const liste = String(env.ALLOWED_ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean);
+  return [url.origin, ...liste];
+}
+function corsAutorise(request, env, url) {
+  const origin = request.headers.get('Origin');
+  if (!origin) return true; // même origine / pas de navigateur (curl, Capacitor natif)
+  return originesAutorisees(env, url).includes(origin);
+}
+function entetesCors(request, env, url) {
+  const origin = request.headers.get('Origin');
+  const h = {};
+  if (origin && corsAutorise(request, env, url)) {
+    h['Access-Control-Allow-Origin'] = origin;
+    h['Vary'] = 'Origin';
+    h['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS';
+    h['Access-Control-Allow-Headers'] = 'Content-Type';
+    h['Access-Control-Max-Age'] = '86400';
+  }
+  return h;
+}
+
+// Comparaison de hash en temps constant (évite l'oracle de timing sur le login).
+function hashEgaux(a, b) {
+  const A = new TextEncoder().encode(a);
+  const B = new TextEncoder().encode(b);
+  if (A.length !== B.length) return false;
+  return crypto.subtle.timingSafeEqual(A, B);
 }
 
 // --- KV générique (sync du stockage local -> serveur) ---
@@ -90,7 +125,7 @@ async function routeAuth(request, env, action) {
     const account = await env.DB.prepare('SELECT * FROM comptes WHERE pseudo_normalise = ?').bind(n).first();
     if (!account) return jsonErreur('Aucun compte avec ce pseudo.', 404);
     const hash = await pbkdf2(body.mdp, account.sel);
-    if (hash !== account.hash) return jsonErreur('Mot de passe incorrect.', 401);
+    if (!hashEgaux(hash, account.hash)) return jsonErreur('Mot de passe incorrect.', 401);
     await env.DB.prepare('UPDATE comptes SET dernier_login = ? WHERE pseudo = ?').bind(new Date().toISOString(), account.pseudo).run();
     return json({ ok: true, pseudo: account.pseudo });
   }
@@ -187,6 +222,23 @@ async function routeRoom(request, env, url, segment) {
 // --- Routeur principal ---
 export async function apiRouter(request, env, url) {
   const p = url.pathname; // ex: /api/kv/xxx
+
+  // Preflight CORS (appli mobile Capacitor = autre origine).
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: { ...entetesCors(request, env, url), 'Cache-Control': 'no-store' } });
+  }
+
+  // Les écritures cross-origin sont refusées sauf origine autorisée (ALLOWED_ORIGINS).
+  if (request.method !== 'GET' && !corsAutorise(request, env, url)) {
+    return jsonErreur('Origine non autorisée.', 403);
+  }
+
+  // Portes V2 : tant que V2_ENABLED n'est pas "true", seules les routes de santé
+  // (ping/health/csp-report) répondent — les routes D1/KV/DO renvoient 503.
+  const ROUTES_OUVERTES = ['/api/ping', '/api/health', '/api/csp-report'];
+  if (env.V2_ENABLED !== 'true' && !ROUTES_OUVERTES.includes(p)) {
+    return jsonErreur('V2 non active sur ce déploiement.', 503);
+  }
 
   if (p === '/api/ping' || p === '/api/health') {
     return json({ ok: true, app: 'VoltQuiz', version: env.APP_VERSION || '0.1.0', heure: new Date().toISOString() });

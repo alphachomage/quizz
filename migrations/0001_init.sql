@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS comptes (
   email TEXT,
   hash TEXT NOT NULL,          -- hash du mot de passe (PBKDF2 côté serveur en V2)
   sel TEXT NOT NULL,
-  hash_version INTEGER DEFAULT 1,
+  hash_version INTEGER DEFAULT 2,
   avatar TEXT,
   cree_le TEXT,
   dernier_login TEXT
