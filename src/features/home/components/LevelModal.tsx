@@ -1,9 +1,16 @@
-// ModaleNiveau.jsx — modale de choix de la difficulté (solo), ouverte au clic sur un
+// ModaleNiveau.tsx — modale de choix de la difficulté (solo), ouverte au clic sur un
 // thème. Utilise la modale accessible partagée (Échap, focus, aria).
+import type { CSSProperties, ReactElement } from 'react';
 import Icon, { Bars } from '@shared/ui/Icon.jsx';
 import Modal from '@shared/ui/Modal.jsx';
 import { LEVELS, levelName } from '@lib/scoring.js';
-export default function LevelModal({ a }) {
+import type { HomeState } from '../useHome.js';
+
+interface LevelModalProps {
+  a: HomeState;
+}
+
+export default function LevelModal({ a }: LevelModalProps): ReactElement | null {
   const theme = a.theme;
   if (!theme) return null;
   return (
@@ -12,12 +19,14 @@ export default function LevelModal({ a }) {
         <h2>
           <span
             className="theme-icone"
-            style={{
-              '--couleur': theme.couleur,
-              width: 34,
-              height: 34,
-              borderRadius: 10,
-            }}
+            style={
+              {
+                '--couleur': theme.couleur,
+                width: 34,
+                height: 34,
+                borderRadius: 10,
+              } as CSSProperties
+            }
           >
             <Icon nom={theme.icone} taille={18} />
           </span>
@@ -33,9 +42,11 @@ export default function LevelModal({ a }) {
           <button
             key={n.id}
             className={a.niveau === n.id ? 'niveau-modal actif' : 'niveau-modal'}
-            style={{
-              '--couleur': n.couleur,
-            }}
+            style={
+              {
+                '--couleur': n.couleur,
+              } as CSSProperties
+            }
             onClick={() => a.setLevel(n.id)}
           >
             <Bars actives={i + 1} couleur={n.couleur} taille={18} />

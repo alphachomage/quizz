@@ -1,15 +1,28 @@
-// BarreUser.jsx — barre utilisateur en haut de l'accueil : avatar, pseudo, niveau,
+// BarreUser.tsx — barre utilisateur en haut de l'accueil : avatar, pseudo, niveau,
 // barre d'XP globale, titre, et boutons (badges, tuto, stats, paramètres, déconnexion).
+import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
+import type { HomeState } from '../useHome.js';
+
+interface UserBarProps {
+  a: HomeState;
+  pseudo: string;
+  isGuest: boolean;
+  onLogout: () => void;
+  onBadges: () => void;
+  onTutorial: () => void;
+  onStats: () => void;
+}
+
 export default function UserBar({
   a,
   pseudo,
-  isGuest: isGuest,
-  onLogout: onLogout,
+  isGuest,
+  onLogout,
   onBadges,
-  onTutorial: onTutorial,
+  onTutorial,
   onStats,
-}) {
+}: UserBarProps): ReactElement {
   return (
     <div className="barre-user">
       <div className="user-bloc">

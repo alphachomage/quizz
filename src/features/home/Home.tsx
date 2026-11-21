@@ -1,12 +1,15 @@
-// Accueil.jsx — écran d'accueil, coquille render-only :
-// toute la logique (état, dérivés, action « lancer ») est dans useHome.js.
-// la mise en page est découpée dans ./composants/*.jsx.
+// Accueil (Home.tsx) — écran d'accueil, coquille render-only :
+// toute la logique (état, dérivés, action « lancer ») est dans useHome.ts.
+// la mise en page est découpée dans ./components/*.tsx.
+import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import { setAvatar } from '@lib/accounts.js';
 import Settings from '@shared/modals/Settings.jsx';
 import Profile from '@shared/modals/Profile.jsx';
 import Suggestions from '@shared/modals/Suggestions.jsx';
+import type { Prefs, Theme } from '@lib/types.js';
 import { useHome } from './useHome.js';
+import type { StartConfig } from './useHome.js';
 import UserBar from './components/UserBar.jsx';
 import ModeTabs from './components/ModeTabs.jsx';
 import BadgeBanner from './components/BadgeBanner.jsx';
@@ -14,25 +17,43 @@ import DuelNames from './components/DuelNames.jsx';
 import ThemeGrid from './components/ThemeGrid.jsx';
 import LevelModal from './components/LevelModal.jsx';
 import FixedCta from './components/FixedCta.jsx';
+
+/** Props de l'écran d'accueil, déléguées par app/Screens.tsx. */
+export interface HomeProps {
+  themes: Theme[] | null;
+  pseudo: string;
+  prefs: Prefs;
+  isAdmin: boolean;
+  isGuest: boolean;
+  onLogout: () => void;
+  onStart: (cfg: StartConfig) => void;
+  onPropose: () => void;
+  onLeaderboard: () => void;
+  onStats: () => void;
+  onBadges: () => void;
+  onChangePrefs: (prefs: Prefs) => void;
+  onTutorial: () => void;
+}
+
 export default function Home({
   themes,
   pseudo,
   prefs,
-  isAdmin: isAdmin,
-  isGuest: isGuest,
-  onLogout: onLogout,
-  onStart: onStart,
-  onPropose: onPropose,
-  onLeaderboard: onLeaderboard,
+  isAdmin,
+  isGuest,
+  onLogout,
+  onStart,
+  onPropose,
+  onLeaderboard,
   onStats,
   onBadges,
-  onChangePrefs: onChangePrefs,
-  onTutorial: onTutorial,
-}) {
+  onChangePrefs,
+  onTutorial,
+}: HomeProps): ReactElement {
   const a = useHome({
     themes,
     pseudo,
-    onStart: onStart,
+    onStart,
   });
   return (
     <div className="accueil">
@@ -104,7 +125,7 @@ export default function Home({
         <Profile
           pseudo={pseudo}
           avatar={a.avatar}
-          themes={themes}
+          themes={themes ?? undefined}
           onClose={() => a.setProfilOuvert(false)}
           onBadges={() => {
             a.setProfilOuvert(false);

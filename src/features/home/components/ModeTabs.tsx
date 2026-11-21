@@ -1,15 +1,31 @@
-// ModesTabs.jsx — les 4 onglets de mode + la ligne de description du mode choisi.
+// ModesTabs.tsx — les 4 onglets de mode + la ligne de description du mode choisi.
+import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import { recordKey } from '@lib/records.js';
+import type { GameMode } from '@lib/types.js';
+import type { HomeState } from '../useHome.js';
 
-const MODES = [
+// Onglet de mode : `badge` = pastille « à venir », `streak` = pastille série de jours.
+interface ModeTab {
+  id: GameMode;
+  icone: string;
+  nom: string;
+  badge?: string;
+  streak?: boolean;
+}
+
+const MODES: ModeTab[] = [
   { id: 'solo', icone: 'timer', nom: 'Solo' },
   { id: 'duel', icone: 'swords', nom: 'Duel en ligne', badge: 'à venir' },
   { id: 'survie', icone: 'skull', nom: 'Survie' },
   { id: 'quotidien', icone: 'calendar', nom: 'Quizz du jour', streak: true },
 ];
 
-export default function ModeTabs({ a }) {
+interface ModeTabsProps {
+  a: HomeState;
+}
+
+export default function ModeTabs({ a }: ModeTabsProps): ReactElement {
   const { mode, setMode, records, dailyStreak, dailyRecord } = a;
   return (
     <>

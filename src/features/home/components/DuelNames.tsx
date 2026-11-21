@@ -1,6 +1,13 @@
-// NomsDuel.jsx — saisie des deux noms de joueurs en mode duel (avec datalist des
+// NomsDuel.tsx — saisie des deux noms de joueurs en mode duel (avec datalist des
 // pseudos déjà rencontrés, façon « amis » en local).
-export default function DuelNames({ a }) {
+import type { ReactElement } from 'react';
+import type { HomeState } from '../useHome.js';
+
+interface DuelNamesProps {
+  a: HomeState;
+}
+
+export default function DuelNames({ a }: DuelNamesProps): ReactElement {
   return (
     <section className="noms">
       <datalist id="joueurs-connus">

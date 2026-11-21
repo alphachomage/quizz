@@ -1,10 +1,16 @@
+import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import Modal from '@shared/ui/Modal.jsx';
 
 // Tuto de bienvenue : ouvert UNE SEULE FOIS par compte (première connexion).
 // Court et concis : principe du jeu, points, série (streak), modes de jeu.
 
-export default function Tutorial({ onClose: onClose, isGuest: isGuest }) {
+interface TutorialProps {
+  onClose: () => void;
+  isGuest: boolean;
+}
+
+export default function Tutorial({ onClose, isGuest }: TutorialProps): ReactElement {
   return (
     <Modal title="Bienvenue sur VoltQuiz" onClose={onClose} classe="tuto">
       <div className="modal-titre">

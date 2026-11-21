@@ -1,8 +1,15 @@
-// CtaFixe.jsx — barre d'action fixe en bas de l'accueil : le bouton pour lancer est
+// CtaFixe.tsx — barre d'action fixe en bas de l'accueil : le bouton pour lancer est
 // TOUJOURS visible, sans scroller.
+import type { ReactElement } from 'react';
 import { levelName } from '@lib/scoring.js';
-export default function FixedCta({ a }) {
-  const { mode, theme, alreadyPlayedToday: alreadyPlayedToday, dailyRecord, niveau, lancer } = a;
+import type { HomeState } from '../useHome.js';
+
+interface FixedCtaProps {
+  a: HomeState;
+}
+
+export default function FixedCta({ a }: FixedCtaProps): ReactElement {
+  const { mode, theme, alreadyPlayedToday, dailyRecord, niveau, lancer } = a;
   return (
     <div className="cta-fixe">
       <div className="cta-fixe-interieur">

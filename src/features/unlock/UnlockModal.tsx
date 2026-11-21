@@ -1,10 +1,26 @@
+import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
+import type { ComputedBadge } from '@lib/badges.js';
+import type { ComputedTitle } from '@lib/titles.js';
 
 // Animation de déblocage : affichée sur l'ACCUEIL juste après avoir terminé un quizz,
 // quand un badge ou un titre vient d'être débloqué. Liste ce qui est nouveau,
 // avec une animation d'apparition (respecte le réglage "animations OFF").
 
-export default function UnlockModal({ celebration, onClose: onClose, onSeeBadges: onSeeBadges }) {
+// Célébration transmise par app/useUnlock (défini localement ici : R4 interdit
+// d'importer app/useUnlock depuis une feature).
+interface Celebration {
+  badges?: ComputedBadge[];
+  titles?: ComputedTitle[];
+}
+
+interface UnlockModalProps {
+  celebration: Celebration | null;
+  onClose: () => void;
+  onSeeBadges: () => void;
+}
+
+export default function UnlockModal({ celebration, onClose, onSeeBadges }: UnlockModalProps): ReactElement | null {
   const { badges = [], titles = [] } = celebration || {};
   if (!badges.length && !titles.length) return null;
   return (
