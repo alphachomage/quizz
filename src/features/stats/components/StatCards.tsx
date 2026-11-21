@@ -1,5 +1,13 @@
-// CartesStats.jsx — les 4-5 grandes cartes de chiffres en haut de l'écran Stats.
-export default function StatCards({ stats, avgTime }) {
+// CartesStats.tsx — les 4-5 grandes cartes de chiffres en haut de l'écran Stats.
+import type { ReactElement } from 'react';
+import type { Stats } from '../statsCompute.js';
+
+interface StatCardsProps {
+  stats: Stats;
+  avgTime: number | null;
+}
+
+export default function StatCards({ stats, avgTime }: StatCardsProps): ReactElement {
   return (
     <section className="stats-cartes">
       <div className="stat-carte">

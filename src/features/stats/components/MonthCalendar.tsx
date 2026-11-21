@@ -1,5 +1,12 @@
-// CalendrierMois.jsx — calendrier d'activité du mois en cours (grille L..D façon GitHub).
-export default function MonthCalendar({ calendar }) {
+// CalendrierMois.tsx — calendrier d'activité du mois en cours (grille L..D façon GitHub).
+import type { ReactElement } from 'react';
+import type { Calendar } from '../statsCompute.js';
+
+interface MonthCalendarProps {
+  calendar: Calendar;
+}
+
+export default function MonthCalendar({ calendar }: MonthCalendarProps): ReactElement {
   return (
     <section>
       <h3 className="titre-section">Activité — {calendar.monthName}</h3>

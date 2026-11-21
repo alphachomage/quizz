@@ -1,7 +1,8 @@
-// features/resultat/usePartage.js — partage du résultat du quizz du jour :
+// features/resultat/usePartage.ts — partage du résultat du quizz du jour :
 // texte + liens directs (X, Facebook, WhatsApp, Messenger), image "story" générée
 // en canvas pour Instagram/TikTok, partage natif et copie presse-papiers. 100 % local.
 import { useState } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 import {
   shareText,
   appUrl,
@@ -10,7 +11,40 @@ import {
   shareNative,
   copyToClipboard,
 } from '@lib/share.js';
-export function useShare({ result }) {
+import type { GameResult } from '@lib/types.js';
+
+/** Cibles de partage proposées par la modale. */
+export type ShareTarget =
+  | 'natif'
+  | 'copier'
+  | 'x'
+  | 'facebook'
+  | 'whatsapp'
+  | 'messenger'
+  | 'instagram'
+  | 'tiktok'
+  | 'story';
+
+// Résultat de partie partageable : seule la série de jours de la persistance est lue.
+interface ShareableResult extends GameResult {
+  persistance?: { dailyStreak?: number };
+}
+
+interface UseShareParams {
+  result: ShareableResult;
+}
+
+/** Contrat du hook renvoyé (consommé par Results et ShareModal). */
+export interface UseShare {
+  shareOpen: boolean;
+  setShareOpen: Dispatch<SetStateAction<boolean>>;
+  messagePartage: string;
+  dailyShareText: string;
+  shareTo: (nom: ShareTarget) => Promise<void>;
+  dailyStreak: number;
+}
+
+export function useShare({ result }: UseShareParams): UseShare {
   const { niveau, players, scores, bonnes, total } = result;
   const [shareOpen, setShareOpen] = useState(false);
   const [messagePartage, setShareMessage] = useState('');
@@ -23,7 +57,7 @@ export function useShare({ result }) {
     total,
     streak: dailyStreak,
   });
-  async function shareTo(nom) {
+  async function shareTo(nom: ShareTarget): Promise<void> {
     const url = appUrl();
     const liens = shareLinks(dailyShareText, url);
     setShareMessage('');
@@ -72,7 +106,7 @@ export function useShare({ result }) {
       const ok = await shareNative({
         text: dailyShareText,
         url,
-        file: file,
+        file,
       });
       if (ok) return;
       // repli : on télécharge l'image + on copie le texte

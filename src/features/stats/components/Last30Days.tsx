@@ -1,5 +1,12 @@
-// Barres30j.jsx — courbe des points marqués sur les 30 derniers jours.
-export default function Last30Days({ calendar }) {
+// Barres30j.tsx — courbe des points marqués sur les 30 derniers jours.
+import type { ReactElement } from 'react';
+import type { Calendar } from '../statsCompute.js';
+
+interface Last30DaysProps {
+  calendar: Calendar;
+}
+
+export default function Last30Days({ calendar }: Last30DaysProps): ReactElement {
   return (
     <section>
       <h3 className="titre-section">Points marqués — 30 derniers jours</h3>

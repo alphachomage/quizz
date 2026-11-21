@@ -1,8 +1,15 @@
-// PartageModal.jsx — modale de partage du résultat du quizz du jour
+// PartageModal.tsx — modale de partage du résultat du quizz du jour
 // (liens directs pré-remplis, image story, partage natif, copie).
+import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import Modal from '@shared/ui/Modal.jsx';
-export default function ShareModal({ share }) {
+import type { UseShare } from '../useShare.js';
+
+interface ShareModalProps {
+  share: UseShare;
+}
+
+export default function ShareModal({ share }: ShareModalProps): ReactElement {
   const close = () => share.setShareOpen(false);
   return (
     <Modal title="Partager mon résultat" onClose={close}>
@@ -23,7 +30,7 @@ export default function ShareModal({ share }) {
         {share.dailyShareText}
       </p>
       <div className="partage-liste">
-        {typeof navigator !== 'undefined' && navigator.share && (
+        {typeof navigator !== 'undefined' && 'share' in navigator && (
           <button className="btn-principal" onClick={() => share.shareTo('natif')}>
             <Icon nom="share" taille={18} /> Partager… (story, amis, apps installées)
           </button>
