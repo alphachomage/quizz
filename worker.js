@@ -77,7 +77,7 @@ function rateLimite(bee, ip) {
   return true;
 }
 
-import { apiRouter } from './worker-api.js';
+import { apiRouter, compteursInternes } from './worker-api.js';
 
 export default {
   async fetch(request, env, _ctx) {
@@ -87,6 +87,7 @@ export default {
     // --- API : rate limiting (30 req/min/IP) puis routeur /api/* (worker-api.js) ---
     if (url.pathname.startsWith('/api/')) {
       if (!rateLimite(env, ip)) {
+        compteursInternes.hits429 += 1; // exposé via /api/stats (tableau de bord admin)
         return new Response(JSON.stringify({ ok: false, erreur: 'Trop de requêtes, réessaie dans une minute.' }), {
           status: 429,
           headers: { ...Object.fromEntries(entetesSecurite(env, url.host)), 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
