@@ -16,14 +16,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
     "paths": {
-      "@app/*": ["src/app/*"],
-      "@lib/*": ["src/lib/*"],
-      "@shared/*": ["src/shared/*"],
-      "@features/*": ["src/features/*"],
-      "@data/*": ["src/data/*"],
-      "@/*": ["src/*"]
+      "@app/*": ["./src/app/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@features/*": ["./src/features/*"],
+      "@data/*": ["./src/data/*"],
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src", "tests", "worker.ts", "worker-api.ts", "durable-objects", "scripts", "vite.config.ts", "vitest.config.ts", "eslint.config.js"]
