@@ -2,14 +2,11 @@
 // Stockées via lib/storage.js et visibles UNIQUEMENT dans la vue admin (?admin=1) :
 // jamais affichées dans l'interface joueur.
 import { SuggestionsRepo } from './repositories.js';
-import type { Suggestion } from './types.js';
+import type { StoredSuggestion } from './repositories.js';
 
-// Suggestion telle que persistée : l'auteur est stocké sous la clé « pseudo »
-// (héritage du format de stockage, distinct du champ « auteur » de types.ts).
-export interface StoredSuggestion extends Suggestion {
-  pseudo: string;
-  date: string;
-}
+// StoredSuggestion est défini dans repositories.ts (l'auteur est stocké sous la clé
+// « pseudo », héritage du format de stockage) et ré-exporté ici.
+export type { StoredSuggestion };
 
 export function loadSuggestions(): StoredSuggestion[] {
   const l = SuggestionsRepo.all();

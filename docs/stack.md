@@ -56,7 +56,7 @@ src/
 │   ├── modals/             # Settings.jsx · Profile.jsx · Suggestions.jsx (modales transverses)
 │   ├── hooks/useStorage.js # useSyncExternalStore sur lib/storage.js
 │   └── utils/              # mergeThemes.js · downloadJson.js
-├── lib/                    # PUR (pas de React) : 27 modules, imports directs (pas de barrel)
+├── lib/                    # PUR (pas de React) : 29 modules .ts + types.ts, imports directs (pas de barrel)
 │   └── storage.js          # STORAGE_KEYS (17 clés voltquiz_*), STORAGE_MODE, read/write/remove,
 │                           #   subscribe/notify, preloadFromServer
 │       repositories.js     # 1 repo par clé STORAGE_KEYS (RecordsRepo, XpRepo, GamesRepo...)

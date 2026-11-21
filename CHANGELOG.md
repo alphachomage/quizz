@@ -5,6 +5,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 
 ## Non publié
 
+### Modifié
+- **Phase 1 de la migration TS terminée : `src/lib/` est 100 % TypeScript** (29 modules `.ts`, 0 `.js`), typage strict sans `any`, types métier cœur dans `src/lib/types.ts`, types persistés centralisés dans `repositories.ts`. 4 branches subagents (storage / draw / flow / accounts) mergées + branche d'intégration (types dupliqués unifiés). `tsc --noEmit` vert, lint 0/0, 130 tests OK.
+
+
 ### Ajouté
 - **TypeScript** : `tsconfig.json` (strict sur les `.ts`/`.tsx`, `allowJs`+`checkJs:false` pendant la migration incrémentale), `src/vite-env.d.ts`, `npm run typecheck` (`tsc --noEmit`) + étape CI, bloc `typescript-eslint` dans `eslint.config.js` (règles R1-R5 étendues aux `.ts`/`.tsx`), `typescript@^5` + `typescript-eslint@^8` en devDeps (Vite compile le TS nativement, zéro impact runtime). Migration par couches : `lib/` -> `data/questions.d.ts` -> `shared/`/`app/` -> `features/`. Les 263 fichiers `questions-*.js` restent en JS. Décision documentée dans `docs/methodologie.md`.
 
