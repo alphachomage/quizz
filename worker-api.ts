@@ -83,7 +83,7 @@ async function routeKv(request: Request, env: Env, key: string): Promise<Respons
   }
   if (request.method === 'POST') {
     const body = await readBody(request);
-    if (!body || !('valeur' in body)) return jsonError('Valeur manquante.', 400);
+    if (!body || !('value' in body) || body.value === undefined) return jsonError('Valeur manquante.', 400);
     if (env.DB) await kvViaD1Set(env, key, body.value);
     return json({
       ok: true,

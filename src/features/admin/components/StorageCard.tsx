@@ -1,5 +1,5 @@
 // StorageCard.tsx — carte "Stockage" du tableau de bord admin : mode current (local ou
-// d1 via ?stockage=d1), nombre de clés présentes dans le stockage, comptes locaux.
+// d1 par défaut, 'local' via ?stockage=local), nombre de clés présentes, comptes locaux.
 import type { ReactElement } from 'react';
 import type { StockageMetrics } from '../useAdminMetrics.js';
 import MetricCard from './MetricCard.jsx';

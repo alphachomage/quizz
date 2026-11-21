@@ -9,18 +9,17 @@
 // - lire() tolère l'ancien format "chaîne brute" (non JSON) pour rester compatible
 //   avec les données écrites avant cette couche.
 //
-// - MODE STOCKAGE : 'local' (défaut, 100 % hors-ligne) ou 'd1' (V2 : synchro serveur
-//   via /api/kv). En 'd1', lire() sert le cache localStorage (rempli au démarrage par
-//   prechargerDepuisServeur()) et ecrire() pousse aussi au serveur en arrière-plan :
+// - MODE STOCKAGE : 'd1' (défaut, synchro serveur D1 via /api/kv) ou 'local' (hors-ligne
+//   forcé avec ?stockage=local). En 'd1', lire() sert le cache localStorage (rempli au
+//   démarrage par preloadFromServer()) et ecrire() pousse aussi au serveur en arrière-plan :
 //   l'appli reste utilisable hors-ligne, la synchro est best-effort.
-//   Flag : ?stockage=d1 dans l'URL (test), sinon 'local'.
 
 import { readUrlParam } from './nav.js';
 import { kvGet, kvSet } from './api.js';
 
-/** Mode de stockage actif : 'local' (défaut, hors-ligne) ou 'd1' (synchro serveur V2). */
+/** Mode de stockage actif : 'd1' (défaut, synchro serveur D1) ou 'local' (hors-ligne, via ?stockage=local). */
 export type StorageMode = 'local' | 'd1';
-export const STORAGE_MODE: StorageMode = readUrlParam('stockage') === 'd1' ? 'd1' : 'local';
+export const STORAGE_MODE: StorageMode = readUrlParam('stockage') === 'local' ? 'local' : 'd1';
 
 // Registre de TOUTES les clés de stockage de l'application.
 export const STORAGE_KEYS = {

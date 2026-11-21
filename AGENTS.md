@@ -12,8 +12,8 @@
 Quiz web rapide façon QuizUp, en **React 18 + Vite 6 + WPA (vite-plugin-pwa)**, déployé
 sur Cloudflare Workers (`https://voltquiz.joris-leo81.workers.dev`). 4 modes : Solo
 (3 niveaux), Duel 1v1 local, Survie (1 vie), Quizz du jour (tirage seedé + série de jours).
-Comptage réel des questions : `npm run count:questions`. Comptes 100 % locaux pour
-l'instant (POC) ; migration prévue vers Cloudflare D1 (voir `docs/stockage-d1.md`).
+Comptage réel des questions : `npm run count:questions`. Persistance : cache localStorage + synchro serveur **Cloudflare D1 active**
+(mode `d1` par défaut, `?stockage=local` pour forcer le hors-ligne — voir `docs/stockage-d1.md`).
 Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Capacitor.
 
 ## Règles absolues (non négociables)
@@ -84,6 +84,8 @@ npm run typecheck        # tsc --noEmit (strict sur les .ts/.tsx)
 npm test                 # tous les tests Vitest ; test:game = flux solo seul (~2 s)
 npm run test:coverage    # couverture avec seuils appliqués (échoue si en dessous)
 npm run count:questions  # comptage réel du corpus (thèmes, questions, doublons)
+npm run db:migrate:local # applique les migrations D1 en LOCAL (dev workerd, .wrangler/state)
+npm run db:migrate       # applique les migrations D1 en PROD (wrangler login ou CLOUDFLARE_API_TOKEN)
 npx wrangler deploy --dry-run   # valide worker.js + wrangler.toml sans déployer
 ```
 

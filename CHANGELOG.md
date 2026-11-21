@@ -6,6 +6,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 ## Non publié
 
 ### Modifié
+- **D1 activée** : `V2_ENABLED="true"` en prod et preview (`wrangler.toml`), mode stockage `d1` par défaut dans `src/lib/storage.ts` (échappatoire `?stockage=local`), scripts `npm run db:migrate:local` / `db:migrate`. Dev local = workerd + D1 locale sqlite (`.wrangler/state`), migrations locales appliquées. Smoke test local OK (POST/GET `/api/kv/*` sur D1, 400 sans `value`). Bug corrigé au passage : `routeKv` lisait `body.value` mais testait `'valeur' in body` -> 400/500 incohérents.
+
+
+### Modifié
 - **Migration TypeScript terminée** : `tests/` en `.ts`/`.tsx` (20 fichiers), `vite.config.ts` + `vitest.config.ts`. Le projet est 100 % TS hors `src/data/questions-*.js` + `theme-manifest.js` (généré), `eslint.config.js` et `scripts/*.mjs`. `tsc --noEmit` strict = 0 erreur, lint 0/0, 130 tests OK, build + dry-run OK.
 
 
