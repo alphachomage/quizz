@@ -92,6 +92,7 @@ interface Env {
   ENVIRONMENT: string;
   APP_VERSION: string;
   CSP_REPORT_ONLY: string;
-  V2_ENABLED: string;
+  /** Liste CSV de pseudos autorisés à ouvrir la vue admin (?admin=1 + /api/admin/check). Vide = personne. */
+  ADMIN_PSEUDOS: string;
   ALLOWED_ORIGINS: string;
 }

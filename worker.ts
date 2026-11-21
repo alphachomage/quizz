@@ -5,7 +5,8 @@
 // le Worker sert les fichiers statiques via le binding ASSETS (dist/client),
 // pose les en-têtes de sécurité sur CHAQUE réponse (CSP d'abord en Report-Only,
 // voir CSP_REPORT_ONLY dans wrangler.toml), gère le cache, et route l'API
-// (/api/*, voir worker-api.ts : V2 = comptes D1, rooms de duel KV/DO).
+// (/api/*, voir worker-api.ts : base D1 par défaut — sync_client, comptes, parties,
+// records, XP, soumissions — + rooms de duel KV/DO).
 // Les types du runtime (Env, Fetcher, D1Database...) sont déclarés localement dans
 // durable-objects/workers-env.d.ts (pas de @cloudflare/workers-types, règle 8).
 

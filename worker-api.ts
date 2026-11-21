@@ -1,8 +1,10 @@
 /* global Env */
 // worker-api.ts — mini-routeur /api/* de VoltQuiz (zéro dépendance), importé par worker.ts.
-// Préparé pour la V2 (comptes serveur, parties, records, XP, rooms de duel) :
-// toutes les routes sont fonctionnelles si les bindings D1/KV/DO sont configurés.
-// En attendant, le client reste 100 % local (voir src/lib/api.ts + lib/storage.ts).
+// La base D1 est le stockage par défaut (plus de porte V2_ENABLED) : toutes les routes
+// répondent dès que les bindings sont présents ; une route renvoie 503 « binding
+// manquant » si D1/KV/DO n'est pas configuré (voir chaque handler).
+// Tables D1 (migrations/) : sync_client (miroir des clés localStorage), comptes,
+// parties, records, xp, soumissions. KV ROOMS + DO DUEL_ROOMS = duel en ligne (préparé).
 // Types du runtime (Env, D1Database, KVNamespace...) : durable-objects/workers-env.d.ts.
 
 // --- Helpers ---
@@ -25,9 +27,9 @@ function jsonError(error: string, status = 400): Response {
   );
 }
 const MAX_BODY = 64 * 1024; // 64 Ko max par body JSON (anti-gros payloads)
-// Les grosses clés kv (ex. voltquiz_parties = historique des 500 dernières parties avec
+// Les grosses clés sync (ex. voltquiz_parties = historique des 500 dernières parties avec
 // le détail des questions) dépassent 64 Ko : plafond spécifique pour /api/kv.
-const MAX_BODY_KV = 1024 * 1024; // 1 Mo max pour /api/kv
+const MAX_BODY_SYNC = 1024 * 1024; // 1 Mo max pour /api/kv (table sync_client)
 
 async function readBody(
   request: Request,
@@ -76,11 +78,11 @@ function hashesEqual(a: string, b: string): boolean {
   return crypto.subtle.timingSafeEqual(A, B);
 }
 
-// --- KV générique (sync du stockage local -> serveur) ---
+// --- Sync générique (miroir serveur du localStorage -> table D1 sync_client) ---
 async function routeKv(request: Request, env: Env, key: string): Promise<Response> {
   if (!key) return jsonError('Clé manquante.', 400);
   if (request.method === 'GET') {
-    const brut = env.DB ? await kvViaD1Get(env, key) : null;
+    const brut = env.DB ? await syncViaD1Get(env, key) : null;
     return json({
       ok: true,
       key,
@@ -88,16 +90,16 @@ async function routeKv(request: Request, env: Env, key: string): Promise<Respons
     });
   }
   if (request.method === 'POST') {
-    const body = await readBody(request, MAX_BODY_KV);
+    const body = await readBody(request, MAX_BODY_SYNC);
     if (!body || !('value' in body) || body.value === undefined) return jsonError('Valeur manquante.', 400);
-    if (env.DB) await kvViaD1Set(env, key, body.value);
+    if (env.DB) await syncViaD1Set(env, key, body.value);
     return json({
       ok: true,
       key,
     });
   }
   if (request.method === 'DELETE') {
-    if (env.DB) await kvViaD1Delete(env, key);
+    if (env.DB) await syncViaD1Delete(env, key);
     return json({
       ok: true,
       key,
@@ -106,22 +108,22 @@ async function routeKv(request: Request, env: Env, key: string): Promise<Respons
   return jsonError('Méthode non supportée.', 405);
 }
 
-// KV stocké dans D1 (table kv) si le binding DB existe.
-async function kvViaD1Get(env: Env, key: string): Promise<unknown> {
-  const row = await env.DB.prepare('SELECT valeur FROM kv WHERE cle = ?')
+// sync_client = table D1 cle/valeur (JSON) qui miroir les clés localStorage du client.
+async function syncViaD1Get(env: Env, key: string): Promise<unknown> {
+  const row = await env.DB.prepare('SELECT valeur FROM sync_client WHERE cle = ?')
     .bind(key)
     .first<{ valeur: string }>();
   return row ? JSON.parse(row.valeur) : null;
 }
-async function kvViaD1Set(env: Env, key: string, value: unknown): Promise<void> {
+async function syncViaD1Set(env: Env, key: string, value: unknown): Promise<void> {
   await env.DB.prepare(
-    'INSERT INTO kv (cle, valeur) VALUES (?, ?) ON CONFLICT(cle) DO UPDATE SET valeur = excluded.valeur'
+    'INSERT INTO sync_client (cle, valeur) VALUES (?, ?) ON CONFLICT(cle) DO UPDATE SET valeur = excluded.valeur'
   )
     .bind(key, JSON.stringify(value))
     .run();
 }
-async function kvViaD1Delete(env: Env, key: string): Promise<void> {
-  await env.DB.prepare('DELETE FROM kv WHERE cle = ?').bind(key).run();
+async function syncViaD1Delete(env: Env, key: string): Promise<void> {
+  await env.DB.prepare('DELETE FROM sync_client WHERE cle = ?').bind(key).run();
 }
 
 // --- Auth : inscription / connexion (PBKDF2 210 000 itérations côté serveur) ---
@@ -215,10 +217,12 @@ async function routeGames(request: Request, env: Env, url: URL): Promise<Respons
   if (!env.DB) return jsonError('Base non configurée.', 503);
   if (request.method === 'GET') {
     const pseudo = url.searchParams.get('pseudo');
+    // Filtre par colonne pseudo dédiée (index idx_parties_pseudo) — jamais de LIKE
+    // '%...%' sur la colonne JSON joueurs, l'index ne servirait à rien.
     const requete = pseudo
-      ? 'SELECT * FROM parties WHERE joueurs LIKE ? ORDER BY date DESC LIMIT 500'
+      ? 'SELECT * FROM parties WHERE pseudo = ? ORDER BY date DESC LIMIT 500'
       : 'SELECT * FROM parties ORDER BY date DESC LIMIT 500';
-    const params = pseudo ? [`%${normalizePseudo(pseudo)}%`] : [];
+    const params = pseudo ? [normalizePseudo(pseudo)] : [];
     const res = await env.DB.prepare(requete)
       .bind(...params)
       .all();
@@ -230,15 +234,24 @@ async function routeGames(request: Request, env: Env, url: URL): Promise<Respons
   if (request.method === 'POST') {
     const p = await readBody(request);
     if (!p || !p.mode) return jsonError('Partie invalide.', 400);
-    const id = crypto.randomUUID();
+    const id = typeof p.id === 'string' && p.id ? p.id : crypto.randomUUID();
+    // Colonne pseudo = compte connecté (ou 1er joueur en duel local) : sert au filtre
+    // indexé GET /api/parties?pseudo= et au futur classement global.
+    const pseudo =
+      typeof p.pseudo === 'string' && p.pseudo
+        ? normalizePseudo(p.pseudo)
+        : Array.isArray(p.players) && p.players[0] && typeof p.players[0].nom === 'string'
+          ? normalizePseudo(p.players[0].nom)
+          : null;
     await env.DB.prepare(
-      'INSERT INTO parties (id, mode, niveau, theme_id, joueurs, scores, bonnes, total, details, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      'INSERT INTO parties (id, mode, niveau, theme_id, pseudo, joueurs, scores, bonnes, total, details, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
     )
       .bind(
         id,
         p.mode,
         p.niveau || null,
         p.themeId || null,
+        pseudo,
         JSON.stringify(p.players || []),
         JSON.stringify(p.scores || []),
         JSON.stringify(p.bonnes || []),
@@ -314,6 +327,80 @@ async function routeXp(
     });
   }
   return jsonError('Méthode non supportée.', 405);
+}
+
+// --- Soumissions de questions des joueurs (D1, table soumissions) ---
+// GET /api/soumissions?etat=attente -> liste (500 max, plus récentes d'abord).
+// POST /api/soumissions -> ajoute/remplace une soumission (etat forcé à 'attente').
+async function routeSoumissions(request: Request, env: Env, url: URL): Promise<Response> {
+  if (!env.DB) return jsonError('Base non configurée.', 503);
+  if (request.method === 'GET') {
+    const etat = url.searchParams.get('etat');
+    const requete = etat
+      ? 'SELECT * FROM soumissions WHERE etat = ? ORDER BY date DESC LIMIT 500'
+      : 'SELECT * FROM soumissions ORDER BY date DESC LIMIT 500';
+    const res = await env.DB.prepare(requete)
+      .bind(...(etat ? [etat] : []))
+      .all();
+    return json({
+      ok: true,
+      soumissions: res.results || [],
+    });
+  }
+  if (request.method === 'POST') {
+    const body = await readBody(request);
+    if (
+      !body ||
+      typeof body.id !== 'string' ||
+      typeof body.q !== 'string' ||
+      !Array.isArray(body.reponses) ||
+      typeof body.bonne !== 'number' ||
+      body.bonne < 0 ||
+      body.bonne >= body.reponses.length
+    )
+      return jsonError('Soumission invalide.', 400);
+    await env.DB.prepare(
+      'INSERT INTO soumissions (id, pseudo, theme_id, q, reponses, bonne, niveau, info, etat, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET q = excluded.q, reponses = excluded.reponses, bonne = excluded.bonne, niveau = excluded.niveau, info = excluded.info, etat = excluded.etat, date = excluded.date'
+    )
+      .bind(
+        body.id,
+        typeof body.pseudo === 'string' ? normalizePseudo(body.pseudo) : null,
+        typeof body.themeId === 'string' ? body.themeId : null,
+        body.q.slice(0, 500),
+        JSON.stringify(body.reponses).slice(0, 2000),
+        body.bonne,
+        typeof body.niveau === 'string' ? body.niveau : 'facile',
+        typeof body.info === 'string' ? body.info.slice(0, 1000) : null,
+        'attente',
+        typeof body.date === 'string' ? body.date : new Date().toISOString()
+      )
+      .run();
+    return json({
+      ok: true,
+      id: body.id,
+    });
+  }
+  return jsonError('Méthode non supportée.', 405);
+}
+
+// --- Accès admin : GET /api/admin/check?pseudo=X -> 200 { ok, admin: true } si le pseudo
+// (normalisé) est dans la var d'env ADMIN_PSEUDOS (liste CSV), sinon 403. La liste vit
+// côté serveur : aucun secret dans le bundle client. ADMIN_PSEUDOS vide = personne. ---
+async function routeAdminCheck(request: Request, env: Env, url: URL): Promise<Response> {
+  if (request.method !== 'GET') return jsonError('Méthode non supportée.', 405);
+  const pseudo = url.searchParams.get('pseudo');
+  if (!pseudo) return jsonError('Pseudo requis.', 400);
+  const autorises = String(env.ADMIN_PSEUDOS || '')
+    .split(',')
+    .map((s) => normalizePseudo(s))
+    .filter(Boolean);
+  if (!autorises.includes(normalizePseudo(pseudo))) {
+    return jsonError('Accès admin refusé.', 403);
+  }
+  return json({
+    ok: true,
+    admin: true,
+  });
 }
 
 // --- Rooms de duel éphémères (KV) ---
@@ -393,18 +480,13 @@ export async function apiRouter(request: Request, env: Env, url: URL): Promise<R
     return jsonError('Origine non autorisée.', 403);
   }
 
-  // Portes V2 : tant que V2_ENABLED n'est pas "true", seules les routes de santé
-  // (ping/health/csp-report) répondent — les routes D1/KV/DO renvoient 503.
-  const ROUTES_OUVERTES = ['/api/ping', '/api/health', '/api/csp-report'];
-  if (env.V2_ENABLED !== 'true' && !ROUTES_OUVERTES.includes(p)) {
-    return jsonError('V2 non active sur ce déploiement.', 503);
-  }
+  // Plus de porte V2_ENABLED : la base D1 est le stockage par défaut. Les routes de
+  // santé répondent toujours ; chaque route métier renvoie 503 si son binding manque.
   if (p === '/api/ping' || p === '/api/health') {
     return json({
       ok: true,
       app: 'VoltQuiz',
       version: env.APP_VERSION || '0.1.0',
-      v2: env.V2_ENABLED === 'true',
       hour: new Date().toISOString(),
     });
   }
@@ -418,8 +500,7 @@ export async function apiRouter(request: Request, env: Env, url: URL): Promise<R
       },
     });
   }
-  // Stats V2 pour le tableau de bord admin (?admin=1) : gated V2 comme les autres
-  // routes -> 503 « V2 non active » si V2_ENABLED n'est pas "true".
+  // Stats pour le tableau de bord admin (?admin=1) : rooms KV, rapports CSP, hits 429.
   if (p === '/api/stats' && request.method === 'GET') {
     let rooms = 0;
     if (env.ROOMS) {
@@ -435,13 +516,14 @@ export async function apiRouter(request: Request, env: Env, url: URL): Promise<R
     }
     return json({
       ok: true,
-      v2: env.V2_ENABLED === 'true',
       rooms,
       rapportsCsp: internalCounters.rapportsCsp,
       hits429: internalCounters.hits429,
       hour: new Date().toISOString(),
     });
   }
+  if (p === '/api/admin/check') return routeAdminCheck(request, env, url);
+  if (p === '/api/soumissions') return routeSoumissions(request, env, url);
   if (p.startsWith('/api/kv/'))
     return routeKv(request, env, decodeURIComponent(p.slice('/api/kv/'.length)));
   if (p === '/api/auth/inscription' || p === '/api/auth/connexion') {
