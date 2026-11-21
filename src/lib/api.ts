@@ -82,7 +82,7 @@ export interface SubmissionsResponse {
   soumissions: unknown[];
 }
 
-/** Réponse de GET /api/admin/check?pseudo=... : admin:true si le pseudo est dans ADMIN_PSEUDOS. */
+/** Réponse de GET /api/admin/check?pseudo=... : admin:true si le compte a admin=1 (table comptes). */
 export interface AdminCheckResponse {
   ok: boolean;
   admin: boolean;
@@ -171,7 +171,7 @@ export const kvDelete = (key: string): Promise<OkResponse> =>
 export const apiHealth = (): Promise<HealthResponse> => appel('/health');
 export const apiStats = (): Promise<StatsResponse> => appel('/stats');
 
-// Accès admin : 200 { admin: true } si le pseudo est dans ADMIN_PSEUDOS (serveur), 403 sinon.
+// Accès admin : 200 { admin: true } si le compte a admin=1 en table D1 comptes, 403 sinon.
 export const apiAdminCheck = (pseudo: string): Promise<AdminCheckResponse> =>
   appel(`/admin/check?pseudo=${encodeURIComponent(pseudo)}`);
 

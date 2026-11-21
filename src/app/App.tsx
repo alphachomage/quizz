@@ -66,7 +66,7 @@ function Shell(): ReactElement {
 
   // Flags d'URL (lus UNE fois) : ?admin=1 ?reset=1 ?resetcompte=1 ?tuto=1
   const flags = useMemo(() => readUrlFlags(), []);
-  // ?admin=1 ne suffit plus : le pseudo de la session doit être dans ADMIN_PSEUDOS
+  // ?admin=1 ne suffit plus : le compte de la session doit avoir admin=1 en base
   // (vérifié côté serveur via /api/admin/check) — voir useAdminAccess.ts.
   const { isAdmin, enCours: adminEnCours } = useAdminAccess(flags.admin, session);
   const [tutoOuvert, setTutoOuvert] = useState(false);

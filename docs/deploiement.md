@@ -48,8 +48,9 @@ production. Aucun secret Cloudflare n'est stocké dans GitHub.
 
 `[vars]` (prod) : `ENVIRONMENT`, `APP_VERSION`, `CSP_REPORT_ONLY` (true = CSP en
 observation 48 h avec rapports sur `/api/csp-report`, puis false pour appliquer),
-`ADMIN_PSEUDOS` (liste CSV de pseudos autorisés à ouvrir `?admin=1`, **vide = personne** —
-voir `docs/features/admin.md`), `ALLOWED_ORIGINS`.
-`[env.preview]` : `ENVIRONMENT = "preview"`, `CSP_REPORT_ONLY = "true"`, `ADMIN_PSEUDOS = ""`.
+`ALLOWED_ORIGINS`.
+`[env.preview]` : `ENVIRONMENT = "preview"`, `CSP_REPORT_ONLY = "true"`.
+Accès admin : pas de var d'env — flag `admin = 1` sur le compte en table D1 `comptes`
+(promu par `wrangler d1 execute`, voir `docs/features/admin.md`).
 Bindings : `DB` (D1), `ROOMS` (KV), `DUEL_ROOMS` (Durable Object) — voir
 `docs/stockage-d1.md`. Plus de `V2_ENABLED` : la base D1 est le défaut.

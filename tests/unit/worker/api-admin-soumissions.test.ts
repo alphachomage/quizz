@@ -4,12 +4,18 @@
 import { describe, expect, it } from 'vitest';
 import { apiRouter } from '../../../worker-api.js';
 
-// D1 factice ciblée : stocke les lignes de soumissions/parties (tableau de params bind).
-function fakeD1(): { db: Env['DB']; tables: Record<string, Map<string, unknown[]>> } {
+// D1 factice ciblée : stocke les lignes de soumissions/parties (tableau de params bind)
+// et les comptes (pseudo_normalise -> { admin }).
+function fakeD1(): {
+  db: Env['DB'];
+  tables: Record<string, Map<string, unknown[]>>;
+  comptes: Map<string, { admin: number }>;
+} {
   const tables: Record<string, Map<string, unknown[]>> = {
     soumissions: new Map(),
     parties: new Map(),
   };
+  const comptes = new Map<string, { admin: number }>();
   const db = {
     prepare(sql: string) {
       let params: unknown[] = [];
@@ -19,6 +25,10 @@ function fakeD1(): { db: Env['DB']; tables: Record<string, Map<string, unknown[]
           return self;
         },
         async first() {
+          if (sql.includes('FROM comptes')) {
+            const c = comptes.get(String(params[0]));
+            return c ? { admin: c.admin } : null;
+          }
           return null;
         },
         async all() {
@@ -43,15 +53,14 @@ function fakeD1(): { db: Env['DB']; tables: Record<string, Map<string, unknown[]
       return self;
     },
   } as unknown as Env['DB'];
-  return { db, tables };
+  return { db, tables, comptes };
 }
 
-function envAvec(db: Env['DB'], adminPseudos = ''): Env {
+function envAvec(db: Env['DB'] | undefined): Env {
   return {
     DB: db,
     ENVIRONMENT: 'production',
     APP_VERSION: '0.1.0',
-    ADMIN_PSEUDOS: adminPseudos,
     ALLOWED_ORIGINS: '',
   } as unknown as Env;
 }
@@ -66,9 +75,12 @@ async function appel(env: Env, chemin: string, init?: { method?: string; body?: 
   return { status: res.status, data: (await res.json()) as Record<string, unknown> };
 }
 
-describe('GET /api/admin/check', () => {
-  it('200 admin:true si le pseudo normalisé est dans ADMIN_PSEUDOS', async () => {
-    const env = envAvec(fakeD1().db, 'Joris, Léa');
+describe('GET /api/admin/check (flag comptes.admin en base)', () => {
+  it('200 admin:true si le compte a admin=1 (pseudo normalisé)', async () => {
+    const { db, comptes } = fakeD1();
+    comptes.set('joris', { admin: 1 });
+    comptes.set('lea', { admin: 1 });
+    const env = envAvec(db);
     const res = await appel(env, '/api/admin/check?pseudo=joris');
     expect(res.status).toBe(200);
     expect(res.data.admin).toBe(true);
@@ -77,12 +89,15 @@ describe('GET /api/admin/check', () => {
     expect(res2.status).toBe(200);
   });
 
-  it('403 si le pseudo n’est pas dans la liste, 400 sans pseudo, 403 si liste vide', async () => {
-    const env = envAvec(fakeD1().db, 'joris');
+  it('403 si admin=0 ou compte inconnu, 400 sans pseudo, 503 sans DB', async () => {
+    const { db, comptes } = fakeD1();
+    comptes.set('lea', { admin: 0 }); // compte créé mais pas admin
+    const env = envAvec(db);
+    expect((await appel(env, '/api/admin/check?pseudo=lea')).status).toBe(403);
     expect((await appel(env, '/api/admin/check?pseudo=intrus')).status).toBe(403);
     expect((await appel(env, '/api/admin/check')).status).toBe(400);
-    const envVide = envAvec(fakeD1().db, '');
-    expect((await appel(envVide, '/api/admin/check?pseudo=joris')).status).toBe(403);
+    const envSansDb = envAvec(undefined);
+    expect((await appel(envSansDb, '/api/admin/check?pseudo=joris')).status).toBe(503);
   });
 });
 

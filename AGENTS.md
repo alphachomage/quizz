@@ -14,7 +14,7 @@ sur Cloudflare Workers (`https://voltquiz.joris-leo81.workers.dev`). 4 modes : S
 (3 niveaux), Duel 1v1 local, Survie (1 vie), Quizz du jour (tirage seedé + série de jours).
 Comptage réel des questions : `npm run count:questions`. Persistance : cache localStorage + base serveur **Cloudflare D1 par défaut**
 (mode `d1` par défaut, `?stockage=local` pour forcer le hors-ligne — voir `docs/stockage-d1.md`).
-Admin : `?admin=1` + pseudo dans `ADMIN_PSEUDOS` (vérifié serveur, `docs/features/admin.md`).
+Admin : `?admin=1` + flag `admin=1` sur le compte en D1 (`comptes.admin`, vérifié via `/api/admin/check` — `docs/features/admin.md`).
 Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Capacitor.
 
 ## Règles absolues (non négociables)
@@ -68,7 +68,7 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
     - chiffres du corpus **jamais en dur** : régénérés via `npm run count:questions` ;
     - commandes citées **testées** (`npm run test:game`, `db:migrate:local`...) ;
     - extensions à jour (`.ts`/`.tsx`, sauf `questions-*.js`/`theme-manifest.js`) ;
-    - cohérence avec le code (ex. `ADMIN_PSEUDOS`, modes de stockage, flags URL) ;
+    - cohérence avec le code (ex. flag `comptes.admin`, modes de stockage, flags URL) ;
     - `CHANGELOG.md` a une entrée, `docs/INDEX.md` reflète les docs courantes.
 13. Git : une branche `feature/<phase>-<slug>` par étape depuis `origin/main`, worktree
     dédié par sous-agent, review du diff (code + docs), merge sur `main`, push.
@@ -106,7 +106,7 @@ npx wrangler deploy --dry-run   # valide worker.ts + wrangler.toml sans déploye
 | Questions (format, ajout, similarité, corpus) | `docs/questions.md` |
 | Comptes, invité, modération, reset | `docs/comptes.md` |
 | XP, badges, titres, classement, stats | `docs/progression.md` |
-| Sécurité (headers, CSP, zod, hash, ADMIN_PSEUDOS) | `docs/securite.md` |
+| Sécurité (headers, CSP, zod, hash, gate admin `comptes.admin`) | `docs/securite.md` |
 | localStorage (cache) + D1 (base par défaut), décision mobile | `docs/stockage-d1.md` |
 | Déploiement Cloudflare + CI + envs dev/prod | `docs/deploiement.md` |
 | Tests (quoi, où, commandes, couverture) | `docs/tests.md` |

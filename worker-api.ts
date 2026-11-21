@@ -150,7 +150,7 @@ function normalizePseudo(p: unknown): string {
     .replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9]/g, '');
 }
-// Ligne de la table D1 `comptes` (schéma : migrations/0001_init.sql).
+// Ligne de la table D1 `comptes` (schéma : migrations/0001_init.sql + 0003_admin_flag.sql).
 interface CompteRow {
   pseudo: string;
   pseudo_normalise: string;
@@ -160,6 +160,7 @@ interface CompteRow {
   hash_version: number;
   cree_le: string | null;
   dernier_login: string | null;
+  admin: number; // 0/1 — flag admin du compte (promu par UPDATE SQL, voir docs/features/admin.md)
 }
 async function routeAuth(
   request: Request,
@@ -383,18 +384,21 @@ async function routeSoumissions(request: Request, env: Env, url: URL): Promise<R
   return jsonError('Méthode non supportée.', 405);
 }
 
-// --- Accès admin : GET /api/admin/check?pseudo=X -> 200 { ok, admin: true } si le pseudo
-// (normalisé) est dans la var d'env ADMIN_PSEUDOS (liste CSV), sinon 403. La liste vit
-// côté serveur : aucun secret dans le bundle client. ADMIN_PSEUDOS vide = personne. ---
+// --- Accès admin : GET /api/admin/check?pseudo=X -> 200 { ok, admin: true } si le compte
+// existe en table `comptes` avec admin = 1, sinon 403. Le flag vit EN BASE (colonne
+// comptes.admin, migration 0003), pas dans une var d'env : aucun secret dans wrangler.toml.
+// Promotion d'un compte (bootstrap du 1er admin) :
+//   npx wrangler d1 execute voltquiz --remote --command \
+//     "UPDATE comptes SET admin = 1 WHERE pseudo_normalise = 'tonpseudo'" ---
 async function routeAdminCheck(request: Request, env: Env, url: URL): Promise<Response> {
   if (request.method !== 'GET') return jsonError('Méthode non supportée.', 405);
   const pseudo = url.searchParams.get('pseudo');
   if (!pseudo) return jsonError('Pseudo requis.', 400);
-  const autorises = String(env.ADMIN_PSEUDOS || '')
-    .split(',')
-    .map((s) => normalizePseudo(s))
-    .filter(Boolean);
-  if (!autorises.includes(normalizePseudo(pseudo))) {
+  if (!env.DB) return jsonError('Base non configurée.', 503);
+  const row = await env.DB.prepare('SELECT admin FROM comptes WHERE pseudo_normalise = ?')
+    .bind(normalizePseudo(pseudo))
+    .first<{ admin: number }>();
+  if (!row || !row.admin) {
     return jsonError('Accès admin refusé.', 403);
   }
   return json({

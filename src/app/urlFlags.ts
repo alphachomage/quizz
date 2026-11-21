@@ -1,7 +1,7 @@
 // urlFlags.ts — SEUL module habilité à lire window.location / window.history
 // (règle R5 : aucun composant ne touche window.location directement).
 // Gère les flags d'URL de la version d'essai : ?admin=1 ?reset=1 ?resetcompte=1 ?tuto=1
-// (?admin=1 est ensuite VÉRIFIÉ côté serveur : voir app/useAdminAccess.ts + ADMIN_PSEUDOS).
+// (?admin=1 est ensuite VÉRIFIÉ côté serveur : voir app/useAdminAccess.ts + comptes.admin).
 
 /** Flags d'URL lus au démarrage de l'appli. */
 export interface UrlFlags {

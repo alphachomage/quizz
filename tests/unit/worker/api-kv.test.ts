@@ -37,7 +37,6 @@ function envAvec(db: Env['DB']): Env {
     DB: db,
     ENVIRONMENT: 'production',
     APP_VERSION: '0.1.0',
-    ADMIN_PSEUDOS: '',
     ALLOWED_ORIGINS: '',
   } as unknown as Env;
 }
@@ -118,7 +117,6 @@ describe('/api/kv/* (table D1 sync_client, D1 factice)', () => {
     const env = {
       ENVIRONMENT: 'production',
       APP_VERSION: '0.1.0',
-      ADMIN_PSEUDOS: '',
       ALLOWED_ORIGINS: '',
     } as unknown as Env;
     const kv = await appelKv(env, 'x');

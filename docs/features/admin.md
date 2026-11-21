@@ -1,16 +1,24 @@
-# Admin (`?admin=1` + autorisation serveur)
+# Admin (`?admin=1` + flag `admin` sur le compte en base)
 
 Écran d'administration, prioritaire sur le reste. **Le flag `?admin=1` seul ne suffit
 plus** (n'importe qui avec le lien y avait accès) : `src/app/App.tsx` lit le flag via
 `readUrlFlags()` puis applique le gate `useAdminAccess` (`src/app/useAdminAccess.ts`) :
 
 1. session **compte** requise (un invité n'a jamais accès) ;
-2. le pseudo de la session doit figurer dans la var d'env **`ADMIN_PSEUDOS`**
-   (`wrangler.toml`, liste CSV, **vide = personne**), vérifié côté serveur via
-   `GET /api/admin/check?pseudo=...` (200 `{admin:true}` ou 403) — la liste des admins
-   ne sort jamais du serveur ;
+2. le compte doit avoir **`admin = 1` dans la table D1 `comptes`** (colonne ajoutée par la
+   migration `0003_admin_flag.sql`), vérifié côté serveur via
+   `GET /api/admin/check?pseudo=...` (200 `{admin:true}` si `comptes.admin = 1`, 403
+   sinon) — le flag vit en base, aucun secret dans `wrangler.toml` ni dans le bundle ;
 3. mode de stockage `'d1'` requis (en `?stockage=local`, hors-ligne, aucune vérification
    serveur possible -> l'admin est indisponible et l'appli retombe sur le flux normal).
+
+**Promouvoir un compte admin** (bootstrap du premier admin, puis à chaque nouveau) :
+
+```bash
+npx wrangler d1 execute voltquiz --remote --command \
+  "UPDATE comptes SET admin = 1 WHERE pseudo_normalise = 'tonpseudo'"
+# en local : ajoutez --local
+```
 
 Le composant rendu est `ROUTES.admin` = `src/features/admin/AdminReports.tsx` (lazy,
 `src/app/routes.ts`). Quitter : recharge sans `?admin=1` (`urlWithoutAdminFlag()` +

@@ -1,7 +1,7 @@
 // useAdminAccess.ts — gate de la vue admin. Le flag ?admin=1 SEUL ne suffit plus
 // (n'importe qui avec le lien y avait accès) : il faut une session compte (pas invité)
-// dont le pseudo figure dans la var d'env ADMIN_PSEUDOS côté serveur, vérifiée via
-// GET /api/admin/check (la liste des admins ne sort jamais du serveur).
+// dont le compte a admin = 1 en table D1 `comptes`, vérifié côté serveur via
+// GET /api/admin/check (le flag vit en base, aucun secret dans wrangler.toml ni le bundle).
 // En mode stockage 'local' (?stockage=local, hors-ligne), aucune vérification serveur
 // n'est possible -> la vue admin est indisponible.
 import { useEffect, useState } from 'react';

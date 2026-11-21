@@ -104,19 +104,19 @@ puis `curl localhost:5173/api/kv/test` -> `{"ok":true,"key":"test","value":42}`.
 
 - `wrangler.toml` : bindings `DB` (D1 `voltquiz`, id `3b0a1123-13c6-4d55-8872-d817138fdbd7`),
   `ROOMS` (KV id `2e95c8f1ba2449b5b83f9614d1aa12a9`), `DUEL_ROOMS` (Durable Object) +
-  migration `v1`. Var `ADMIN_PSEUDOS` (liste CSV de pseudos admin, vide = personne) —
-  voir « Admin sécurisé » ci-dessous. **Plus de `V2_ENABLED`** : supprimé, la base est le
+  migration `v1`. **Plus de `V2_ENABLED`** : supprimé, la base est le
   défaut (chaque route renvoie 503 « binding manquant » si D1/KV/DO n'est pas configuré).
 - `migrations/0001_init.sql` : tables comptes, parties, records, xp, soumissions, kv.
   `migrations/0002_sync_client.sql` : renomme `kv` -> `sync_client`, ajoute
   `parties.pseudo` + index corrigés + index soumissions.
+  `migrations/0003_admin_flag.sql` : colonne `comptes.admin` (flag admin en base).
   Appliquées en local ET en remote :
   `npx wrangler d1 migrations apply voltquiz --local` puis `--remote`.
 - `worker-api.ts` : routes `/api/kv/:cle` (GET/POST/DELETE -> `sync_client`),
   `/api/auth/*` (PBKDF2 210k, comparaison timing-safe), `/api/parties` (GET avec filtre
   `?pseudo=` sur colonne indexée, POST), `/api/records[/:cle]`, `/api/xp[/:pseudo/:themeId]`,
-  `/api/soumissions` (GET `?etat=`, POST), `/api/admin/check?pseudo=` (200 si le pseudo
-  normalisé est dans `ADMIN_PSEUDOS`, sinon 403), `/api/room*` (KV), `/api/duel/:room`
+  `/api/soumissions` (GET `?etat=`, POST), `/api/admin/check?pseudo=` (200 si le compte
+  a `admin = 1` en table `comptes`, sinon 403), `/api/room*` (KV), `/api/duel/:room`
   (WebSocket -> DO), `/api/ping|health`, `/api/stats`, `/api/csp-report`. Toutes :
   validation, `Cache-Control: no-store`, rate limit 30/min/IP (dans `worker.ts`).
   Plafond de body : 64 Ko en général, **1 Mo pour `/api/kv/*`** (l'historique
@@ -132,9 +132,10 @@ persistée en D1 ; POST sans `value` -> 400.
 
 `?admin=1` ne suffit plus (n'importe qui avec le lien y avait accès). La vue admin exige :
 1. une **session compte** (pas invité) ;
-2. le pseudo de la session dans la var d'env **`ADMIN_PSEUDOS`** (CSV, ex. `"joris,lea"`),
-   vérifiée côté serveur via `GET /api/admin/check?pseudo=...` — la liste ne sort jamais
-   du serveur. `ADMIN_PSEUDOS` vide = personne n'a accès.
+2. le compte a **`admin = 1` en table D1 `comptes`** (migration `0003`), vérifié côté
+   serveur via `GET /api/admin/check?pseudo=...` (200 si admin, 403 sinon). Le flag se
+   promouvoit par SQL — aucun secret dans `wrangler.toml` :
+   `npx wrangler d1 execute voltquiz --remote --command "UPDATE comptes SET admin = 1 WHERE pseudo_normalise = 'tonpseudo'"`
 3. le mode `'d1'` (en `?stockage=local`, hors-ligne, aucune vérification serveur :
    l'admin est indisponible).
 

@@ -35,10 +35,12 @@ manifest, JSON ; `public, max-age=31536000, immutable` sur `/assets/*` (hashés)
   Chaque route renvoie **503 « binding manquant »** si D1/KV/DO n'est pas configuré
   (`worker-api.ts`) ; les routes de santé (`/api/ping`, `/api/health`, `/api/csp-report`)
   répondent toujours.
-- **Accès admin** : `?admin=1` exige une session compte (pas invité) dont le pseudo est
-  dans la var d'env **`ADMIN_PSEUDOS`** (liste CSV, vide = personne), vérifié côté serveur
-  via `GET /api/admin/check?pseudo=...` (200 si admin, 403 sinon). En mode `?stockage=local`
-  (hors-ligne) l'admin est indisponible. Côté client : `src/app/useAdminAccess.ts`.
+- **Accès admin** : `?admin=1` exige une session compte (pas invité) avec **`admin = 1`
+  dans la table D1 `comptes`** (migration `0003_admin_flag.sql`), vérifié côté serveur via
+  `GET /api/admin/check?pseudo=...` (200 si admin, 403 sinon — compte inconnu ou flag à 0).
+  Le flag se promouvoit par SQL (`UPDATE comptes SET admin = 1 WHERE pseudo_normalise = …`),
+  aucun secret dans `wrangler.toml`. En mode `?stockage=local` (hors-ligne) l'admin est
+  indisponible. Côté client : `src/app/useAdminAccess.ts`.
 - Validation des entrées sur chaque route. WebSocket `/api/duel/:room` délégué au
   Durable Object `DuelRoom` (passe intacte à travers `securiser()`, 101 préservé).
 - **Hash timing-safe** : comparaison des hash en temps constant

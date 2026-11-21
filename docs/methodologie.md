@@ -24,7 +24,7 @@
       - [ ] chiffres du corpus jamais écrits en dur -> `npm run count:questions` ;
       - [ ] commandes citées testées telles quelles (`npm run test:game`, `db:migrate:local`…) ;
       - [ ] extensions à jour (`.ts`/`.tsx` ; seuls `questions-*.js` et `theme-manifest.js` restent en JS) ;
-      - [ ] cohérence avec le code : flags URL (`?stockage=local`), `ADMIN_PSEUDOS`, ports, clés localStorage ;
+      - [ ] cohérence avec le code : flags URL (`?stockage=local`), flag admin `comptes.admin`, ports, clés localStorage ;
       - [ ] `CHANGELOG.md` à jour (entrée « Non publié »), `docs/INDEX.md` cohérent ;
       - [ ] grep de salissures : `worker.js`, `storage.js`, `.jsx`, `ci.yml`, `test:legacy`, `?stockage=d1`, `V2_ENABLED`
 - [ ] pas de nouvelle librairie sans **justification écrite** (pour + contre)
