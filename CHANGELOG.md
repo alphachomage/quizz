@@ -5,6 +5,20 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 
 ## Non publié
 
+### Ajouté
+- **Base D1 branchée de bout en bout côté client** (audit : seule la table générique était alimentée) : en mode `d1` (défaut), les données métier partent désormais aussi dans leurs tables dédiées, en best-effort (un échec réseau ne bloque jamais le jeu) — comptes via `/api/auth/*` (PBKDF2 serveur, `src/lib/accounts.ts`, cache local sans secret), parties via `POST /api/parties` (`src/lib/game-history.ts`, avec colonne `pseudo`), records via `/api/records` (`src/lib/records.ts`), XP via `/api/xp` (`src/lib/xp.ts`), soumissions via la **nouvelle route** `POST/GET /api/soumissions` (`src/lib/submissions.ts`, modération admin cross-device).
+- **Table `kv` renommée `sync_client`** (migration `0002_sync_client.sql`) : nom limpide pour le miroir serveur des 17 clés localStorage (blob `cle/valeur` volontaire) ; les données métier structurées ont leurs tables relationnelles dédiées. Voir `docs/stockage-d1.md`.
+- **Index corrigés** (migration `0002`) : `parties.pseudo` = nouvelle colonne texte indexée (l'ancien index sur la colonne JSON `joueurs` était inutilisable avec `LIKE '%…%'`) + `GET /api/parties?pseudo=` filtre dessus ; index `soumissions(etat)` et `soumissions(theme_id)`.
+- **Admin sécurisé** : `?admin=1` ne suffit plus — session compte (pas invité) requise + pseudo dans la var d'env `ADMIN_PSEUDOS` (CSV, vide = personne), vérifié côté serveur via la nouvelle route `GET /api/admin/check` (`src/app/useAdminAccess.ts` + `App.tsx`). En `?stockage=local` (hors-ligne), l'admin est indisponible.
+
+### Supprimé
+- **`V2_ENABLED`** (porte kill-switch) : la base D1 est le stockage par défaut, plus de flag. Chaque route renvoie 503 « binding manquant » si D1/KV/DO n'est pas configuré ; les routes de santé répondent toujours. `wrangler.toml`, `worker-api.ts`, `apiHealth/apiStats` (champ `v2` retiré), `useServerStats`/`ServerCard` (statut `v2-inactive` retiré, carte « Serveur (API) »).
+
+### Modifié
+- **Questions côté client, c'est volontaire et documenté** (`docs/stockage-d1.md`) : le corpus est du contenu statique versionné avec l'app (chunks lazy servis par le worker, cacheables, zéro requête D1 par question) ; seules les soumissions des joueurs migrent serveur (table `soumissions`).
+- Docs mises à jour : `docs/stockage-d1.md` (réécrit), `docs/securite.md`, `docs/features/admin.md`, `docs/comptes.md`, `docs/deploiement.md`, `docs/methodologie.md`, `docs/INDEX.md`, `AGENTS.md`.
+- Tests : `tests/unit/worker/api-kv.test.ts` (sans V2, table `sync_client`), nouveau `tests/unit/worker/api-admin-soumissions.test.ts` (admin check, soumissions, filtre pseudo de `/api/parties`), `tests/unit/lib/accounts.test.ts` (modes d1 serveur mocké + local), `tests/integration/app-shell.test.tsx` (admin autorisé avec session compte, refusé en invité).
+
 ### Corrigé
 - **Synchro D1 : aucune perte silencieuse des écritures serveur** (le mode `d1` écrivait bien en D1 via `/api/kv/*`, mais un POST refusé — hors-ligne, 429, 5xx, ou body > 64 Ko — était ignoré silencieusement, et `preloadFromServer()` écrasait ensuite le local par l'état serveur au démarrage : la progression « restait en localStorage »). Ajout d'une **file d'attente** (`voltquiz_pending_writes`, clé localStorage locale) : toute écriture refusée y est stockée et retentée par `flushPendingWrites()` au démarrage, après chaque write et sur `online` ; `preloadFromServer()` ne touche jamais une clé en attente. `remove()` pousse désormais un `DELETE /api/kv/<cle>` (pending `null` si échec). Tests : `tests/unit/lib/storage-d1.test.ts` (7 tests) + `tests/unit/worker/api-kv.test.ts` (6 tests).
 - **`/api/kv` : plafond de body 64 Ko -> 1 Mo** (`worker-api.ts`) : `voltquiz_parties` (historique 500 parties avec détail) dépassait 64 Ko, donc son POST renvoyait 400 et n'était jamais persisté côté serveur. Le plafond général 64 Ko reste pour les autres routes. `DELETE` ajouté à `Access-Control-Allow-Methods`.

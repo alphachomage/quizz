@@ -1,11 +1,17 @@
-# Comptes locaux, invité, modération, reset
+# Comptes, invité, modération, reset
 
-## Comptes 100 % locaux (`src/lib/accounts.ts`)
+## Comptes (`src/lib/accounts.ts`) — deux modes
 
-- Création : pseudo + e-mail + mot de passe, stockés dans `localStorage`
-  (clé `voltquiz_comptes`). Mot de passe **hashé SHA-256 salé** (`crypto.subtle` +
-  sel `crypto.randomUUID`), jamais en clair. Guard `secureContext()` : hors
-  contexte sécurisé (HTTPS/localhost), erreur utilisateur claire au lieu d'un crash.
+- **Mode `d1` (défaut)** : création/connexion via le serveur
+  (`POST /api/auth/inscription|connexion`, hash **PBKDF2 210 000 itérations** côté
+  worker, comparaison timing-safe — table D1 `comptes`). Le mot de passe ne transite
+  que vers `/api/auth/*`. Le `localStorage` (`voltquiz_comptes`) ne garde qu'un **cache
+  du profil** (pseudo, e-mail, avatar) : jamais de hash ni de mot de passe en clair.
+  Serveur injoignable -> erreur claire (« réessaie, ou ouvre l'appli avec ?stockage=local »).
+- **Mode `local` (`?stockage=local`, hors-ligne)** : comptes 100 % locaux, mot de passe
+  **hashé SHA-256 salé** (`crypto.subtle` + sel `crypto.randomUUID`), jamais en clair.
+  Guard `secureContext()` : hors contexte sécurisé (HTTPS/localhost), erreur
+  utilisateur claire au lieu d'un crash.
 - Session : clé `voltquiz_session` (`currentSession()`). Sans session, l'app affiche
   l'écran `Account` (`src/features/account/Account.tsx`).
 - Modération des pseudos à la création (`src/lib/moderation.ts`, `isValidPseudo`) :

@@ -24,9 +24,9 @@
       - [ ] chiffres du corpus jamais écrits en dur -> `npm run count:questions` ;
       - [ ] commandes citées testées telles quelles (`npm run test:game`, `db:migrate:local`…) ;
       - [ ] extensions à jour (`.ts`/`.tsx` ; seuls `questions-*.js` et `theme-manifest.js` restent en JS) ;
-      - [ ] cohérence avec le code : flags URL (`?stockage=local`), `V2_ENABLED`, ports, clés localStorage ;
+      - [ ] cohérence avec le code : flags URL (`?stockage=local`), `ADMIN_PSEUDOS`, ports, clés localStorage ;
       - [ ] `CHANGELOG.md` à jour (entrée « Non publié »), `docs/INDEX.md` cohérent ;
-      - [ ] grep de salissures : `worker.js`, `storage.js`, `.jsx`, `ci.yml`, `test:legacy`, `?stockage=d1`, `V2_ENABLED=false`
+      - [ ] grep de salissures : `worker.js`, `storage.js`, `.jsx`, `ci.yml`, `test:legacy`, `?stockage=d1`, `V2_ENABLED`
 - [ ] pas de nouvelle librairie sans **justification écrite** (pour + contre)
 - [ ] la prod répond après merge : `curl -s https://voltquiz.joris-leo81.workers.dev/api/ping`
 
@@ -59,8 +59,8 @@ les choix techniques en les expliquant.
 ## Environnements
 
 `npm run dev` (local 5173), `npm run preview` (build servie en local 4173),
-`npm run deploy:preview` (Cloudflare preview, V2_ENABLED=true),
-`npm run deploy` (prod, V2_ENABLED=true) — détail dans `docs/deploiement.md`.
+`npm run deploy:preview` (Cloudflare preview, D1 active),
+`npm run deploy` (prod, D1 active) — détail dans `docs/deploiement.md`.
 
 ## Subagents / parallélisation
 
