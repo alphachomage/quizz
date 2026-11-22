@@ -22,15 +22,26 @@ Ne JAMAIS modifier les 263 fichiers existants (ajout uniquement). `scripts/gen-m
 régénère `src/data/theme-manifest.js` (auto via `predev`/`prebuild`, ou à la main :
 `npm run gen:manifest`).
 
-## Chargement : chunks lazy, mais tout est chargé au démarrage
+## Chargement : IndexedDB (cache persistant) + chunks lazy en fallback
 
 `src/data/questions.ts` utilise `import.meta.glob('./questions-*.js')` **non eager** :
 chaque fichier `questions-*.js` est découpé en un chunk (~10 Ko) par le bundler, et la
-PWA précache tous les chunks (hors-ligne OK). **Mais** `loadThemes()` (appelée par
-`ThemesContext` au démarrage) charge **tous les chunks** via `Promise.all` : le lazy
-sert à alléger le chunk initial et à permettre le precache, pas à différer le chargement
-des questions. Seules les métadonnées (`THEMES_META`, depuis `theme-manifest.js`, ~2 Ko)
-sont disponibles immédiatement.
+PWA précache tous les chunks (hors-ligne OK).
+
+**Premier lancement** (ou après un changement de version du corpus) : `loadThemes()`
+charge tous les chunks via `Promise.all`, puis indexe le corpus aplati dans
+**IndexedDB** (`src/lib/question-db.ts`, base `voltquiz-questions`, store `questions`
+avec index `by_theme` et `by_theme_niveau`) et mémorise la version du corpus
+(`CORPUS_VERSION`, hash des fichiers généré par `scripts/gen-manifest.mjs` dans
+`theme-manifest.js`).
+
+**Démarrages suivants** : si la version stockée dans IndexedDB === `CORPUS_VERSION`,
+`loadThemes()` lit le corpus directement depuis IndexedDB (`loadCorpus`) — beaucoup plus
+rapide que 263 requêtes de chunks + parsing JS. Sinon (ou si IndexedDB est indisponible :
+navigation privée, vieux navigateur), repli sur les chunks + réindexation.
+
+Seules les métadonnées (`THEMES_META`, depuis `theme-manifest.js`, ~2 Ko) restent
+disponibles immédiatement, sans attendre IndexedDB.
 
 ## Format (clés en français, documentées pour le client)
 
@@ -74,6 +85,15 @@ Même `id` qu'un thème existant = questions ajoutées à ce thème (fusion par
 | sciences | `#2dd4bf` | oui |
 | sport | `#4ade80` | oui |
 
+## Qualité du tirage : stats de réussite par question
+
+Chaque partie terminée enregistre le résultat de chaque question (texte + correct) dans
+`voltquiz_stats_questions` (`src/lib/question-stats.ts`, sync D1 en mode `d1`), indexé
+par texte normalisé. Au tirage (`drawGameQuestions`), `filterByQuality()` retire du pool
+les questions **suspectes** : taux de réussite < 5 % après au moins 20 évaluations
+(question probablement fausse), ou > 98 % en niveau « dur » (trop facile) — sauf si ça
+laisse moins de questions que demandé (le pool d'origine est alors conservé).
+
 ## Deux façons d'ajouter ses questions
 
 1. **Depuis l'appli** (« Proposer une question », débloqué au niveau 3 du thème,
@@ -90,9 +110,11 @@ Même `id` qu'un thème existant = questions ajoutées à ce thème (fusion par
 ## Admin (`?admin=1`)
 
 `src/features/admin/AdminReports.tsx`. Signalements (pouce rouge en partie, clé
-`voltquiz_signales`) : « Garder » ou « Retirer du pool » (exclusion via
-`voltquiz_exclues`, appliquée dans `loadThemes()`, retrait effectif au rechargement ;
-les fichiers source ne sont jamais modifiés). Propositions en attente, suggestions
-des joueurs (`voltquiz_suggestions`), compteur de questions par thème (seul endroit
-où le nombre de questions est visible côté UI ; la référence reste
-`npm run count:questions`).
+`voltquiz_signales`) : « Garder » / « Retirer du pool » (exclusion via
+`voltquiz_exclues`) / **« Modifier »** (override via `voltquiz_overrides`, voir
+`src/lib/overrides.ts` : la question est remplacée dans le pool sans toucher au
+fichier source). Exclusions et overrides sont appliqués dans `loadThemes()`,
+effectifs au rechargement ; les fichiers source ne sont jamais modifiés.
+Propositions en attente, suggestions des joueurs (`voltquiz_suggestions`),
+compteur de questions par thème (seul endroit où le nombre de questions est
+visible côté UI ; la référence reste `npm run count:questions`).

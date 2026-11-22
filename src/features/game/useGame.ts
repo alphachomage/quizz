@@ -184,6 +184,7 @@ export function useGame({ config, prefs, onFinish }: UseGameParams): GameState {
         streak: nouveauStreak,
         bonusStreak,
         secondes: secondsElapsed, // temps de réaction (stats avancées)
+        q: question.q, // texte de la question (stats de qualité : taux de réussite)
       },
     ]);
     setScores((s) => {

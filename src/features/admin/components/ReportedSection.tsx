@@ -7,6 +7,7 @@ import type { ReportStatut, StoredReport } from '@lib/reports.js';
 interface ReportedSectionProps {
   list: StoredReport[];
   onVerify: (s: StoredReport, statut: ReportStatut) => void;
+  onEdit: (s: StoredReport) => void;
   onRemove: (q: string) => void;
   onExport: () => void;
   onClearAll: () => void;
@@ -15,6 +16,7 @@ interface ReportedSectionProps {
 export default function ReportedSection({
   list,
   onVerify,
+  onEdit,
   onRemove,
   onExport,
   onClearAll,
@@ -94,6 +96,13 @@ export default function ReportedSection({
                     onClick={() => onVerify(s, 'retirer')}
                   >
                     <Icon nom="trash" taille={14} /> Retirer du pool
+                  </button>
+                  <button
+                    className="filtre"
+                    title="Corriger la question (override admin, sans toucher au fichier source)"
+                    onClick={() => onEdit(s)}
+                  >
+                    <Icon nom="pencil" taille={14} /> Modifier
                   </button>
                 </>
               )}

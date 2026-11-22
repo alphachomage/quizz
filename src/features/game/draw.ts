@@ -2,6 +2,7 @@
 // solo (niveau choisi), duel (6/joueur), survie (tous
 // thèmes/niveaux, 1 vie), quizz du jour (tirage seedé par la date).
 import { todayDate } from '@lib/dates.js';
+import { filterByQuality } from '@lib/question-stats.js';
 import { DUEL_QUESTIONS, SOLO_QUESTIONS, SURVIVAL_MAX } from '@lib/scoring.js';
 import { seriesKey, poolWithoutPreviousSeries } from '@lib/series.js';
 import { shuffle, dailyQuestions, drawSeries } from '@lib/draw.js';
@@ -71,6 +72,9 @@ export function drawGameQuestions(config: GameLaunchConfig): DrawnQuestion[][] {
   if (mode !== 'quotidien') {
     pool = poolWithoutPreviousSeries(pool, seriesKey(mode, niveau, theme.id), countN);
   }
+  // Filtre qualité : retire les questions suspectes (taux de réussite anormal après
+  // assez d'évaluations — ex. question probablement fausse), si ça laisse assez de questions.
+  pool = filterByQuality(pool, niveau, countN);
   // 1) on mélange les réponses de chaque question, 2) on tire l'ordre des questions au
   // hasard avec diversité : max 2 questions du même sujet et, en mode multi-thèmes
   // (survie), un plafond par thème (sauf quizz du jour : tirage seedé + diversifié).

@@ -5,12 +5,15 @@ import { loadReports, removeReport, clearReports, markReport } from '@lib/report
 import type { ReportStatut, StoredReport } from '@lib/reports.js';
 import { loadSuggestions, removeSuggestion } from '@lib/suggestions.js';
 import type { StoredSuggestion } from '@lib/suggestions.js';
-import type { Submission, Theme } from '@lib/types.js';
+import { setOverride } from '@lib/overrides.js';
+import { normalizeQuestionText } from '@lib/text.js';
+import type { Question, Submission, Theme } from '@lib/types.js';
 import AdminDashboard from './AdminDashboard.jsx';
 import ThemesSection from './components/ThemesSection.jsx';
 import ReportedSection from './components/ReportedSection.jsx';
 import ProposedSection from './components/ProposedSection.jsx';
 import SuggestionsSection from './components/SuggestionsSection.jsx';
+import EditQuestionForm from './components/EditQuestionForm.jsx';
 
 // Vue ADMIN (?admin=1) : tableau de bord global en haut (AdminDashboard), puis les
 // sections de modération (signalements, propositions, suggestions, thèmes).
@@ -39,6 +42,8 @@ export default function AdminReports({
 }: AdminReportsProps): ReactElement {
   const [signales, setSignales] = useState<StoredReport[]>(() => loadReports());
   const [suggestions, setSuggestions] = useState<StoredSuggestion[]>(() => loadSuggestions());
+  // Question en cours d'édition (override "modifier") : { report, question trouvée dans le corpus }.
+  const [editing, setEditing] = useState<{ report: StoredReport; question: Question } | null>(null);
   function removeSuggestionN(id: string): void {
     removeSuggestion(id);
     setSuggestions(loadSuggestions());
@@ -61,6 +66,29 @@ export default function AdminReports({
   function verify(s: StoredReport, statut: ReportStatut): void {
     markReport(s.q, statut);
     setSignales(loadReports());
+  }
+  // Ouvre le formulaire d'édition : retrouve la question complète dans le corpus par texte normalisé.
+  function startEdit(s: StoredReport): void {
+    const cle = normalizeQuestionText(s.q);
+    for (const t of themes ?? []) {
+      const q = t.questions.find((x) => normalizeQuestionText(x.q) === cle);
+      if (q) {
+        setEditing({ report: s, question: q });
+        return;
+      }
+    }
+    // Question introuvable dans le corpus (ex: question perso supprimée) : on édite quand même
+    // depuis le texte du signalement, avec des réponses vides.
+    setEditing({
+      report: s,
+      question: { q: s.q, reponses: ['', ''], bonne: 0, niveau: 'moyen' },
+    });
+  }
+  // Enregistre un override "modifier" : la question remplacée prend effet au rechargement.
+  function saveEdit(q: Question): void {
+    if (!editing) return;
+    setOverride(editing.report.q, { action: 'modifier', question: q });
+    setEditing(null);
   }
   function clearAll(): void {
     if (window.confirm('Supprimer TOUS les signalements ?')) {
@@ -114,10 +142,20 @@ export default function AdminReports({
         <ReportedSection
           list={list}
           onVerify={verify}
+          onEdit={startEdit}
           onRemove={remove}
           onExport={exportFn}
           onClearAll={clearAll}
         />
+
+        {editing && (
+          <EditQuestionForm
+            question={editing.question}
+            themeName={themeName(editing.report.themeId)}
+            onSave={saveEdit}
+            onCancel={() => setEditing(null)}
+          />
+        )}
 
         <ProposedSection
           submissions={submissions}

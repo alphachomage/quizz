@@ -51,6 +51,8 @@ export interface GameDetail {
   niveau: LevelId | string;
   correct: boolean;
   gain: number;
+  /** Texte de la question (pour les stats de qualité : taux de réussite par question). */
+  q?: string;
 }
 
 /** Résultat d'une partie terminée (persisté + affiché sur l'écran de résultats). */
@@ -112,6 +114,11 @@ export interface Report {
   date?: string;
   statut?: 'garder' | 'retirer';
 }
+
+/** Override admin posé sur une question du corpus (clé = texte normalisé de la question). */
+export type OverrideEntry =
+  | { action: 'supprimer' }
+  | { action: 'modifier'; question: Question };
 
 /** Suggestion de joueur (vue admin). */
 export interface Suggestion {
