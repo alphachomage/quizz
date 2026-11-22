@@ -112,6 +112,23 @@ export interface GamesResponse {
   games: unknown[];
 }
 
+/** Ligne du classement global (GET /api/classement, agrégé côté serveur sur D1). */
+export interface ClassementRow {
+  nom: string;
+  score: number;
+  bonnes: number;
+  total: number;
+  themeId: string | null;
+  niveau: string | null;
+  date: string;
+}
+
+export interface ClassementResponse {
+  ok: boolean;
+  rows?: ClassementRow[];
+  error?: string;
+}
+
 /** Ligne de la table D1 « records ». */
 export interface RecordRow {
   cle: string;
@@ -271,6 +288,17 @@ export const apiAddGame = (game: GamePayload): Promise<AddGameResponse> =>
   });
 export const apiGames = (pseudo?: string): Promise<GamesResponse> =>
   appel(`/parties${pseudo ? `?pseudo=${encodeURIComponent(pseudo)}` : ''}`);
+/** GET /api/classement?mode=&niveau=&periode= : top 20 global (meilleur score par joueur). */
+export const apiClassement = (
+  mode: string,
+  niveau?: string,
+  periode?: string
+): Promise<ClassementResponse> => {
+  const params = new URLSearchParams({ mode });
+  if (niveau && niveau !== 'tous') params.set('niveau', niveau);
+  if (periode) params.set('periode', periode);
+  return appel(`/classement?${params.toString()}`);
+};
 export const apiRecord = (key: string): Promise<RecordResponse> =>
   appel(`/records/${encodeURIComponent(key)}`);
 export const apiSaveRecord = (key: string, value: number, pseudo?: string): Promise<OkResponse> =>

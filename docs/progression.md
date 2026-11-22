@@ -29,6 +29,18 @@ onglets par mode, filtre Facile/Moyen/Difficile en solo, sélecteur
 « Tout l'historique / Cette semaine » (`isThisWeek` dans `src/lib/dates.ts`,
 lundi->dimanche). Lignes : rang, joueur, badge thème coloré, difficulté, points.
 
+### Classement global (serveur D1)
+
+Bascule « Local (ce PC) / Global (en ligne) » affichée uniquement en mode `d1`
+(`STORAGE_MODE`, `?stockage=local` la masque). Le global appelle
+**GET `/api/classement?mode=&niveau=&periode=`** (`worker-api.ts` → `routeClassement`,
+session requise) : top 20 agrégé en SQL sur la table D1 `parties`
+(`json_each(joueurs)`, meilleur score par joueur = colonne `pseudo` normalisée,
+sinon nom du 1er joueur), filtres `niveau` (solo) et `periode=semaine` (depuis lundi
+00:00 UTC). Client : `apiClassement()` dans `src/lib/api.ts`. La ligne du compte
+connecté est surlignée (`.ligne-classement.moi`). En cas d'erreur réseau, message
+d'erreur + retour possible en local.
+
 ## Stats (`src/features/stats/Stats.tsx` + `statsCompute.ts`)
 
 Depuis l'historique : `computeStats` (parties jouées, questions répondues, % réussite,

@@ -116,3 +116,16 @@
   color: var(--or);
   flex-shrink: 0;
 }
+
+/* Ligne du joueur connecté dans le classement (local ou global) */
+.ligne-classement.moi {
+  outline: 2px solid var(--accent1);
+  outline-offset: -2px;
+}
+.ligne-classement.moi .lc-nom::after {
+  content: "(toi)";
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--texte-doux);
+  margin-left: 6px;
+}

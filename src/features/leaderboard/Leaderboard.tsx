@@ -1,9 +1,12 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { CSSProperties } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import { loadGames } from '@lib/game-history.js';
 import { levelName, LEVELS } from '@lib/scoring.js';
 import { isThisWeek } from '@lib/dates.js';
+import { apiClassement } from '@lib/api.js';
+import { STORAGE_MODE } from '@lib/storage.js';
+import { currentSession } from '@lib/accounts.js';
 import type { Theme } from '@lib/types.js';
 
 // Leaderboard local : UNIQUEMENT les classements par mode de jeu, avec pour chaque
@@ -66,7 +69,14 @@ export default function Leaderboard({ themes, onHome: onHome, onStats }: Leaderb
   const [tab, setTab] = useState('solo');
   const [niveauSolo, setSoloLevel] = useState('tous'); // filtre de l'onglet Solo
   const [periode, setPeriode] = useState('tout'); // 'tout' | 'semaine' (classement hebdo)
+  const [source, setSource] = useState<'local' | 'global'>('local'); // local (ce PC) ou global (serveur D1)
+  const [rowsGlobal, setRowsGlobal] = useState<RowClassement[] | null>(null);
+  const [chargementGlobal, setChargementGlobal] = useState(false);
+  const [erreurGlobal, setErreurGlobal] = useState<string | null>(null);
   const games = useMemo(() => loadGames(), []);
+  // Le classement global n'existe qu'en mode 'd1' (base serveur) ; en ?stockage=local il reste local.
+  const globalDispo = STORAGE_MODE === 'd1';
+  const pseudoActuel = currentSession()?.pseudo ?? null;
 
   // --- Lignes de classement pour un mode donné (depuis l'historique des parties) ---
   const modeRows = useMemo(() => {
@@ -94,6 +104,48 @@ export default function Leaderboard({ themes, onHome: onHome, onStats }: Leaderb
     }
     return rows.sort((a, b) => b.score - a.score).slice(0, 20);
   }, [games, tab, niveauSolo, periode, themes]);
+
+  // --- Classement GLOBAL : top 20 agrégé côté serveur (GET /api/classement, table D1) ---
+  useEffect(() => {
+    if (source !== 'global' || !globalDispo) return undefined;
+    let annule = false;
+    setChargementGlobal(true);
+    setErreurGlobal(null);
+    apiClassement(tab, tab === 'solo' ? niveauSolo : undefined, periode)
+      .then((r) => {
+        if (annule) return;
+        setRowsGlobal(
+          (r.rows || []).map((row, i) => {
+            const theme = (themes || []).find((t) => t.id === row.themeId);
+            return {
+              key: `global-${i}-${row.nom}`,
+              nom: row.nom,
+              score: row.score,
+              bonnes: row.bonnes,
+              total: row.total,
+              themeName: row.themeId === 'tous' ? 'Tous les thèmes' : theme ? theme.nom : row.themeId || '',
+              themeColor: theme ? theme.couleur : '#8b5cf6',
+              themeIcon: theme ? theme.icone : 'sparkles',
+              niveau: row.niveau,
+              date: row.date,
+            };
+          })
+        );
+      })
+      .catch((e: unknown) => {
+        if (annule) return;
+        setErreurGlobal(e instanceof Error ? e.message : 'Classement global indisponible.');
+        setRowsGlobal([]);
+      })
+      .finally(() => {
+        if (!annule) setChargementGlobal(false);
+      });
+    return () => {
+      annule = true;
+    };
+  }, [source, globalDispo, tab, niveauSolo, periode, themes]);
+
+  const lignes = source === 'global' ? rowsGlobal : modeRows;
   function labelMode(mode: string, niveau: string | null): string {
     if (mode === 'solo') return `solo · ${levelName(niveau)}`;
     if (mode === 'duel') return 'duel 1v1';
@@ -131,7 +183,9 @@ export default function Leaderboard({ themes, onHome: onHome, onStats }: Leaderb
           </span>
           Classement
         </div>
-        <p className="tagline">Un classement par mode de jeu, enregistré localement sur ce PC.</p>
+        <p className="tagline">
+          Un classement par mode de jeu — en local (ce PC) ou en global (tous les joueurs en ligne).
+        </p>
       </header>
 
       <div className="onglets">
@@ -167,6 +221,23 @@ export default function Leaderboard({ themes, onHome: onHome, onStats }: Leaderb
         ))}
       </div>
 
+      {globalDispo && (
+        <div className="filtres-niveau">
+          {[
+            { id: 'local' as const, nom: 'Local (ce PC)', icone: 'device' },
+            { id: 'global' as const, nom: 'Global (en ligne)', icone: 'globe' },
+          ].map((s) => (
+            <button
+              key={s.id}
+              className={source === s.id ? 'filtre actif' : 'filtre'}
+              onClick={() => setSource(s.id)}
+            >
+              <Icon nom={s.icone} taille={14} /> {s.nom}
+            </button>
+          ))}
+        </div>
+      )}
+
       {tab === 'solo' && (
         <div className="filtres-niveau">
           {[
@@ -188,19 +259,35 @@ export default function Leaderboard({ themes, onHome: onHome, onStats }: Leaderb
       )}
 
       {isGameMode &&
-        (modeRows.length === 0 ? (
+        (source === 'global' && chargementGlobal ? (
+          <p className="vide">Chargement du classement global…</p>
+        ) : source === 'global' && erreurGlobal ? (
           <p className="vide">
-            {periode === 'semaine' &&
-              'Aucune partie cette semaine — le classement hebdo se remplit dès ta prochaine partie. '}
-            {tab === 'solo'
-              ? `Aucune partie solo${niveauSolo !== 'tous' ? ` au niveau ${levelName(niveauSolo)}` : ''}${periode === 'tout' ? ' enregistrée pour l’instant.' : ''}`
-              : periode === 'tout' &&
-                `Aucune partie ${TABS.find((o) => o.id === tab)?.nom.toLowerCase()} enregistrée pour l’instant.`}
+            Classement global indisponible ({erreurGlobal}) — vérifie ta connexion, ou repasse en local.
+          </p>
+        ) : !lignes || lignes.length === 0 ? (
+          <p className="vide">
+            {source === 'global'
+              ? 'Aucune partie en ligne pour ce mode pour l’instant — joue une partie pour apparaître dans le classement global.'
+              : periode === 'semaine' &&
+                'Aucune partie cette semaine — le classement hebdo se remplit dès ta prochaine partie. '}
+            {source === 'local' &&
+              (tab === 'solo'
+                ? `Aucune partie solo${niveauSolo !== 'tous' ? ` au niveau ${levelName(niveauSolo)}` : ''}${periode === 'tout' ? ' enregistrée pour l’instant.' : ''}`
+                : periode === 'tout' &&
+                  `Aucune partie ${TABS.find((o) => o.id === tab)?.nom.toLowerCase()} enregistrée pour l’instant.`)}
           </p>
         ) : (
           <ul className="liste-classement">
-            {modeRows.map((l, i) => (
-              <li key={l.key} className="ligne-classement">
+            {lignes.map((l, i) => (
+              <li
+                key={l.key}
+                className={
+                  pseudoActuel && l.nom.toLowerCase() === pseudoActuel.toLowerCase()
+                    ? 'ligne-classement moi'
+                    : 'ligne-classement'
+                }
+              >
                 <span
                   className="rang"
                   style={{
