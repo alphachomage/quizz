@@ -76,7 +76,8 @@ manifest, JSON ; `public, max-age=31536000, immutable` sur `/assets/*` (hashés)
   pseudo de la connexion, pas à un champ du message — pas d'usurpation d'identité.
 - **Hash timing-safe** : comparaison des hash en temps constant
   (`crypto.subtle.timingSafeEqual` dans `hashEgaux`). Mots de passe serveur (mode `d1`,
-  défaut) : PBKDF2 210 000 itérations SHA-256 (`hash_version = 2`, table `comptes`).
+  défaut) : PBKDF2 100 000 itérations SHA-256 (plafond dur de WebCrypto dans Workers,
+  `hash_version = 2`, table `comptes`).
   En mode `?stockage=local` : SHA-256 salé local (`src/lib/accounts.ts`).
 
 ## Données externes (client)
@@ -88,8 +89,9 @@ manifest, JSON ; `public, max-age=31536000, immutable` sur `/assets/*` (hashés)
 - **XSS** : jamais de `dangerouslySetInnerHTML`/`innerHTML`/`eval` (grep en review).
   React échappe par défaut.
 - **Mots de passe** : jamais en clair. Mode `d1` (défaut) : le mot de passe transite
-  uniquement vers `/api/auth/*` (PBKDF2 210 000 itérations côté serveur,
-  `worker-api.ts`) et le cache local `voltquiz_comptes` ne contient **aucun** hash.
+  uniquement vers `/api/auth/*` (PBKDF2 100 000 itérations côté serveur — plafond
+  WebCrypto de Workers —, `worker-api.ts`) et le cache local `voltquiz_comptes` ne
+  contient **aucun** hash.
   Mode `?stockage=local` : SHA-256 salé local (`crypto.randomUUID` +
   `crypto.subtle`, guard `secureContext()` dans `src/lib/accounts.ts` -> erreur
   claire hors contexte sécurisé).

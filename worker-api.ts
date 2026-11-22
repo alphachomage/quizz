@@ -189,8 +189,11 @@ async function exigerAdmin(request: Request, env: Env): Promise<{ pseudo: string
   return s;
 }
 
-// --- Auth : inscription / connexion (PBKDF2 210 000 itérations côté serveur) ---
-const PBKDF2_ITERATIONS = 210000;
+// --- Auth : inscription / connexion (PBKDF2 côté serveur) ---
+// Plafond dur de WebCrypto dans le runtime Workers : deriveBits(PBKDF2) lève
+// NotSupportedError au-delà de 100 000 itérations (500 sur /api/auth/* sinon).
+// On prend donc le maximum permis par la plateforme.
+const PBKDF2_ITERATIONS = 100000;
 const MAX_MDP = 72; // au-delà, 400 (évite un PBKDF2 sur un body énorme)
 async function pbkdf2(password: string, sel: string): Promise<string> {
   const data = new TextEncoder().encode(`${sel}::${password}`);

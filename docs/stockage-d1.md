@@ -10,7 +10,7 @@ aucun composant ne touche au stockage directement.
 |---|---|---|---|
 | `sync_client` | **Miroir serveur des 17 clés localStorage**, namespacé par compte : la clé réelle est `<pseudo>:<cle>` (un client ne touche que son espace) | `cle TEXT PRIMARY KEY, valeur TEXT` (JSON) — blob store **volontaire** : ces données n'ont pas de schéma relationnel | ✅ auto via `storage.ts` (`/api/kv/*` + Bearer) |
 | `sessions` | Tokens de session Bearer (TTL 30 j, 1 par compte) | `token TEXT PK, pseudo, cree_le, expire_le` | ✅ émise par `/api/auth/*`, envoyée en header
-| `comptes` | Comptes serveur (auth PBKDF2 210 000 itérations, hash `hash_version = 2`) | relationnelle, `pseudo_normalise UNIQUE` | ✅ `accounts.ts` → `/api/auth/*` |
+| `comptes` | Comptes serveur (auth PBKDF2 100 000 itérations — plafond WebCrypto Workers, hash `hash_version = 2`) | relationnelle, `pseudo_normalise UNIQUE` | ✅ `accounts.ts` → `/api/auth/*` |
 | `parties` | Historique serveur des parties (multi-appareils, futur classement global) | relationnelle + **colonne `pseudo` indexée** | ✅ `game-history.ts` → `/api/parties` |
 | `records` | Records serveur par mode × niveau × thème | `cle TEXT PRIMARY KEY` | ✅ `records.ts` → `/api/records` |
 | `xp` | XP serveur par compte × thème | `pseudo_theme TEXT PRIMARY KEY` | ✅ `xp.ts` → `/api/xp` |

@@ -3,7 +3,7 @@
 ## Comptes (`src/lib/accounts.ts`) — deux modes
 
 - **Mode `d1` (défaut)** : création/connexion via le serveur
-  (`POST /api/auth/inscription|connexion`, hash **PBKDF2 210 000 itérations** côté
+  (`POST /api/auth/inscription|connexion`, hash **PBKDF2 100 000 itérations** côté
   worker, comparaison timing-safe — table D1 `comptes`). Le mot de passe ne transite
   que vers `/api/auth/*`. Le `localStorage` (`voltquiz_comptes`) ne garde qu'un **cache
   du profil** (pseudo, e-mail, avatar) : jamais de hash ni de mot de passe en clair.
