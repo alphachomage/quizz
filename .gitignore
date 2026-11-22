@@ -6,6 +6,10 @@ coverage/
 .env*
 *.log
 
+# Généré au build/dev par scripts/gen-corpus-json.mjs (prebuild/predev), servi en
+# statique depuis public/ — jamais importé en dur, donc pas versionné.
+public/corpus.json
+
 # Fichiers de travail temporaires (scans et dumps de rédaction de questions)
 scan*.txt
 sciences-*.txt

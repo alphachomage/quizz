@@ -58,8 +58,9 @@ function fusionner(a: Theme[], b: Theme[]): Theme[] {
   return [...map.values()];
 }
 
-// Charge tous les chunks questions-*.js et les fusionne (appelé une seule fois,
-// au premier lancement ou après un changement de CORPUS_VERSION, pour remplir IndexedDB).
+// Charge tous les chunks questions-*.js et les fusionne (fallback si corpus.json
+// est indisponible — appelé une seule fois, au premier lancement ou après un
+// changement de CORPUS_VERSION, pour remplir IndexedDB).
 async function loadFromChunks(): Promise<Theme[]> {
   const modules = await Promise.all(Object.values(chargeurs).map((f) => f()));
   let tous: Theme[] = [];
@@ -68,6 +69,32 @@ async function loadFromChunks(): Promise<Theme[]> {
     if (isThemeArray(lot)) tous = fusionner(tous, lot);
   }
   return tous;
+}
+
+// Charge le corpus complet : d'abord public/corpus.json (1 requête, généré au build
+// par scripts/gen-corpus-json.mjs, précaché par la PWA car dans public/), fallback sur
+// les chunks JS si le fetch échoue ou si la version ne correspond pas.
+async function loadFromCorpus(): Promise<Theme[]> {
+  try {
+    const r = await fetch('/corpus.json');
+    if (r.ok) {
+      const data = (await r.json()) as { version?: string; themes?: unknown };
+      if (
+        data &&
+        data.version === CORPUS_VERSION &&
+        Array.isArray(data.themes) &&
+        data.themes.length > 0 &&
+        data.themes.every(
+          (t) => t && typeof t === 'object' && Array.isArray((t as Theme).questions)
+        )
+      ) {
+        return data.themes as unknown as Theme[];
+      }
+    }
+  } catch {
+    // fetch échoué (hors-ligne, test) : fallback chunks
+  }
+  return loadFromChunks();
 }
 
 // Applique les exclusions admin + les overrides (supprimer/modifier) + filtre les thèmes
@@ -100,11 +127,11 @@ export async function loadThemes(): Promise<Theme[]> {
   } catch {
     // IndexedDB indisponible : on ignore et on passe aux chunks
   }
-  const tous = await loadFromChunks();
+  const tous = await loadFromCorpus();
   try {
     await saveCorpus(tous, CORPUS_VERSION);
   } catch {
-    // IndexedDB indisponible : on joue sans cache, les chunks ont déjà tout chargé
+    // IndexedDB indisponible : on joue sans cache, le corpus est déjà chargé
   }
   return applyExclusions(tous);
 }

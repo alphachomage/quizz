@@ -65,13 +65,17 @@ git add src/data/questions-histoire-z.js
 git commit -m "feat(questions): +10 questions histoire"
 ```
 
-C'est tout. Au prochain `npm run dev` / `npm run build` :
+C'est tout. Au prochain `npm run dev` / `npm run build` (les `predev`/`prebuild`
+lancent automatiquement les deux scripts) :
 - `scripts/gen-manifest.mjs` régénère `theme-manifest.js` **avec un nouveau
   `CORPUS_VERSION`** (hash des fichiers) → le cache IndexedDB des joueurs est
   invalidé automatiquement, ils reçoivent les nouvelles questions au prochain
   lancement ;
-- le nouveau fichier est découpé en un chunk par le bundler et **précaché par la
-  PWA** (hors-ligne OK).
+- `scripts/gen-corpus-json.mjs` régénère `public/corpus.json` (tout le corpus
+  fusionné en un seul JSON minifié, avec la même version) → servi en 1 requête
+  et **précaché par la PWA** (hors-ligne OK) ;
+- le nouveau fichier `questions-*.js` reste découpé en chunk par le bundler
+  (fallback si `corpus.json` est indisponible).
 
 ---
 

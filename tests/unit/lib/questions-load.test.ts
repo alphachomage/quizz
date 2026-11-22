@@ -75,4 +75,54 @@ describe('loadThemes — IndexedDB vs chunks', () => {
     expect(themes.length).toBeGreaterThanOrEqual(12);
     expect(saveCorpus).toHaveBeenCalledTimes(1);
   });
+
+  it('corpus.json disponible et version OK -> fetch /corpus.json utilisé (1 requête, pas les chunks)', async () => {
+    getStoredCorpusVersion.mockResolvedValue('ancienne-version');
+    saveCorpus.mockResolvedValue(undefined);
+    const themesJson = [
+      {
+        id: 'theme-json',
+        nom: 'Thème JSON',
+        questions: [{ q: 'Question du corpus.json ?', reponses: ['a', 'b'], bonne: 0, niveau: 'moyen' }],
+      },
+    ];
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ version: CORPUS_VERSION, themes: themesJson }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const { loadThemes } = await import('@/data/questions.js');
+    const themes = await loadThemes();
+    expect(fetchMock).toHaveBeenCalledWith('/corpus.json');
+    // Le thème du corpus.json est présent, indexé dans IDB avec la bonne version.
+    expect(themes.find((t) => t.id === 'theme-json')).toBeDefined();
+    expect(saveCorpus.mock.calls[0][1]).toBe(CORPUS_VERSION);
+    vi.unstubAllGlobals();
+  });
+
+  it('corpus.json indisponible (fetch échoue) -> fallback sur les chunks', async () => {
+    getStoredCorpusVersion.mockResolvedValue('ancienne-version');
+    saveCorpus.mockResolvedValue(undefined);
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')));
+    const { loadThemes } = await import('@/data/questions.js');
+    const themes = await loadThemes();
+    expect(themes.length).toBeGreaterThanOrEqual(12); // les vrais chunks ont été chargés
+    vi.unstubAllGlobals();
+  });
+
+  it('corpus.json version différente -> fallback sur les chunks', async () => {
+    getStoredCorpusVersion.mockResolvedValue('ancienne-version');
+    saveCorpus.mockResolvedValue(undefined);
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ version: 'version-differente', themes: [{ id: 'x', questions: [] }] }),
+      })
+    );
+    const { loadThemes } = await import('@/data/questions.js');
+    const themes = await loadThemes();
+    expect(themes.length).toBeGreaterThanOrEqual(12);
+    vi.unstubAllGlobals();
+  });
 });

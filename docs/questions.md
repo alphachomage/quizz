@@ -30,9 +30,12 @@ chaque fichier `questions-*.js` est découpé en un chunk (~10 Ko) par le bundle
 PWA précache tous les chunks (hors-ligne OK).
 
 **Premier lancement** (ou après un changement de version du corpus) : `loadThemes()`
-charge tous les chunks via `Promise.all`, puis indexe le corpus aplati dans
-**IndexedDB** (`src/lib/question-db.ts`, base `voltquiz-questions`, store `questions`
-avec index `by_theme` et `by_theme_niveau`) et mémorise la version du corpus
+fetch d'abord **`public/corpus.json`** (généré au build par `scripts/gen-corpus-json.mjs`,
+tout le corpus fusionné en un seul JSON minifié de ~2,4 Mo avec `version`, précaché par
+la PWA car dans `public/` — 1 requête au lieu de 263 chunks), fallback sur les chunks
+`import.meta.glob` si le fetch échoue ou si la version ne correspond. Puis le corpus est
+indexé dans **IndexedDB** (`src/lib/question-db.ts`, base `voltquiz-questions`, store
+`questions` avec index `by_theme` et `by_theme_niveau`) avec la version du corpus
 (`CORPUS_VERSION`, hash des fichiers généré par `scripts/gen-manifest.mjs` dans
 `theme-manifest.js`).
 
