@@ -12,9 +12,14 @@
 
 import { loadExcluded } from '@lib/exclusions.js';
 import { normalizeQuestionText } from '@lib/text.js';
+import {
+  getStoredCorpusVersion,
+  saveCorpus,
+  loadCorpus,
+} from '@lib/question-db.js';
 import type { Theme } from '@lib/types.js';
 
-import { THEME_MANIFEST } from './theme-manifest.js';
+import { THEME_MANIFEST, CORPUS_VERSION } from './theme-manifest.js';
 
 // Chargeurs lazy : chemin -> fonction() -> Promise<module>.
 // Les modules eux-mêmes sont des chunks JS non typés : leur forme est déclarée
@@ -52,14 +57,20 @@ function fusionner(a: Theme[], b: Theme[]): Theme[] {
   return [...map.values()];
 }
 
-// Charge TOUTES les questions (tous les chunks) et applique les exclusions admin.
-export async function loadThemes(): Promise<Theme[]> {
+// Charge tous les chunks questions-*.js et les fusionne (appelé une seule fois,
+// au premier lancement ou après un changement de CORPUS_VERSION, pour remplir IndexedDB).
+async function loadFromChunks(): Promise<Theme[]> {
   const modules = await Promise.all(Object.values(chargeurs).map((f) => f()));
   let tous: Theme[] = [];
   for (const mod of modules) {
     const lot = Object.values(mod as Record<string, unknown>)[0]; // chaque fichier exporte un seul tableau
     if (isThemeArray(lot)) tous = fusionner(tous, lot);
   }
+  return tous;
+}
+
+// Applique les exclusions admin + filtre les thèmes retirés.
+function applyExclusions(tous: Theme[]): Theme[] {
   // Questions retirées du pool par l'admin (signalées puis vérifiées comme mauvaises) :
   // elles ne sont plus jamais tirées, mais les fichiers source ne sont pas modifiés.
   const exclues = new Set(loadExcluded());
@@ -69,4 +80,27 @@ export async function loadThemes(): Promise<Theme[]> {
     }
   }
   return tous.filter((t) => !RETIRED_THEMES.includes(t.id));
+}
+
+// Charge TOUTES les questions : d'abord depuis IndexedDB si la version du corpus
+// correspond (rapide), sinon depuis les chunks JS (lent, une seule fois) + indexation
+// dans IndexedDB pour les prochains démarrages. Repli gracieux si IndexedDB est
+// indisponible (navigation privée, vieux navigateur) : on retombe sur les chunks.
+export async function loadThemes(): Promise<Theme[]> {
+  try {
+    const stored = await getStoredCorpusVersion();
+    if (stored === CORPUS_VERSION) {
+      const fromDb = await loadCorpus(THEME_MANIFEST);
+      if (fromDb.length > 0) return applyExclusions(fromDb);
+    }
+  } catch {
+    // IndexedDB indisponible : on ignore et on passe aux chunks
+  }
+  const tous = await loadFromChunks();
+  try {
+    await saveCorpus(tous, CORPUS_VERSION);
+  } catch {
+    // IndexedDB indisponible : on joue sans cache, les chunks ont déjà tout chargé
+  }
+  return applyExclusions(tous);
 }

@@ -22,15 +22,26 @@ Ne JAMAIS modifier les 263 fichiers existants (ajout uniquement). `scripts/gen-m
 régénère `src/data/theme-manifest.js` (auto via `predev`/`prebuild`, ou à la main :
 `npm run gen:manifest`).
 
-## Chargement : chunks lazy, mais tout est chargé au démarrage
+## Chargement : IndexedDB (cache persistant) + chunks lazy en fallback
 
 `src/data/questions.ts` utilise `import.meta.glob('./questions-*.js')` **non eager** :
 chaque fichier `questions-*.js` est découpé en un chunk (~10 Ko) par le bundler, et la
-PWA précache tous les chunks (hors-ligne OK). **Mais** `loadThemes()` (appelée par
-`ThemesContext` au démarrage) charge **tous les chunks** via `Promise.all` : le lazy
-sert à alléger le chunk initial et à permettre le precache, pas à différer le chargement
-des questions. Seules les métadonnées (`THEMES_META`, depuis `theme-manifest.js`, ~2 Ko)
-sont disponibles immédiatement.
+PWA précache tous les chunks (hors-ligne OK).
+
+**Premier lancement** (ou après un changement de version du corpus) : `loadThemes()`
+charge tous les chunks via `Promise.all`, puis indexe le corpus aplati dans
+**IndexedDB** (`src/lib/question-db.ts`, base `voltquiz-questions`, store `questions`
+avec index `by_theme` et `by_theme_niveau`) et mémorise la version du corpus
+(`CORPUS_VERSION`, hash des fichiers généré par `scripts/gen-manifest.mjs` dans
+`theme-manifest.js`).
+
+**Démarrages suivants** : si la version stockée dans IndexedDB === `CORPUS_VERSION`,
+`loadThemes()` lit le corpus directement depuis IndexedDB (`loadCorpus`) — beaucoup plus
+rapide que 263 requêtes de chunks + parsing JS. Sinon (ou si IndexedDB est indisponible :
+navigation privée, vieux navigateur), repli sur les chunks + réindexation.
+
+Seules les métadonnées (`THEMES_META`, depuis `theme-manifest.js`, ~2 Ko) restent
+disponibles immédiatement, sans attendre IndexedDB.
 
 ## Format (clés en français, documentées pour le client)
 
