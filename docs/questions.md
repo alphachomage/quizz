@@ -18,9 +18,10 @@ autres thèmes via `questions-redistribution.js`) -> **12 thèmes actifs**.
 npm run test:data         # test de schéma (zod) sur tout le corpus
 ```
 
-Ne JAMAIS modifier les 263 fichiers existants (ajout uniquement). `scripts/gen-manifest.mjs`
-régénère `src/data/theme-manifest.js` (auto via `predev`/`prebuild`, ou à la main :
-`npm run gen:manifest`).
+Ne JAMAIS modifier les 263 fichiers existants (ajout uniquement) — voir le guide pas à
+pas **`docs/ajouter-questions.md`**. `scripts/gen-manifest.mjs` régénère
+`src/data/theme-manifest.js` + `CORPUS_VERSION` (auto via `predev`/`prebuild`, ou à la
+main : `npm run gen:manifest`).
 
 ## Chargement : IndexedDB (cache persistant) + chunks lazy en fallback
 
