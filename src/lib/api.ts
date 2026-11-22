@@ -207,6 +207,38 @@ export const apiAddSubmission = (s: SubmissionPayload): Promise<AddGameResponse>
     method: 'POST',
     body: JSON.stringify(s),
   });
+// Validation/refus d'une soumission côté serveur (admin requis) : etat -> 'validee'/'refusee'.
+export const apiValidateSubmission = (id: string): Promise<OkResponse> =>
+  appel('/soumissions/valider', {
+    method: 'POST',
+    body: JSON.stringify({ id }),
+  });
+export const apiRefuseSubmission = (id: string): Promise<OkResponse> =>
+  appel('/soumissions/refuser', {
+    method: 'POST',
+    body: JSON.stringify({ id }),
+  });
+
+/** GET /api/questions?themeId=&page=&limit= : questions communautaires validées (paginé). */
+export interface CommunityQuestionsResponse {
+  ok: boolean;
+  questions: unknown[];
+  total: number;
+  page: number;
+  limit: number;
+}
+export const apiCommunityQuestions = (
+  themeId?: string,
+  page = 0,
+  limit = 100
+): Promise<CommunityQuestionsResponse> => {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+  if (themeId) params.set('themeId', themeId);
+  return appel(`/questions?${params.toString()}`);
+};
 
 // Auth (hash vérifié côté serveur, PBKDF2 en V2).
 export const authSignup = (

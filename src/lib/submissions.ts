@@ -4,7 +4,7 @@
 //   exportables en JSON, et elles disparaissent de la liste des propositions.
 import { SubmissionsRepo, ApprovedRepo } from './repositories.js';
 import { STORAGE_MODE } from './storage.js';
-import { apiAddSubmission } from './api.js';
+import { apiAddSubmission, apiValidateSubmission, apiRefuseSubmission } from './api.js';
 import { currentSession } from './accounts.js';
 import type { Question, Submission, Theme } from './types.js';
 
@@ -46,9 +46,6 @@ export function addSubmission(q: Submission): Submission {
   }
   return submission;
 }
-export function removeSubmission(id: string): void {
-  SubmissionsRepo.save(loadSubmissions().filter((s) => s.id !== id));
-}
 export function loadApproved(): ApprovedSubmission[] {
   return ApprovedRepo.all();
 }
@@ -63,6 +60,19 @@ export function approveSubmission(id: string): void {
   });
   ApprovedRepo.save(validees);
   SubmissionsRepo.save(enAttente.filter((s) => s.id !== id));
+  // Mode 'd1' : validation aussi côté serveur (etat='validee') pour que la question soit
+  // servie à tous les joueurs via GET /api/questions (best-effort).
+  if (STORAGE_MODE === 'd1') {
+    void apiValidateSubmission(id).catch(() => {});
+  }
+}
+
+// Refuse une soumission : retirée de la liste d'attente + etat='refusee' côté serveur.
+export function refuseSubmission(id: string): void {
+  SubmissionsRepo.save(loadSubmissions().filter((s) => s.id !== id));
+  if (STORAGE_MODE === 'd1') {
+    void apiRefuseSubmission(id).catch(() => {});
+  }
 }
 
 // Construit le contenu JSON exportable (même format que questions-utilisateur.json)

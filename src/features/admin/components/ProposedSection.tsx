@@ -10,7 +10,7 @@ interface ProposedSectionProps {
   approvedCount: number;
   themeName: (themeId: string) => string | undefined;
   onApprove: (id: string) => void;
-  onDelete: (id: string) => void;
+  onRefuse: (id: string) => void;
   onExportApproved: () => void;
 }
 
@@ -19,7 +19,7 @@ export default function ProposedSection({
   approvedCount,
   themeName,
   onApprove,
-  onDelete,
+  onRefuse,
   onExportApproved,
 }: ProposedSectionProps): ReactElement {
   return (
@@ -64,10 +64,10 @@ export default function ProposedSection({
               </button>
               <button
                 className="btn-suppr"
-                title="Supprimer cette proposition"
-                onClick={() => onDelete(s.id as string)}
+                title="Refuser : retirée de la liste + etat='refusee' côté serveur"
+                onClick={() => onRefuse(s.id as string)}
               >
-                <Icon nom="trash" taille={16} />
+                <Icon nom="x" taille={16} />
               </button>
             </li>
           ))}

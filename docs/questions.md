@@ -95,6 +95,18 @@ les questions **suspectes** : taux de réussite < 5 % après au moins 20 évalua
 (question probablement fausse), ou > 98 % en niveau « dur » (trop facile) — sauf si ça
 laisse moins de questions que demandé (le pool d'origine est alors conservé).
 
+## Corpus communautaire (D1, cross-device)
+
+Les propositions validées par l'admin sont aussi poussées côté serveur
+(`POST /api/soumissions/valider`, etat `validee` dans la table `soumissions`) et servies
+à tous les joueurs connectés via `GET /api/questions?themeId=&page=&limit=` (paginé,
+session requise, `reponses` parsé côté serveur). Côté client, `src/lib/community.ts`
+(`loadCommunityQuestions`) récupère toutes les pages au démarrage, valide chaque ligne
+par zod (`submissionSchema`), dédup par texte normalisé, et `ThemesContext` les fusionne
+au catalogue (dédup aussi avec les questions validées localement). Best-effort : hors-ligne
+ou `?stockage=local`, aucune question communautaire, le jeu continue avec le corpus intégré.
+Le refus admin (`refuseSubmission`) passe l'état à `refusee` côté serveur.
+
 ## Deux façons d'ajouter ses questions
 
 1. **Depuis l'appli** (« Proposer une question », débloqué au niveau 3 du thème,

@@ -54,7 +54,6 @@ function Shell(): ReactElement {
     submissions,
     approvedCount,
     addQuestion,
-    removeQuestion,
     approveQuestion,
     exporterValidees,
   } = useThemes();
@@ -150,7 +149,6 @@ function Shell(): ReactElement {
           submissions={submissions}
           approvedCount={approvedCount}
           onApproveSubmission={approveQuestion}
-          onDeleteSubmission={removeQuestion}
           onExportApproved={() => downloadJson(exporterValidees())}
         />
       </div>

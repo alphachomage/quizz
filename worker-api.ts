@@ -474,6 +474,81 @@ async function routeSoumissions(request: Request, env: Env, url: URL): Promise<R
   return jsonError('Méthode non supportée.', 405);
 }
 
+// --- Questions communautaires validées (GET /api/questions, session requise) ---
+// Paginé : ?themeId=...&page=0&limit=50 (limit max 100). Renvoie uniquement les
+// soumissions en etat='validee' (validées par un admin côté serveur), avec `reponses`
+// parsé (JSON) — les lignes illisibles sont ignorées. `total` = nb total pour paginer.
+async function routeQuestionsCommunautaires(
+  request: Request,
+  env: Env,
+  url: URL
+): Promise<Response> {
+  if (!env.DB) return jsonError('Base non configurée.', 503);
+  const s = await exigerSession(request, env);
+  if (s instanceof Response) return s;
+  if (request.method !== 'GET') return jsonError('Méthode non supportée.', 405);
+  const themeId = url.searchParams.get('themeId');
+  const page = Math.max(0, parseInt(url.searchParams.get('page') || '0', 10) || 0);
+  const limit = Math.min(
+    100,
+    Math.max(1, parseInt(url.searchParams.get('limit') || '50', 10) || 50)
+  );
+  const offset = page * limit;
+  const requete = themeId
+    ? 'SELECT * FROM soumissions WHERE etat = ? AND theme_id = ? ORDER BY date DESC LIMIT ? OFFSET ?'
+    : 'SELECT * FROM soumissions WHERE etat = ? ORDER BY date DESC LIMIT ? OFFSET ?';
+  const params: (string | number)[] = themeId
+    ? ['validee', themeId, limit, offset]
+    : ['validee', limit, offset];
+  const res = await env.DB.prepare(requete).bind(...params).all();
+  const questions = (res.results || [])
+    .map((r) => {
+      try {
+        return { ...r, reponses: JSON.parse(String(r.reponses)) };
+      } catch {
+        return null; // ligne illisible : ignorée
+      }
+    })
+    .filter(Boolean);
+  const totalRow = await env.DB.prepare(
+    themeId
+      ? 'SELECT COUNT(*) as n FROM soumissions WHERE etat = ? AND theme_id = ?'
+      : 'SELECT COUNT(*) as n FROM soumissions WHERE etat = ?'
+  )
+    .bind(...(themeId ? ['validee', themeId] : ['validee']))
+    .first<{ n: number }>();
+  return json({
+    ok: true,
+    questions,
+    total: totalRow?.n || 0,
+    page,
+    limit,
+  });
+}
+
+// --- Validation/refus d'une soumission côté serveur (admin requis) ---
+// POST /api/soumissions/valider  body { id } -> etat='validee' (servie par /api/questions)
+// POST /api/soumissions/refuser  body { id } -> etat='refusee'
+async function routeSoumissionEtat(
+  request: Request,
+  env: Env,
+  action: 'valider' | 'refuser'
+): Promise<Response> {
+  if (!env.DB) return jsonError('Base non configurée.', 503);
+  const a = await exigerAdmin(request, env);
+  if (a instanceof Response) return a;
+  if (request.method !== 'POST') return jsonError('Méthode non supportée.', 405);
+  const body = await readBody(request);
+  if (!body || typeof body.id !== 'string') return jsonError('id requis.', 400);
+  const etat = action === 'valider' ? 'validee' : 'refusee';
+  await env.DB.prepare('UPDATE soumissions SET etat = ? WHERE id = ?').bind(etat, body.id).run();
+  return json({
+    ok: true,
+    id: body.id,
+    etat,
+  });
+}
+
 // --- Accès admin : GET /api/admin/check (header Authorization: Bearer <token>) ->
 // 200 { ok, admin: true } si le compte DU TOKEN a admin = 1 en table `comptes`,
 // 401 sans session valide, 403 si compte non admin. Le flag vit EN BASE (colonne
@@ -617,6 +692,9 @@ export async function apiRouter(request: Request, env: Env, url: URL): Promise<R
     });
   }
   if (p === '/api/admin/check') return routeAdminCheck(request, env);
+  if (p === '/api/questions') return routeQuestionsCommunautaires(request, env, url);
+  if (p === '/api/soumissions/valider') return routeSoumissionEtat(request, env, 'valider');
+  if (p === '/api/soumissions/refuser') return routeSoumissionEtat(request, env, 'refuser');
   if (p === '/api/soumissions') return routeSoumissions(request, env, url);
   if (p.startsWith('/api/kv/'))
     return routeKv(request, env, decodeURIComponent(p.slice('/api/kv/'.length)));
