@@ -51,6 +51,8 @@ export interface GameDetail {
   niveau: LevelId | string;
   correct: boolean;
   gain: number;
+  /** Texte de la question (pour les stats de qualité : taux de réussite par question). */
+  q?: string;
 }
 
 /** Résultat d'une partie terminée (persisté + affiché sur l'écran de résultats). */

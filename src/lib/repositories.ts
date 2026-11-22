@@ -159,6 +159,15 @@ export const OverridesRepo = repoSimple<Record<string, OverrideEntry>>(
   STORAGE_KEYS.overrides,
   {}
 );
+/** Stats de qualité par question : texte normalisé -> { total, correct }. */
+export interface QuestionStats {
+  total: number;
+  correct: number;
+}
+export const QuestionStatsRepo = repoSimple<Record<string, QuestionStats>>(
+  STORAGE_KEYS.questionStats,
+  {}
+);
 export const SeriesRepo = repoSimple<Record<string, string[]>>(STORAGE_KEYS.series, {});
 export const DailyStreakRepo = {
   ...repoSimple<DailyStreak>(STORAGE_KEYS.dailyStreak, {

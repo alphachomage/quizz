@@ -85,6 +85,15 @@ Même `id` qu'un thème existant = questions ajoutées à ce thème (fusion par
 | sciences | `#2dd4bf` | oui |
 | sport | `#4ade80` | oui |
 
+## Qualité du tirage : stats de réussite par question
+
+Chaque partie terminée enregistre le résultat de chaque question (texte + correct) dans
+`voltquiz_stats_questions` (`src/lib/question-stats.ts`, sync D1 en mode `d1`), indexé
+par texte normalisé. Au tirage (`drawGameQuestions`), `filterByQuality()` retire du pool
+les questions **suspectes** : taux de réussite < 5 % après au moins 20 évaluations
+(question probablement fausse), ou > 98 % en niveau « dur » (trop facile) — sauf si ça
+laisse moins de questions que demandé (le pool d'origine est alors conservé).
+
 ## Deux façons d'ajouter ses questions
 
 1. **Depuis l'appli** (« Proposer une question », débloqué au niveau 3 du thème,

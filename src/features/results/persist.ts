@@ -5,6 +5,7 @@
 // Retourne toutes les valeurs affichées par l'écran de résultats.
 // Mode invité : rien n'est enregistré (sauf le record local), aucune XP.
 import { loadGames, addGame } from '@lib/game-history.js';
+import { recordResults } from '@lib/question-stats.js';
 import { loadRecords, saveRecord, recordKey } from '@lib/records.js';
 import { loadXp, addXp, themeLevel } from '@lib/xp.js';
 import type { XpMap } from '@lib/xp.js';
@@ -58,6 +59,8 @@ export function persistResult(result: GameResult, isGuest: boolean, prefs?: Pref
 
   // --- Historique de la partie (alimente le leaderboard ET les statistiques personal) ---
   if (!isGuest) {
+    // Stats de qualité : taux de réussite par question (filtre auto du pool au tirage).
+    if (details && details.length > 0) recordResults(details);
     addGame({
       mode,
       niveau,
