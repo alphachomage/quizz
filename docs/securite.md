@@ -2,9 +2,12 @@
 
 ## En-têtes (`worker.ts`, sur CHAQUE réponse via `securiser()`)
 
-`entetesSecurite(env, hote)` : CSP (d'abord `Content-Security-Policy-Report-Only`
-avec `report-uri /api/csp-report` tant que `CSP_REPORT_ONLY=true` dans `wrangler.toml`,
-48 h d'observation, puis appliquée quand `false`), `X-Content-Type-Options: nosniff`,
+`entetesSecurite(env, hote)` : CSP — **appliquée en prod** (`Content-Security-Policy`,
+`CSP_REPORT_ONLY=false` dans `wrangler.toml [vars]`) **plus** un second header
+`Content-Security-Policy-Report-Only` avec `report-uri /api/csp-report` pour continuer
+à remonter les violations sans bloquer ; en preview et en dev local, Report-Only seul
+(`env.preview` garde `CSP_REPORT_ONLY=true`, le HMR Vite a besoin de
+`'unsafe-inline'/'unsafe-eval'` en localhost). `X-Content-Type-Options: nosniff`,
 `Referrer-Policy: strict-origin-when-cross-origin`, `X-Frame-Options: DENY`,
 `Cross-Origin-Opener-Policy: same-origin`, `Permissions-Policy` (caméra/micro/geo off),
 `Strict-Transport-Security` en prod HTTPS. En dev localhost, `script-src` autorise
@@ -66,7 +69,11 @@ manifest, JSON ; `public, max-age=31536000, immutable` sur `/assets/*` (hashés)
   coût avant le 404 (pas d'oracle de timing). Mot de passe > 72 caractères -> 400.
 - Validation des entrées sur chaque route. WebSocket `/api/duel/:room` : token en
   `?token=` (un WebSocket navigateur ne pose pas de header custom), vérifié **avant**
-  l'upgrade 101, puis délégué au Durable Object `DuelRoom` (101 préservé).
+  l'upgrade 101, puis délégué au Durable Object `DuelRoom` (101 préservé). Le **pseudo
+  du joueur est forcé = celui du token** : `worker-api.ts` le pose en header
+  `x-voltquiz-pseudo` sur la requête forwardée au DO ; `DuelRoom` ne lit jamais la
+  query string (`?pseudo=` est ignoré) et les messages WebSocket sont attribués au
+  pseudo de la connexion, pas à un champ du message — pas d'usurpation d'identité.
 - **Hash timing-safe** : comparaison des hash en temps constant
   (`crypto.subtle.timingSafeEqual` dans `hashEgaux`). Mots de passe serveur (mode `d1`,
   défaut) : PBKDF2 210 000 itérations SHA-256 (`hash_version = 2`, table `comptes`).
@@ -106,6 +113,13 @@ circulaires (`npm run lint:arch`).
 ## Limites connues
 
 Pas de vérification d'e-mail réelle, pas de refresh token (le token Bearer vit 30 j,
+révoqué à la déconnexion côté client et à la reconnexion côté serveur), localStorage
+~5-10 Mo (cache local). La synchro serveur est best-effort : en cas de conflit
+multi-appareils, le dernier écrivain gagne côté serveur et `preloadFromServer()` écrase
+le local au démarrage suivant (sauf clé en file d'attente `voltquiz_pending_writes`).
+Le duel en ligne (rooms KV + DO) est préparé côté serveur mais sans UI cliente pour
+l'instant. Rate limiting en mémoire par isolate (contournable par changement d'IP, acceptable
+pour un POC).
 révoqué à la déconnexion côté client et à la reconnexion côté serveur), localStorage
 ~5-10 Mo (cache local). La synchro serveur est best-effort : en cas de conflit
 multi-appareils, le dernier écrivain gagne côté serveur et `preloadFromServer()` écrase

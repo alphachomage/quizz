@@ -723,14 +723,20 @@ export async function apiRouter(request: Request, env: Env, url: URL): Promise<R
   }
   // WebSocket du duel : délégué au Durable Object DuelRoom (binding DUEL_ROOMS).
   // Session requise via ?token= (un WebSocket navigateur ne peut pas poser de header
-  // Authorization custom) — vérifiée AVANT l'upgrade 101.
+  // Authorization custom) — vérifiée AVANT l'upgrade 101. Le pseudo du joueur est
+  // forcé = celui du token : il est posé en header x-voltquiz-pseudo sur la requête
+  // forwardée au DO (jamais pris de la query string, un client ne peut pas usurper
+  // l'identité d'un autre joueur dans la room).
   if (p.startsWith('/api/duel/')) {
     const roomId = decodeURIComponent(p.slice('/api/duel/'.length));
     const pseudo = await sessionValideParToken(url.searchParams.get('token'), env);
     if (!pseudo) return jsonError('Session requise pour le duel.', 401);
     if (!env.DUEL_ROOMS) return jsonError('Durable Object DUEL_ROOMS non configuré.', 503);
     const id = env.DUEL_ROOMS.idFromName(roomId);
-    return env.DUEL_ROOMS.get(id).fetch(request);
+    const headers = new Headers(request.headers);
+    headers.set('x-voltquiz-pseudo', pseudo);
+    const reqDo = new Request(request, { headers });
+    return env.DUEL_ROOMS.get(id).fetch(reqDo);
   }
   return jsonError('Route API inconnue.', 404);
 }
