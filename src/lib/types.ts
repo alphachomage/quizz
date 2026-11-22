@@ -113,6 +113,11 @@ export interface Report {
   statut?: 'garder' | 'retirer';
 }
 
+/** Override admin posé sur une question du corpus (clé = texte normalisé de la question). */
+export type OverrideEntry =
+  | { action: 'supprimer' }
+  | { action: 'modifier'; question: Question };
+
 /** Suggestion de joueur (vue admin). */
 export interface Suggestion {
   id: string;

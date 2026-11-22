@@ -11,6 +11,7 @@
 // reclassées dans les autres thèmes via questions-redistribution.js.
 
 import { loadExcluded } from '@lib/exclusions.js';
+import { applyOverrides } from '@lib/overrides.js';
 import { normalizeQuestionText } from '@lib/text.js';
 import {
   getStoredCorpusVersion,
@@ -69,7 +70,8 @@ async function loadFromChunks(): Promise<Theme[]> {
   return tous;
 }
 
-// Applique les exclusions admin + filtre les thèmes retirés.
+// Applique les exclusions admin + les overrides (supprimer/modifier) + filtre les thèmes
+// retirés. Les fichiers source ne sont jamais modifiés.
 function applyExclusions(tous: Theme[]): Theme[] {
   // Questions retirées du pool par l'admin (signalées puis vérifiées comme mauvaises) :
   // elles ne sont plus jamais tirées, mais les fichiers source ne sont pas modifiés.
@@ -79,7 +81,9 @@ function applyExclusions(tous: Theme[]): Theme[] {
       t.questions = t.questions.filter((q) => !exclues.has(normalizeQuestionText(q.q)));
     }
   }
-  return tous.filter((t) => !RETIRED_THEMES.includes(t.id));
+  // Overrides admin (modifier/supprimer une question du corpus sans toucher aux fichiers).
+  const avecOverrides = applyOverrides(tous);
+  return avecOverrides.filter((t) => !RETIRED_THEMES.includes(t.id));
 }
 
 // Charge TOUTES les questions : d'abord depuis IndexedDB si la version du corpus

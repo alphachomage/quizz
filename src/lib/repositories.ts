@@ -9,6 +9,7 @@ import type {
   GameDetail,
   GameMode,
   LevelId,
+  OverrideEntry,
   Prefs,
   Report,
   Submission,
@@ -154,6 +155,10 @@ export const SuggestionsRepo = {
   },
 };
 export const ExcludedRepo = repoSimple<string[]>(STORAGE_KEYS.excluded, []);
+export const OverridesRepo = repoSimple<Record<string, OverrideEntry>>(
+  STORAGE_KEYS.overrides,
+  {}
+);
 export const SeriesRepo = repoSimple<Record<string, string[]>>(STORAGE_KEYS.series, {});
 export const DailyStreakRepo = {
   ...repoSimple<DailyStreak>(STORAGE_KEYS.dailyStreak, {

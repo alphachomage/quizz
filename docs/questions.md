@@ -101,9 +101,11 @@ Même `id` qu'un thème existant = questions ajoutées à ce thème (fusion par
 ## Admin (`?admin=1`)
 
 `src/features/admin/AdminReports.tsx`. Signalements (pouce rouge en partie, clé
-`voltquiz_signales`) : « Garder » ou « Retirer du pool » (exclusion via
-`voltquiz_exclues`, appliquée dans `loadThemes()`, retrait effectif au rechargement ;
-les fichiers source ne sont jamais modifiés). Propositions en attente, suggestions
-des joueurs (`voltquiz_suggestions`), compteur de questions par thème (seul endroit
-où le nombre de questions est visible côté UI ; la référence reste
-`npm run count:questions`).
+`voltquiz_signales`) : « Garder » / « Retirer du pool » (exclusion via
+`voltquiz_exclues`) / **« Modifier »** (override via `voltquiz_overrides`, voir
+`src/lib/overrides.ts` : la question est remplacée dans le pool sans toucher au
+fichier source). Exclusions et overrides sont appliqués dans `loadThemes()`,
+effectifs au rechargement ; les fichiers source ne sont jamais modifiés.
+Propositions en attente, suggestions des joueurs (`voltquiz_suggestions`),
+compteur de questions par thème (seul endroit où le nombre de questions est
+visible côté UI ; la référence reste `npm run count:questions`).

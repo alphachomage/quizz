@@ -65,6 +65,7 @@ export const STORAGE_KEYS = {
   reports: 'voltquiz_signales',
   suggestions: 'voltquiz_suggestions',
   excluded: 'voltquiz_exclues',
+  overrides: 'voltquiz_overrides',
   series: 'voltquiz_dernieres_series',
   dailyStreak: 'voltquiz_streak_quotidien',
   tutorial: 'voltquiz_tuto_vu',
