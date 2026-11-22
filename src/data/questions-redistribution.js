@@ -3,3334 +3,370 @@
 export const QUESTIONS_REDISTRIBUTION = [
   {
     id: "culture-generale",
+    nom: undefined,
+    icone: undefined,
+    couleur: undefined,
     questions: [
-      {
-        "q": "Quel réseau social sert surtout à poster des photos ?",
-        "reponses": [
-          "LinkedIn",
-          "Instagram",
-          "TikTok",
-          "X"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel réseau social est connu pour ses vidéos courtes ?",
-        "reponses": [
-          "Facebook",
-          "TikTok",
-          "LinkedIn",
-          "Pinterest"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Combien de lettres dans l'alphabet français ?",
-        "reponses": [
-          "24",
-          "25",
-          "26",
-          "28"
-        ],
-        "bonne": 2,
-        "niveau": "facile"
-      },
-      {
-        "q": "Vrai ou faux : TikTok appartient à une entreprise chinoise.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "facile",
-        "info": "ByteDance, entreprise chinoise."
-      },
-      {
-        "q": "Combien font 15 - 7 ?",
-        "reponses": [
-          "6",
-          "7",
-          "8",
-          "9"
-        ],
-        "bonne": 2,
-        "niveau": "facile"
-      },
-      {
-        "q": "'Instagram' sert surtout à partager...",
-        "reponses": [
-          "Des vidéos longues",
-          "Des photos",
-          "Des textes",
-          "Des liens"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Que signifie 'lol' dans un SMS ?",
-        "reponses": [
-          "Lots of love",
-          "Laughing out loud",
-          "Lots of luck",
-          "Look out left"
-        ],
-        "bonne": 1,
-        "niveau": "moyen",
-        "info": "'Laughing out loud' = 'mort de rire'."
-      },
-      {
-        "q": "Quelle appli de visio est devenue célèbre en 2020 ?",
-        "reponses": [
-          "Teams",
-          "Zoom",
-          "Discord",
-          "Meet"
-        ],
-        "bonne": 1,
-        "niveau": "moyen",
-        "info": "Les réunions en Zoom se sont multipliées pendant les confinements."
-      },
-      {
-        "q": "Quelle marque a le slogan 'Just Do It' ?",
-        "reponses": [
-          "Adidas",
-          "Nike",
-          "Puma",
-          "Reebok"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "En quelle année Instagram a-t-il été fondé ?",
-        "reponses": [
-          "2008",
-          "2010",
-          "2012",
-          "2014"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "En quelle année est sorti le premier iPhone ?",
-        "reponses": [
-          "2005",
-          "2007",
-          "2009",
-          "2010"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Qui a fondé Microsoft ?",
-        "reponses": [
-          "Bill Gates et Paul Allen",
-          "Steve Jobs seul",
-          "Larry Page et Sergey Brin",
-          "Jeff Bezos seul"
-        ],
-        "bonne": 0,
-        "niveau": "dur"
-      },
-      {
-        "q": "En quelle année Facebook a-t-il été créé ?",
-        "reponses": [
-          "2003",
-          "2004",
-          "2005",
-          "2006"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Vrai ou faux : le mot 'emoji' vient du japonais.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "facile",
-        "info": "'E' = image, 'moji' = caractère."
-      },
-      {
-        "q": "Combien font 20 ÷ 4 ?",
-        "reponses": [
-          "4",
-          "5",
-          "6",
-          "8"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel réseau social a un fantôme comme logo ?",
-        "reponses": [
-          "Instagram",
-          "Snapchat",
-          "TikTok",
-          "X"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Vrai ou faux : 'Google' vient d'un nombre égal à 10 puissance 100.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "facile",
-        "info": "Un 'googol' = 1 suivi de 100 zéros."
-      },
-      {
-        "q": "Quel vêtement porte-t-on en hiver ?",
-        "reponses": [
-          "Un short",
-          "Un manteau",
-          "Un maillot de bain",
-          "Des lunettes de soleil"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Instagram, TikTok et Snapchat sont des...",
-        "reponses": [
-          "Des jeux vidéo",
-          "Des réseaux sociaux",
-          "Des moteurs de recherche",
-          "Des banques en ligne"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Combien de côtés a un hexagone ?",
-        "reponses": [
-          "5",
-          "6",
-          "7",
-          "8"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Vrai ou faux : YouTube appartient à Google.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Qui a fondé Apple ?",
-        "reponses": [
-          "Bill Gates",
-          "Steve Jobs",
-          "Mark Zuckerberg",
-          "Jeff Bezos"
-        ],
-        "bonne": 1,
-        "niveau": "moyen",
-        "info": "Steve Jobs, avec Steve Wozniak, en 1976."
-      },
-      {
-        "q": "Quel réseau social professionnel appartient à Microsoft ?",
-        "reponses": [
-          "LinkedIn",
-          "Instagram",
-          "TikTok",
-          "Snapchat"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien d'abonnés compte le plus gros YouTuber mondial (2024) ?",
-        "reponses": [
-          "100 millions",
-          "200 millions",
-          "Plus de 300 millions",
-          "500 millions"
-        ],
-        "bonne": 2,
-        "niveau": "moyen",
-        "info": "MrBeast dépasse les 300 millions."
-      },
-      {
-        "q": "Quelle marque de sport a 3 bandes comme logo ?",
-        "reponses": [
-          "Nike",
-          "Puma",
-          "Adidas",
-          "Reebok"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "En quelle année Elon Musk a-t-il racheté Twitter ?",
-        "reponses": [
-          "2020",
-          "2021",
-          "2022",
-          "2023"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quel réseau social est devenu 'X' en 2023 ?",
-        "reponses": [
-          "Facebook",
-          "Instagram",
-          "Twitter",
-          "TikTok"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Combien d'utilisateurs actifs compte TikTok dans le monde (2024) ?",
-        "reponses": [
-          "100 millions",
-          "500 millions",
-          "Plus d'1 milliard",
-          "5 milliards"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "En quelle année le mot 'mème' a-t-il été inventé ?",
-        "reponses": [
-          "1976",
-          "1982",
-          "1990",
-          "2005"
-        ],
-        "bonne": 0,
-        "niveau": "dur",
-        "info": "Par Richard Dawkins dans 'Le Gène égoïste'. Le mot vient du grec 'mimema'."
-      },
-      {
-        "q": "Comment appelle-t-on le 1er janvier ?",
-        "reponses": [
-          "La fête des Rois",
-          "Le Jour de l'an",
-          "La Chandeleur",
-          "Pâques"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Combien font 3 × 9 ?",
-        "reponses": [
-          "24",
-          "26",
-          "27",
-          "30"
-        ],
-        "bonne": 2,
-        "niveau": "facile"
-      },
-      {
-        "q": "Combien de jours compte le mois de février la plupart du temps ?",
-        "reponses": [
-          "27",
-          "28",
-          "29",
-          "30"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Combien de côtés a un pentagone ?",
-        "reponses": [
-          "4",
-          "5",
-          "6",
-          "7"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel mois vient juste après décembre ?",
-        "reponses": [
-          "Février",
-          "Mars",
-          "Janvier",
-          "Novembre"
-        ],
-        "bonne": 2,
-        "niveau": "facile"
-      },
-      {
-        "q": "Vrai ou faux : 'YouTube' a été créé avant 'Facebook'.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 1,
-        "niveau": "facile",
-        "info": "Facebook : 2004. YouTube : 2005."
-      },
-      {
-        "q": "Quel réseau social utilisait un petit oiseau bleu comme logo ?",
-        "reponses": [
-          "Snapchat",
-          "Twitter",
-          "Pinterest",
-          "Tumblr"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "En quelle année la poupée Barbie a-t-elle été créée ?",
-        "reponses": [
-          "1949",
-          "1959",
-          "1969",
-          "1979"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Qui a fondé l'entreprise Amazon ?",
-        "reponses": [
-          "Jeff Bezos",
-          "Elon Musk",
-          "Bill Gates",
-          "Steve Jobs"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quelle entreprise possède Facebook, Instagram et WhatsApp ?",
-        "reponses": [
-          "Google",
-          "Meta",
-          "X Corp",
-          "ByteDance"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "En quelle année l'entreprise Google a-t-elle été fondée ?",
-        "reponses": [
-          "1996",
-          "1998",
-          "2000",
-          "2002"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Combien d'utilisateurs actifs mensuels compte YouTube (ordre de grandeur 2024) ?",
-        "reponses": [
-          "500 millions",
-          "1 milliard",
-          "2,5 milliards",
-          "5 milliards"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "En quelle année la plateforme Netflix a-t-elle été fondée ?",
-        "reponses": [
-          "1995",
-          "1997",
-          "1999",
-          "2001"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Qui a inventé le World Wide Web en 1989 ?",
-        "reponses": [
-          "Bill Gates",
-          "Steve Jobs",
-          "Tim Berners-Lee",
-          "Vint Cerf"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quel réseau social a été fondé par Jack Dorsey ?",
-        "reponses": [
-          "Snapchat",
-          "Twitter",
-          "Reddit",
-          "Twitch"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "En quelle année la plateforme 'Spotify' a-t-elle été lancée ?",
-        "reponses": [
-          "2006",
-          "2008",
-          "2010",
-          "2012"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "En quelle année est sorti le premier iPad d'Apple ?",
-        "reponses": [
-          "2008",
-          "2010",
-          "2012",
-          "2014"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quelle application est connue pour ses vidéos courtes ?",
-        "reponses": [
-          "TikTok",
-          "LinkedIn",
-          "Pinterest",
-          "Zoom"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel réseau social est centré sur les photos et les stories ?",
-        "reponses": [
-          "Instagram",
-          "X",
-          "LinkedIn",
-          "Reddit"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Comment s'appelle le réseau social Twitter depuis 2022 ?",
-        "reponses": [
-          "X",
-          "Y",
-          "Z",
-          "Threads"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Qui a créé Facebook ?",
-        "reponses": [
-          "Mark Zuckerberg",
-          "Bill Gates",
-          "Steve Jobs",
-          "Jack Dorsey"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quelle entreprise Steve Jobs a-t-il cofondée ?",
-        "reponses": [
-          "Apple",
-          "Microsoft",
-          "Google",
-          "Amazon"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quel réseau social limitait historiquement ses messages à 280 caractères ?",
-        "reponses": [
-          "Twitter",
-          "Instagram",
-          "Facebook",
-          "LinkedIn"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quelle marque de sport a pour slogan « Just Do It » ?",
-        "reponses": [
-          "Nike",
-          "Adidas",
-          "Puma",
-          "Reebok"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Qui a cofondé Microsoft avec Paul Allen en 1975 ?",
-        "reponses": [
-          "Bill Gates",
-          "Steve Jobs",
-          "Larry Ellison",
-          "Michael Dell"
-        ],
-        "bonne": 0,
-        "niveau": "dur"
-      },
-      {
-        "q": "En quelle année le premier iPhone est-il sorti ?",
-        "reponses": [
-          "2005",
-          "2007",
-          "2009",
-          "2010"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Qui a fondé Google en 1998 ?",
-        "reponses": [
-          "Steve Jobs",
-          "Bill Gates",
-          "Larry Page et Sergey Brin",
-          "Mark Zuckerberg"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quelle application de messagerie instantanée appartient à Meta ?",
-        "reponses": [
-          "WhatsApp",
-          "Telegram",
-          "Signal",
-          "iMessage"
-        ],
-        "bonne": 0,
-        "niveau": "dur"
-      },
-      {
-        "q": "En quelle année la plateforme YouTube a-t-elle été lancée ?",
-        "reponses": [
-          "2004",
-          "2005",
-          "2006",
-          "2007"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "En quelle année l'application Instagram a-t-elle été lancée ?",
-        "reponses": [
-          "2008",
-          "2010",
-          "2012",
-          "2014"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "En quelle année le hashtag (#) a-t-il été inventé sur Twitter par Chris Messina ?",
-        "reponses": [
-          "2005",
-          "2006",
-          "2007",
-          "2009"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quelle entreprise de voitures électriques a été cofondée par Elon Musk en 2003 ?",
-        "reponses": [
-          "Tesla",
-          "Nikola",
-          "Rivian",
-          "Lucid Motors"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "En quelle année le réseau social professionnel LinkedIn a-t-il été lancé ?",
-        "reponses": [
-          "2001",
-          "2002",
-          "2003",
-          "2005"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien de langues différentes sont parlées dans le monde aujourd'hui (ordre de grandeur) ?",
-        "reponses": [
-          "Environ 700",
-          "Environ 1 500",
-          "Environ 3 000",
-          "Environ 7 000"
-        ],
-        "bonne": 3,
-        "niveau": "moyen"
-      },
-      {
-        "q": "En quelle année Shigetaka Kurita a-t-il créé les premiers emojis pour un opérateur japonais ?",
-        "reponses": [
-          "1997",
-          "1998",
-          "1999",
-          "2001"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Combien d'utilisateurs actifs mensuels compte Instagram dans le monde en 2024 (ordre de grandeur) ?",
-        "reponses": [
-          "Plus de 500 millions",
-          "Plus d'1 milliard",
-          "Plus de 2 milliards",
-          "Plus de 4 milliards"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Qui a inventé le jeu de rôle « Donjons et Dragons », publié en 1974 ?",
-        "reponses": [
-          "Gary Gygax et Dave Arneson",
-          "J. R. R. Tolkien",
-          "Michael Crichton",
-          "George Lucas"
-        ],
-        "bonne": 0,
-        "niveau": "dur"
-      },
-      {
-        "q": "En quelle année la société Apple a-t-elle été fondée ?",
-        "reponses": [
-          "1974",
-          "1975",
-          "1976",
-          "1977"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Combien de roues sur une voiture standard ?",
-        "reponses": [
-          "2",
-          "4",
-          "6",
-          "8"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel est le plus long mot de la langue française ?",
-        "reponses": [
-          "Anticonstitutionnellement",
-          "Dictionnaire",
-          "Philosophiquement",
-          "Institutionnellement"
-        ],
-        "bonne": 0,
-        "niveau": "moyen",
-        "info": "25 lettres !"
-      },
-      {
-        "q": "Combien de roues sur un tricycle ?",
-        "reponses": [
-          "2",
-          "3",
-          "4",
-          "5"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Combien d'heures dans une journée ?",
-        "reponses": [
-          "12",
-          "24",
-          "30",
-          "48"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quelle saison vient juste après l'hiver ?",
-        "reponses": [
-          "Le printemps",
-          "L'été",
-          "L'automne",
-          "L'hiver"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      }
-    ]
+      { "q": "Quel réseau social sert surtout à poster des photos ?", "reponses": ["LinkedIn","Instagram","TikTok","X"], "bonne": 1, "niveau": "facile" },
+      { "q": "Quel réseau social est connu pour ses vidéos courtes ?", "reponses": ["Facebook","TikTok","LinkedIn","Pinterest"], "bonne": 1, "niveau": "facile" },
+      { "q": "Combien de lettres dans l'alphabet français ?", "reponses": ["24","25","26","28"], "bonne": 2, "niveau": "facile" },
+      { "q": "Vrai ou faux : TikTok appartient à une entreprise chinoise.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "facile", "info": "ByteDance, entreprise chinoise." },
+      { "q": "Combien font 15 - 7 ?", "reponses": ["6","7","8","9"], "bonne": 2, "niveau": "facile" },
+      { "q": "'Instagram' sert surtout à partager...", "reponses": ["Des vidéos longues","Des photos","Des textes","Des liens"], "bonne": 1, "niveau": "facile" },
+      { "q": "Que signifie 'lol' dans un SMS ?", "reponses": ["Lots of love","Laughing out loud","Lots of luck","Look out left"], "bonne": 1, "niveau": "moyen", "info": "'Laughing out loud' = 'mort de rire'." },
+      { "q": "Quelle appli de visio est devenue célèbre en 2020 ?", "reponses": ["Teams","Zoom","Discord","Meet"], "bonne": 1, "niveau": "moyen", "info": "Les réunions en Zoom se sont multipliées pendant les confinements." },
+      { "q": "Quelle marque a le slogan 'Just Do It' ?", "reponses": ["Adidas","Nike","Puma","Reebok"], "bonne": 1, "niveau": "moyen" },
+      { "q": "En quelle année Instagram a-t-il été fondé ?", "reponses": ["2008","2010","2012","2014"], "bonne": 1, "niveau": "dur" },
+      { "q": "En quelle année est sorti le premier iPhone ?", "reponses": ["2005","2007","2009","2010"], "bonne": 1, "niveau": "dur" },
+      { "q": "Qui a fondé Microsoft ?", "reponses": ["Bill Gates et Paul Allen","Steve Jobs seul","Larry Page et Sergey Brin","Jeff Bezos seul"], "bonne": 0, "niveau": "dur" },
+      { "q": "En quelle année Facebook a-t-il été créé ?", "reponses": ["2003","2004","2005","2006"], "bonne": 1, "niveau": "dur" },
+      { "q": "Vrai ou faux : le mot 'emoji' vient du japonais.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "facile", "info": "'E' = image, 'moji' = caractère." },
+      { "q": "Combien font 20 ÷ 4 ?", "reponses": ["4","5","6","8"], "bonne": 1, "niveau": "facile" },
+      { "q": "Quel réseau social a un fantôme comme logo ?", "reponses": ["Instagram","Snapchat","TikTok","X"], "bonne": 1, "niveau": "facile" },
+      { "q": "Vrai ou faux : 'Google' vient d'un nombre égal à 10 puissance 100.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "facile", "info": "Un 'googol' = 1 suivi de 100 zéros." },
+      { "q": "Quel vêtement porte-t-on en hiver ?", "reponses": ["Un short","Un manteau","Un maillot de bain","Des lunettes de soleil"], "bonne": 1, "niveau": "facile" },
+      { "q": "Instagram, TikTok et Snapchat sont des...", "reponses": ["Des jeux vidéo","Des réseaux sociaux","Des moteurs de recherche","Des banques en ligne"], "bonne": 1, "niveau": "facile" },
+      { "q": "Combien de côtés a un hexagone ?", "reponses": ["5","6","7","8"], "bonne": 1, "niveau": "facile" },
+      { "q": "Vrai ou faux : YouTube appartient à Google.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "facile" },
+      { "q": "Qui a fondé Apple ?", "reponses": ["Bill Gates","Steve Jobs","Mark Zuckerberg","Jeff Bezos"], "bonne": 1, "niveau": "moyen", "info": "Steve Jobs, avec Steve Wozniak, en 1976." },
+      { "q": "Quel réseau social professionnel appartient à Microsoft ?", "reponses": ["LinkedIn","Instagram","TikTok","Snapchat"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Combien d'abonnés compte le plus gros YouTuber mondial (2024) ?", "reponses": ["100 millions","200 millions","Plus de 300 millions","500 millions"], "bonne": 2, "niveau": "moyen", "info": "MrBeast dépasse les 300 millions." },
+      { "q": "Quelle marque de sport a 3 bandes comme logo ?", "reponses": ["Nike","Puma","Adidas","Reebok"], "bonne": 2, "niveau": "moyen" },
+      { "q": "En quelle année Elon Musk a-t-il racheté Twitter ?", "reponses": ["2020","2021","2022","2023"], "bonne": 2, "niveau": "dur" },
+      { "q": "Quel réseau social est devenu 'X' en 2023 ?", "reponses": ["Facebook","Instagram","Twitter","TikTok"], "bonne": 2, "niveau": "dur" },
+      { "q": "Combien d'utilisateurs actifs compte TikTok dans le monde (2024) ?", "reponses": ["100 millions","500 millions","Plus d'1 milliard","5 milliards"], "bonne": 2, "niveau": "dur" },
+      { "q": "En quelle année le mot 'mème' a-t-il été inventé ?", "reponses": ["1976","1982","1990","2005"], "bonne": 0, "niveau": "dur", "info": "Par Richard Dawkins dans 'Le Gène égoïste'. Le mot vient du grec 'mimema'." },
+      { "q": "Comment appelle-t-on le 1er janvier ?", "reponses": ["La fête des Rois","Le Jour de l'an","La Chandeleur","Pâques"], "bonne": 1, "niveau": "facile" },
+      { "q": "Combien font 3 × 9 ?", "reponses": ["24","26","27","30"], "bonne": 2, "niveau": "facile" },
+      { "q": "Combien de jours compte le mois de février la plupart du temps ?", "reponses": ["27","28","29","30"], "bonne": 1, "niveau": "facile" },
+      { "q": "Combien de côtés a un pentagone ?", "reponses": ["4","5","6","7"], "bonne": 1, "niveau": "facile" },
+      { "q": "Quel mois vient juste après décembre ?", "reponses": ["Février","Mars","Janvier","Novembre"], "bonne": 2, "niveau": "facile" },
+      { "q": "Vrai ou faux : 'YouTube' a été créé avant 'Facebook'.", "reponses": ["Vrai","Faux"], "bonne": 1, "niveau": "facile", "info": "Facebook : 2004. YouTube : 2005." },
+      { "q": "Quel réseau social utilisait un petit oiseau bleu comme logo ?", "reponses": ["Snapchat","Twitter","Pinterest","Tumblr"], "bonne": 1, "niveau": "moyen" },
+      { "q": "En quelle année la poupée Barbie a-t-elle été créée ?", "reponses": ["1949","1959","1969","1979"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Qui a fondé l'entreprise Amazon ?", "reponses": ["Jeff Bezos","Elon Musk","Bill Gates","Steve Jobs"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Quelle entreprise possède Facebook, Instagram et WhatsApp ?", "reponses": ["Google","Meta","X Corp","ByteDance"], "bonne": 1, "niveau": "moyen" },
+      { "q": "En quelle année l'entreprise Google a-t-elle été fondée ?", "reponses": ["1996","1998","2000","2002"], "bonne": 1, "niveau": "dur" },
+      { "q": "Combien d'utilisateurs actifs mensuels compte YouTube (ordre de grandeur 2024) ?", "reponses": ["500 millions","1 milliard","2,5 milliards","5 milliards"], "bonne": 2, "niveau": "dur" },
+      { "q": "En quelle année la plateforme Netflix a-t-elle été fondée ?", "reponses": ["1995","1997","1999","2001"], "bonne": 1, "niveau": "dur" },
+      { "q": "Qui a inventé le World Wide Web en 1989 ?", "reponses": ["Bill Gates","Steve Jobs","Tim Berners-Lee","Vint Cerf"], "bonne": 2, "niveau": "dur" },
+      { "q": "Quel réseau social a été fondé par Jack Dorsey ?", "reponses": ["Snapchat","Twitter","Reddit","Twitch"], "bonne": 1, "niveau": "dur" },
+      { "q": "En quelle année la plateforme 'Spotify' a-t-elle été lancée ?", "reponses": ["2006","2008","2010","2012"], "bonne": 1, "niveau": "dur" },
+      { "q": "En quelle année est sorti le premier iPad d'Apple ?", "reponses": ["2008","2010","2012","2014"], "bonne": 1, "niveau": "dur" },
+      { "q": "Quelle application est connue pour ses vidéos courtes ?", "reponses": ["TikTok","LinkedIn","Pinterest","Zoom"], "bonne": 0, "niveau": "facile" },
+      { "q": "Quel réseau social est centré sur les photos et les stories ?", "reponses": ["Instagram","X","LinkedIn","Reddit"], "bonne": 0, "niveau": "facile" },
+      { "q": "Comment s'appelle le réseau social Twitter depuis 2022 ?", "reponses": ["X","Y","Z","Threads"], "bonne": 0, "niveau": "facile" },
+      { "q": "Qui a créé Facebook ?", "reponses": ["Mark Zuckerberg","Bill Gates","Steve Jobs","Jack Dorsey"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Quelle entreprise Steve Jobs a-t-il cofondée ?", "reponses": ["Apple","Microsoft","Google","Amazon"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Quel réseau social limitait historiquement ses messages à 280 caractères ?", "reponses": ["Twitter","Instagram","Facebook","LinkedIn"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Quelle marque de sport a pour slogan « Just Do It » ?", "reponses": ["Nike","Adidas","Puma","Reebok"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Qui a cofondé Microsoft avec Paul Allen en 1975 ?", "reponses": ["Bill Gates","Steve Jobs","Larry Ellison","Michael Dell"], "bonne": 0, "niveau": "dur" },
+      { "q": "En quelle année le premier iPhone est-il sorti ?", "reponses": ["2005","2007","2009","2010"], "bonne": 1, "niveau": "dur" },
+      { "q": "Qui a fondé Google en 1998 ?", "reponses": ["Steve Jobs","Bill Gates","Larry Page et Sergey Brin","Mark Zuckerberg"], "bonne": 2, "niveau": "dur" },
+      { "q": "Quelle application de messagerie instantanée appartient à Meta ?", "reponses": ["WhatsApp","Telegram","Signal","iMessage"], "bonne": 0, "niveau": "dur" },
+      { "q": "En quelle année la plateforme YouTube a-t-elle été lancée ?", "reponses": ["2004","2005","2006","2007"], "bonne": 1, "niveau": "dur" },
+      { "q": "En quelle année l'application Instagram a-t-elle été lancée ?", "reponses": ["2008","2010","2012","2014"], "bonne": 1, "niveau": "dur" },
+      { "q": "En quelle année le hashtag (#) a-t-il été inventé sur Twitter par Chris Messina ?", "reponses": ["2005","2006","2007","2009"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Quelle entreprise de voitures électriques a été cofondée par Elon Musk en 2003 ?", "reponses": ["Tesla","Nikola","Rivian","Lucid Motors"], "bonne": 0, "niveau": "moyen" },
+      { "q": "En quelle année le réseau social professionnel LinkedIn a-t-il été lancé ?", "reponses": ["2001","2002","2003","2005"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Combien de langues différentes sont parlées dans le monde aujourd'hui (ordre de grandeur) ?", "reponses": ["Environ 700","Environ 1 500","Environ 3 000","Environ 7 000"], "bonne": 3, "niveau": "moyen" },
+      { "q": "En quelle année Shigetaka Kurita a-t-il créé les premiers emojis pour un opérateur japonais ?", "reponses": ["1997","1998","1999","2001"], "bonne": 2, "niveau": "dur" },
+      { "q": "Combien d'utilisateurs actifs mensuels compte Instagram dans le monde en 2024 (ordre de grandeur) ?", "reponses": ["Plus de 500 millions","Plus d'1 milliard","Plus de 2 milliards","Plus de 4 milliards"], "bonne": 2, "niveau": "dur" },
+      { "q": "Qui a inventé le jeu de rôle « Donjons et Dragons », publié en 1974 ?", "reponses": ["Gary Gygax et Dave Arneson","J. R. R. Tolkien","Michael Crichton","George Lucas"], "bonne": 0, "niveau": "dur" },
+      { "q": "En quelle année la société Apple a-t-elle été fondée ?", "reponses": ["1974","1975","1976","1977"], "bonne": 2, "niveau": "dur" },
+      { "q": "Combien de roues sur une voiture standard ?", "reponses": ["2","4","6","8"], "bonne": 1, "niveau": "facile" },
+      { "q": "Quel est le plus long mot de la langue française ?", "reponses": ["Anticonstitutionnellement","Dictionnaire","Philosophiquement","Institutionnellement"], "bonne": 0, "niveau": "moyen", "info": "25 lettres !" },
+      { "q": "Combien de roues sur un tricycle ?", "reponses": ["2","3","4","5"], "bonne": 1, "niveau": "facile" },
+      { "q": "Combien d'heures dans une journée ?", "reponses": ["12","24","30","48"], "bonne": 1, "niveau": "facile" },
+      { "q": "Quelle saison vient juste après l'hiver ?", "reponses": ["Le printemps","L'été","L'automne","L'hiver"], "bonne": 0, "niveau": "facile" },
+    ],
   },
   {
     id: "cinema-series",
+    nom: undefined,
+    icone: undefined,
+    couleur: undefined,
     questions: [
-      {
-        "q": "Combien de saisons dans 'Friends' ?",
-        "reponses": [
-          "8",
-          "9",
-          "10",
-          "12"
-        ],
-        "bonne": 2,
-        "niveau": "facile"
-      },
-      {
-        "q": "À quel univers appartient Superman ?",
-        "reponses": [
-          "Marvel",
-          "DC Comics",
-          "Harry Potter",
-          "Star Wars"
-        ],
-        "bonne": 1,
-        "niveau": "moyen",
-        "info": "Marvel = Spider-Man, Iron Man... DC = Superman, Batman..."
-      },
-      {
-        "q": "Dans quelle décennie se déroule 'Stranger Things' ?",
-        "reponses": [
-          "Années 1960",
-          "Années 1970",
-          "Années 1980",
-          "Années 1990"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quelle famille suit 'L'Incroyable Famille Kardashian' ?",
-        "reponses": [
-          "Les Kardashian",
-          "Les Jenner",
-          "Les Hilton",
-          "Les Osbourne"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Qui joue Eleven dans 'Stranger Things' ?",
-        "reponses": [
-          "Sadie Sink",
-          "Millie Bobby Brown",
-          "Finn Wolfhard",
-          "Gaten Matarazzo"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien d'épisodes dans une saison de 'Friends' ?",
-        "reponses": [
-          "10",
-          "20",
-          "Environ 24",
-          "30"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Qui a créé Mickey Mouse ?",
-        "reponses": [
-          "Walt Disney",
-          "Carl Barks",
-          "Bob Kane",
-          "Matt Groening"
-        ],
-        "bonne": 0,
-        "niveau": "dur",
-        "info": "Walt Disney, avec Ub Iwerks, en 1928."
-      },
-      {
-        "q": "Quel film a été le premier à dépasser 1 milliard de dollars de recettes ?",
-        "reponses": [
-          "Avatar",
-          "Titanic",
-          "Star Wars",
-          "Jurassic Park"
-        ],
-        "bonne": 1,
-        "niveau": "dur",
-        "info": "Titanic en 1997, avant Avatar en 2009."
-      },
-      {
-        "q": "Dans 'Stranger Things', comment s'appelle le monde parallèle ?",
-        "reponses": [
-          "Le Monde à l'envers",
-          "Le Nether",
-          "Le Multivers",
-          "L'Ombre"
-        ],
-        "bonne": 0,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quel film de 2019 a dépassé Avatar au box-office mondial ?",
-        "reponses": [
-          "Titanic",
-          "Avengers: Endgame",
-          "Star Wars",
-          "Jurassic Park"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quelle série suit la famille royale britannique (fiction) ?",
-        "reponses": [
-          "The Crown",
-          "Bridgerton",
-          "Downton Abbey",
-          "Reign"
-        ],
-        "bonne": 0,
-        "niveau": "dur"
-      },
-      {
-        "q": "En quelle année est sorti le premier livre 'Harry Potter' ?",
-        "reponses": [
-          "1995",
-          "1997",
-          "1999",
-          "2000"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien d'épisodes dans la saison 1 de 'Squid Game' ?",
-        "reponses": [
-          "6",
-          "7",
-          "8",
-          "9"
-        ],
-        "bonne": 3,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Qui joue Barbie dans le film de 2023 ?",
-        "reponses": [
-          "Margot Robbie",
-          "Emma Stone",
-          "Ana de Armas",
-          "Sydney Sweeney"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quel est le vrai nom de 'The Rock' ?",
-        "reponses": [
-          "Dwayne Johnson",
-          "Vin Diesel",
-          "Jason Statham",
-          "John Cena"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Dans 'Wednesday', comment s'appelle l'école ?",
-        "reponses": [
-          "Nevermore",
-          "Poudlard",
-          "Beauxbâtons",
-          "Hogwarts"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Qui a réalisé le film 'Barbie' (2023) ?",
-        "reponses": [
-          "Patty Jenkins",
-          "Greta Gerwig",
-          "Sofia Coppola",
-          "Kathryn Bigelow"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quelle série Netflix suit les meurtres de Dexter, un tueur en série ?",
-        "reponses": [
-          "You",
-          "Dexter",
-          "Mindhunter",
-          "Hannibal"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Qui a prêté sa voix à l'Âne dans 'Shrek' ?",
-        "reponses": [
-          "Eddie Murphy",
-          "Mike Myers",
-          "Antonio Banderas",
-          "John Lithgow"
-        ],
-        "bonne": 0,
-        "niveau": "dur"
-      },
-      {
-        "q": "Dans 'Squid Game', quel est le numéro du héros ?",
-        "reponses": [
-          "067",
-          "456",
-          "218",
-          "101"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Qui a écrit la saga 'Harry Potter' ?",
-        "reponses": [
-          "J. K. Rowling",
-          "Stephenie Meyer",
-          "Suzanne Collins",
-          "Roald Dahl"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quelle actrice joue Wednesday Addams dans la série 'Wednesday' ?",
-        "reponses": [
-          "Jenna Ortega",
-          "Millie Bobby Brown",
-          "Sadie Sink",
-          "Maya Hawke"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quel auteur japonais a créé le manga 'Naruto' ?",
-        "reponses": [
-          "Masashi Kishimoto",
-          "Eiichiro Oda",
-          "Akira Toriyama",
-          "Hayao Miyazaki"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "En quelle année est sorti le film 'Avatar' de James Cameron ?",
-        "reponses": [
-          "2007",
-          "2009",
-          "2011",
-          "2013"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "En quelle année a été diffusé le premier épisode de la série 'Les Simpson' ?",
-        "reponses": [
-          "1987",
-          "1989",
-          "1991",
-          "1993"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Qui a créé la série animée 'South Park' ?",
-        "reponses": [
-          "Seth MacFarlane",
-          "Trey Parker et Matt Stone",
-          "Matt Groening",
-          "Mike Judge"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quel super-héros porte un costume rouge avec une araignée dessus ?",
-        "reponses": [
-          "Spider-Man",
-          "Batman",
-          "Superman",
-          "Iron Man"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Dans quelle série animée vit une famille jaune ?",
-        "reponses": [
-          "Les Simpson",
-          "South Park",
-          "Family Guy",
-          "Rick et Morty"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel super-héros appartient à l'univers Marvel ?",
-        "reponses": [
-          "Spider-Man",
-          "Superman",
-          "Batman",
-          "Goku"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Sur quelle plateforme trouve-t-on la série Stranger Things ?",
-        "reponses": [
-          "Netflix",
-          "Disney+",
-          "Amazon Prime Video",
-          "YouTube"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Qui a joué Barbie au cinéma en 2023 ?",
-        "reponses": [
-          "Margot Robbie",
-          "Scarlett Johansson",
-          "Emma Watson",
-          "Ana de Armas"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Qui a réalisé « Avatar » et « Titanic » ?",
-        "reponses": [
-          "James Cameron",
-          "Steven Spielberg",
-          "Ridley Scott",
-          "Peter Jackson"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quel manga suit les aventures de Monkey D. Luffy et de son équipage de pirates ?",
-        "reponses": [
-          "One Piece",
-          "Naruto",
-          "Dragon Ball",
-          "Bleach"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quel film de 1994 met en scène un homme simple d'esprit qui traverse les États-Unis en courant ?",
-        "reponses": [
-          "Forrest Gump",
-          "Rain Man",
-          "Le Grand Bleu",
-          "Les Évadés"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Qui a créé le personnage de Mickey Mouse en 1928 ?",
-        "reponses": [
-          "Walt Disney",
-          "Charles Schulz",
-          "Jim Henson",
-          "Werner Heisenberg"
-        ],
-        "bonne": 0,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quel film est devenu le plus gros succès commercial de l'histoire du cinéma ?",
-        "reponses": [
-          "Titanic",
-          "Avengers: Endgame",
-          "Avatar",
-          "Star Wars"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Qui a réalisé les films « Les Gardiens de la Galaxie » ?",
-        "reponses": [
-          "James Gunn",
-          "Russo brothers",
-          "Taika Waititi",
-          "Jon Favreau"
-        ],
-        "bonne": 0,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quel manga met en scène Son Goku et les boules de cristal ?",
-        "reponses": [
-          "Dragon Ball",
-          "Naruto",
-          "One Piece",
-          "Bleach"
-        ],
-        "bonne": 0,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quel est le vrai nom de Spider-Man ?",
-        "reponses": [
-          "Peter Parker",
-          "Bruce Wayne",
-          "Clark Kent",
-          "Tony Stark"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Comment s'appelle le chien de la famille Simpson ?",
-        "reponses": [
-          "Père Noël",
-          "Rouquin",
-          "Moe",
-          "Boule de neige"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Qui a créé le personnage de Batman en 1939 ?",
-        "reponses": [
-          "Bob Kane",
-          "Stan Lee",
-          "Jerry Siegel",
-          "Joe Shuster"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel acteur incarne Geralt de Riv dans la série « The Witcher » ?",
-        "reponses": [
-          "Henry Cavill",
-          "Tom Holland",
-          "Matt Smith",
-          "Kit Harington"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel héros de bande dessinée belge est un jeune reporter accompagné de son chien Milou ?",
-        "reponses": [
-          "Tintin",
-          "Lucky Luke",
-          "Astérix",
-          "Gaston Lagaffe"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel scénariste a dirigé Marvel Comics pendant des décennies et co-créé Spider-Man, Hulk et les X-Men ?",
-        "reponses": [
-          "Stan Lee",
-          "Walt Disney",
-          "Bob Kane",
-          "Hergé"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel super-héros porte un bouclier orné d'une étoile ?",
-        "reponses": [
-          "Iron Man",
-          "Captain America",
-          "Thor",
-          "Black Panther"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel est le vrai nom de l'acteur connu sous le nom de Vin Diesel ?",
-        "reponses": [
-          "Mark Sinclair",
-          "Vincent Sinclair",
-          "Diesel Johnson",
-          "Marc Diesel"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quelle entreprise a racheté le studio d'animation Pixar en 2006 ?",
-        "reponses": [
-          "DreamWorks",
-          "Disney",
-          "Sony",
-          "Warner Bros"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Dans l'univers Marvel, comment s'appelle le frère de Thor ?",
-        "reponses": [
-          "Loki",
-          "Odin",
-          "Balder",
-          "Heimdall"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quelle série animée suit un scientifique génial et son petit-fils dans des aventures interdimensionnelles ?",
-        "reponses": [
-          "Rick et Morty",
-          "Les Griffin",
-          "American Dad",
-          "Futurama"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "En quelle année le studio d'animation japonais Studio Ghibli a-t-il été fondé ?",
-        "reponses": [
-          "1983",
-          "1984",
-          "1985",
-          "1988"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Qui a créé le personnage de Superman en 1938 ?",
-        "reponses": [
-          "Jerry Siegel et Joe Shuster",
-          "Bob Kane et Bill Finger",
-          "Stan Lee et Jack Kirby",
-          "Joe Simon et Jack Kirby"
-        ],
-        "bonne": 0,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quel film est considéré comme le plus cher de l'histoire du cinéma (environ 379 millions de dollars) ?",
-        "reponses": [
-          "« Pirates des Caraïbes : La Fontaine de Jouvence »",
-          "« Titanic »",
-          "« Avatar »",
-          "« Avengers: Endgame »"
-        ],
-        "bonne": 0,
-        "niveau": "dur"
-      }
-    ]
+      { "q": "Combien de saisons dans 'Friends' ?", "reponses": ["8","9","10","12"], "bonne": 2, "niveau": "facile" },
+      { "q": "À quel univers appartient Superman ?", "reponses": ["Marvel","DC Comics","Harry Potter","Star Wars"], "bonne": 1, "niveau": "moyen", "info": "Marvel = Spider-Man, Iron Man... DC = Superman, Batman..." },
+      { "q": "Dans quelle décennie se déroule 'Stranger Things' ?", "reponses": ["Années 1960","Années 1970","Années 1980","Années 1990"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Quelle famille suit 'L'Incroyable Famille Kardashian' ?", "reponses": ["Les Kardashian","Les Jenner","Les Hilton","Les Osbourne"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Qui joue Eleven dans 'Stranger Things' ?", "reponses": ["Sadie Sink","Millie Bobby Brown","Finn Wolfhard","Gaten Matarazzo"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Combien d'épisodes dans une saison de 'Friends' ?", "reponses": ["10","20","Environ 24","30"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Qui a créé Mickey Mouse ?", "reponses": ["Walt Disney","Carl Barks","Bob Kane","Matt Groening"], "bonne": 0, "niveau": "dur", "info": "Walt Disney, avec Ub Iwerks, en 1928." },
+      { "q": "Quel film a été le premier à dépasser 1 milliard de dollars de recettes ?", "reponses": ["Avatar","Titanic","Star Wars","Jurassic Park"], "bonne": 1, "niveau": "dur", "info": "Titanic en 1997, avant Avatar en 2009." },
+      { "q": "Dans 'Stranger Things', comment s'appelle le monde parallèle ?", "reponses": ["Le Monde à l'envers","Le Nether","Le Multivers","L'Ombre"], "bonne": 0, "niveau": "dur" },
+      { "q": "Quel film de 2019 a dépassé Avatar au box-office mondial ?", "reponses": ["Titanic","Avengers: Endgame","Star Wars","Jurassic Park"], "bonne": 1, "niveau": "dur" },
+      { "q": "Quelle série suit la famille royale britannique (fiction) ?", "reponses": ["The Crown","Bridgerton","Downton Abbey","Reign"], "bonne": 0, "niveau": "dur" },
+      { "q": "En quelle année est sorti le premier livre 'Harry Potter' ?", "reponses": ["1995","1997","1999","2000"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Combien d'épisodes dans la saison 1 de 'Squid Game' ?", "reponses": ["6","7","8","9"], "bonne": 3, "niveau": "moyen" },
+      { "q": "Qui joue Barbie dans le film de 2023 ?", "reponses": ["Margot Robbie","Emma Stone","Ana de Armas","Sydney Sweeney"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Quel est le vrai nom de 'The Rock' ?", "reponses": ["Dwayne Johnson","Vin Diesel","Jason Statham","John Cena"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Dans 'Wednesday', comment s'appelle l'école ?", "reponses": ["Nevermore","Poudlard","Beauxbâtons","Hogwarts"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Qui a réalisé le film 'Barbie' (2023) ?", "reponses": ["Patty Jenkins","Greta Gerwig","Sofia Coppola","Kathryn Bigelow"], "bonne": 1, "niveau": "dur" },
+      { "q": "Quelle série Netflix suit les meurtres de Dexter, un tueur en série ?", "reponses": ["You","Dexter","Mindhunter","Hannibal"], "bonne": 1, "niveau": "dur" },
+      { "q": "Qui a prêté sa voix à l'Âne dans 'Shrek' ?", "reponses": ["Eddie Murphy","Mike Myers","Antonio Banderas","John Lithgow"], "bonne": 0, "niveau": "dur" },
+      { "q": "Dans 'Squid Game', quel est le numéro du héros ?", "reponses": ["067","456","218","101"], "bonne": 1, "niveau": "dur" },
+      { "q": "Qui a écrit la saga 'Harry Potter' ?", "reponses": ["J. K. Rowling","Stephenie Meyer","Suzanne Collins","Roald Dahl"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Quelle actrice joue Wednesday Addams dans la série 'Wednesday' ?", "reponses": ["Jenna Ortega","Millie Bobby Brown","Sadie Sink","Maya Hawke"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Quel auteur japonais a créé le manga 'Naruto' ?", "reponses": ["Masashi Kishimoto","Eiichiro Oda","Akira Toriyama","Hayao Miyazaki"], "bonne": 0, "niveau": "moyen" },
+      { "q": "En quelle année est sorti le film 'Avatar' de James Cameron ?", "reponses": ["2007","2009","2011","2013"], "bonne": 1, "niveau": "moyen" },
+      { "q": "En quelle année a été diffusé le premier épisode de la série 'Les Simpson' ?", "reponses": ["1987","1989","1991","1993"], "bonne": 1, "niveau": "dur" },
+      { "q": "Qui a créé la série animée 'South Park' ?", "reponses": ["Seth MacFarlane","Trey Parker et Matt Stone","Matt Groening","Mike Judge"], "bonne": 1, "niveau": "dur" },
+      { "q": "Quel super-héros porte un costume rouge avec une araignée dessus ?", "reponses": ["Spider-Man","Batman","Superman","Iron Man"], "bonne": 0, "niveau": "facile" },
+      { "q": "Dans quelle série animée vit une famille jaune ?", "reponses": ["Les Simpson","South Park","Family Guy","Rick et Morty"], "bonne": 0, "niveau": "facile" },
+      { "q": "Quel super-héros appartient à l'univers Marvel ?", "reponses": ["Spider-Man","Superman","Batman","Goku"], "bonne": 0, "niveau": "facile" },
+      { "q": "Sur quelle plateforme trouve-t-on la série Stranger Things ?", "reponses": ["Netflix","Disney+","Amazon Prime Video","YouTube"], "bonne": 0, "niveau": "facile" },
+      { "q": "Qui a joué Barbie au cinéma en 2023 ?", "reponses": ["Margot Robbie","Scarlett Johansson","Emma Watson","Ana de Armas"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Qui a réalisé « Avatar » et « Titanic » ?", "reponses": ["James Cameron","Steven Spielberg","Ridley Scott","Peter Jackson"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Quel manga suit les aventures de Monkey D. Luffy et de son équipage de pirates ?", "reponses": ["One Piece","Naruto","Dragon Ball","Bleach"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Quel film de 1994 met en scène un homme simple d'esprit qui traverse les États-Unis en courant ?", "reponses": ["Forrest Gump","Rain Man","Le Grand Bleu","Les Évadés"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Qui a créé le personnage de Mickey Mouse en 1928 ?", "reponses": ["Walt Disney","Charles Schulz","Jim Henson","Werner Heisenberg"], "bonne": 0, "niveau": "dur" },
+      { "q": "Quel film est devenu le plus gros succès commercial de l'histoire du cinéma ?", "reponses": ["Titanic","Avengers: Endgame","Avatar","Star Wars"], "bonne": 2, "niveau": "dur" },
+      { "q": "Qui a réalisé les films « Les Gardiens de la Galaxie » ?", "reponses": ["James Gunn","Russo brothers","Taika Waititi","Jon Favreau"], "bonne": 0, "niveau": "dur" },
+      { "q": "Quel manga met en scène Son Goku et les boules de cristal ?", "reponses": ["Dragon Ball","Naruto","One Piece","Bleach"], "bonne": 0, "niveau": "dur" },
+      { "q": "Quel est le vrai nom de Spider-Man ?", "reponses": ["Peter Parker","Bruce Wayne","Clark Kent","Tony Stark"], "bonne": 0, "niveau": "facile" },
+      { "q": "Comment s'appelle le chien de la famille Simpson ?", "reponses": ["Père Noël","Rouquin","Moe","Boule de neige"], "bonne": 0, "niveau": "facile" },
+      { "q": "Qui a créé le personnage de Batman en 1939 ?", "reponses": ["Bob Kane","Stan Lee","Jerry Siegel","Joe Shuster"], "bonne": 0, "niveau": "facile" },
+      { "q": "Quel acteur incarne Geralt de Riv dans la série « The Witcher » ?", "reponses": ["Henry Cavill","Tom Holland","Matt Smith","Kit Harington"], "bonne": 0, "niveau": "facile" },
+      { "q": "Quel héros de bande dessinée belge est un jeune reporter accompagné de son chien Milou ?", "reponses": ["Tintin","Lucky Luke","Astérix","Gaston Lagaffe"], "bonne": 0, "niveau": "facile" },
+      { "q": "Quel scénariste a dirigé Marvel Comics pendant des décennies et co-créé Spider-Man, Hulk et les X-Men ?", "reponses": ["Stan Lee","Walt Disney","Bob Kane","Hergé"], "bonne": 0, "niveau": "facile" },
+      { "q": "Quel super-héros porte un bouclier orné d'une étoile ?", "reponses": ["Iron Man","Captain America","Thor","Black Panther"], "bonne": 1, "niveau": "facile" },
+      { "q": "Quel est le vrai nom de l'acteur connu sous le nom de Vin Diesel ?", "reponses": ["Mark Sinclair","Vincent Sinclair","Diesel Johnson","Marc Diesel"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Quelle entreprise a racheté le studio d'animation Pixar en 2006 ?", "reponses": ["DreamWorks","Disney","Sony","Warner Bros"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Dans l'univers Marvel, comment s'appelle le frère de Thor ?", "reponses": ["Loki","Odin","Balder","Heimdall"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Quelle série animée suit un scientifique génial et son petit-fils dans des aventures interdimensionnelles ?", "reponses": ["Rick et Morty","Les Griffin","American Dad","Futurama"], "bonne": 0, "niveau": "moyen" },
+      { "q": "En quelle année le studio d'animation japonais Studio Ghibli a-t-il été fondé ?", "reponses": ["1983","1984","1985","1988"], "bonne": 2, "niveau": "dur" },
+      { "q": "Qui a créé le personnage de Superman en 1938 ?", "reponses": ["Jerry Siegel et Joe Shuster","Bob Kane et Bill Finger","Stan Lee et Jack Kirby","Joe Simon et Jack Kirby"], "bonne": 0, "niveau": "dur" },
+      { "q": "Quel film est considéré comme le plus cher de l'histoire du cinéma (environ 379 millions de dollars) ?", "reponses": ["« Pirates des Caraïbes : La Fontaine de Jouvence »","« Titanic »","« Avatar »","« Avengers: Endgame »"], "bonne": 0, "niveau": "dur" },
+    ],
   },
   {
     id: "musique",
+    nom: undefined,
+    icone: undefined,
+    couleur: undefined,
     questions: [
-      {
-        "q": "De quel groupe Harry Styles faisait-il partie ?",
-        "reponses": [
-          "BTS",
-          "One Direction",
-          "Coldplay",
-          "Maroon 5"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quel est le vrai nom de Lady Gaga ?",
-        "reponses": [
-          "Madonna Ciccone",
-          "Stefani Germanotta",
-          "Robyn Fenty",
-          "Aurora Sky"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quel titre de Daft Punk a cartonné en 2013 ?",
-        "reponses": [
-          "Around the World",
-          "Get Lucky",
-          "One More Time",
-          "Da Funk"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quel pays a remporté l'Eurovision 2024 ?",
-        "reponses": [
-          "La Suède",
-          "La Suisse",
-          "L'Italie",
-          "La France"
-        ],
-        "bonne": 1,
-        "niveau": "dur",
-        "info": "Nemo et 'The Code' pour la Suisse."
-      },
-      {
-        "q": "Combien de membres compte le groupe de K-pop Blackpink ?",
-        "reponses": [
-          "3",
-          "4",
-          "5",
-          "6"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Qui a chanté « Bad Romance » ?",
-        "reponses": [
-          "Lady Gaga",
-          "Rihanna",
-          "Adele",
-          "Beyoncé"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Qui a chanté « Shape of You » ?",
-        "reponses": [
-          "Ed Sheeran",
-          "Justin Bieber",
-          "Drake",
-          "The Weeknd"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Qui a chanté « Happy » dans le film Moi, moche et méchant ?",
-        "reponses": [
-          "Pharrell Williams",
-          "Bruno Mars",
-          "Ed Sheeran",
-          "Justin Timberlake"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Qui a chanté « Bad Guy » ?",
-        "reponses": [
-          "Billie Eilish",
-          "Dua Lipa",
-          "Ariana Grande",
-          "Selena Gomez"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quelle chanteuse est surnommée « Queen B » ?",
-        "reponses": [
-          "Beyoncé",
-          "Rihanna",
-          "Adele",
-          "Taylor Swift"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quelle chanteuse est surnommée la « Material Girl » ?",
-        "reponses": [
-          "Madonna",
-          "Cher",
-          "Kylie Minogue",
-          "Britney Spears"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel est le vrai nom du rappeur Eminem ?",
-        "reponses": [
-          "Marshall Mathers",
-          "Curtis Jackson",
-          "Shawn Carter",
-          "Calvin Broadus"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Qui a remporté le Concours Eurovision de la chanson en 2023 avec « Tattoo » ?",
-        "reponses": [
-          "Loreen",
-          "Käärijä",
-          "Alessandra",
-          "Marco Mengoni"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Qui a chanté « Genie in a Bottle » en 1999 ?",
-        "reponses": [
-          "Britney Spears",
-          "Christina Aguilera",
-          "Jessica Simpson",
-          "Mandy Moore"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien de vues le clip « Despacito » de Luis Fonsi a-t-il dépassées sur YouTube en 2024 ?",
-        "reponses": [
-          "Plus de 5 milliards",
-          "Plus de 6 milliards",
-          "Plus de 8 milliards",
-          "Plus de 10 milliards"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Combien de membres comptait le boys band britannique One Direction ?",
-        "reponses": [
-          "4",
-          "5",
-          "6",
-          "7"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "En quelle année le chanteur sud-coréen Psy a-t-il sorti le tube « Gangnam Style » ?",
-        "reponses": [
-          "2010",
-          "2011",
-          "2012",
-          "2013"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      }
-    ]
+      { "q": "De quel groupe Harry Styles faisait-il partie ?", "reponses": ["BTS","One Direction","Coldplay","Maroon 5"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Quel est le vrai nom de Lady Gaga ?", "reponses": ["Madonna Ciccone","Stefani Germanotta","Robyn Fenty","Aurora Sky"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Quel titre de Daft Punk a cartonné en 2013 ?", "reponses": ["Around the World","Get Lucky","One More Time","Da Funk"], "bonne": 1, "niveau": "dur" },
+      { "q": "Quel pays a remporté l'Eurovision 2024 ?", "reponses": ["La Suède","La Suisse","L'Italie","La France"], "bonne": 1, "niveau": "dur", "info": "Nemo et 'The Code' pour la Suisse." },
+      { "q": "Combien de membres compte le groupe de K-pop Blackpink ?", "reponses": ["3","4","5","6"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Qui a chanté « Shape of You » ?", "reponses": ["Ed Sheeran","Justin Bieber","Drake","The Weeknd"], "bonne": 0, "niveau": "facile" },
+      { "q": "Qui a chanté « Happy » dans le film Moi, moche et méchant ?", "reponses": ["Pharrell Williams","Bruno Mars","Ed Sheeran","Justin Timberlake"], "bonne": 0, "niveau": "facile" },
+      { "q": "Qui a chanté « Bad Guy » ?", "reponses": ["Billie Eilish","Dua Lipa","Ariana Grande","Selena Gomez"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Quelle chanteuse est surnommée « Queen B » ?", "reponses": ["Beyoncé","Rihanna","Adele","Taylor Swift"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Quelle chanteuse est surnommée la « Material Girl » ?", "reponses": ["Madonna","Cher","Kylie Minogue","Britney Spears"], "bonne": 0, "niveau": "facile" },
+      { "q": "Quel est le vrai nom du rappeur Eminem ?", "reponses": ["Marshall Mathers","Curtis Jackson","Shawn Carter","Calvin Broadus"], "bonne": 0, "niveau": "facile" },
+      { "q": "Qui a remporté le Concours Eurovision de la chanson en 2023 avec « Tattoo » ?", "reponses": ["Loreen","Käärijä","Alessandra","Marco Mengoni"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Qui a chanté « Genie in a Bottle » en 1999 ?", "reponses": ["Britney Spears","Christina Aguilera","Jessica Simpson","Mandy Moore"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Combien de vues le clip « Despacito » de Luis Fonsi a-t-il dépassées sur YouTube en 2024 ?", "reponses": ["Plus de 5 milliards","Plus de 6 milliards","Plus de 8 milliards","Plus de 10 milliards"], "bonne": 2, "niveau": "dur" },
+      { "q": "Combien de membres comptait le boys band britannique One Direction ?", "reponses": ["4","5","6","7"], "bonne": 1, "niveau": "dur" },
+      { "q": "En quelle année le chanteur sud-coréen Psy a-t-il sorti le tube « Gangnam Style » ?", "reponses": ["2010","2011","2012","2013"], "bonne": 2, "niveau": "dur" },
+    ],
   },
   {
     id: "sport",
+    nom: undefined,
+    icone: undefined,
+    couleur: undefined,
     questions: [
-      {
-        "q": "Quel sport est surnommé 'la petite balle jaune' ?",
-        "reponses": [
-          "Le golf",
-          "Le tennis",
-          "Le ping-pong",
-          "Le badminton"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel pays a remporté la Coupe du monde de rugby 2023 ?",
-        "reponses": [
-          "La Nouvelle-Zélande",
-          "L'Angleterre",
-          "L'Afrique du Sud",
-          "La France"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quelle marque de chaussures de sport est associée à Michael Jordan ?",
-        "reponses": [
-          "Air Jordan",
-          "Air Max",
-          "Cortez",
-          "Pegasus"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel est le record de profondeur de plongée humaine en scaphandre autonome (environ) ?",
-        "reponses": [
-          "150 m",
-          "250 m",
-          "332 m",
-          "450 m"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      }
-    ]
+      { "q": "Quel sport est surnommé 'la petite balle jaune' ?", "reponses": ["Le golf","Le tennis","Le ping-pong","Le badminton"], "bonne": 1, "niveau": "facile" },
+      { "q": "Quel pays a remporté la Coupe du monde de rugby 2023 ?", "reponses": ["La Nouvelle-Zélande","L'Angleterre","L'Afrique du Sud","La France"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Quelle marque de chaussures de sport est associée à Michael Jordan ?", "reponses": ["Air Jordan","Air Max","Cortez","Pegasus"], "bonne": 0, "niveau": "facile" },
+      { "q": "Quel est le record de profondeur de plongée humaine en scaphandre autonome (environ) ?", "reponses": ["150 m","250 m","332 m","450 m"], "bonne": 2, "niveau": "moyen" },
+    ],
   },
   {
     id: "jeux-videos",
+    nom: undefined,
+    icone: undefined,
+    couleur: undefined,
     questions: [
-      {
-        "q": "Quel studio a créé 'Fortnite' ?",
-        "reponses": [
-          "Valve",
-          "Epic Games",
-          "Riot Games",
-          "Activision"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "En quelle année a été diffusé le premier épisode de la série animée 'Pokémon' ?",
-        "reponses": [
-          "1995",
-          "1997",
-          "1999",
-          "2001"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      }
-    ]
+      { "q": "Quel studio a créé 'Fortnite' ?", "reponses": ["Valve","Epic Games","Riot Games","Activision"], "bonne": 1, "niveau": "dur" },
+      { "q": "En quelle année a été diffusé le premier épisode de la série animée 'Pokémon' ?", "reponses": ["1995","1997","1999","2001"], "bonne": 1, "niveau": "dur" },
+    ],
   },
   {
     id: "geographie",
+    nom: undefined,
+    icone: undefined,
+    couleur: undefined,
     questions: [
-      {
-        "q": "De quel pays vient 'Squid Game' ?",
-        "reponses": [
-          "Le Japon",
-          "La Chine",
-          "La Corée du Sud",
-          "La Thaïlande"
-        ],
-        "bonne": 2,
-        "niveau": "facile"
-      },
-      {
-        "q": "Dans quelle ville se passe 'Friends' ?",
-        "reponses": [
-          "Los Angeles",
-          "Chicago",
-          "New York",
-          "Boston"
-        ],
-        "bonne": 2,
-        "niveau": "facile"
-      },
-      {
-        "q": "Combien de couleurs sur le drapeau français ?",
-        "reponses": [
-          "2",
-          "3",
-          "4",
-          "5"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Température la plus basse jamais enregistrée sur Terre ?",
-        "reponses": [
-          "-50 °C",
-          "-73 °C",
-          "-89,2 °C",
-          "-100 °C"
-        ],
-        "bonne": 2,
-        "niveau": "dur",
-        "info": "En Antarctique, station Vostok, 1983."
-      },
-      {
-        "q": "Vrai ou faux : la Grande Muraille de Chine est visible depuis la Lune.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 1,
-        "niveau": "moyen",
-        "info": "Faux : elle est trop étroite pour être vue de si loin !"
-      },
-      {
-        "q": "À quelle profondeur se trouve le point le plus profond des océans ?",
-        "reponses": [
-          "5 000 m",
-          "8 000 m",
-          "Environ 11 000 m",
-          "20 000 m"
-        ],
-        "bonne": 2,
-        "niveau": "dur",
-        "info": "La fosse des Mariannes, ~10 984 m."
-      },
-      {
-        "q": "Vrai ou faux : la Tour Eiffel peut s'allonger de quelques centimètres en été.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "facile",
-        "info": "À cause de la dilatation du métal sous la chaleur."
-      },
-      {
-        "q": "Quelle est la température la plus basse jamais enregistrée sur Terre ?",
-        "reponses": [
-          "−50 °C",
-          "−89,2 °C",
-          "−100 °C",
-          "−72 °C"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quelle est la profondeur approximative de la fosse des Mariannes ?",
-        "reponses": [
-          "5 000 m",
-          "8 000 m",
-          "11 000 m",
-          "20 000 m"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quelle est la température la plus haute jamais enregistrée officiellement sur Terre ?",
-        "reponses": [
-          "54,4 °C",
-          "56,7 °C",
-          "58,1 °C",
-          "60,3 °C"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "À quelle altitude se situe le lac Titicaca ?",
-        "reponses": [
-          "2 500 m",
-          "3 812 m",
-          "4 200 m",
-          "4 800 m"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quelle pression règne au fond de la fosse des Mariannes (environ) ?",
-        "reponses": [
-          "100 bars",
-          "500 bars",
-          "1 100 bars",
-          "5 000 bars"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      }
-    ]
+      { "q": "De quel pays vient 'Squid Game' ?", "reponses": ["Le Japon","La Chine","La Corée du Sud","La Thaïlande"], "bonne": 2, "niveau": "facile" },
+      { "q": "Dans quelle ville se passe 'Friends' ?", "reponses": ["Los Angeles","Chicago","New York","Boston"], "bonne": 2, "niveau": "facile" },
+      { "q": "Combien de couleurs sur le drapeau français ?", "reponses": ["2","3","4","5"], "bonne": 1, "niveau": "facile" },
+      { "q": "Température la plus basse jamais enregistrée sur Terre ?", "reponses": ["-50 °C","-73 °C","-89,2 °C","-100 °C"], "bonne": 2, "niveau": "dur", "info": "En Antarctique, station Vostok, 1983." },
+      { "q": "Vrai ou faux : la Grande Muraille de Chine est visible depuis la Lune.", "reponses": ["Vrai","Faux"], "bonne": 1, "niveau": "moyen", "info": "Faux : elle est trop étroite pour être vue de si loin !" },
+      { "q": "À quelle profondeur se trouve le point le plus profond des océans ?", "reponses": ["5 000 m","8 000 m","Environ 11 000 m","20 000 m"], "bonne": 2, "niveau": "dur", "info": "La fosse des Mariannes, ~10 984 m." },
+      { "q": "Vrai ou faux : la Tour Eiffel peut s'allonger de quelques centimètres en été.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "facile", "info": "À cause de la dilatation du métal sous la chaleur." },
+      { "q": "Quelle est la température la plus basse jamais enregistrée sur Terre ?", "reponses": ["−50 °C","−89,2 °C","−100 °C","−72 °C"], "bonne": 1, "niveau": "dur" },
+      { "q": "Quelle est la profondeur approximative de la fosse des Mariannes ?", "reponses": ["5 000 m","8 000 m","11 000 m","20 000 m"], "bonne": 2, "niveau": "dur" },
+      { "q": "Quelle est la température la plus haute jamais enregistrée officiellement sur Terre ?", "reponses": ["54,4 °C","56,7 °C","58,1 °C","60,3 °C"], "bonne": 1, "niveau": "dur" },
+      { "q": "À quelle altitude se situe le lac Titicaca ?", "reponses": ["2 500 m","3 812 m","4 200 m","4 800 m"], "bonne": 1, "niveau": "dur" },
+      { "q": "Quelle pression règne au fond de la fosse des Mariannes (environ) ?", "reponses": ["100 bars","500 bars","1 100 bars","5 000 bars"], "bonne": 2, "niveau": "dur" },
+    ],
   },
   {
     id: "sciences",
+    nom: undefined,
+    icone: undefined,
+    couleur: undefined,
     questions: [
-      {
-        "q": "Vrai ou faux : l'ananas pousse sur un arbre.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 1,
-        "niveau": "facile",
-        "info": "L'ananas pousse sur une plante herbacée."
-      },
-      {
-        "q": "Vrai ou faux : la banane est techniquement une baie.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "facile",
-        "info": "Botaniquement oui. La fraise, non !"
-      },
-      {
-        "q": "Combien de pattes a une araignée ?",
-        "reponses": [
-          "6",
-          "8",
-          "10",
-          "12"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Vrai ou faux : les chiens voient en noir et blanc.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 1,
-        "niveau": "facile",
-        "info": "Faux : ils voient les couleurs, surtout le bleu et le jaune."
-      },
-      {
-        "q": "Combien de doigts sur une main ?",
-        "reponses": [
-          "4",
-          "5",
-          "6",
-          "10"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Combien de pattes a un insecte ?",
-        "reponses": [
-          "4",
-          "6",
-          "8",
-          "10"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Vrai ou faux : les chats ronronnent quand ils sont contents.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "facile",
-        "info": "Mais ils ronronnent aussi quand ils sont stressés !"
-      },
-      {
-        "q": "Quel animal terrestre est le plus rapide du monde ?",
-        "reponses": [
-          "Le lion",
-          "Le guépard",
-          "Le cheval",
-          "L'aigle"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Vrai ou faux : l'eau bout à 100 °C (au niveau de la mer).",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Combien d'heures par jour dort un koala en moyenne ?",
-        "reponses": [
-          "4 h",
-          "10 h",
-          "16 h",
-          "22 h"
-        ],
-        "bonne": 3,
-        "niveau": "moyen",
-        "info": "Record de sommeil chez les animaux."
-      },
-      {
-        "q": "Combien de cœurs possède une pieuvre ?",
-        "reponses": [
-          "1",
-          "2",
-          "3",
-          "4"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "De quelle couleur est le lait de l'hippopotame ?",
-        "reponses": [
-          "Blanc",
-          "Rose",
-          "Vert",
-          "Jaune"
-        ],
-        "bonne": 1,
-        "niveau": "moyen",
-        "info": "Rose, à cause d'acides sécrétés par sa peau !"
-      },
-      {
-        "q": "Combien de temps met le sang à faire le tour du corps ?",
-        "reponses": [
-          "10 secondes",
-          "Environ 1 minute",
-          "10 minutes",
-          "1 heure"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quel animal dort debout ?",
-        "reponses": [
-          "Le chien",
-          "Le cheval",
-          "Le chat",
-          "Le lapin"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien de dents a un adulte (dents de sagesse comprises) ?",
-        "reponses": [
-          "28",
-          "30",
-          "32",
-          "34"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Vrai ou faux : les empreintes des koalas ressemblent aux nôtres.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "moyen",
-        "info": "Tellement ressemblantes qu'elles ont trompé des experts !"
-      },
-      {
-        "q": "Combien d'os avait le corps humain à la naissance ?",
-        "reponses": [
-          "206",
-          "240",
-          "Environ 270",
-          "300"
-        ],
-        "bonne": 2,
-        "niveau": "dur",
-        "info": "Certains fusionnent en grandissant pour arriver à 206."
-      },
-      {
-        "q": "Quel animal a le plus gros cœur ?",
-        "reponses": [
-          "L'éléphant",
-          "La girafe",
-          "La baleine bleue",
-          "Le requin baleine"
-        ],
-        "bonne": 2,
-        "niveau": "dur",
-        "info": "Celui de la baleine bleue peut peser 200 kg."
-      },
-      {
-        "q": "En quelle année la structure de l'ADN a-t-elle été découverte ?",
-        "reponses": [
-          "1944",
-          "1953",
-          "1962",
-          "1971"
-        ],
-        "bonne": 1,
-        "niveau": "dur",
-        "info": "Watson et Crick, prix Nobel 1962."
-      },
-      {
-        "q": "Quel est le record de longévité humaine confirmé ?",
-        "reponses": [
-          "110 ans",
-          "117 ans",
-          "122 ans",
-          "130 ans"
-        ],
-        "bonne": 2,
-        "niveau": "dur",
-        "info": "Jeanne Calment, 122 ans et 164 jours."
-      },
-      {
-        "q": "Combien de cellules dans le corps humain (ordre de grandeur) ?",
-        "reponses": [
-          "1 milliard",
-          "100 milliards",
-          "37 000 milliards",
-          "1 000 000 milliards"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quel animal détient le record de chromosomes ?",
-        "reponses": [
-          "L'humain",
-          "Le chien",
-          "Une fougère (Ophioglossum)",
-          "Le papillon"
-        ],
-        "bonne": 2,
-        "niveau": "dur",
-        "info": "Plus de 1 200 paires de chromosomes !"
-      },
-      {
-        "q": "Combien de fois le cœur bat-il par jour en moyenne ?",
-        "reponses": [
-          "10 000",
-          "50 000",
-          "Environ 100 000",
-          "500 000"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Combien de pattes a un chien ?",
-        "reponses": [
-          "2",
-          "4",
-          "6",
-          "8"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Vrai ou faux : les girafes ont un cou très court.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel animal fait « cocorico » ?",
-        "reponses": [
-          "La poule",
-          "Le coq",
-          "Le canard",
-          "Le dindon"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel animal vit dans une ruche ?",
-        "reponses": [
-          "L'ours",
-          "L'abeille",
-          "Le lapin",
-          "Le hérisson"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Vrai ou faux : l'escargot porte sa maison sur le dos.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel animal fait « ouaf ouaf » ?",
-        "reponses": [
-          "Le chat",
-          "Le chien",
-          "La vache",
-          "Le lion"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Combien d'heures par jour dort un chat en moyenne ?",
-        "reponses": [
-          "2 h",
-          "6 h",
-          "12 à 16 h",
-          "22 h"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Vrai ou faux : les requins existaient avant les arbres.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "moyen",
-        "info": "Les requins ont ~450 millions d'années, les arbres ~350 millions."
-      },
-      {
-        "q": "Combien de muscles dans le corps humain (environ) ?",
-        "reponses": [
-          "100",
-          "300",
-          "600",
-          "1000"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quel oiseau ne sait pas voler ?",
-        "reponses": [
-          "L'aigle",
-          "Le hibou",
-          "L'autruche",
-          "Le colibri"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Vrai ou faux : le nez humain peut distinguer des milliers d'odeurs.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien de dents un requin perd-il au cours de sa vie ?",
-        "reponses": [
-          "Environ 100",
-          "Environ 1 000",
-          "Environ 30 000",
-          "500"
-        ],
-        "bonne": 2,
-        "niveau": "moyen",
-        "info": "Elles repoussent toute sa vie !"
-      },
-      {
-        "q": "Quel animal peut changer de couleur ?",
-        "reponses": [
-          "Le chien",
-          "Le chat",
-          "Le caméléon",
-          "Le lion"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien de goûts de base existe-t-il ?",
-        "reponses": [
-          "3",
-          "4",
-          "5",
-          "7"
-        ],
-        "bonne": 2,
-        "niveau": "moyen",
-        "info": "Sucré, salé, acide, amer et umami."
-      },
-      {
-        "q": "Jusqu'à combien de temps un escargot peut-il dormir ?",
-        "reponses": [
-          "1 mois",
-          "1 an",
-          "3 ans",
-          "10 ans"
-        ],
-        "bonne": 2,
-        "niveau": "moyen",
-        "info": "En période de sécheresse, il hiberne."
-      },
-      {
-        "q": "La lumière va environ combien de fois plus vite que le son ?",
-        "reponses": [
-          "100 fois",
-          "1 000 fois",
-          "10 000 fois",
-          "Environ 880 000 fois"
-        ],
-        "bonne": 3,
-        "niveau": "dur",
-        "info": "~300 000 km/s contre ~340 m/s."
-      },
-      {
-        "q": "Combien de cœurs possède un ver de terre ?",
-        "reponses": [
-          "0",
-          "1",
-          "5",
-          "10"
-        ],
-        "bonne": 2,
-        "niveau": "dur",
-        "info": "5 paires de cœurs, soit 10 !"
-      },
-      {
-        "q": "Combien d'os dans un pied humain ?",
-        "reponses": [
-          "14",
-          "20",
-          "26",
-          "32"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Jusqu'à combien de battements d'ailes par seconde chez le colibri ?",
-        "reponses": [
-          "5",
-          "20",
-          "80",
-          "200"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Vrai ou faux : les pieuvres ont le sang bleu.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "dur",
-        "info": "Leur sang contient de l'hémocyanine, à base de cuivre."
-      },
-      {
-        "q": "Combien de pattes a un crabe ?",
-        "reponses": [
-          "6",
-          "8",
-          "10",
-          "12"
-        ],
-        "bonne": 2,
-        "niveau": "facile"
-      },
-      {
-        "q": "Vrai ou faux : l'éléphant est le plus gros animal terrestre vivant.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel animal dort suspendu la tête en bas ?",
-        "reponses": [
-          "La chauve-souris",
-          "Le paresseux",
-          "Le koala",
-          "Le lémurien"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Combien de bosses a un dromadaire ?",
-        "reponses": [
-          "1",
-          "2",
-          "3",
-          "4"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Vrai ou faux : la grenouille est un amphibien.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel oiseau ne vole pas et vit en Antarctique ?",
-        "reponses": [
-          "L'autruche",
-          "Le manchot",
-          "Le kiwi",
-          "Le casoar"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Vrai ou faux : une poule peut voler sur de courtes distances.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel animal est surnommé le 'roi des animaux' ?",
-        "reponses": [
-          "Le tigre",
-          "L'ours",
-          "Le lion",
-          "Le gorille"
-        ],
-        "bonne": 2,
-        "niveau": "facile"
-      },
-      {
-        "q": "Combien de vies dit-on qu'un chat possède ?",
-        "reponses": [
-          "3",
-          "5",
-          "7",
-          "9"
-        ],
-        "bonne": 3,
-        "niveau": "facile"
-      },
-      {
-        "q": "Combien de bras possède une étoile de mer classique ?",
-        "reponses": [
-          "4",
-          "5",
-          "6",
-          "8"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Environ combien de dents possède un escargot ?",
-        "reponses": [
-          "100",
-          "1 000",
-          "14 000",
-          "30 000"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Vrai ou faux : les dauphins dorment avec un seul hémisphère cérébral à la fois.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien d'heures par jour dort un lion en moyenne ?",
-        "reponses": [
-          "8",
-          "12",
-          "16",
-          "20"
-        ],
-        "bonne": 3,
-        "niveau": "moyen"
-      },
-      {
-        "q": "De quelle couleur est la peau de l'ours polaire (sous ses poils) ?",
-        "reponses": [
-          "Blanche",
-          "Rose",
-          "Noire",
-          "Grise"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Vrai ou faux : la crevette-mante possède la vue la plus complexe du règne animal.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quel animal marin change de sexe au cours de sa vie ?",
-        "reponses": [
-          "Le requin",
-          "Le poisson-clown",
-          "Le dauphin",
-          "La raie"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien de bras a une pieuvre ?",
-        "reponses": [
-          "6",
-          "8",
-          "10",
-          "12"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien de mois dure la gestation d'une éléphante ?",
-        "reponses": [
-          "9",
-          "12",
-          "18",
-          "22"
-        ],
-        "bonne": 3,
-        "niveau": "moyen",
-        "info": "La plus longue gestation des mammifères terrestres."
-      },
-      {
-        "q": "Vrai ou faux : l'hippopotame sécrète une sueur rougeâtre qui le protège du soleil.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien de chromosomes possède un chien ?",
-        "reponses": [
-          "38",
-          "58",
-          "78",
-          "98"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quelle est la température corporelle normale du cheval ?",
-        "reponses": [
-          "37 °C",
-          "38 °C",
-          "39 °C",
-          "40 °C"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Combien d'os possède un requin ?",
-        "reponses": [
-          "0",
-          "50",
-          "100",
-          "206"
-        ],
-        "bonne": 0,
-        "niveau": "dur",
-        "info": "Son squelette est en cartilage."
-      },
-      {
-        "q": "Quel vertébré marins détient un record de longévité de plusieurs siècles ?",
-        "reponses": [
-          "La tortue géante",
-          "Le requin du Groenland",
-          "Le crocodile",
-          "La baleine boréale"
-        ],
-        "bonne": 1,
-        "niveau": "dur",
-        "info": "Plus de 400 ans pour certains individus."
-      },
-      {
-        "q": "Combien de temps faut-il environ pour cultiver une perle dans une huître ?",
-        "reponses": [
-          "3 mois",
-          "1 an",
-          "2 à 3 ans",
-          "10 ans"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Environ combien de papilles gustatives possède la langue humaine ?",
-        "reponses": [
-          "1 000",
-          "5 000",
-          "10 000",
-          "50 000"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quelle est la vitesse du son dans l'air (au niveau de la mer, environ) ?",
-        "reponses": [
-          "120 m/s",
-          "343 m/s",
-          "500 m/s",
-          "1 000 m/s"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Combien d'années peut vivre un olivier ?",
-        "reponses": [
-          "100 ans",
-          "500 ans",
-          "Plus de 1 000 ans",
-          "5 000 ans"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quel animal possède le plus gros cerveau en poids absolu ?",
-        "reponses": [
-          "L'éléphant",
-          "La baleine bleue",
-          "Le cachalot",
-          "L'orque"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "À quelle profondeur maximale le cachalot peut-il plonger (environ) ?",
-        "reponses": [
-          "500 m",
-          "1 000 m",
-          "2 000 m",
-          "3 000 m"
-        ],
-        "bonne": 3,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quel est le plus grand organe du corps humain ?",
-        "reponses": [
-          "Le cœur",
-          "Le foie",
-          "La peau",
-          "Le cerveau"
-        ],
-        "bonne": 2,
-        "niveau": "facile"
-      },
-      {
-        "q": "Combien d'heures de sommeil recommande-t-on à un adulte ?",
-        "reponses": [
-          "5 à 6",
-          "7 à 9",
-          "10 à 12",
-          "3 à 4"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel animal peut dormir debout ?",
-        "reponses": [
-          "Le cheval",
-          "Le chien",
-          "Le chat",
-          "Le lapin"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Combien de dents possède un adulte en général ?",
-        "reponses": [
-          "28",
-          "30",
-          "32",
-          "36"
-        ],
-        "bonne": 2,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel fruit porte ses graines à l'extérieur ?",
-        "reponses": [
-          "La fraise",
-          "La banane",
-          "La pomme",
-          "La poire"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Combien de pattes a une araignée ?",
-        "reponses": [
-          "6",
-          "8",
-          "10",
-          "12"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel liquide est le plus abondant dans le corps humain ?",
-        "reponses": [
-          "L'eau",
-          "Le sang",
-          "La lymphe",
-          "La salive"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel animal change de couleur selon son humeur ?",
-        "reponses": [
-          "Le caméléon",
-          "Le zèbre",
-          "Le perroquet",
-          "Le lion"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien de cœurs possède une pieuvre ?",
-        "reponses": [
-          "1",
-          "2",
-          "3",
-          "4"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quel est l'ordre de grandeur du poids d'un gros nuage ?",
-        "reponses": [
-          "1 tonne",
-          "500 tonnes",
-          "500 000 tonnes",
-          "1 milliard de tonnes"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quel grand oiseau d'Afrique ne sait pas voler ?",
-        "reponses": [
-          "L'autruche",
-          "Le flamant rose",
-          "Le pélican",
-          "Le vautour"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quel est le seul mammifère capable de voler réellement ?",
-        "reponses": [
-          "La chauve-souris",
-          "L'écureuil volant",
-          "Le phalanger volant",
-          "La souris volante"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien de muscles environ faut-il pour sourire ?",
-        "reponses": [
-          "2",
-          "5",
-          "17",
-          "50"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien de fois le cœur humain bat-il en moyenne par jour ?",
-        "reponses": [
-          "10 000",
-          "50 000",
-          "100 000",
-          "500 000"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quel animal détient le record du nombre de chromosomes ?",
-        "reponses": [
-          "Le chien",
-          "Une fougère, Ophioglossum",
-          "L'éléphant",
-          "L'être humain"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Combien de litres de salive produit-on en moyenne par jour ?",
-        "reponses": [
-          "0,2 L",
-          "1 L",
-          "5 L",
-          "10 L"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quel est l'animal terrestre le plus rapide du monde ?",
-        "reponses": [
-          "Le guépard",
-          "Le faucon pèlerin",
-          "L'antilope",
-          "Le lévrier"
-        ],
-        "bonne": 0,
-        "niveau": "dur"
-      },
-      {
-        "q": "Combien d'os compte le corps d'un bébé à la naissance, environ ?",
-        "reponses": [
-          "206",
-          "270",
-          "300",
-          "150"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quel insecte butine les fleurs et produit le miel ?",
-        "reponses": [
-          "Le papillon",
-          "La libellule",
-          "L'abeille",
-          "La guêpe"
-        ],
-        "bonne": 2,
-        "niveau": "facile"
-      },
-      {
-        "q": "De quelle couleur est la langue de la girafe ?",
-        "reponses": [
-          "Rose",
-          "Rouge",
-          "Bleue",
-          "Verte"
-        ],
-        "bonne": 2,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel insecte peut survivre plusieurs semaines sans sa tête ?",
-        "reponses": [
-          "La mouche",
-          "Le cafard",
-          "La sauterelle",
-          "L'abeille"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Outre les cheveux, quelle partie du corps continue de pousser toute la vie ?",
-        "reponses": [
-          "Les ongles",
-          "Les dents",
-          "Les os",
-          "La peau"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel oiseau pond le plus gros œuf du monde ?",
-        "reponses": [
-          "L'aigle",
-          "L'autruche",
-          "Le condor",
-          "Le cygne"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel animal est incapable de vomir ?",
-        "reponses": [
-          "Le chien",
-          "Le chat",
-          "Le cheval",
-          "Le porc"
-        ],
-        "bonne": 2,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel animal marin possède cinq bras et n'a pas de cerveau ?",
-        "reponses": [
-          "L'étoile de mer",
-          "La pieuvre",
-          "Le calmar",
-          "La méduse"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel animal australien porte ses petits dans une poche ventrale ?",
-        "reponses": [
-          "Le kangourou",
-          "Le koala",
-          "Le wombat",
-          "Le diable de Tasmanie"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel mammifère terrestre est incapable de sauter ?",
-        "reponses": [
-          "Le cheval",
-          "L'éléphant",
-          "L'hippopotame",
-          "Le rhinocéros"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quelle est la vitesse maximale d'un guépard en pleine course (environ) ?",
-        "reponses": [
-          "80 km/h",
-          "100 km/h",
-          "110 km/h",
-          "140 km/h"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien de temps dure la gestation d'une girafe (environ) ?",
-        "reponses": [
-          "9 mois",
-          "12 mois",
-          "15 mois",
-          "18 mois"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Environ combien de plumes possède un cygne adulte ?",
-        "reponses": [
-          "5 000",
-          "10 000",
-          "25 000",
-          "50 000"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien de battements par minute le cœur d'un colibri peut-il atteindre ?",
-        "reponses": [
-          "Environ 500",
-          "Environ 800",
-          "Environ 1 200",
-          "Environ 2 000"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quelle méduse est dite « immortelle » car elle peut rajeunir indéfiniment ?",
-        "reponses": [
-          "La méduse-lune",
-          "Turritopsis dohrnii",
-          "La physalie",
-          "La méduse bleue"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quel oiseau est capable de dormir tout en volant ?",
-        "reponses": [
-          "Le martinet",
-          "L'hirondelle",
-          "Le faucon",
-          "Le hibou"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien d'osselets compte l'oreille moyenne humaine ?",
-        "reponses": [
-          "2",
-          "3",
-          "4",
-          "5"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien de litres de sang le cœur humain pompe-t-il par minute au repos (environ) ?",
-        "reponses": [
-          "2 litres",
-          "5 litres",
-          "10 litres",
-          "20 litres"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien de pattes possède un tardigrade ?",
-        "reponses": [
-          "6",
-          "8",
-          "10",
-          "12"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quelle vitesse un faucon pèlerin peut-il dépasser lors d'un piqué ?",
-        "reponses": [
-          "200 km/h",
-          "250 km/h",
-          "300 km/h",
-          "350 km/h"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Combien d'années une tortue géante des Galápagos peut-elle vivre ?",
-        "reponses": [
-          "Plus de 50 ans",
-          "Plus de 80 ans",
-          "Plus de 100 ans",
-          "Plus de 150 ans"
-        ],
-        "bonne": 3,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quel est le plus petit mammifère du monde en taille ?",
-        "reponses": [
-          "La musaraigne étrusque",
-          "La chauve-souris bourdon",
-          "Le panda roux",
-          "Le fennec"
-        ],
-        "bonne": 0,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quel poids atteint environ le cœur d'une girafe adulte ?",
-        "reponses": [
-          "5 kg",
-          "8 kg",
-          "11 kg",
-          "15 kg"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "Jusqu'à combien d'années peut vivre une reine de termites ?",
-        "reponses": [
-          "10 ans",
-          "20 ans",
-          "30 ans",
-          "50 ans"
-        ],
-        "bonne": 3,
-        "niveau": "dur"
-      }
-    ]
+      { "q": "Vrai ou faux : l'ananas pousse sur un arbre.", "reponses": ["Vrai","Faux"], "bonne": 1, "niveau": "facile", "info": "L'ananas pousse sur une plante herbacée." },
+      { "q": "Vrai ou faux : la banane est techniquement une baie.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "facile", "info": "Botaniquement oui. La fraise, non !" },
+      { "q": "Combien de pattes a une araignée ?", "reponses": ["6","8","10","12"], "bonne": 1, "niveau": "facile" },
+      { "q": "Vrai ou faux : les chiens voient en noir et blanc.", "reponses": ["Vrai","Faux"], "bonne": 1, "niveau": "facile", "info": "Faux : ils voient les couleurs, surtout le bleu et le jaune." },
+      { "q": "Combien de doigts sur une main ?", "reponses": ["4","5","6","10"], "bonne": 1, "niveau": "facile" },
+      { "q": "Combien de pattes a un insecte ?", "reponses": ["4","6","8","10"], "bonne": 1, "niveau": "facile" },
+      { "q": "Vrai ou faux : les chats ronronnent quand ils sont contents.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "facile", "info": "Mais ils ronronnent aussi quand ils sont stressés !" },
+      { "q": "Quel animal terrestre est le plus rapide du monde ?", "reponses": ["Le lion","Le guépard","Le cheval","L'aigle"], "bonne": 1, "niveau": "facile" },
+      { "q": "Vrai ou faux : l'eau bout à 100 °C (au niveau de la mer).", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "facile" },
+      { "q": "Combien d'heures par jour dort un koala en moyenne ?", "reponses": ["4 h","10 h","16 h","22 h"], "bonne": 3, "niveau": "moyen", "info": "Record de sommeil chez les animaux." },
+      { "q": "Combien de cœurs possède une pieuvre ?", "reponses": ["1","2","3","4"], "bonne": 2, "niveau": "moyen" },
+      { "q": "De quelle couleur est le lait de l'hippopotame ?", "reponses": ["Blanc","Rose","Vert","Jaune"], "bonne": 1, "niveau": "moyen", "info": "Rose, à cause d'acides sécrétés par sa peau !" },
+      { "q": "Combien de temps met le sang à faire le tour du corps ?", "reponses": ["10 secondes","Environ 1 minute","10 minutes","1 heure"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Quel animal dort debout ?", "reponses": ["Le chien","Le cheval","Le chat","Le lapin"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Combien de dents a un adulte (dents de sagesse comprises) ?", "reponses": ["28","30","32","34"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Vrai ou faux : les empreintes des koalas ressemblent aux nôtres.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "moyen", "info": "Tellement ressemblantes qu'elles ont trompé des experts !" },
+      { "q": "Combien d'os avait le corps humain à la naissance ?", "reponses": ["206","240","Environ 270","300"], "bonne": 2, "niveau": "dur", "info": "Certains fusionnent en grandissant pour arriver à 206." },
+      { "q": "Quel animal a le plus gros cœur ?", "reponses": ["L'éléphant","La girafe","La baleine bleue","Le requin baleine"], "bonne": 2, "niveau": "dur", "info": "Celui de la baleine bleue peut peser 200 kg." },
+      { "q": "En quelle année la structure de l'ADN a-t-elle été découverte ?", "reponses": ["1944","1953","1962","1971"], "bonne": 1, "niveau": "dur", "info": "Watson et Crick, prix Nobel 1962." },
+      { "q": "Quel est le record de longévité humaine confirmé ?", "reponses": ["110 ans","117 ans","122 ans","130 ans"], "bonne": 2, "niveau": "dur", "info": "Jeanne Calment, 122 ans et 164 jours." },
+      { "q": "Combien de cellules dans le corps humain (ordre de grandeur) ?", "reponses": ["1 milliard","100 milliards","37 000 milliards","1 000 000 milliards"], "bonne": 2, "niveau": "dur" },
+      { "q": "Quel animal détient le record de chromosomes ?", "reponses": ["L'humain","Le chien","Une fougère (Ophioglossum)","Le papillon"], "bonne": 2, "niveau": "dur", "info": "Plus de 1 200 paires de chromosomes !" },
+      { "q": "Combien de fois le cœur bat-il par jour en moyenne ?", "reponses": ["10 000","50 000","Environ 100 000","500 000"], "bonne": 2, "niveau": "dur" },
+      { "q": "Combien de pattes a un chien ?", "reponses": ["2","4","6","8"], "bonne": 1, "niveau": "facile" },
+      { "q": "Vrai ou faux : les girafes ont un cou très court.", "reponses": ["Vrai","Faux"], "bonne": 1, "niveau": "facile" },
+      { "q": "Quel animal fait « cocorico » ?", "reponses": ["La poule","Le coq","Le canard","Le dindon"], "bonne": 1, "niveau": "facile" },
+      { "q": "Quel animal vit dans une ruche ?", "reponses": ["L'ours","L'abeille","Le lapin","Le hérisson"], "bonne": 1, "niveau": "facile" },
+      { "q": "Vrai ou faux : l'escargot porte sa maison sur le dos.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "facile" },
+      { "q": "Quel animal fait « ouaf ouaf » ?", "reponses": ["Le chat","Le chien","La vache","Le lion"], "bonne": 1, "niveau": "facile" },
+      { "q": "Combien d'heures par jour dort un chat en moyenne ?", "reponses": ["2 h","6 h","12 à 16 h","22 h"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Vrai ou faux : les requins existaient avant les arbres.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "moyen", "info": "Les requins ont ~450 millions d'années, les arbres ~350 millions." },
+      { "q": "Combien de muscles dans le corps humain (environ) ?", "reponses": ["100","300","600","1000"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Quel oiseau ne sait pas voler ?", "reponses": ["L'aigle","Le hibou","L'autruche","Le colibri"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Vrai ou faux : le nez humain peut distinguer des milliers d'odeurs.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Combien de dents un requin perd-il au cours de sa vie ?", "reponses": ["Environ 100","Environ 1 000","Environ 30 000","500"], "bonne": 2, "niveau": "moyen", "info": "Elles repoussent toute sa vie !" },
+      { "q": "Quel animal peut changer de couleur ?", "reponses": ["Le chien","Le chat","Le caméléon","Le lion"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Combien de goûts de base existe-t-il ?", "reponses": ["3","4","5","7"], "bonne": 2, "niveau": "moyen", "info": "Sucré, salé, acide, amer et umami." },
+      { "q": "Jusqu'à combien de temps un escargot peut-il dormir ?", "reponses": ["1 mois","1 an","3 ans","10 ans"], "bonne": 2, "niveau": "moyen", "info": "En période de sécheresse, il hiberne." },
+      { "q": "La lumière va environ combien de fois plus vite que le son ?", "reponses": ["100 fois","1 000 fois","10 000 fois","Environ 880 000 fois"], "bonne": 3, "niveau": "dur", "info": "~300 000 km/s contre ~340 m/s." },
+      { "q": "Combien de cœurs possède un ver de terre ?", "reponses": ["0","1","5","10"], "bonne": 2, "niveau": "dur", "info": "5 paires de cœurs, soit 10 !" },
+      { "q": "Combien d'os dans un pied humain ?", "reponses": ["14","20","26","32"], "bonne": 2, "niveau": "dur" },
+      { "q": "Jusqu'à combien de battements d'ailes par seconde chez le colibri ?", "reponses": ["5","20","80","200"], "bonne": 2, "niveau": "dur" },
+      { "q": "Vrai ou faux : les pieuvres ont le sang bleu.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "dur", "info": "Leur sang contient de l'hémocyanine, à base de cuivre." },
+      { "q": "Combien de pattes a un crabe ?", "reponses": ["6","8","10","12"], "bonne": 2, "niveau": "facile" },
+      { "q": "Vrai ou faux : l'éléphant est le plus gros animal terrestre vivant.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "facile" },
+      { "q": "Quel animal dort suspendu la tête en bas ?", "reponses": ["La chauve-souris","Le paresseux","Le koala","Le lémurien"], "bonne": 0, "niveau": "facile" },
+      { "q": "Combien de bosses a un dromadaire ?", "reponses": ["1","2","3","4"], "bonne": 0, "niveau": "facile" },
+      { "q": "Vrai ou faux : la grenouille est un amphibien.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "facile" },
+      { "q": "Quel oiseau ne vole pas et vit en Antarctique ?", "reponses": ["L'autruche","Le manchot","Le kiwi","Le casoar"], "bonne": 1, "niveau": "facile" },
+      { "q": "Vrai ou faux : une poule peut voler sur de courtes distances.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "facile" },
+      { "q": "Quel animal est surnommé le 'roi des animaux' ?", "reponses": ["Le tigre","L'ours","Le lion","Le gorille"], "bonne": 2, "niveau": "facile" },
+      { "q": "Combien de vies dit-on qu'un chat possède ?", "reponses": ["3","5","7","9"], "bonne": 3, "niveau": "facile" },
+      { "q": "Combien de bras possède une étoile de mer classique ?", "reponses": ["4","5","6","8"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Environ combien de dents possède un escargot ?", "reponses": ["100","1 000","14 000","30 000"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Vrai ou faux : les dauphins dorment avec un seul hémisphère cérébral à la fois.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Combien d'heures par jour dort un lion en moyenne ?", "reponses": ["8","12","16","20"], "bonne": 3, "niveau": "moyen" },
+      { "q": "De quelle couleur est la peau de l'ours polaire (sous ses poils) ?", "reponses": ["Blanche","Rose","Noire","Grise"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Vrai ou faux : la crevette-mante possède la vue la plus complexe du règne animal.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Quel animal marin change de sexe au cours de sa vie ?", "reponses": ["Le requin","Le poisson-clown","Le dauphin","La raie"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Combien de bras a une pieuvre ?", "reponses": ["6","8","10","12"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Combien de mois dure la gestation d'une éléphante ?", "reponses": ["9","12","18","22"], "bonne": 3, "niveau": "moyen", "info": "La plus longue gestation des mammifères terrestres." },
+      { "q": "Vrai ou faux : l'hippopotame sécrète une sueur rougeâtre qui le protège du soleil.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Combien de chromosomes possède un chien ?", "reponses": ["38","58","78","98"], "bonne": 2, "niveau": "dur" },
+      { "q": "Quelle est la température corporelle normale du cheval ?", "reponses": ["37 °C","38 °C","39 °C","40 °C"], "bonne": 1, "niveau": "dur" },
+      { "q": "Combien d'os possède un requin ?", "reponses": ["0","50","100","206"], "bonne": 0, "niveau": "dur", "info": "Son squelette est en cartilage." },
+      { "q": "Quel vertébré marins détient un record de longévité de plusieurs siècles ?", "reponses": ["La tortue géante","Le requin du Groenland","Le crocodile","La baleine boréale"], "bonne": 1, "niveau": "dur", "info": "Plus de 400 ans pour certains individus." },
+      { "q": "Combien de temps faut-il environ pour cultiver une perle dans une huître ?", "reponses": ["3 mois","1 an","2 à 3 ans","10 ans"], "bonne": 2, "niveau": "dur" },
+      { "q": "Environ combien de papilles gustatives possède la langue humaine ?", "reponses": ["1 000","5 000","10 000","50 000"], "bonne": 2, "niveau": "dur" },
+      { "q": "Quelle est la vitesse du son dans l'air (au niveau de la mer, environ) ?", "reponses": ["120 m/s","343 m/s","500 m/s","1 000 m/s"], "bonne": 1, "niveau": "dur" },
+      { "q": "Combien d'années peut vivre un olivier ?", "reponses": ["100 ans","500 ans","Plus de 1 000 ans","5 000 ans"], "bonne": 2, "niveau": "dur" },
+      { "q": "Quel animal possède le plus gros cerveau en poids absolu ?", "reponses": ["L'éléphant","La baleine bleue","Le cachalot","L'orque"], "bonne": 2, "niveau": "dur" },
+      { "q": "À quelle profondeur maximale le cachalot peut-il plonger (environ) ?", "reponses": ["500 m","1 000 m","2 000 m","3 000 m"], "bonne": 3, "niveau": "dur" },
+      { "q": "Quel est le plus grand organe du corps humain ?", "reponses": ["Le cœur","Le foie","La peau","Le cerveau"], "bonne": 2, "niveau": "facile" },
+      { "q": "Combien d'heures de sommeil recommande-t-on à un adulte ?", "reponses": ["5 à 6","7 à 9","10 à 12","3 à 4"], "bonne": 1, "niveau": "facile" },
+      { "q": "Quel animal peut dormir debout ?", "reponses": ["Le cheval","Le chien","Le chat","Le lapin"], "bonne": 0, "niveau": "facile" },
+      { "q": "Combien de dents possède un adulte en général ?", "reponses": ["28","30","32","36"], "bonne": 2, "niveau": "facile" },
+      { "q": "Quel fruit porte ses graines à l'extérieur ?", "reponses": ["La fraise","La banane","La pomme","La poire"], "bonne": 0, "niveau": "facile" },
+      { "q": "Quel liquide est le plus abondant dans le corps humain ?", "reponses": ["L'eau","Le sang","La lymphe","La salive"], "bonne": 0, "niveau": "facile" },
+      { "q": "Quel animal change de couleur selon son humeur ?", "reponses": ["Le caméléon","Le zèbre","Le perroquet","Le lion"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Quel est l'ordre de grandeur du poids d'un gros nuage ?", "reponses": ["1 tonne","500 tonnes","500 000 tonnes","1 milliard de tonnes"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Quel grand oiseau d'Afrique ne sait pas voler ?", "reponses": ["L'autruche","Le flamant rose","Le pélican","Le vautour"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Quel est le seul mammifère capable de voler réellement ?", "reponses": ["La chauve-souris","L'écureuil volant","Le phalanger volant","La souris volante"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Combien de muscles environ faut-il pour sourire ?", "reponses": ["2","5","17","50"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Combien de fois le cœur humain bat-il en moyenne par jour ?", "reponses": ["10 000","50 000","100 000","500 000"], "bonne": 2, "niveau": "dur" },
+      { "q": "Quel animal détient le record du nombre de chromosomes ?", "reponses": ["Le chien","Une fougère, Ophioglossum","L'éléphant","L'être humain"], "bonne": 1, "niveau": "dur" },
+      { "q": "Combien de litres de salive produit-on en moyenne par jour ?", "reponses": ["0,2 L","1 L","5 L","10 L"], "bonne": 1, "niveau": "dur" },
+      { "q": "Quel est l'animal terrestre le plus rapide du monde ?", "reponses": ["Le guépard","Le faucon pèlerin","L'antilope","Le lévrier"], "bonne": 0, "niveau": "dur" },
+      { "q": "Combien d'os compte le corps d'un bébé à la naissance, environ ?", "reponses": ["206","270","300","150"], "bonne": 1, "niveau": "dur" },
+      { "q": "Quel insecte butine les fleurs et produit le miel ?", "reponses": ["Le papillon","La libellule","L'abeille","La guêpe"], "bonne": 2, "niveau": "facile" },
+      { "q": "De quelle couleur est la langue de la girafe ?", "reponses": ["Rose","Rouge","Bleue","Verte"], "bonne": 2, "niveau": "facile" },
+      { "q": "Quel insecte peut survivre plusieurs semaines sans sa tête ?", "reponses": ["La mouche","Le cafard","La sauterelle","L'abeille"], "bonne": 1, "niveau": "facile" },
+      { "q": "Outre les cheveux, quelle partie du corps continue de pousser toute la vie ?", "reponses": ["Les ongles","Les dents","Les os","La peau"], "bonne": 0, "niveau": "facile" },
+      { "q": "Quel oiseau pond le plus gros œuf du monde ?", "reponses": ["L'aigle","L'autruche","Le condor","Le cygne"], "bonne": 1, "niveau": "facile" },
+      { "q": "Quel animal est incapable de vomir ?", "reponses": ["Le chien","Le chat","Le cheval","Le porc"], "bonne": 2, "niveau": "facile" },
+      { "q": "Quel animal marin possède cinq bras et n'a pas de cerveau ?", "reponses": ["L'étoile de mer","La pieuvre","Le calmar","La méduse"], "bonne": 0, "niveau": "facile" },
+      { "q": "Quel animal australien porte ses petits dans une poche ventrale ?", "reponses": ["Le kangourou","Le koala","Le wombat","Le diable de Tasmanie"], "bonne": 0, "niveau": "facile" },
+      { "q": "Quel mammifère terrestre est incapable de sauter ?", "reponses": ["Le cheval","L'éléphant","L'hippopotame","Le rhinocéros"], "bonne": 1, "niveau": "facile" },
+      { "q": "Quelle est la vitesse maximale d'un guépard en pleine course (environ) ?", "reponses": ["80 km/h","100 km/h","110 km/h","140 km/h"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Combien de temps dure la gestation d'une girafe (environ) ?", "reponses": ["9 mois","12 mois","15 mois","18 mois"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Environ combien de plumes possède un cygne adulte ?", "reponses": ["5 000","10 000","25 000","50 000"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Combien de battements par minute le cœur d'un colibri peut-il atteindre ?", "reponses": ["Environ 500","Environ 800","Environ 1 200","Environ 2 000"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Quelle méduse est dite « immortelle » car elle peut rajeunir indéfiniment ?", "reponses": ["La méduse-lune","Turritopsis dohrnii","La physalie","La méduse bleue"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Quel oiseau est capable de dormir tout en volant ?", "reponses": ["Le martinet","L'hirondelle","Le faucon","Le hibou"], "bonne": 0, "niveau": "moyen" },
+      { "q": "Combien d'osselets compte l'oreille moyenne humaine ?", "reponses": ["2","3","4","5"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Combien de litres de sang le cœur humain pompe-t-il par minute au repos (environ) ?", "reponses": ["2 litres","5 litres","10 litres","20 litres"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Combien de pattes possède un tardigrade ?", "reponses": ["6","8","10","12"], "bonne": 1, "niveau": "dur" },
+      { "q": "Quelle vitesse un faucon pèlerin peut-il dépasser lors d'un piqué ?", "reponses": ["200 km/h","250 km/h","300 km/h","350 km/h"], "bonne": 2, "niveau": "dur" },
+      { "q": "Combien d'années une tortue géante des Galápagos peut-elle vivre ?", "reponses": ["Plus de 50 ans","Plus de 80 ans","Plus de 100 ans","Plus de 150 ans"], "bonne": 3, "niveau": "dur" },
+      { "q": "Quel est le plus petit mammifère du monde en taille ?", "reponses": ["La musaraigne étrusque","La chauve-souris bourdon","Le panda roux","Le fennec"], "bonne": 0, "niveau": "dur" },
+      { "q": "Quel poids atteint environ le cœur d'une girafe adulte ?", "reponses": ["5 kg","8 kg","11 kg","15 kg"], "bonne": 2, "niveau": "dur" },
+      { "q": "Jusqu'à combien d'années peut vivre une reine de termites ?", "reponses": ["10 ans","20 ans","30 ans","50 ans"], "bonne": 3, "niveau": "dur" },
+    ],
   },
   {
     id: "espace",
+    nom: undefined,
+    icone: undefined,
+    couleur: undefined,
     questions: [
-      {
-        "q": "Vrai ou faux : un jour sur Vénus dure plus longtemps qu'une année.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "moyen",
-        "info": "Vénus tourne très lentement sur elle-même."
-      },
-      {
-        "q": "Quelle planète est surnommée la planète rouge ?",
-        "reponses": [
-          "Vénus",
-          "Jupiter",
-          "Mars",
-          "Saturne"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quelle planète possède le plus de lunes connues ?",
-        "reponses": [
-          "Jupiter",
-          "Saturne",
-          "Uranus",
-          "Neptune"
-        ],
-        "bonne": 1,
-        "niveau": "dur",
-        "info": "Saturne dépasse Jupiter depuis les découvertes récentes."
-      },
-      {
-        "q": "Combien de temps met la lumière du Soleil pour nous parvenir ?",
-        "reponses": [
-          "1 seconde",
-          "Environ 8 minutes",
-          "1 heure",
-          "8 heures"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Vrai ou faux : la Terre est ronde.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel est l'élément chimique le plus abondant dans l'univers ?",
-        "reponses": [
-          "L'oxygène",
-          "L'hydrogène",
-          "Le carbone",
-          "L'hélium"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quelle est la planète la plus chaude du système solaire ?",
-        "reponses": [
-          "Mercure",
-          "Vénus",
-          "Mars",
-          "Jupiter"
-        ],
-        "bonne": 1,
-        "niveau": "dur",
-        "info": "Vénus (~460 °C) dépasse Mercure grâce à son effet de serre."
-      },
-      {
-        "q": "Vrai ou faux : il pleuvrait des diamants sur Neptune et Uranus.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "dur",
-        "info": "Hypothèse des chercheurs : le méthane s'y transformerait en diamants."
-      },
-      {
-        "q": "Combien de galaxies dans l'univers observable (estimation) ?",
-        "reponses": [
-          "100 000",
-          "1 million",
-          "10 milliards",
-          "2 000 milliards"
-        ],
-        "bonne": 3,
-        "niveau": "dur"
-      },
-      {
-        "q": "Quelle planète possède des anneaux très visibles ?",
-        "reponses": [
-          "Saturne",
-          "Mars",
-          "Vénus",
-          "Mercure"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Combien de temps met la lumière du Soleil pour arriver jusqu'à la Terre ?",
-        "reponses": [
-          "2 minutes",
-          "8 minutes",
-          "20 minutes",
-          "1 heure"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quelle planète tourne sur elle-même à l'envers par rapport aux autres ?",
-        "reponses": [
-          "Mars",
-          "Vénus",
-          "Jupiter",
-          "Saturne"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien de temps met la Terre pour faire le tour du Soleil ?",
-        "reponses": [
-          "24 heures",
-          "30 jours",
-          "365 jours",
-          "12 ans"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Quelle est la planète la plus chaude du système solaire ?",
-        "reponses": [
-          "Vénus",
-          "Mercure",
-          "Mars",
-          "Jupiter"
-        ],
-        "bonne": 0,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien de temps dure une année sur Neptune, en années terrestres ?",
-        "reponses": [
-          "30 ans",
-          "84 ans",
-          "165 ans",
-          "12 ans"
-        ],
-        "bonne": 2,
-        "niveau": "dur"
-      },
-      {
-        "q": "À quelle vitesse la Terre tourne-t-elle autour du Soleil, environ ?",
-        "reponses": [
-          "3 km/s",
-          "30 km/s",
-          "300 km/s",
-          "3 000 km/s"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "Combien de temps met Vénus pour tourner sur elle-même ?",
-        "reponses": [
-          "24 heures",
-          "243 jours terrestres",
-          "365 jours",
-          "88 jours"
-        ],
-        "bonne": 1,
-        "niveau": "dur"
-      },
-      {
-        "q": "À quelle vitesse la Terre tourne-t-elle sur elle-même à l'équateur (environ) ?",
-        "reponses": [
-          "1 000 km/h",
-          "1 670 km/h",
-          "3 000 km/h",
-          "5 400 km/h"
-        ],
-        "bonne": 1,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Combien de temps un photon met-il en moyenne à sortir du Soleil après sa création dans le cœur ?",
-        "reponses": [
-          "Environ 8 minutes",
-          "Environ 1 000 ans",
-          "Environ 10 000 ans",
-          "Environ 100 000 ans"
-        ],
-        "bonne": 3,
-        "niveau": "dur"
-      }
-    ]
+      { "q": "Vrai ou faux : un jour sur Vénus dure plus longtemps qu'une année.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "moyen", "info": "Vénus tourne très lentement sur elle-même." },
+      { "q": "Quelle planète est surnommée la planète rouge ?", "reponses": ["Vénus","Jupiter","Mars","Saturne"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Quelle planète possède le plus de lunes connues ?", "reponses": ["Jupiter","Saturne","Uranus","Neptune"], "bonne": 1, "niveau": "dur", "info": "Saturne dépasse Jupiter depuis les découvertes récentes." },
+      { "q": "Combien de temps met la lumière du Soleil pour nous parvenir ?", "reponses": ["1 seconde","Environ 8 minutes","1 heure","8 heures"], "bonne": 1, "niveau": "dur" },
+      { "q": "Vrai ou faux : la Terre est ronde.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "facile" },
+      { "q": "Quel est l'élément chimique le plus abondant dans l'univers ?", "reponses": ["L'oxygène","L'hydrogène","Le carbone","L'hélium"], "bonne": 1, "niveau": "dur" },
+      { "q": "Quelle est la planète la plus chaude du système solaire ?", "reponses": ["Mercure","Vénus","Mars","Jupiter"], "bonne": 1, "niveau": "dur", "info": "Vénus (~460 °C) dépasse Mercure grâce à son effet de serre." },
+      { "q": "Vrai ou faux : il pleuvrait des diamants sur Neptune et Uranus.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "dur", "info": "Hypothèse des chercheurs : le méthane s'y transformerait en diamants." },
+      { "q": "Combien de galaxies dans l'univers observable (estimation) ?", "reponses": ["100 000","1 million","10 milliards","2 000 milliards"], "bonne": 3, "niveau": "dur" },
+      { "q": "Quelle planète possède des anneaux très visibles ?", "reponses": ["Saturne","Mars","Vénus","Mercure"], "bonne": 0, "niveau": "facile" },
+      { "q": "Combien de temps met la lumière du Soleil pour arriver jusqu'à la Terre ?", "reponses": ["2 minutes","8 minutes","20 minutes","1 heure"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Quelle planète tourne sur elle-même à l'envers par rapport aux autres ?", "reponses": ["Mars","Vénus","Jupiter","Saturne"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Combien de temps met la Terre pour faire le tour du Soleil ?", "reponses": ["24 heures","30 jours","365 jours","12 ans"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Combien de temps dure une année sur Neptune, en années terrestres ?", "reponses": ["30 ans","84 ans","165 ans","12 ans"], "bonne": 2, "niveau": "dur" },
+      { "q": "À quelle vitesse la Terre tourne-t-elle autour du Soleil, environ ?", "reponses": ["3 km/s","30 km/s","300 km/s","3 000 km/s"], "bonne": 1, "niveau": "dur" },
+      { "q": "Combien de temps met Vénus pour tourner sur elle-même ?", "reponses": ["24 heures","243 jours terrestres","365 jours","88 jours"], "bonne": 1, "niveau": "dur" },
+      { "q": "À quelle vitesse la Terre tourne-t-elle sur elle-même à l'équateur (environ) ?", "reponses": ["1 000 km/h","1 670 km/h","3 000 km/h","5 400 km/h"], "bonne": 1, "niveau": "moyen" },
+      { "q": "Combien de temps un photon met-il en moyenne à sortir du Soleil après sa création dans le cœur ?", "reponses": ["Environ 8 minutes","Environ 1 000 ans","Environ 10 000 ans","Environ 100 000 ans"], "bonne": 3, "niveau": "dur" },
+    ],
   },
   {
     id: "cuisine",
+    nom: undefined,
+    icone: undefined,
+    couleur: undefined,
     questions: [
-      {
-        "q": "Quel repas prend-on le matin ?",
-        "reponses": [
-          "Le dîner",
-          "Le goûter",
-          "Le petit-déjeuner",
-          "Le souper"
-        ],
-        "bonne": 2,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel repas prend-on à midi ?",
-        "reponses": [
-          "Le petit-déjeuner",
-          "Le goûter",
-          "Le déjeuner",
-          "Le dîner"
-        ],
-        "bonne": 2,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel fruit croquant a souvent des pépins et existe en rouge ou en vert ?",
-        "reponses": [
-          "La poire",
-          "La pomme",
-          "La pêche",
-          "Le raisin"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Vrai ou faux : le chocolat est fabriqué à partir de cacao.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quel pays est à l'origine des sushis ?",
-        "reponses": [
-          "La Chine",
-          "La Corée du Sud",
-          "Le Japon",
-          "La Thaïlande"
-        ],
-        "bonne": 2,
-        "niveau": "moyen"
-      },
-      {
-        "q": "Vrai ou faux : le miel ne périme jamais.",
-        "reponses": [
-          "Vrai",
-          "Faux"
-        ],
-        "bonne": 0,
-        "niveau": "facile",
-        "info": "On a retrouvé du miel de 3 000 ans encore comestible !"
-      },
-      {
-        "q": "Quel fruit est jaune et courbé ?",
-        "reponses": [
-          "La pomme",
-          "La banane",
-          "La cerise",
-          "Le raisin"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "Quelle boisson est la plus consommée au monde après l'eau ?",
-        "reponses": [
-          "Le café",
-          "Le thé",
-          "Le lait",
-          "Le jus d'orange"
-        ],
-        "bonne": 1,
-        "niveau": "facile"
-      },
-      {
-        "q": "De quelle couleur devient le homard à la cuisson ?",
-        "reponses": [
-          "Vert",
-          "Bleu",
-          "Rouge",
-          "Noir"
-        ],
-        "bonne": 2,
-        "niveau": "facile"
-      }
-    ]
-  }
+      { "q": "Quel repas prend-on le matin ?", "reponses": ["Le dîner","Le goûter","Le petit-déjeuner","Le souper"], "bonne": 2, "niveau": "facile" },
+      { "q": "Quel repas prend-on à midi ?", "reponses": ["Le petit-déjeuner","Le goûter","Le déjeuner","Le dîner"], "bonne": 2, "niveau": "facile" },
+      { "q": "Quel fruit croquant a souvent des pépins et existe en rouge ou en vert ?", "reponses": ["La poire","La pomme","La pêche","Le raisin"], "bonne": 1, "niveau": "facile" },
+      { "q": "Vrai ou faux : le chocolat est fabriqué à partir de cacao.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "facile" },
+      { "q": "Quel pays est à l'origine des sushis ?", "reponses": ["La Chine","La Corée du Sud","Le Japon","La Thaïlande"], "bonne": 2, "niveau": "moyen" },
+      { "q": "Vrai ou faux : le miel ne périme jamais.", "reponses": ["Vrai","Faux"], "bonne": 0, "niveau": "facile", "info": "On a retrouvé du miel de 3 000 ans encore comestible !" },
+      { "q": "Quel fruit est jaune et courbé ?", "reponses": ["La pomme","La banane","La cerise","Le raisin"], "bonne": 1, "niveau": "facile" },
+      { "q": "Quelle boisson est la plus consommée au monde après l'eau ?", "reponses": ["Le café","Le thé","Le lait","Le jus d'orange"], "bonne": 1, "niveau": "facile" },
+      { "q": "De quelle couleur devient le homard à la cuisson ?", "reponses": ["Vert","Bleu","Rouge","Noir"], "bonne": 2, "niveau": "facile" },
+    ],
+  },
 ];

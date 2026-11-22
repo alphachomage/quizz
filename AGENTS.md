@@ -117,3 +117,11 @@ npx wrangler deploy --dry-run   # valide worker.ts + wrangler.toml sans déploye
 | Écrans détaillés | `docs/features/` |
 
 Le client n'est pas développeur : `README.md` (racine) reste le guide pas à pas.
+
+## Dédoublonnage du corpus (fait le 2026-11-22)
+
+- `node scripts/dedupe-questions.mjs` : supprime les doublons exacts (même question normalisée
+  dans le même thème, comme `npm run count:questions`), garde la 1ère occurrence, réécrit
+  uniquement les fichiers concernés (en-tête et nom d'export conservés).
+  Résultat : 73 doublons supprimés, `doublons exacts : 0`, 13 488 questions, 12 thèmes actifs ≥ 1079.
+  Sauvegarde des données avant run : `backups/data-avant-dedup-*`.
