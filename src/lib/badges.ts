@@ -55,6 +55,8 @@ export interface BadgeStats {
   recordDuel: number;
   maxNiveauTheme: number;
   nbThemesNiv3: number;
+  /** Niveau par thème (id du thème -> niveau), pour les badges liés à un thème précis. */
+  themeLevels: Record<string, number>;
   dailyStreak: number;
   nbProposees: number;
   approvedCount: number;
@@ -112,7 +114,10 @@ export function badgeStats(data?: BadgeStatsInput): BadgeStats {
         .map(([, v]) => v)
     );
   const levels = Object.values(xp).map((v) => themeLevel(v));
+  const themeLevels: Record<string, number> = {};
+  for (const [id, v] of Object.entries(xp)) themeLevels[id] = themeLevel(v || 0);
   return {
+    themeLevels,
     games: games.length,
     repondues,
     bonnes,
@@ -349,9 +354,73 @@ export const BADGES: BadgeDef[] = [
   {
     id: 'themes-12',
     nom: 'Tour du monde',
-    desc: 'Jouer dans les 12 thèmes',
+    desc: 'Jouer dans 12 thèmes différents',
     icone: 'planet',
     test: (s) => s.playedThemes >= 12,
+  },
+  {
+    id: 'themes-16',
+    nom: 'Omniprésent',
+    desc: 'Jouer dans les 16 thèmes',
+    icone: 'globe',
+    test: (s) => s.playedThemes >= 16,
+  },
+  // --- Badges des 4 nouveaux thèmes (niveau 3 puis 5 sur le thème) ---
+  {
+    id: 'theme-technologie-3',
+    nom: 'Geek confirmé',
+    desc: 'Niveau 3 sur le thème Technologie & Internet',
+    icone: 'chip',
+    test: (s) => (s.themeLevels['technologie'] || 0) >= 3,
+  },
+  {
+    id: 'theme-technologie-5',
+    nom: 'Expert du web',
+    desc: 'Niveau 5 sur le thème Technologie & Internet',
+    icone: 'chip',
+    test: (s) => (s.themeLevels['technologie'] || 0) >= 5,
+  },
+  {
+    id: 'theme-nature-3',
+    nom: 'Ranger confirmé',
+    desc: 'Niveau 3 sur le thème Nature & Animaux',
+    icone: 'paw',
+    test: (s) => (s.themeLevels['nature'] || 0) >= 3,
+  },
+  {
+    id: 'theme-nature-5',
+    nom: 'Naturaliste confirmé',
+    desc: 'Niveau 5 sur le thème Nature & Animaux',
+    icone: 'paw',
+    test: (s) => (s.themeLevels['nature'] || 0) >= 5,
+  },
+  {
+    id: 'theme-economie-3',
+    nom: 'Businessman',
+    desc: 'Niveau 3 sur le thème Économie & Marques',
+    icone: 'coins',
+    test: (s) => (s.themeLevels['economie'] || 0) >= 3,
+  },
+  {
+    id: 'theme-economie-5',
+    nom: 'Requin de la finance',
+    desc: 'Niveau 5 sur le thème Économie & Marques',
+    icone: 'coins',
+    test: (s) => (s.themeLevels['economie'] || 0) >= 5,
+  },
+  {
+    id: 'theme-auto-3',
+    nom: 'Pilote confirmé',
+    desc: 'Niveau 3 sur le thème Voitures & Auto-moto',
+    icone: 'car',
+    test: (s) => (s.themeLevels['auto'] || 0) >= 3,
+  },
+  {
+    id: 'theme-auto-5',
+    nom: 'As du volant',
+    desc: 'Niveau 5 sur le thème Voitures & Auto-moto',
+    icone: 'car',
+    test: (s) => (s.themeLevels['auto'] || 0) >= 5,
   },
   {
     id: 'propose-1',
@@ -405,6 +474,15 @@ const PROGRES_BADGES: Record<string, (s: BadgeStats) => [number, number]> = {
   'niveau-10': (s) => [s.maxNiveauTheme, 10],
   'themes-5': (s) => [s.playedThemes, 5],
   'themes-12': (s) => [s.playedThemes, 12],
+  'themes-16': (s) => [s.playedThemes, 16],
+  'theme-technologie-3': (s) => [s.themeLevels['technologie'] || 0, 3],
+  'theme-technologie-5': (s) => [s.themeLevels['technologie'] || 0, 5],
+  'theme-nature-3': (s) => [s.themeLevels['nature'] || 0, 3],
+  'theme-nature-5': (s) => [s.themeLevels['nature'] || 0, 5],
+  'theme-economie-3': (s) => [s.themeLevels['economie'] || 0, 3],
+  'theme-economie-5': (s) => [s.themeLevels['economie'] || 0, 5],
+  'theme-auto-3': (s) => [s.themeLevels['auto'] || 0, 3],
+  'theme-auto-5': (s) => [s.themeLevels['auto'] || 0, 5],
   'propose-1': (s) => [s.nbProposees + s.approvedCount, 1],
   'validees-3': (s) => [s.approvedCount, 3],
 };

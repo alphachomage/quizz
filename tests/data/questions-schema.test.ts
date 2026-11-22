@@ -11,9 +11,29 @@ const THEMES = await loadThemes();
 
 const NIVEAUX_VALIDES = LEVELS.map((n) => n.id);
 
+// Les 12 thèmes historiques doivent rester >= 1000 questions ; les 4 thèmes ajoutés
+// en 2026-11 (technologie, nature, economie, auto) démarrent avec un pack de 40 et
+// sont complétés jusqu'à 1000 par vagues (sous-agents, fichiers questions-vague-*.js).
+const THEMES_HISTORIQUES = [
+  'culture-generale',
+  'cinema-series',
+  'musique',
+  'sport',
+  'jeux-videos',
+  'geographie',
+  'cuisine',
+  'espace',
+  'histoire',
+  'mythologie',
+  'sciences',
+  'mangas-animes',
+];
+const NOUVEAUX_THEMES = ['technologie', 'nature', 'economie', 'auto'];
+
 describe('corpus de questions intégré', () => {
-  it('contient 12 thèmes actifs', () => {
-    expect(THEMES.length).toBe(12);
+  it('contient 16 thèmes actifs (12 historiques + 4 nouveaux)', () => {
+    expect(THEMES.length).toBe(16);
+    for (const id of NOUVEAUX_THEMES) expect(THEMES.some((t) => t.id === id)).toBe(true);
   });
 
   it('chaque thème a un id, un nom, une icône et une couleur', () => {
@@ -26,9 +46,10 @@ describe('corpus de questions intégré', () => {
     }
   });
 
-  it('chaque thème compte au moins 1000 questions', () => {
+  it('les 12 thèmes historiques comptent au moins 1000 questions, les 4 nouveaux au moins 40 (pack de départ)', () => {
     for (const t of THEMES) {
-      expect(t.questions.length).toBeGreaterThanOrEqual(1000);
+      if (THEMES_HISTORIQUES.includes(t.id)) expect(t.questions.length).toBeGreaterThanOrEqual(1000);
+      else expect(t.questions.length).toBeGreaterThanOrEqual(40);
     }
   });
 
@@ -49,7 +70,7 @@ describe('corpus de questions intégré', () => {
         for (const r of q.reponses) expect(typeof r).toBe('string');
       }
     }
-    expect(total).toBeGreaterThan(12000);
+    expect(total).toBeGreaterThan(13300);
   });
 
   it('compte les doublons exacts (héritage des premiers lots, < 150 tolérés)', () => {

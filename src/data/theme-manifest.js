@@ -2,6 +2,12 @@
 // Métadonnées des thèmes SANS les questions : chunk initial léger, questions lazy.
 export const THEME_MANIFEST = [
   {
+    "id": "auto",
+    "nom": "Voitures & Auto-moto",
+    "icone": "car",
+    "couleur": "#fb7185"
+  },
+  {
     "id": "culture-generale",
     "nom": "Culture générale",
     "icone": "globe",
@@ -56,6 +62,12 @@ export const THEME_MANIFEST = [
     "couleur": "#fb923c"
   },
   {
+    "id": "economie",
+    "nom": "Économie & Marques",
+    "icone": "coins",
+    "couleur": "#fbbf24"
+  },
+  {
     "id": "espace",
     "nom": "Espace",
     "icone": "planet",
@@ -80,11 +92,23 @@ export const THEME_MANIFEST = [
     "couleur": "#fbbf24"
   },
   {
+    "id": "nature",
+    "nom": "Nature & Animaux",
+    "icone": "paw",
+    "couleur": "#4ade80"
+  },
+  {
     "id": "sciences",
     "nom": "sciences",
     "icone": "question",
     "couleur": "#8b5cf6"
+  },
+  {
+    "id": "technologie",
+    "nom": "Technologie & Internet",
+    "icone": "chip",
+    "couleur": "#38bdf8"
   }
 ];
 // Version du corpus (hash des fichiers questions-*.js) : invalidation du cache IndexedDB.
-export const CORPUS_VERSION = "bc84b57fc797a6b9";
+export const CORPUS_VERSION = "2063f1d43ddb1f42";

@@ -360,6 +360,51 @@ const CHEMINS: Record<string, ReactNode> = {
       <line x1="7" y1="11" x2="13" y2="11" />
     </>
   ),
+  chip: (
+    // puce électronique (technologie & internet)
+    <>
+      <rect x="6" y="6" width="12" height="12" rx="2" />
+      <rect x="10" y="10" width="4" height="4" rx="1" />
+      <line x1="9" y1="2.5" x2="9" y2="6" />
+      <line x1="15" y1="2.5" x2="15" y2="6" />
+      <line x1="9" y1="18" x2="9" y2="21.5" />
+      <line x1="15" y1="18" x2="15" y2="21.5" />
+      <line x1="2.5" y1="9" x2="6" y2="9" />
+      <line x1="2.5" y1="15" x2="6" y2="15" />
+      <line x1="18" y1="9" x2="21.5" y2="9" />
+      <line x1="18" y1="15" x2="21.5" y2="15" />
+    </>
+  ),
+  paw: (
+    // patte d'animal (nature & animaux)
+    <>
+      <circle cx="5.5" cy="10" r="2" />
+      <circle cx="9.5" cy="5.5" r="2" />
+      <circle cx="14.5" cy="5.5" r="2" />
+      <circle cx="18.5" cy="10" r="2" />
+      <path d="M12 11c-3 0-5.5 2.5-5.5 5a2.75 2.75 0 0 0 5.5.5 2.75 2.75 0 0 0 5.5-.5c0-2.5-2.5-5-5.5-5z" />
+    </>
+  ),
+  coins: (
+    // pièces empilées (économie & marques)
+    <>
+      <ellipse cx="12" cy="6" rx="7" ry="3" />
+      <path d="M5 6v6c0 1.66 3.13 3 7 3s7-1.34 7-3V6" />
+      <path d="M5 12v6c0 1.66 3.13 3 7 3s7-1.34 7-3v-6" />
+    </>
+  ),
+  car: (
+    // voiture (voitures & auto-moto)
+    <>
+      <path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11" />
+      <path d="M3 11h18a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-1" />
+      <path d="M3 11a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h1" />
+      <circle cx="7.5" cy="17" r="2" />
+      <circle cx="16.5" cy="17" r="2" />
+      <line x1="9.5" y1="17" x2="14.5" y2="17" />
+      <line x1="3" y1="13" x2="21" y2="13" />
+    </>
+  ),
 };
 
 interface IconProps {

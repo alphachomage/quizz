@@ -52,6 +52,10 @@ voir `docs/questions.md`). Source de vérité : `npm run count:questions` + `src
 | pop-culture | `#e879f9` | non (retiré) |
 | sciences | `#2dd4bf` | oui |
 | sport | `#4ade80` | oui |
+| technologie | `#38bdf8` | oui (ajout 2026-11) |
+| nature | `#4ade80` | oui (ajout 2026-11) |
+| economie | `#fbbf24` | oui (ajout 2026-11) |
+| auto | `#fb7185` | oui (ajout 2026-11) |
 
 ## Mise en page actuelle (« épuré »)
 

@@ -23,6 +23,10 @@ const TITLES_PER_THEME: Record<string, [string, string, string]> = {
   mythologie: ['Conteur de mythes', 'Prêtre des anciens', 'Oracle'],
   sciences: ['Apprenti savant', 'Chercheur', 'Prix Nobel'],
   'mangas-animes': ['Otaku', 'Sensei', 'Légende du manga'],
+  technologie: ['Geek', 'Développeur', 'Visionnaire du web'],
+  nature: ['Ranger', 'Naturaliste', 'Esprit de la forêt'],
+  economie: ['Petit trader', 'Homme d’affaires', 'Requin de la finance'],
+  auto: ['Pilote du dimanche', 'Pilote confirmé', 'Roi du bitume'],
 };
 const TITLE_TIERS: number[] = [3, 5, 10];
 
