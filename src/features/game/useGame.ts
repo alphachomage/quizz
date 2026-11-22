@@ -119,7 +119,7 @@ export function useGame({ config, prefs, onFinish }: UseGameParams): GameState {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questions.length]);
-  const { time, setTime } = useTimer(phase === 'question', SECONDS_PER_QUESTION, () => answer(null));
+  const { time, reset } = useTimer(phase === 'question', SECONDS_PER_QUESTION, () => answer(null));
 
   // Ambiance sonore de la partie (nappe douce), selon le réglage « Musique de fond ».
   const musicOn = !!(prefs && prefs.music !== false);
@@ -230,7 +230,7 @@ export function useGame({ config, prefs, onFinish }: UseGameParams): GameState {
     setTimeout(() => setConfettis([]), 1500);
   }
   function suivant() {
-    setTime(SECONDS_PER_QUESTION);
+    reset();
     setSelection(null);
     // En survie, la première mauvaise réponse (ou le temps écoulé) termine la partie.
     if (mode === 'survie' && !lastCorrect) return finir();
@@ -249,7 +249,7 @@ export function useGame({ config, prefs, onFinish }: UseGameParams): GameState {
     }
   }
   function pret() {
-    setTime(SECONDS_PER_QUESTION);
+    reset();
     setPhase('question');
   }
 

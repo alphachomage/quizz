@@ -69,8 +69,8 @@
   height: 100%;
   border-radius: var(--radius-pilule);
   transition:
-    width 1s linear,
-    background var(--dur-standard) ease; /* 1 setState/s côté JS, lissé ici */
+    width 100ms linear,
+    background var(--dur-standard) ease; /* temps réel côté JS (10 maj/s), lissage court ici */
 }
 
 .minuteur-pts {
