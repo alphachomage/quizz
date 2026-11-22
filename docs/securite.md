@@ -47,9 +47,14 @@ manifest, JSON ; `public, max-age=31536000, immutable` sur `/assets/*` (hashés)
   (jamais celui du body ni de l'URL), un client ne peut pas usurper un autre compte.
 - **Routes ouvertes** (pas de session) : `/api/ping`, `/api/health`, `/api/csp-report`,
   `/api/auth/*`. Toutes les autres (`/api/kv/*`, `/api/parties`, `/api/records`,
-  `/api/xp`, `/api/soumissions`, `/api/room*`, `/api/duel/*`, `/api/admin/check`,
-  `/api/stats`) exigent une session ; `/api/soumissions` GET et `/api/admin/check`
-  exigent en plus `admin = 1` sur le compte.
+  `/api/xp`, `/api/soumissions`, `/api/soumissions/valider|refuser`, `/api/questions`,
+  `/api/room*`, `/api/duel/*`, `/api/admin/check`,
+  `/api/stats`) exigent une session ; `GET /api/soumissions`, `POST /api/soumissions/valider|refuser`
+  et `/api/admin/check` exigent en plus `admin = 1` sur le compte.
+- **Corpus communautaire** : `GET /api/questions?themeId=&page=&limit=` (session) renvoie
+  les soumissions `etat='validee'` paginées (limite max 100), `reponses` parsé côté serveur,
+  lignes illisibles ignorées ; `POST /api/soumissions/valider|refuser` (admin) passe l'état
+  à `validee`/`refusee`. Le client valide chaque ligne reçue par zod avant usage.
 - **Accès admin** : `?admin=1` exige une session compte (pas invité) avec **`admin = 1`
   dans la table D1 `comptes`** (migration `0003_admin_flag.sql`), vérifié via
   `GET /api/admin/check` (le pseudo vient du **token**, pas d'un paramètre — on ne peut

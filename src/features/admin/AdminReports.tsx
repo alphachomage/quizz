@@ -5,6 +5,7 @@ import { loadReports, removeReport, clearReports, markReport } from '@lib/report
 import type { ReportStatut, StoredReport } from '@lib/reports.js';
 import { loadSuggestions, removeSuggestion } from '@lib/suggestions.js';
 import type { StoredSuggestion } from '@lib/suggestions.js';
+import { loadSubmissions, refuseSubmission } from '@lib/submissions.js';
 import { setOverride } from '@lib/overrides.js';
 import { normalizeQuestionText } from '@lib/text.js';
 import type { Question, Submission, Theme } from '@lib/types.js';
@@ -27,7 +28,6 @@ interface AdminReportsProps {
   submissions: Submission[];
   approvedCount: number;
   onApproveSubmission: (id: string) => void;
-  onDeleteSubmission: (id: string) => void;
   onExportApproved: () => void;
 }
 
@@ -37,11 +37,11 @@ export default function AdminReports({
   submissions,
   approvedCount,
   onApproveSubmission,
-  onDeleteSubmission,
   onExportApproved,
 }: AdminReportsProps): ReactElement {
   const [signales, setSignales] = useState<StoredReport[]>(() => loadReports());
   const [suggestions, setSuggestions] = useState<StoredSuggestion[]>(() => loadSuggestions());
+  const [subs, setSubs] = useState<Submission[]>(() => submissions);
   // Question en cours d'édition (override "modifier") : { report, question trouvée dans le corpus }.
   const [editing, setEditing] = useState<{ report: StoredReport; question: Question } | null>(null);
   function removeSuggestionN(id: string): void {
@@ -59,6 +59,11 @@ export default function AdminReports({
   function remove(q: string): void {
     removeReport(q);
     setSignales(loadReports());
+  }
+  // Refuse une proposition : retirée localement + etat='refusee' côté serveur (mode d1).
+  function refuse(id: string): void {
+    refuseSubmission(id);
+    setSubs(loadSubmissions());
   }
 
   // Vérification manuelle d'une question signalée :
@@ -158,11 +163,11 @@ export default function AdminReports({
         )}
 
         <ProposedSection
-          submissions={submissions}
+          submissions={subs}
           approvedCount={approvedCount}
           themeName={themeName}
           onApprove={onApproveSubmission}
-          onDelete={onDeleteSubmission}
+          onRefuse={refuse}
           onExportApproved={onExportApproved}
         />
 

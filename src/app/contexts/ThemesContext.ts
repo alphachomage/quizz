@@ -6,12 +6,13 @@ import { loadThemes } from '@data/questions.js';
 import {
   loadSubmissions,
   addSubmission,
-  removeSubmission,
   loadApproved,
   approveSubmission,
   exportSubmissionsJson,
 } from '@lib/submissions.js';
 import type { ApprovedSubmission } from '@lib/submissions.js';
+import { loadCommunityQuestions } from '@lib/community.js';
+import { normalizeQuestionText } from '@lib/text.js';
 import { validatePersonalFile, validateSubmissions } from '@lib/schema.js';
 import { mergeThemes } from '@shared/utils/mergeThemes.js';
 import type { Question, Submission, TaggedQuestion, Theme } from '@lib/types.js';
@@ -28,7 +29,6 @@ export interface ThemesContextValue {
   validees: ApprovedSubmission[];
   approvedCount: number;
   addQuestion: (q: Submission) => void;
-  removeQuestion: (id: string) => void;
   approveQuestion: (id: string) => void;
   exporterValidees: () => string;
 }
@@ -60,7 +60,13 @@ export function ThemesProvider({ children }: ThemesProviderProps) {
         if (!active) return;
         // Donnée externe (fetch) : validée par schéma zod avant usage.
         const personal = validatePersonalFile(rawPersonal);
-        setBaseThemes(personal ? mergeThemes(base, personal.themes) : base);
+        // Questions communautaires validées par l'admin (servies par /api/questions,
+        // validées par zod dans community.ts) : best-effort, fusionnées au catalogue.
+        const community = await loadCommunityQuestions();
+        let fusion = base;
+        if (personal) fusion = mergeThemes(fusion, personal.themes);
+        if (community.length > 0) fusion = mergeThemes(fusion, community);
+        setBaseThemes(fusion);
       } catch {
         if (active) setBaseThemes([]); // échec de chargement : catalogue vide plutôt que crash
       }
@@ -71,8 +77,10 @@ export function ThemesProvider({ children }: ThemesProviderProps) {
     };
   }, []);
 
-  // Thèmes finaux = base/fichier + questions VALIDÉES manuellement (localStorage).
-  // Les questions merely « proposées » (en attente) ne sont PAS jouables.
+  // Thèmes finaux = base/fichier/communautaire + questions VALIDÉES manuellement
+  // (localStorage). Les questions « proposées » (en attente) ne sont PAS jouables.
+  // Dédup par texte normalisé : une question à la fois en local (validées) et servie
+  // par le serveur (communautaire) n'apparaît qu'une fois.
   const themes = useMemo<Theme[] | null>(() => {
     if (!baseThemes) return null; // chargement en cours
     const map = new Map<string, Theme>(
@@ -84,7 +92,19 @@ export function ThemesProvider({ children }: ThemesProviderProps) {
         },
       ])
     );
+    const vus = new Set<string>();
+    for (const t of map.values()) {
+      t.questions = t.questions.filter((q) => {
+        const cle = normalizeQuestionText(q.q);
+        if (!cle || vus.has(cle)) return false;
+        vus.add(cle);
+        return true;
+      });
+    }
     for (const s of validees) {
+      const cle = normalizeQuestionText(s.q);
+      if (vus.has(cle)) continue;
+      vus.add(cle);
       const question: Question = {
         q: s.q,
         reponses: s.reponses,
@@ -137,10 +157,6 @@ export function ThemesProvider({ children }: ThemesProviderProps) {
     () => ({
       addQuestion: (q: Submission) => {
         addSubmission(q);
-        setSubmissions(loadSubmissions());
-      },
-      removeQuestion: (id: string) => {
-        removeSubmission(id);
         setSubmissions(loadSubmissions());
       },
       approveQuestion: (id: string) => {

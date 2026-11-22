@@ -54,8 +54,9 @@ const personalFileSchema = z.object({
 });
 export type PersonalFile = z.infer<typeof personalFileSchema>;
 
-// Une soumission stockée en localStorage (peut avoir été modifiée à la main).
-const submissionSchema = schemaQuestion.extend({
+// Une soumission stockée en localStorage (peut avoir été modifiée à la main) ou reçue
+// du serveur (table D1 soumissions, après mapping theme_id -> themeId).
+export const submissionSchema = schemaQuestion.extend({
   themeId: z.string().trim().min(1).max(60),
   id: z.string().optional(),
   date: z.string().optional(),
