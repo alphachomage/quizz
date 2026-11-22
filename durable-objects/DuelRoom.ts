@@ -22,14 +22,15 @@ export class DuelRoom {
     this.players = []; // connexions WebSocket actives
   }
   async fetch(request: Request): Promise<Response> {
-    const url = new URL(request.url);
-
     // WebSocket : /api/duel/<roomId>
     if (request.headers.get('Upgrade') === 'websocket') {
       const paire = new WebSocketPair();
       const [client, server] = Object.values(paire);
       this.state.acceptWebSocket(server);
-      const pseudo = url.searchParams.get('pseudo') || 'Joueur';
+      // Le pseudo vient du header x-voltquiz-pseudo posé par worker-api.ts = pseudo du
+      // token Bearer vérifié avant l'upgrade (JAMAIS de la query string : un client ne
+      // peut pas usurper l'identité d'un autre joueur).
+      const pseudo = request.headers.get('x-voltquiz-pseudo') || 'Joueur';
       this.players.push({
         ws: server,
         pseudo,
@@ -79,10 +80,13 @@ export class DuelRoom {
   async webSocketMessage(ws: WebSocket, message: string): Promise<void> {
     try {
       const data = JSON.parse(message);
+      // L'expéditeur = le pseudo de la CONNEXION (token vérifié à l'upgrade), pas un
+      // champ du message : un client ne peut pas se faire passer pour un autre.
+      const joueur = this.players.find((j) => j.ws === ws);
       this.diffuser(
         {
           type: 'action',
-          de: data.pseudo || '?',
+          de: joueur ? joueur.pseudo : '?',
           action: data,
         },
         ws

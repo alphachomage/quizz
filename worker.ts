@@ -37,11 +37,14 @@ function securityHeaders(env: Env, hote = ''): Headers {
     ...(isProd ? ['upgrade-insecure-requests'] : []),
   ].join('; ');
   const h = new Headers();
-  // CSP d'abord en Report-Only (48 h d'observation) puis appliquée : CSP_REPORT_ONLY=true/false
+  // CSP : en Report-Only tant que CSP_REPORT_ONLY=true (ou en dev local pour le HMR) ;
+  // appliquée en prod (CSP_REPORT_ONLY=false) AVEC un second header Report-Only qui
+  // continue de remonter les violations sur /api/csp-report pour surveiller.
   if (env.CSP_REPORT_ONLY === 'true' || !isProd) {
     h.set('Content-Security-Policy-Report-Only', `${csp}; report-uri /api/csp-report`);
   } else {
     h.set('Content-Security-Policy', csp);
+    h.set('Content-Security-Policy-Report-Only', `${csp}; report-uri /api/csp-report`);
   }
   h.set('X-Content-Type-Options', 'nosniff');
   h.set('Referrer-Policy', 'strict-origin-when-cross-origin');
