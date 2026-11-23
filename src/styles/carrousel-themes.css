@@ -147,7 +147,7 @@
   border-radius: var(--radius-pilule);
   background: transparent;
   color: var(--accent1);
-  font-size: 0.85rem;
+  font-size: 0.9rem; /* >= 14 px en gras : contraste suffisant jaune sur bleu (mode clair) */
   font-weight: 700;
   cursor: pointer;
   transition: background var(--dur-court) ease;

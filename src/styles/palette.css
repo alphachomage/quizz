@@ -16,6 +16,7 @@ body.theme-clair {
   --accent1: #ffd23f;
   --accent2: #ffd23f;
   --or: #ffd23f;
+  --question: #1e3fa8; /* texte des questions : bleu roi (choix client à l'atelier) */
 }
 
 /* 30% secondaire (cartes jaunes) : texte foncé par-dessus */

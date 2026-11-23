@@ -44,6 +44,7 @@
   --accent1: #ffd23f;
   --accent2: #ffd23f;
   --or: #ffd23f;
+  --question: #ffffff; /* texte des questions en partie */
 
   /* Jaune #FFD23F à alpha */
   --accent-08: rgba(255, 210, 63, 0.08);
