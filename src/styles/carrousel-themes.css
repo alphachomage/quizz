@@ -207,17 +207,68 @@
 /* Liens du bas de l'accueil regroupés sur une ligne discrète */
 .liens-accueil {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
-  gap: var(--esp-4) var(--esp-16);
-  margin-top: var(--esp-12);
+  gap: clamp(6px, 2.4vw, 12px);
+  margin-top: var(--esp-8);
 }
 
 .accueil .liens-accueil .btn-secondaire {
+  flex-shrink: 1;
+  gap: var(--esp-4);
   width: auto;
+  min-width: 0;
   margin: 0;
-  padding: 6px 4px;
-  font-size: 0.78rem;
+  padding: 6px 2px;
+  font-size: clamp(0.62rem, 0.45rem + 1.2vw, 0.72rem);
+  white-space: nowrap;
+}
+
+.liens-accueil .icone {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* Écrans peu hauts : on resserre les espacements verticaux pour rester sans défilement */
+@media (max-height: 760px) {
+  .app:has(.accueil) {
+    padding-top: 14px;
+  }
+
+  .accueil .barre-user {
+    margin-bottom: var(--esp-8);
+  }
+
+  .accueil .hero {
+    margin-bottom: var(--esp-10);
+  }
+
+  .accueil .modes-tabs {
+    gap: var(--esp-10);
+  }
+}
+
+/* Très petits écrans (ex. 320 x 568) : tuiles et logo encore un peu réduits */
+@media (max-height: 660px) {
+  .accueil .modes-tabs {
+    max-width: min(290px, 37vh);
+    max-width: min(290px, 37dvh);
+  }
+
+  .accueil .logo-img {
+    width: min(220px, 60vw, 21vh);
+    width: min(220px, 60vw, 21dvh);
+  }
+
+  .accueil .prochain-badge {
+    margin-top: var(--esp-4);
+    padding-block: 4px;
+  }
+
+  .accueil .prochain-badge .ecusson {
+    display: none;
+  }
 }
 
 /* Centrage vertical de l'accueil : la barre du joueur reste en haut, le bloc logo -> liens
@@ -234,4 +285,11 @@
 
 .accueil > .liens-accueil {
   margin-bottom: auto;
+}
+
+/* Écrans étroits : les liens restent sur une ligne en masquant leurs petites icônes */
+@media (max-width: 380px) {
+  .liens-accueil .icone {
+    display: none;
+  }
 }

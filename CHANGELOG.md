@@ -6,6 +6,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 ## Non publié
 
 ### Modifié
+- **Accueil sur un seul écran, sans défilement, quelle que soit la taille** (vérifié de 320×568 à 1280×800) : logo et tuiles dimensionnés aussi selon la hauteur d'écran (`dvh`), espacements resserrés sous 760 px et 660 px de haut. Tuiles un peu plus petites mais pictos (48 % de la tuile) et libellés plus grands ; logo remonté de 5 px ; liens du bas sur une seule ligne (icônes masquées sous 380 px de large).
 - **Refonte de l'accueil (maquette du client) : on choisit son mode, le reste se passe en popin, plus aucun défilement.** Logo **VQuizz** installé (`public/logo-vquizz.png`, fond rendu transparent à partir de l'image fournie ; variante lettres bleu nuit `logo-vquizz-clair.png` pour le mode clair). 4 grandes tuiles de mode carrées (picto jaune, nom en capitales). Solo ouvre `ThemePickerModal` : carrousel en boucle infinie dont la carte centrale est le thème choisi, bouton « Thème aléatoire » qui fait tourner le carrousel façon roulette (`useCarousel.spinTo`), difficulté, « C'est parti ! ». Survie et Quizz du jour ouvrent `ModeConfirmModal` (règles, record/série, lancement). Supprimés car remplacés : `LevelModal`, `FixedCta`, `RandomModal` + `useRoulette`, `DuelNames`, `ModeDescription` (contenu repris dans la popin), `cta-fixe.css`, `roulette.css` ; `ThemeGrid` devient `ThemeCarousel`. `.app` ne réserve plus 110 px pour la barre fixe. `prefersReducedMotion()` ajouté à `src/lib/nav.ts`. Test `app-shell` adapté au nouveau parcours.
 
 ### Corrigé

@@ -150,8 +150,11 @@
 }
 
 .logo-img {
+  position: relative;
+  top: -5px; /* demande client : logo légèrement remonté */
   display: block;
-  width: min(230px, 62vw);
+  width: min(220px, 60vw, 25vh);
+  width: min(220px, 60vw, 25dvh);
   height: auto;
 }
 
