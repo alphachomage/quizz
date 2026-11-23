@@ -6,6 +6,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 ## Non publié
 
 ### Modifié
+- **L'appli s'appelle désormais VQuizz** (demande client) : titre de l'onglet, nom de l'appli installée (manifest PWA), tutoriel « Bienvenue sur VQuizz », texte et image de partage, écran d'erreur, carte serveur admin, README, docs et commentaires. Nouvelles icônes d'appli (`public/icons/*`) générées à partir du logo VQuizz sur fond bleu nuit (zone sûre respectée pour l'icône « maskable »). Logo VQuizz aussi sur l'écran de connexion. **Identifiants techniques inchangés** (`voltquiz_*` en localStorage, base D1, Worker, URL) pour ne casser ni les données ni le déploiement ; fichiers de questions et migrations D1 non modifiés (règle 7).
+- **Fin de partie (atelier)** : plus de grosse icône, titre « PARTIE TERMINÉE » en capitales et en gras, score et « Nouveau record ! » réunis en une seule section (`.bloc-score`), libellé « pts » en jaune, record et bandeau Top 10 plus discrets, titre « XP gagnée » centré, textes du bloc XP harmonisés à 13 px.
+- **Badges et Statistiques** : titre centré en gras, bouton « Accueil » remplacé par une petite croix de fermeture en haut à droite (`.btn-fermer-ecran`, libellé accessible « Retour à l'accueil »).
+- **Partie** : étiquette du thème agrandie.
 - **Écran Classement (atelier)** : onglets de mode à coins arrondis 16 px (au lieu de pilule, aussi sur Badges et Compte), filtres centrés en 2 colonnes de même largeur.
 - **Partie (atelier)** : étiquette du thème centrée à coins de 5 px, infos centrées dessous ; toutes les questions en bleu roi en mode clair (règle globale `.question`).
 

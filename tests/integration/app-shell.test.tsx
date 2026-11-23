@@ -71,7 +71,7 @@ describe("shell de l'application (app/)", () => {
         const data = url.startsWith('/api/admin/check')
           ? { ok: true, admin: true }
           : url.startsWith('/api/health')
-            ? { ok: true, app: 'VoltQuiz', version: '0.1.0', hour: new Date().toISOString() }
+            ? { ok: true, app: 'VQuizz', version: '0.1.0', hour: new Date().toISOString() }
             : url.startsWith('/api/stats')
               ? { ok: true, rooms: 0, rapportsCsp: 0, hits429: 0 }
               : { ok: true };

@@ -42,7 +42,7 @@ export default function ServerCard({ etat }: ServerCardProps): ReactElement {
   // statut === 'ok' : le health est renseigné, les stats peuvent manquer (réseau).
   const { health, stats } = etat;
   const hour = health.hour ? new Date(health.hour).toLocaleString('fr-FR') : null;
-  const sous = `VoltQuiz ${health.version || '?'}${hour ? ` · ${hour}` : ''}`;
+  const sous = `VQuizz ${health.version || '?'}${hour ? ` · ${hour}` : ''}`;
   return (
     <MetricCard icone="globe" title="Serveur (API)" value="API active" sous={sous}>
       {stats ? (

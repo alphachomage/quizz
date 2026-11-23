@@ -79,7 +79,7 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
                 margin: '0 0 24px',
               }}
             >
-              VoltQuiz a rencontré un problème inattendu. Tes données locales sont conservées :
+              VQuizz a rencontré un problème inattendu. Tes données locales sont conservées :
               recharge simplement l'application.
             </p>
             <button

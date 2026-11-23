@@ -1,7 +1,9 @@
-# VoltQuiz — mode d'emploi (routeur)
+# VQuizz — mode d'emploi (routeur)
 
-> Le dossier s'appelle encore `QUIZZWALLAH` (nom historique) ; le projet s'appelle
-> **VoltQuiz** partout ailleurs. Ce fichier est un **routeur** : lis-le toujours,
+> Le projet s'appelle **VQuizz** (anciennement VoltQuiz, renommé le 2026-11-23 ; le dossier
+> local s'appelle encore `QUIZZWALLAH`). Les **identifiants techniques restent `voltquiz`**
+> (clés localStorage `voltquiz_*`, base D1, nom du Worker, URL de déploiement) : les changer
+> casserait les données existantes. Ce fichier est un **routeur** : lis-le toujours,
 > puis lis UNIQUEMENT les 1-3 fichiers de `docs/` utiles à ta tâche (voir `docs/INDEX.md`).
 > Tu es peut-être piloté par quelqu'un qui n'est pas développeur : tu prends toi-même
 > les choix techniques, en expliquant le pour et le contre (voir `docs/methodologie.md`,
@@ -30,7 +32,7 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
    en français car c'est le format JSON documenté pour le client
    (`docs/questions.md`) et les clés localStorage existantes.
    Les noms de classes CSS restent en français pour l'instant (refonte design prévue).
-3. **Palette 60-30-10, AUCUN dégradé** : voir `docs/design.md` (palette « sobre » active,
+3. **Palette 60-30-10, AUCUN dégradé** : voir `docs/design.md` (palette « Bleu roi » active,
    couleurs des thèmes à respecter, ne jamais inventer de couleur). Pour une refonte
    design en profondeur, suivre `docs/design.md` (tokens centralisés dans
    `src/styles/tokens.css`).
@@ -98,23 +100,23 @@ npx wrangler deploy --dry-run   # valide worker.ts + wrangler.toml sans déploye
 
 ## Où est quoi ? (pointeurs rapides)
 
-| Sujet | Fichier |
-|---|---|
-| Règles du jeu, scoring, modes | `docs/jeu.md` |
-| Architecture (app/, features/, lib/, shared/) | `docs/stack.md` |
-| Design, palettes, refonte CSS en profondeur | `docs/design.md` |
-| Questions (format, ajout, similarité, corpus) | `docs/questions.md` |
-| Comptes, invité, modération, reset | `docs/comptes.md` |
-| XP, badges, titres, classement, stats | `docs/progression.md` |
-| Sécurité (headers, CSP, zod, hash, gate admin `comptes.admin`) | `docs/securite.md` |
-| localStorage (cache) + D1 (base par défaut), décision mobile | `docs/stockage-d1.md` |
-| Déploiement Cloudflare + CI + envs dev/prod | `docs/deploiement.md` |
-| Tests (quoi, où, commandes, couverture) | `docs/tests.md` |
-| Méthodologie (branches, worktrees, review code+docs, décisions) | `docs/methodologie.md` |
-| Mobile (Capacitor) | `docs/mobile.md` |
-| Sons, vibrations, partage | `docs/sons-partage.md` |
-| Dashboard admin | `docs/features/admin.md` |
-| Écrans détaillés | `docs/features/` |
+| Sujet                                                           | Fichier                  |
+| --------------------------------------------------------------- | ------------------------ |
+| Règles du jeu, scoring, modes                                   | `docs/jeu.md`            |
+| Architecture (app/, features/, lib/, shared/)                   | `docs/stack.md`          |
+| Design, palettes, refonte CSS en profondeur                     | `docs/design.md`         |
+| Questions (format, ajout, similarité, corpus)                   | `docs/questions.md`      |
+| Comptes, invité, modération, reset                              | `docs/comptes.md`        |
+| XP, badges, titres, classement, stats                           | `docs/progression.md`    |
+| Sécurité (headers, CSP, zod, hash, gate admin `comptes.admin`)  | `docs/securite.md`       |
+| localStorage (cache) + D1 (base par défaut), décision mobile    | `docs/stockage-d1.md`    |
+| Déploiement Cloudflare + CI + envs dev/prod                     | `docs/deploiement.md`    |
+| Tests (quoi, où, commandes, couverture)                         | `docs/tests.md`          |
+| Méthodologie (branches, worktrees, review code+docs, décisions) | `docs/methodologie.md`   |
+| Mobile (Capacitor)                                              | `docs/mobile.md`         |
+| Sons, vibrations, partage                                       | `docs/sons-partage.md`   |
+| Dashboard admin                                                 | `docs/features/admin.md` |
+| Écrans détaillés                                                | `docs/features/`         |
 
 Le client n'est pas développeur : `README.md` (racine) reste le guide pas à pas.
 
@@ -137,5 +139,5 @@ Le client n'est pas développeur : `README.md` (racine) reste le guide pas à pa
   `questions-vague5-<theme>-a1.js` de 60). Anti-doublons normalisé à chaque lot -> corpus à 0 doublon.
 - 12 titres dédiés (3 par thème dans `TITLES_PER_THEME`, `src/lib/titles.ts`) -> 62 titres au total.
 - 9 badges dédiés (`src/lib/badges.ts` : niveau 3 + 5 sur chacun des 4 thèmes via `themeLevels`,
-  + `themes-16`) -> 39 badges au total. Icônes `chip`/`paw`/`coins`/`car` ajoutées dans `src/shared/ui/Icon.tsx`.
+  - `themes-16`) -> 39 badges au total. Icônes `chip`/`paw`/`coins`/`car` ajoutées dans `src/shared/ui/Icon.tsx`.
 - Couleurs reprises de la palette fixe de `docs/design.md` (jamais de couleur inventée).

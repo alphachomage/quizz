@@ -37,7 +37,7 @@ export default function TopBar({ p }: TopBarProps): ReactElement {
     <div className="barre-haut">
       <div className="barre-haut-theme">
         <span className="chip theme-chip" style={themeChipStyle}>
-          <Icon nom={currentTheme.icone || theme.icone} taille={16} /> {currentTheme.nom}
+          <Icon nom={currentTheme.icone || theme.icone} taille={20} /> {currentTheme.nom}
         </span>
       </div>
       <div className="barre-haut-infos">

@@ -1,4 +1,4 @@
-/* VoltQuiz — partie tenant sur un seul écran (demande client, atelier 2026-11-23) :
+/* VQuizz — partie tenant sur un seul écran (demande client, atelier 2026-11-23) :
    en-tête sur deux niveaux (thème puis infos), tailles pilotées par la hauteur d'écran,
    et retour de réponse épinglé en bas de l'écran (toujours visible, sans défiler). */
 
@@ -16,9 +16,10 @@
 }
 
 .barre-haut-theme .theme-chip {
+  gap: var(--esp-8);
   border-radius: var(--radius-5); /* étiquette à coins légers plutôt que pilule (atelier) */
-  padding: 7px 14px;
-  font-size: 0.95rem;
+  padding: 10px 22px;
+  font-size: 1.15rem;
   font-weight: 800;
 }
 

@@ -12,10 +12,10 @@ interface TutorialProps {
 
 export default function Tutorial({ onClose, isGuest }: TutorialProps): ReactElement {
   return (
-    <Modal title="Bienvenue sur VoltQuiz" onClose={onClose} classe="tuto">
+    <Modal title="Bienvenue sur VQuizz" onClose={onClose} classe="tuto">
       <div className="modal-titre">
         <h2>
-          <Icon nom="bolt" taille={22} /> Bienvenue sur VoltQuiz
+          <Icon nom="bolt" taille={22} /> Bienvenue sur VQuizz
         </h2>
         <button className="btn-suppr" onClick={onClose} title="Fermer">
           <Icon nom="x" taille={18} />

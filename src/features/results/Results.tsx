@@ -62,7 +62,7 @@ export default function Results({
         ? 'Game over !'
         : mode === 'quotidien'
           ? `Quizz du jour du ${niveau} terminé !`
-          : 'Partie terminée !';
+          : 'Partie terminée';
   const labelRecord =
     mode === 'solo'
       ? `Record niveau ${levelName(niveau)} · ${theme.nom}`
@@ -82,22 +82,6 @@ export default function Results({
   return (
     <div className="ecran-centre">
       <div className="resultat">
-        <div className="gros-icone">
-          {mode === 'duel' ? (
-            gagnant === null ? (
-              <Icon nom="swords" taille={56} />
-            ) : (
-              <Icon nom="trophy" taille={56} />
-            )
-          ) : mode === 'survie' ? (
-            <Icon nom="skull" taille={56} />
-          ) : mode === 'quotidien' ? (
-            <Icon nom="calendar" taille={56} />
-          ) : (
-            <Icon nom="sparkles" taille={56} />
-          )}
-        </div>
-
         {mode === 'duel' ? (
           <>
             <h2>{title}</h2>
@@ -122,8 +106,17 @@ export default function Results({
         ) : (
           <>
             <h2>{title}</h2>
-            <div className="gros-score">
-              {scores[0]} <span>pts</span>
+            {/* Score et « Nouveau record » forment une seule section */}
+            <div className="bloc-score">
+              <div className="gros-score">
+                {scores[0]} <span>pts</span>
+              </div>
+              {nouveauRecord && (
+                <div className="record">
+                  <Icon nom="bolt" taille={16} /> Nouveau record !
+                  {recordAvant > 0 ? ` (avant : ${recordAvant} pts)` : ''}
+                </div>
+              )}
             </div>
             <p className="sous-score">
               {mode === 'survie'
@@ -139,7 +132,7 @@ export default function Results({
           </>
         )}
 
-        {nouveauRecord && (
+        {mode === 'duel' && nouveauRecord && (
           <div className="record">
             <Icon nom="bolt" taille={16} /> Nouveau record !
             {recordAvant > 0 ? ` (avant : ${recordAvant} pts)` : ''}

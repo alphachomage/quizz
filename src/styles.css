@@ -1,4 +1,4 @@
-/* ===== VoltQuiz — feuilles de style modulaires ===== */
+/* ===== VQuizz — feuilles de style modulaires ===== */
 /* L'ordre des @import reprend exactement l'ordre de l'ancien styles.css
    monolithique : la cascade (quelle règle gagne) est strictement conservée. */
 @import './styles/tokens.css';

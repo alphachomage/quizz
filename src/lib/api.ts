@@ -1,4 +1,4 @@
-// api.ts — client HTTP de l'API VoltQuiz (worker-api.ts). La base D1 est le stockage
+// api.ts — client HTTP de l'API VQuizz (worker-api.ts). La base D1 est le stockage
 // par défaut (mode 'd1' de lib/storage.ts) : ce fichier expose toutes les routes
 // (sync_client, auth, parties, records, XP, soumissions, admin check, rooms).
 // Zéro dépendance, fetch natif.

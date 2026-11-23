@@ -34,7 +34,7 @@ interface NativeShareData {
 
 // Texte du message de partage.
 function shareText({ pseudo, date, score, bonnes, total, streak }: SharePayload): string {
-  let t = `${pseudo || "Quelqu'un"} a marqué ${score} pts au Quizz du jour VoltQuiz du ${date} (${bonnes}/${total} bonnes réponses)`;
+  let t = `${pseudo || "Quelqu'un"} a marqué ${score} pts au Quizz du jour VQuizz du ${date} (${bonnes}/${total} bonnes réponses)`;
   if (streak > 1) t += ` — série de ${streak} jours (éclair x${streak})`;
   t += `. Peux-tu faire mieux ?`;
   return t;
@@ -116,7 +116,7 @@ export async function storyImage({
   ctx.textAlign = 'center';
   ctx.fillStyle = '#FFD23F';
   ctx.font = '900 64px Sora, Verdana, sans-serif';
-  ctx.fillText('VOLTQUIZ', L / 2, cy + 480);
+  ctx.fillText('VQUIZZ', L / 2, cy + 480);
   ctx.fillStyle = '#FFFFFF';
   ctx.font = '700 44px Sora, Verdana, sans-serif';
   ctx.fillText(`Quizz du jour — ${date}`, L / 2, cy + 550);

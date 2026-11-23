@@ -41,8 +41,13 @@ export default function Badges({ themes, onHome: onHome }: BadgesProps) {
           <h2>
             <Icon nom="trophy" taille={24} /> Badges & titres
           </h2>
-          <button className="btn-secondaire" onClick={onHome}>
-            <Icon nom="home" taille={18} /> Accueil
+          <button
+            className="btn-fermer-ecran"
+            onClick={onHome}
+            aria-label="Retour à l'accueil"
+            title="Retour à l'accueil"
+          >
+            <Icon nom="x" taille={20} />
           </button>
         </div>
 

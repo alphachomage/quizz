@@ -1,5 +1,5 @@
 /* global Env */
-// worker-api.ts — mini-routeur /api/* de VoltQuiz (zéro dépendance), importé par worker.ts.
+// worker-api.ts — mini-routeur /api/* de VQuizz (zéro dépendance), importé par worker.ts.
 // La base D1 est le stockage par défaut (plus de porte V2_ENABLED) : toutes les routes
 // répondent dès que les bindings sont présents ; une route renvoie 503 « binding
 // manquant » si D1/KV/DO n'est pas configuré (voir chaque handler).
@@ -708,7 +708,7 @@ export async function apiRouter(request: Request, env: Env, url: URL): Promise<R
   if (p === '/api/ping' || p === '/api/health') {
     return json({
       ok: true,
-      app: 'VoltQuiz',
+      app: 'VQuizz',
       version: env.APP_VERSION || '0.1.0',
       hour: new Date().toISOString(),
     });

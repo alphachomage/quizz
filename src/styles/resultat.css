@@ -1,4 +1,4 @@
-/* VoltQuiz — resultat (extrait de l'ancien styles.css, ordre conservé) */
+/* VQuizz — resultat (extrait de l'ancien styles.css, ordre conservé) */
 /* --- �cran de r�sultats : XP gagn�e (globale + par th�me) et top 10 --- */
 .record.top10 {
   margin-top: var(--esp-8);
@@ -178,4 +178,58 @@
 
 .switch.on i {
   left: 23px;
+}
+
+/* --- Fin de partie retravaillée à l'atelier (2026-11-23) --- */
+.resultat h2 {
+  margin-bottom: var(--esp-10);
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase; /* « PARTIE TERMINÉE » */
+}
+
+/* Score + « Nouveau record » : une seule section, serrée */
+.bloc-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.resultat .gros-score {
+  margin: 0;
+  font-size: 2.75rem;
+  line-height: 1.1;
+}
+
+.resultat .gros-score span {
+  color: var(--accent1);
+}
+
+.bloc-score .record {
+  gap: var(--esp-4);
+  margin-top: 0;
+  padding: 4px;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.resultat .record-current {
+  font-size: 0.75rem;
+}
+
+.resultat .record.top10 {
+  padding: 8px;
+  border-radius: var(--radius-petit);
+  font-size: 0.6875rem; /* 11 px : plus petit, mais encore lisible */
+}
+
+.resultat .xp-bloc .titre-section {
+  text-align: center;
+}
+
+.resultat .xp-globale-val,
+.resultat .xp-theme-gain,
+.resultat .xp-theme-niv {
+  font-size: 0.8125rem; /* 13 px partout dans le bloc XP */
 }

@@ -1,4 +1,4 @@
-/* VoltQuiz — stats (extrait de l'ancien styles.css, ordre conservé) */
+/* VQuizz — stats (extrait de l'ancien styles.css, ordre conservé) */
 /* --- �cran statistiques --- */
 
 .stats-ecran {
@@ -174,4 +174,42 @@
   font-weight: 700;
   color: var(--texte-doux);
   text-align: left;
+}
+
+/* En-tête des écrans Badges et Statistiques : titre centré en gras, croix de fermeture
+   (retour à l'accueil) en haut à droite */
+.stats-titre {
+  position: relative;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 44px;
+}
+
+.stats-titre h2 {
+  justify-content: center;
+  font-weight: 700;
+  text-align: center;
+}
+
+.btn-fermer-ecran {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--bordure);
+  border-radius: var(--radius-rond);
+  background: transparent;
+  color: var(--texte);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background var(--dur-court) ease;
+}
+
+.btn-fermer-ecran:hover {
+  background: var(--accent-12);
 }

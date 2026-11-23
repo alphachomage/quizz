@@ -40,8 +40,8 @@ export default defineConfig({
       includeAssets: ['icons/icon-192.png', 'icons/icon-512.png'],
 
       manifest: {
-        name: 'VoltQuiz',
-        short_name: 'VoltQuiz',
+        name: 'VQuizz',
+        short_name: 'VQuizz',
         description: 'Le quiz rapide façon QuizUp : solo avec niveaux de difficulté, ou duel 1v1, directement dans ton navigateur.',
         lang: 'fr',
         theme_color: '#0a1a40',
