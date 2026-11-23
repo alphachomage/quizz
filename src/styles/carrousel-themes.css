@@ -233,7 +233,7 @@
 /* Écrans peu hauts : on resserre les espacements verticaux pour rester sans défilement */
 @media (max-height: 760px) {
   .app:has(.accueil) {
-    padding-top: 14px;
+    padding-top: calc(14px + env(safe-area-inset-top));
   }
 
   .accueil .barre-user {

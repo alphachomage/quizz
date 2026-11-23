@@ -37,7 +37,7 @@ export default defineConfig({
         enabled: false,
         type: 'module',
       },
-      includeAssets: ['icons/icon-192.png', 'icons/icon-512.png'],
+      includeAssets: ['icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-48.png'],
 
       manifest: {
         name: 'VQuizz',

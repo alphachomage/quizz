@@ -107,7 +107,7 @@
 /* Écrans peu hauts : marges du haut réduites */
 @media (max-height: 700px) {
   .app:has(.partie) {
-    padding-top: 12px;
+    padding-top: calc(12px + env(safe-area-inset-top));
   }
 
   .partie .reponse {

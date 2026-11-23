@@ -185,7 +185,8 @@ textarea {
 .app {
   max-width: 720px;
   margin: 0 auto;
-  padding: 28px 20px calc(28px + env(safe-area-inset-bottom));
+  /* safe-area : en plein écran sur iPhone, le contenu ne passe pas sous l'heure / l'encoche */
+  padding: calc(28px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom));
   min-height: 100vh;
   display: flex;
   flex-direction: column;
