@@ -44,8 +44,8 @@ export default defineConfig({
         short_name: 'VoltQuiz',
         description: 'Le quiz rapide façon QuizUp : solo avec niveaux de difficulté, ou duel 1v1, directement dans ton navigateur.',
         lang: 'fr',
-        theme_color: '#000000',
-        background_color: '#000000',
+        theme_color: '#0a1a40',
+        background_color: '#0a1a40',
         display: 'standalone',
         start_url: '/',
         icons: [
@@ -55,7 +55,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,png,json}'],
+        globPatterns: ['**/*.{js,css,html,png,json,woff2}'],
         // Repli SPA propre : toute URL sans extension renvoie index.html,
         // sauf l'API (qui doit renvoyer sa vraie réponse, y compris les 404).
         navigateFallback: '/index.html',

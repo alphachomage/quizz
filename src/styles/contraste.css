@@ -1,0 +1,100 @@
+/* VoltQuiz — contraste : règles transverses pour que tout texte reste lisible (WCAG AA)
+   avec la palette « Bleu roi », en sombre comme en clair. Importé en dernier. */
+
+/* Sur une surface « carte » (bleue dans les deux modes), le texte prend les couleurs
+   prévues pour les cartes : on redéfinit les variables, tous les descendants suivent. */
+.modal,
+.mode-tab,
+.btn-aleatoire,
+.carrousel-fleche,
+.chip,
+.niveau,
+.niveau-modal,
+.theme,
+.btn-secondaire:not(.liens-accueil .btn-secondaire),
+.btn-icone:not(.barre-user .btn-icone),
+.carte-compte,
+.info,
+.vide,
+.ligne-classement,
+.liste-propositions li,
+.liste-similaires,
+.sim-item,
+.minuteur,
+.onglets,
+.filtre,
+.filtres-niveau,
+.passe-appareil,
+.reglage,
+.resultat,
+.score-joueur,
+.scores-duel,
+.stat-carte,
+.stats-ligne,
+.stats-theme,
+.xp-bloc,
+.xp-globale,
+.xp-theme,
+.badge,
+.deblocage-carte,
+.noms input,
+.champ input,
+.champ select,
+.champ textarea,
+.roulette-fenetre {
+  --texte: var(--texte-carte);
+  --texte-doux: var(--texte-doux-carte);
+}
+
+/* Puces de partie (niveau, question n/10…) : pas de couleur propre, on fixe celle des cartes */
+.chip {
+  color: var(--texte-carte);
+}
+
+/* Bouton « Signaler » : posé sur le fond de page, pas sur une carte */
+.btn-signaler {
+  color: var(--texte-doux);
+}
+
+/* Réponses de partie : texte foncé sur les 4 couleurs vives (jaune, vert, rose, bleu clair) */
+.reponse {
+  color: var(--texte-sur-accent);
+}
+
+.reponse.mauvaise {
+  color: var(--blanc);
+}
+
+body.daltonien .reponse.bonne {
+  color: var(--blanc);
+}
+
+body.daltonien .reponse.mauvaise {
+  color: #111111;
+}
+
+/* Puce du thème en partie : fond = couleur du thème (claire) -> texte foncé */
+.theme-chip {
+  color: var(--texte-sur-accent);
+}
+
+/* Nom du thème tiré par la roulette : blanc souligné de la couleur du thème */
+.roulette-resultat strong {
+  color: var(--texte-carte);
+  text-decoration: underline 3px var(--couleur, var(--accent1));
+  text-underline-offset: 6px;
+}
+
+/* Mode clair : le jaune et le vert clair ne se lisent pas sur fond blanc ou bleu clair */
+body.theme-clair .chip.score {
+  color: var(--texte-carte);
+}
+
+body.theme-clair .gain,
+body.theme-clair .rate strong {
+  color: var(--succes-fond);
+}
+
+body.theme-clair .btn-signaler:hover {
+  color: var(--erreur-fond);
+}

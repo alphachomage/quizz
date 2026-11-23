@@ -9,17 +9,40 @@
   60 % fond, 30 % cartes, 10 % accent. Texte foncé `#141414` sur les fonds accent.
 - UI 100 % en français. Code en anglais, commentaires en français.
 
-## Palette ACTIVE « sobre » (`:root` de `src/styles/tokens.css`, `body.theme-clair` de `src/styles/palette.css`)
+## Palette ACTIVE « Bleu roi » (choisie par le client à l'atelier visuel, 2026-11-23)
+
+Valeurs dans `:root` de `src/styles/tokens.css` (sombre) et `body.theme-clair` de `src/styles/palette.css` (clair).
 
 | Rôle | Sombre | Clair |
 |---|---|---|
-| fond (`--fond`) | `#000000` | `#FFFFFF` |
-| cartes (`--carte` / `--carte-2`) | `#26262B` / `#1D1D23` | `#ECECF1` / `#E2E2E9` |
-| accent (`--accent1`, PEPS) | `#D9D0B8` | `#D9D0B8` |
-| texte | `--texte #ECECEC`, `--texte-doux #9C9C94` | `--texte #1A1A1A`, `--texte-doux #6E6E6E` |
-| bordure | `rgba(255,255,255,0.14)` | `rgba(0,0,0,0.14)` |
+| fond (`--fond`) | `#0A1A40` (bleu nuit) | `#FFFFFF` |
+| cartes (`--carte` / `--carte-2`) | `#1E3FA8` / `#18348C` (bleu roi) | `#2D5BFF` / `#1F47D6` |
+| accent (`--accent1`) | `#FFD23F` (jaune) | `#FFD23F` |
+| texte | `--texte #FFFFFF`, `--texte-doux #B9C8F2` | `--texte #141414`, `--texte-doux #55595F` |
+| texte sur carte | `#FFFFFF` / `rgba(255,255,255,0.72)` | `#FFFFFF` / `rgba(255,255,255,0.92)` |
+| bordure | `rgba(255,255,255,0.2)` | `rgba(0,0,0,0.16)` |
 
-Manifest PWA + `theme-color` : `#000000`. Ombres neutres `rgba(0,0,0,...)`.
+Les cartes sont bleues dans les deux modes : le texte posé sur une carte utilise toujours
+`--texte-carte` / `--texte-doux-carte`. `src/styles/contraste.css` redéfinit `--texte` et
+`--texte-doux` sur toutes les surfaces « carte » pour que leurs descendants suivent
+automatiquement ; tout nouveau composant à fond `--carte` doit y être ajouté.
+Texte foncé (`--texte-sur-accent #141414`) sur le jaune et sur les couleurs vives
+(réponses de partie, pastilles « Niv. », puce du thème).
+Manifest PWA + `theme-color` : `#0A1A40`. Image de partage (`src/lib/share.ts`) et écran
+d'erreur (`ErrorBoundary.tsx`) reprennent ces valeurs en dur.
+
+## Police : Sora (OFL 1.1)
+
+Police variable (graisses 100-800) embarquée dans `public/fonts/` (latin + latin-ext, ~49 Ko,
+licence `public/fonts/Sora-OFL.txt`), déclarée en `@font-face` en tête de `tokens.css` et
+précachée par la PWA (fonctionne hors ligne). Pas de dépendance npm ni d'appel à Google Fonts.
+Le mode dyslexie la remplace par Verdana. Le logo utilise la même police (graisse 700).
+
+### Palette « sobre » archivée (active jusqu'au 2026-11-23)
+
+Sombre : fond `#000000`, cartes `#26262B` / `#1D1D23`, accent sable `#D9D0B8`, texte `#ECECEC` /
+`#9C9C94`. Clair : fond `#FFFFFF`, cartes `#ECECF1` / `#E2E2E9`, accent `#D9D0B8`, texte
+`#1A1A1A` / `#595959`. Police : Segoe UI (logo Georgia).
 
 ### Palette « vivante » archivée (pour plus tard)
 

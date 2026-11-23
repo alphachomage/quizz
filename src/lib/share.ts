@@ -59,7 +59,7 @@ function shareLinks(text: string, url: string): ShareLinks {
 }
 
 // Image "story" 1080x1920 générée en direct, palette sobre (canvas = pas de var() CSS, valeurs en dur
-// à synchroniser avec src/styles/tokens.css) : fond #000000, carte #26262B, accent sable #D9D0B8.
+// à synchroniser avec src/styles/tokens.css) : fond #0A1A40, carte #1E3FA8, accent jaune #FFD23F.
 export { shareLinks };
 export async function storyImage({ pseudo, date, score, bonnes, total, streak }: SharePayload): Promise<File> {
   const L = 1080,
@@ -72,7 +72,7 @@ export async function storyImage({ pseudo, date, score, bonnes, total, streak }:
   const ctx = c.getContext('2d')!;
 
   // fond noir (60%)
-  ctx.fillStyle = '#000000';
+  ctx.fillStyle = '#0A1A40';
   ctx.fillRect(0, 0, L, H);
 
   // carte gris ardoise (30%) centrée
@@ -80,13 +80,13 @@ export async function storyImage({ pseudo, date, score, bonnes, total, streak }:
     cw = L - m * 2,
     ch = 900,
     cy = 380;
-  ctx.fillStyle = '#26262B';
+  ctx.fillStyle = '#1E3FA8';
   ctx.beginPath();
   ctx.roundRect(m, cy, cw, ch, 48);
   ctx.fill();
 
   // éclair sable (10%) : polygone du logo, centré en haut de la carte
-  ctx.fillStyle = '#D9D0B8';
+  ctx.fillStyle = '#FFD23F';
   const pts: [number, number][] = [
     [13.6, 1.5],
     [4.2, 13.6],
@@ -107,24 +107,24 @@ export async function storyImage({ pseudo, date, score, bonnes, total, streak }:
 
   // textes (clairs sur carte sombre, contraste WCAG AA)
   ctx.textAlign = 'center';
-  ctx.fillStyle = '#D9D0B8';
-  ctx.font = '900 64px Verdana, sans-serif';
+  ctx.fillStyle = '#FFD23F';
+  ctx.font = '900 64px Sora, Verdana, sans-serif';
   ctx.fillText('VOLTQUIZ', L / 2, cy + 480);
-  ctx.fillStyle = '#ECECEC';
-  ctx.font = '700 44px Verdana, sans-serif';
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = '700 44px Sora, Verdana, sans-serif';
   ctx.fillText(`Quizz du jour — ${date}`, L / 2, cy + 550);
-  ctx.fillStyle = '#D9D0B8';
-  ctx.font = '900 150px Verdana, sans-serif';
+  ctx.fillStyle = '#FFD23F';
+  ctx.font = '900 150px Sora, Verdana, sans-serif';
   ctx.fillText(`${score} pts`, L / 2, cy + 720);
-  ctx.fillStyle = '#ECECEC';
-  ctx.font = '700 40px Verdana, sans-serif';
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = '700 40px Sora, Verdana, sans-serif';
   ctx.fillText(`${bonnes}/${total} bonnes réponses`, L / 2, cy + 790);
   if (streak > 1) ctx.fillText(`Série de ${streak} jours (éclair x${streak})`, L / 2, cy + 850);
-  ctx.fillStyle = '#D9D0B8';
-  ctx.font = '800 42px Verdana, sans-serif';
+  ctx.fillStyle = '#FFD23F';
+  ctx.font = '800 42px Sora, Verdana, sans-serif';
   ctx.fillText(pseudo || '', L / 2, H - 140);
-  ctx.fillStyle = '#9C9C94';
-  ctx.font = '600 34px Verdana, sans-serif';
+  ctx.fillStyle = '#B9C8F2';
+  ctx.font = '600 34px Sora, Verdana, sans-serif';
   ctx.fillText('voltquiz — le quiz rapide', L / 2, H - 90);
   const blob = await new Promise<Blob>((r) => c.toBlob((b) => r(b as Blob), 'image/png'));
   return new File([blob], 'voltquiz-quizz-du-jour.png', {
