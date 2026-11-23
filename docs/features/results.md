@@ -15,3 +15,10 @@
   Accueil.
 
 Tests : `tests/unit/features/result-persist.test.ts`.
+
+## Mise en page (2026-11-23, atelier)
+
+`Results.tsx` affiche : titre en capitales + `.bloc-score` (score, nouveau record), puis
+`components/ResultTiles.tsx` (3 tuiles : bonnes réponses, temps moyen, meilleure série ; pas en
+duel), `.resultat-record` (record + pastille Top 10), `components/ResultXp.tsx` (XP gagnée,
+niveau, barre ; détail par thème seulement si plusieurs thèmes), puis les actions.

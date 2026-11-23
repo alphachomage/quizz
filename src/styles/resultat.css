@@ -214,22 +214,123 @@
   line-height: 1.2;
 }
 
-.resultat .record-current {
-  font-size: 0.75rem;
+/* 3 tuiles : bonnes réponses, temps moyen, meilleure série (gros pictos lisibles) */
+.resultat-tuiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--esp-10);
+  margin-top: var(--esp-18);
 }
 
-.resultat .record.top10 {
-  padding: 8px;
+.resultat-tuile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--esp-4);
+  padding: 12px 6px;
   border-radius: var(--radius-petit);
-  font-size: 0.6875rem; /* 11 px : plus petit, mais encore lisible */
+  background: var(--carte-2);
 }
 
-.resultat .xp-bloc .titre-section {
-  text-align: center;
+.resultat-tuile .icone {
+  color: var(--accent1);
 }
 
-.resultat .xp-globale-val,
-.resultat .xp-theme-gain,
-.resultat .xp-theme-niv {
-  font-size: 0.8125rem; /* 13 px partout dans le bloc XP */
+.resultat-tuile strong {
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.resultat-tuile span {
+  font-size: 0.72rem;
+  color: var(--texte-doux);
+}
+
+/* Record + Top 10 sur une seule ligne */
+.resultat-record {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-8) var(--esp-16);
+  margin-top: var(--esp-16);
+  font-size: 0.95rem;
+}
+
+.resultat-record > span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-6);
+}
+
+.resultat-record .icone {
+  color: var(--accent1);
+}
+
+.resultat-top10 {
+  padding: 4px 12px;
+  border-radius: var(--radius-pilule);
+  background: var(--accent1);
+  color: var(--texte-sur-accent);
+  font-weight: 800;
+}
+
+.resultat-record .resultat-top10 .icone {
+  color: var(--texte-sur-accent);
+}
+
+/* XP gagnée : une ligne + barre de niveau */
+.resultat-xp {
+  margin-top: var(--esp-16);
+  padding: 14px 16px;
+  border-radius: var(--radius-petit);
+  background: var(--carte-2);
+}
+
+.resultat-xp-ligne {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-8);
+  margin-bottom: var(--esp-10);
+}
+
+.resultat-xp-ligne .icone {
+  color: var(--accent1);
+}
+
+.resultat-xp-ligne strong {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--accent1);
+}
+
+.resultat-xp-niv {
+  font-size: 0.85rem;
+  color: var(--texte-doux);
+}
+
+.resultat-xp-themes {
+  display: grid;
+  gap: var(--esp-6);
+  margin: var(--esp-12) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.82rem;
+}
+
+.resultat-xp-themes li {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-8);
+}
+
+.resultat-xp-themes strong {
+  margin-left: auto;
+  color: var(--accent1);
+}
+
+.resultat .actions {
+  margin-top: var(--esp-18);
 }

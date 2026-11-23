@@ -41,7 +41,9 @@
 .champ input,
 .champ select,
 .champ textarea,
-.roulette-fenetre {
+.roulette-fenetre,
+.resultat-tuile,
+.resultat-xp {
   --texte: var(--texte-carte);
   --texte-doux: var(--texte-doux-carte);
 }
