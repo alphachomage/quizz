@@ -1,0 +1,165 @@
+/* VoltQuiz — « prochain badge » en écusson (accueil) + modale de détail */
+
+.ecusson {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.ecusson svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.ecusson-fond {
+  fill: var(--ecusson, var(--accent1));
+}
+
+.ecusson-lisere {
+  fill: none;
+  stroke: var(--texte-sur-accent);
+  stroke-opacity: 0.28;
+  stroke-width: 1.4;
+}
+
+/* Contenu un peu au-dessus du centre : le bas du blason est en pointe */
+.ecusson-contenu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 88%;
+  color: var(--texte-sur-accent);
+}
+
+/* Bloc cliquable centré : blason, surtitre, nom, progression */
+.prochain-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--esp-4);
+  width: 100%;
+  max-width: 260px;
+  margin: var(--esp-16) auto 0;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--radius-moyen);
+  background: transparent;
+  color: var(--texte);
+  cursor: pointer;
+  transition: background var(--dur-court) ease;
+}
+
+.prochain-badge:hover {
+  background: var(--carte);
+}
+
+.prochain-badge .ecusson {
+  margin-bottom: var(--esp-4);
+  transition: transform var(--dur-court) ease;
+}
+
+.prochain-badge:hover .ecusson {
+  transform: translateY(-2px);
+}
+
+.pb-surtitre {
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--texte-doux);
+}
+
+.pb-nom {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.pb-progression {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-8);
+  width: 100%;
+  max-width: 180px;
+  margin-top: var(--esp-2);
+}
+
+.pb-barre {
+  flex: 1;
+  height: 5px;
+  overflow: hidden;
+  border-radius: var(--radius-pilule);
+  background: var(--desactive-30);
+}
+
+.pb-barre i {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-pilule);
+  background: var(--accent1);
+  transition: width var(--dur-standard) ease;
+}
+
+.pb-compte {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--texte-doux);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Modale de détail --- */
+.modal-badge {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--esp-6);
+  max-width: 340px;
+  padding-top: 26px;
+  text-align: center;
+}
+
+.modal-badge-fermer {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.modal-badge .ecusson {
+  margin-bottom: var(--esp-6);
+}
+
+.modal-badge-nom {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.modal-badge-desc {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--texte-doux-carte);
+}
+
+.pb-progression.grande {
+  max-width: 240px;
+  margin-top: var(--esp-8);
+}
+
+.pb-progression.grande .pb-barre {
+  height: 7px;
+}
+
+.modal-badge-reste {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--texte-doux-carte);
+}
+
+.modal-badge .btn-principal {
+  margin-top: var(--esp-12);
+}

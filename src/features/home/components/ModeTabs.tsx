@@ -40,7 +40,7 @@ export default function ModeTabs({ a }: ModeTabsProps): ReactElement {
           }
           onClick={() => setMode(m.id)}
         >
-          <Icon nom={m.icone} taille={19} />
+          <Icon nom={m.icone} taille={30} />
           <span>{m.nom}</span>
           {m.badge && <span className="tab-badge">{m.badge}</span>}
           {m.streak && dailyStreak > 0 && (

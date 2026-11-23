@@ -19,6 +19,7 @@ import ThemeGrid from './components/ThemeGrid.jsx';
 import LevelModal from './components/LevelModal.jsx';
 import FixedCta from './components/FixedCta.jsx';
 import RandomModal from './components/RandomModal.jsx';
+import BadgeDetailModal from './components/BadgeDetailModal.jsx';
 
 /** Props de l'écran d'accueil, déléguées par app/Screens.tsx. */
 export interface HomeProps {
@@ -138,6 +139,8 @@ export default function Home({
           onClose={() => a.setShowRandom(false)}
         />
       )}
+
+      {a.badgeDetail && !isGuest && <BadgeDetailModal a={a} onBadges={onBadges} />}
 
       {a.profilOuvert && (
         <Profile

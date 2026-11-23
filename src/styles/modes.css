@@ -3,19 +3,23 @@
 
 .modes-tabs {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-auto-rows: 1fr;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--esp-8);
 }
 
+/* 4 carrés arrondis : gros picto du mode, libellé en dessous */
 .mode-tab {
   position: relative;
-  flex-direction: row;
-  flex-wrap: nowrap;
+  aspect-ratio: 1;
+  flex-direction: column;
   justify-content: center;
   gap: var(--esp-6);
-  min-height: 46px;
-  padding: 8px 10px;
-  font-size: 0.78rem;
+  min-height: 0;
+  padding: 8px 4px;
+  border-radius: var(--radius-moyen);
+  font-size: 0.72rem;
+  line-height: 1.15;
+  text-align: center;
 }
 
 /* Pastilles posées sur le bord de l'onglet : elles n'agrandissent plus la case */
@@ -23,7 +27,14 @@
 .mode-tab .tab-streak {
   position: absolute;
   top: -8px;
-  right: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+/* La pastille reste centrée : seule l'icône éclair pulse */
+.mode-tab .tab-streak {
+  animation: none;
 }
 
 .btn-icone {

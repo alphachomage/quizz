@@ -1,8 +1,10 @@
-// BanniereBadge.tsx — bannière « prochain badge » (effet « reviens-y »), avec barre
-// de progression. Masquée en mode invité.
+// BanniereBadge.tsx — « prochain badge » en écusson centré (effet « reviens-y ») :
+// blason avec l'icône du badge, son nom et la barre de progression. Un clic ouvre le
+// détail (BadgeDetailModal). Masqué en mode invité.
 import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import type { HomeState } from '../useHome.js';
+import Crest from './Crest.jsx';
 
 interface BadgeBannerProps {
   a: HomeState;
@@ -13,20 +15,28 @@ export default function BadgeBanner({ a, isGuest }: BadgeBannerProps): ReactElem
   if (isGuest || !a.nextBadge) return null;
   const b = a.nextBadge;
   return (
-    <div className="prochain-badge" title={`${b.desc} — débloque ce badge en continuant à jouer !`}>
-      <span className="pb-icone">
-        <Icon nom={b.icone} taille={14} />
+    <button
+      className="prochain-badge"
+      onClick={() => a.setBadgeDetail(true)}
+      aria-label={`Prochain badge : ${b.nom}, ${b.current} sur ${b.target}. Voir le détail`}
+    >
+      <Crest taille={58}>
+        <Icon nom={b.icone} taille={22} />
+      </Crest>
+      <span className="pb-surtitre">Prochain badge</span>
+      <span className="pb-nom">{b.nom}</span>
+      <span className="pb-progression">
+        <span className="pb-barre">
+          <i
+            style={{
+              width: `${Math.round(b.pct * 100)}%`,
+            }}
+          />
+        </span>
+        <span className="pb-compte">
+          {b.current}/{b.target}
+        </span>
       </span>
-      <span className="pb-texte">
-        <strong>Prochain badge :</strong> {b.nom} · {b.current}/{b.target}
-      </span>
-      <span className="pb-barre">
-        <i
-          style={{
-            width: `${Math.round(b.pct * 100)}%`,
-          }}
-        />
-      </span>
-    </div>
+    </button>
   );
 }

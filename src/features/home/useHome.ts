@@ -59,6 +59,8 @@ export interface HomeState {
   setShowSuggestionsN: Dispatch<SetStateAction<boolean>>;
   levelModal: boolean;
   showRandom: boolean;
+  badgeDetail: boolean;
+  setBadgeDetail: Dispatch<SetStateAction<boolean>>;
   setShowRandom: Dispatch<SetStateAction<boolean>>;
   setLevelModal: Dispatch<SetStateAction<boolean>>;
   nom1: string;
@@ -96,6 +98,7 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
   const [showSettings, setShowSettings] = useState(false);
   const [showSuggestions, setShowSuggestionsN] = useState(false);
   const [showRandom, setShowRandom] = useState(false); // roulette « Aléatoire » (solo)
+  const [badgeDetail, setBadgeDetail] = useState(false); // détail du prochain badge
   const [levelModal, setLevelModal] = useState(false); // modale difficulté (solo, au clic sur un thème)
   const [nom1, setNom1] = useState(pseudo || '');
   const [nom2, setNom2] = useState('');
@@ -232,6 +235,8 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
     lancerTheme,
     showRandom,
     setShowRandom,
+    badgeDetail,
+    setBadgeDetail,
     dailyRecord,
     nextBadge,
     dailyStreak,
