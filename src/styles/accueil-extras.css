@@ -66,9 +66,9 @@
   align-items: center;
   gap: 9px;
   margin-top: var(--esp-10);
-  padding: 7px 12px;
-  background: var(--carte);
-  border: 1px solid var(--bordure);
+  padding: 7px 4px;
+  background: transparent;
+  border: 0;
   border-radius: var(--radius-pilule);
 }
 

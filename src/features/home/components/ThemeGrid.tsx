@@ -1,6 +1,6 @@
-// GrilleThemes.tsx — carrousel horizontal des thèmes (ordre alphabétique fixe) avec carte
-// mémoïsée (React.memo : seule la carte dont les props changent est re-rendue).
-import { memo } from 'react';
+// GrilleThemes.tsx — carrousel des thèmes en boucle infinie (ordre alphabétique fixe), points
+// de navigation en bas, flèches sur grand écran. Carte mémoïsée (React.memo).
+import { memo, useCallback } from 'react';
 import type { CSSProperties, ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import { recordKey } from '@lib/records.js';
@@ -9,7 +9,7 @@ import { themeLevel, xpForLevel } from '@lib/xp.js';
 import type { XpMap } from '@lib/xp.js';
 import type { GameMode, LevelId, Theme } from '@lib/types.js';
 import type { HomeState } from '../useHome.js';
-import { useCarousel } from '../useCarousel.js';
+import { LOOP_COPIES, useCarousel } from '../useCarousel.js';
 
 interface ThemeCardProps {
   t: Theme;
@@ -20,6 +20,8 @@ interface ThemeCardProps {
   xp: XpMap;
   isAdmin: boolean;
   isGuest: boolean;
+  /** Copie de bouclage : invisible pour les lecteurs d'écran et hors du parcours clavier. */
+  clone: boolean;
   onSelect: (id: string) => void;
 }
 
@@ -32,6 +34,7 @@ const ThemeCard = memo(function ThemeCard({
   xp,
   isAdmin,
   isGuest,
+  clone,
   onSelect,
 }: ThemeCardProps): ReactElement {
   const record = records[recordKey(mode, mode === 'solo' ? niveau : null, t.id)] || 0;
@@ -47,6 +50,8 @@ const ThemeCard = memo(function ThemeCard({
           '--couleur': t.couleur,
         } as CSSProperties
       }
+      aria-hidden={clone || undefined}
+      tabIndex={clone ? -1 : undefined}
       onClick={() => onSelect(t.id)}
     >
       <span className="theme-icone">
@@ -82,7 +87,19 @@ interface ThemeGridProps {
 }
 
 export default function ThemeGrid({ a, isAdmin, isGuest }: ThemeGridProps): ReactElement {
-  const c = useCarousel(a.displayedThemes.length);
+  const themes = a.displayedThemes;
+  const c = useCarousel(themes.length);
+  const { mode, setThemeId, setLevelModal } = a;
+  const onSelect = useCallback(
+    (id: string) => {
+      setThemeId(id);
+      // En solo, le choix du niveau se fait dans une modale, sans scroll
+      if (mode === 'solo') setLevelModal(true);
+    },
+    [mode, setThemeId, setLevelModal]
+  );
+  const copies = Array.from({ length: LOOP_COPIES }, (_, i) => i);
+  const middle = Math.floor(LOOP_COPIES / 2);
   return (
     <section className="themes-carrousel" aria-roledescription="carrousel" aria-label="Thèmes">
       <div className="carrousel-entete">
@@ -91,7 +108,6 @@ export default function ThemeGrid({ a, isAdmin, isGuest }: ThemeGridProps): Reac
           <button
             className="carrousel-fleche"
             aria-label="Thèmes précédents"
-            disabled={!c.canPrev}
             onClick={() => c.page(-1)}
           >
             <Icon nom="chevron-left" taille={18} />
@@ -99,7 +115,6 @@ export default function ThemeGrid({ a, isAdmin, isGuest }: ThemeGridProps): Reac
           <button
             className="carrousel-fleche"
             aria-label="Thèmes suivants"
-            disabled={!c.canNext}
             onClick={() => c.page(1)}
           >
             <Icon nom="chevron-right" taille={18} />
@@ -107,32 +122,39 @@ export default function ThemeGrid({ a, isAdmin, isGuest }: ThemeGridProps): Reac
         </div>
       </div>
       <div className="themes" ref={c.trackRef} onScroll={c.onScroll}>
-        {a.displayedThemes.map((t) => (
-          <ThemeCard
+        {copies.map((copy) =>
+          themes.map((t) => (
+            <ThemeCard
+              key={`${copy}-${t.id}`}
+              t={t}
+              mode={a.mode}
+              niveau={a.niveau}
+              themeId={a.themeId}
+              records={a.records}
+              xp={a.xp}
+              isAdmin={isAdmin}
+              isGuest={isGuest}
+              clone={copy !== middle}
+              onSelect={onSelect}
+            />
+          ))
+        )}
+      </div>
+      <div className="carrousel-points">
+        {themes.map((t, i) => (
+          <button
             key={t.id}
-            t={t}
-            mode={a.mode}
-            niveau={a.niveau}
-            themeId={a.themeId}
-            records={a.records}
-            xp={a.xp}
-            isAdmin={isAdmin}
-            isGuest={isGuest}
-            onSelect={(id) => {
-              a.setThemeId(id);
-              // En solo, le choix du niveau se fait dans une modale, sans scroll
-              if (a.mode === 'solo') a.setLevelModal(true);
-            }}
+            className={i === c.active ? 'carrousel-point actif' : 'carrousel-point'}
+            style={
+              {
+                '--couleur': t.couleur,
+              } as CSSProperties
+            }
+            aria-label={`Aller au thème ${t.nom}`}
+            aria-current={i === c.active || undefined}
+            onClick={() => c.goTo(i)}
           />
         ))}
-      </div>
-      <div className="carrousel-jauge" aria-hidden="true">
-        <i
-          style={{
-            width: `${c.visible * 100}%`,
-            transform: `translateX(${c.progress * (1 / c.visible - 1) * 100}%)`,
-          }}
-        />
       </div>
     </section>
   );

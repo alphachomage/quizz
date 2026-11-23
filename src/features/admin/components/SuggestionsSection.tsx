@@ -1,4 +1,4 @@
-// SuggestionsSection.tsx — vue admin : remontées des joueurs (bouton « Une suggestion ? »),
+// SuggestionsSection.tsx — vue admin : remontées des joueurs (bouton « Suggestion »),
 // visibles UNIQUEMENT ici, jamais dans l'interface joueur.
 import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
@@ -24,7 +24,7 @@ export default function SuggestionsSection({
         Suggestions des joueurs <span className="badge-compte">{suggestions.length}</span>
       </h2>
       <p className="vide">
-        Remontées envoyées via le bouton « Une suggestion ? » de l'accueil (idée, bug,
+        Remontées envoyées via le bouton « Suggestion » de l'accueil (idée, bug,
         amélioration). Visibles UNIQUEMENT ici, côté admin — jamais dans l'interface joueur.
       </p>
       {suggestions.length === 0 ? (

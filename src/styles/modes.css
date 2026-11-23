@@ -9,7 +9,8 @@
 
 .mode-tab {
   justify-content: center;
-  min-height: 74px;
+  min-height: 64px;
+  padding-block: 9px;
 }
 
 .btn-icone {
@@ -37,6 +38,8 @@
 .barre-user > .btn-icone,
 .barre-user > .btn-suppr {
   flex-shrink: 0;
+  border-color: transparent;
+  background: transparent;
 }
 
 @media (max-width: 420px) {

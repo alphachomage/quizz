@@ -90,19 +90,19 @@ export default function Home({
 
       {['solo', 'duel'].includes(a.mode) && <ThemeGrid a={a} isAdmin={isAdmin} isGuest={isGuest} />}
 
-      {!isGuest && (
-        <button className="btn-secondaire" onClick={onLeaderboard}>
-          <Icon nom="podium" taille={18} /> Voir le classement
+      <nav className="liens-accueil" aria-label="Autres actions">
+        {!isGuest && (
+          <button className="btn-secondaire" onClick={onLeaderboard}>
+            <Icon nom="podium" taille={16} /> Classement
+          </button>
+        )}
+        <button className="btn-secondaire" onClick={onPropose}>
+          <Icon nom="plus" taille={16} /> Proposer une question
         </button>
-      )}
-
-      <button className="btn-secondaire" onClick={onPropose}>
-        <Icon nom="plus" taille={18} /> Proposer une question
-      </button>
-
-      <button className="btn-secondaire" onClick={() => a.setShowSuggestionsN(true)}>
-        <Icon nom="pencil" taille={18} /> Une suggestion ? (idée, bug, amélioration)
-      </button>
+        <button className="btn-secondaire" onClick={() => a.setShowSuggestionsN(true)}>
+          <Icon nom="pencil" taille={16} /> Suggestion
+        </button>
+      </nav>
 
       {a.showSettings && (
         <Settings

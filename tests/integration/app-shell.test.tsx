@@ -89,14 +89,16 @@ describe("shell de l'application (app/)", () => {
     render(<App />);
     // Accueil : les thèmes factices apparaissent (catalogue + chunk lazy résolus).
     await waitForText('Thème 0');
-    expect(screen.getByText('Thème 1')).toBeTruthy();
+    // Le carrousel boucle : chaque carte existe en 3 exemplaires, seul celui du milieu est
+    // exposé aux lecteurs d'écran (les copies sont aria-hidden).
+    expect(screen.getByRole('button', { name: /^Thème 1\b/ })).toBeTruthy();
 
     // Le tuto de bienvenue s'ouvre à la première connexion : on le ferme.
     const tutorialButton = screen.queryByText("C'est parti");
     if (tutorialButton) fireEvent.click(tutorialButton);
 
     // Clic sur un thème -> modale de choix du niveau (solo).
-    fireEvent.click(screen.getByText('Thème 0'));
+    fireEvent.click(screen.getByRole('button', { name: /^Thème 0\b/ }));
     expect(screen.getByText('Choisis la difficulté :')).toBeTruthy();
 
     // Clic sur "C'est parti" DANS LA MODALE (le CTA fixe du bas a le même libellé).

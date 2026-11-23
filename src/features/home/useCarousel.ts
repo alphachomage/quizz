@@ -1,60 +1,111 @@
-// useCarousel.ts — état d'un carrousel horizontal (scroll-snap natif) : position de la
-// jauge de progression, flèches précédent/suivant actives ou non, défilement par page.
-import { useCallback, useEffect, useRef, useState } from 'react';
+// useCarousel.ts — carrousel horizontal en boucle infinie (scroll-snap natif).
+// La liste est rendue 3 fois [copie | originale | copie] ; quand le défilement s'arrête
+// dans une copie, on recale instantanément sur la carte identique de la liste du milieu :
+// l'utilisateur peut swiper à gauche ou à droite sans jamais arriver au bout.
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { RefObject } from 'react';
+
+/** Nombre de copies de la liste rendues dans la piste (la copie du milieu est l'originale). */
+export const LOOP_COPIES = 3;
 
 export interface CarouselState {
   trackRef: RefObject<HTMLDivElement>;
-  /** Part visible de la piste (0-1) : largeur du curseur de la jauge. */
-  visible: number;
-  /** Position du curseur (0-1) dans l'espace restant de la jauge. */
-  progress: number;
-  canPrev: boolean;
-  canNext: boolean;
+  /** Index (0..n-1) de la carte alignée au début de la zone visible : point actif. */
+  active: number;
   onScroll: () => void;
   page: (dir: 1 | -1) => void;
+  goTo: (index: number) => void;
 }
 
 export function useCarousel(itemCount: number): CarouselState {
   const trackRef = useRef<HTMLDivElement>(null);
   const frame = useRef(0);
-  const [state, setState] = useState({ visible: 1, progress: 0, canPrev: false, canNext: false });
+  const settle = useRef<ReturnType<typeof setTimeout>>();
+  const [active, setActive] = useState(0);
+
+  // Distance entre deux cartes et largeur d'une liste complète, mesurées sur le DOM
+  const metrics = useCallback(() => {
+    const el = trackRef.current;
+    const kids = el?.children;
+    if (!el || !kids || kids.length < itemCount * LOOP_COPIES || itemCount === 0) return null;
+    const first = kids[0] as HTMLElement;
+    const step = (kids[1] as HTMLElement | undefined)?.offsetLeft ?? 0;
+    const set = (kids[itemCount] as HTMLElement).offsetLeft - first.offsetLeft;
+    return { el, step: step - first.offsetLeft, set, start: first.offsetLeft };
+  }, [itemCount]);
+
+  // Saut instantané (sans animation) d'une liste entière vers la copie du milieu
+  const recenter = useCallback(() => {
+    const m = metrics();
+    if (!m || m.set <= 0) return;
+    const { el, set } = m;
+    const x = el.scrollLeft;
+    let target = x;
+    if (x < set * 0.5) target = x + set;
+    else if (x >= set * 1.5) target = x - set;
+    if (target === x) return;
+    const prev = el.style.scrollBehavior;
+    el.style.scrollBehavior = 'auto';
+    el.scrollLeft = target;
+    el.style.scrollBehavior = prev;
+  }, [metrics]);
 
   const measure = useCallback(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    const max = el.scrollWidth - el.clientWidth;
-    setState({
-      visible: el.scrollWidth > 0 ? Math.min(1, el.clientWidth / el.scrollWidth) : 1,
-      progress: max > 0 ? el.scrollLeft / max : 0,
-      canPrev: el.scrollLeft > 4,
-      canNext: el.scrollLeft < max - 4,
-    });
-  }, []);
+    const m = metrics();
+    if (!m || m.step <= 0) return;
+    const i = Math.round(m.el.scrollLeft / m.step);
+    setActive(((i % itemCount) + itemCount) % itemCount);
+  }, [metrics, itemCount]);
 
-  // Une seule mesure par image affichée, même si l'événement scroll arrive en rafale
   const onScroll = useCallback(() => {
     cancelAnimationFrame(frame.current);
     frame.current = requestAnimationFrame(measure);
-  }, [measure]);
+    // Recalage une fois le geste terminé (le snap a fini de se poser)
+    clearTimeout(settle.current);
+    settle.current = setTimeout(recenter, 140);
+  }, [measure, recenter]);
 
-  useEffect(() => {
-    measure();
-    const el = trackRef.current;
-    if (!el || typeof ResizeObserver === 'undefined') return undefined;
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    return () => {
-      ro.disconnect();
+  // Départ sur la liste du milieu, avant le premier affichage
+  useLayoutEffect(() => {
+    const m = metrics();
+    if (!m) return;
+    const prev = m.el.style.scrollBehavior;
+    m.el.style.scrollBehavior = 'auto';
+    m.el.scrollLeft = m.set;
+    m.el.style.scrollBehavior = prev;
+    setActive(0);
+  }, [metrics]);
+
+  useEffect(
+    () => () => {
       cancelAnimationFrame(frame.current);
-    };
-  }, [measure, itemCount]);
+      clearTimeout(settle.current);
+    },
+    []
+  );
 
-  // Défile d'environ une largeur visible ; le scroll-snap recale sur la carte la plus proche
-  const page = useCallback((dir: 1 | -1) => {
-    const el = trackRef.current;
-    if (el) el.scrollBy({ left: dir * el.clientWidth * 0.85 });
-  }, []);
+  const page = useCallback(
+    (dir: 1 | -1) => {
+      const m = metrics();
+      if (!m) return;
+      const perView = Math.max(1, Math.floor(m.el.clientWidth / m.step));
+      m.el.scrollBy({ left: dir * perView * m.step });
+    },
+    [metrics]
+  );
 
-  return { trackRef, ...state, onScroll, page };
+  // Va à la carte `index` par le chemin le plus court (on peut passer par une copie)
+  const goTo = useCallback(
+    (index: number) => {
+      const m = metrics();
+      if (!m) return;
+      let delta = index - active;
+      if (delta > itemCount / 2) delta -= itemCount;
+      if (delta < -itemCount / 2) delta += itemCount;
+      m.el.scrollBy({ left: delta * m.step });
+    },
+    [metrics, active, itemCount]
+  );
+
+  return { trackRef, active, onScroll, page, goTo };
 }

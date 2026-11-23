@@ -17,8 +17,15 @@
 }
 
 .carrousel-fleches {
-  display: flex;
+  display: none;
   gap: var(--esp-8);
+}
+
+/* Sur mobile on swipe : les flèches ne servent qu'à la souris, sur grand écran */
+@media (min-width: 721px) {
+  .carrousel-fleches {
+    display: flex;
+  }
 }
 
 .carrousel-fleche {
@@ -42,11 +49,6 @@
   background: var(--carte-2);
 }
 
-.carrousel-fleche:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
 /* La piste : une seule rangée qui défile, chaque carte s'aligne au début de la zone */
 .themes {
   display: grid;
@@ -59,6 +61,7 @@
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   padding: 4px 2px 10px;
+  position: relative;
 }
 
 .themes::-webkit-scrollbar {
@@ -78,6 +81,8 @@
   padding: 11px;
   border-radius: var(--radius-mini);
   font-size: 0.6875rem;
+  align-items: center;
+  text-align: center;
 }
 
 .themes .theme:hover {
@@ -110,21 +115,59 @@
 
 .themes .theme-meta {
   margin-top: auto;
+  justify-content: center;
 }
 
-/* Jauge de progression sous la piste : le curseur montre la partie visible */
-.carrousel-jauge {
-  height: 4px;
-  margin: var(--esp-4) 2px 0;
-  overflow: hidden;
+/* Points de navigation : un par thème, le point actif s'allonge et prend la couleur du thème */
+.carrousel-points {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--esp-6);
+  margin-top: var(--esp-6);
+}
+
+.carrousel-point {
+  width: 6px;
+  height: 6px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pilule);
   background: var(--desactive-30);
-  border-radius: var(--radius-pilule);
+  cursor: pointer;
+  transition:
+    width var(--dur-court) ease,
+    background var(--dur-court) ease;
 }
 
-.carrousel-jauge i {
-  display: block;
-  height: 100%;
-  background: var(--accent1);
-  border-radius: var(--radius-pilule);
-  transition: transform 90ms linear;
+.carrousel-point.actif {
+  width: 18px;
+  background: var(--couleur, var(--accent1));
+}
+
+/* Zone de clic confortable au doigt sans grossir le point */
+.carrousel-point {
+  position: relative;
+}
+
+.carrousel-point::after {
+  content: '';
+  position: absolute;
+  inset: -8px -3px;
+}
+
+/* Liens du bas de l'accueil regroupés sur une ligne discrète (interface moins chargée) */
+.liens-accueil {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--esp-4) var(--esp-16);
+  margin-top: var(--esp-24);
+}
+
+.accueil .liens-accueil .btn-secondaire {
+  width: auto;
+  margin: 0;
+  padding: 8px 4px;
+  font-size: 0.85rem;
 }
