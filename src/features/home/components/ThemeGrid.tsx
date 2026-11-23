@@ -1,5 +1,5 @@
-// GrilleThemes.tsx — grille des thèmes (ordre alphabétique fixe) avec carte mémoïsée
-// (React.memo : la grille ne re-rend que la carte whose props changent).
+// GrilleThemes.tsx — carrousel horizontal des thèmes (ordre alphabétique fixe) avec carte
+// mémoïsée (React.memo : seule la carte dont les props changent est re-rendue).
 import { memo } from 'react';
 import type { CSSProperties, ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
@@ -9,6 +9,7 @@ import { themeLevel, xpForLevel } from '@lib/xp.js';
 import type { XpMap } from '@lib/xp.js';
 import type { GameMode, LevelId, Theme } from '@lib/types.js';
 import type { HomeState } from '../useHome.js';
+import { useCarousel } from '../useCarousel.js';
 
 interface ThemeCardProps {
   t: Theme;
@@ -48,12 +49,10 @@ const ThemeCard = memo(function ThemeCard({
       }
       onClick={() => onSelect(t.id)}
     >
-      <span className="theme-haut">
-        <span className="theme-icone">
-          <Icon nom={t.icone} taille={22} />
-        </span>
-        <span className="theme-nom">{t.nom}</span>
+      <span className="theme-icone">
+        <Icon nom={t.icone} taille={26} />
       </span>
+      <span className="theme-nom">{t.nom}</span>
       <span className="theme-meta">
         {!isGuest && <span className="theme-niv">Niv. {niv}</span>}
         {record > 0 && <span className="theme-record">Record {record} pts</span>}
@@ -83,10 +82,31 @@ interface ThemeGridProps {
 }
 
 export default function ThemeGrid({ a, isAdmin, isGuest }: ThemeGridProps): ReactElement {
+  const c = useCarousel(a.displayedThemes.length);
   return (
-    <>
-      <h2 className="titre-section">Choisis ton thème</h2>
-      <section className="themes">
+    <section className="themes-carrousel" aria-roledescription="carrousel" aria-label="Thèmes">
+      <div className="carrousel-entete">
+        <h2 className="titre-section">Choisis ton thème</h2>
+        <div className="carrousel-fleches">
+          <button
+            className="carrousel-fleche"
+            aria-label="Thèmes précédents"
+            disabled={!c.canPrev}
+            onClick={() => c.page(-1)}
+          >
+            <Icon nom="chevron-left" taille={18} />
+          </button>
+          <button
+            className="carrousel-fleche"
+            aria-label="Thèmes suivants"
+            disabled={!c.canNext}
+            onClick={() => c.page(1)}
+          >
+            <Icon nom="chevron-right" taille={18} />
+          </button>
+        </div>
+      </div>
+      <div className="themes" ref={c.trackRef} onScroll={c.onScroll}>
         {a.displayedThemes.map((t) => (
           <ThemeCard
             key={t.id}
@@ -105,7 +125,15 @@ export default function ThemeGrid({ a, isAdmin, isGuest }: ThemeGridProps): Reac
             }}
           />
         ))}
-      </section>
-    </>
+      </div>
+      <div className="carrousel-jauge" aria-hidden="true">
+        <i
+          style={{
+            width: `${c.visible * 100}%`,
+            transform: `translateX(${c.progress * (1 / c.visible - 1) * 100}%)`,
+          }}
+        />
+      </div>
+    </section>
   );
 }

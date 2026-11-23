@@ -12,6 +12,7 @@ import { useHome } from './useHome.js';
 import type { StartConfig } from './useHome.js';
 import UserBar from './components/UserBar.jsx';
 import ModeTabs from './components/ModeTabs.jsx';
+import ModeDescription from './components/ModeDescription.jsx';
 import BadgeBanner from './components/BadgeBanner.jsx';
 import DuelNames from './components/DuelNames.jsx';
 import ThemeGrid from './components/ThemeGrid.jsx';
@@ -81,6 +82,7 @@ export default function Home({
         </div>
       </header>
 
+      <ModeDescription a={a} />
       <ModeTabs a={a} />
       <BadgeBanner a={a} isGuest={isGuest} />
 

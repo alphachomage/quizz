@@ -1,0 +1,130 @@
+/* VoltQuiz — carrousel horizontal des thèmes sur l'accueil (scroll-snap natif, sans librairie) */
+
+.themes-carrousel {
+  margin-top: 30px;
+}
+
+.carrousel-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-12);
+  margin-bottom: var(--esp-12);
+}
+
+.carrousel-entete .titre-section {
+  margin: 0;
+}
+
+.carrousel-fleches {
+  display: flex;
+  gap: var(--esp-8);
+}
+
+.carrousel-fleche {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--bordure);
+  border-radius: var(--radius-pilule);
+  background: var(--carte);
+  color: var(--texte);
+  cursor: pointer;
+  transition:
+    background var(--dur-court) ease,
+    opacity var(--dur-court) ease;
+}
+
+.carrousel-fleche:hover:not(:disabled) {
+  background: var(--carte-2);
+}
+
+.carrousel-fleche:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* La piste : une seule rangée qui défile, chaque carte s'aligne au début de la zone */
+.themes {
+  display: grid;
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: 136px;
+  gap: var(--esp-12);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding: 4px 2px 10px;
+}
+
+.themes::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .themes {
+    scroll-behavior: smooth;
+  }
+}
+
+.themes .theme {
+  scroll-snap-align: start;
+  min-height: 156px;
+  gap: var(--esp-8);
+  padding: 11px;
+  border-radius: var(--radius-mini);
+  font-size: 0.6875rem;
+}
+
+.themes .theme:hover {
+  transform: translateY(-3px);
+}
+
+/* Thème choisi : bordure + fond légèrement teinté de la couleur du thème (aplat, pas de dégradé) */
+.themes .theme.actif {
+  transform: none;
+  border-color: var(--couleur, var(--accent1));
+  background: color-mix(in srgb, var(--couleur, var(--accent1)) 16%, var(--carte));
+}
+
+.themes .theme-icone {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-mini);
+}
+
+.themes .theme-nom {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  min-height: 2.4em;
+  font-size: 0.92rem;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+.themes .theme-meta {
+  margin-top: auto;
+}
+
+/* Jauge de progression sous la piste : le curseur montre la partie visible */
+.carrousel-jauge {
+  height: 4px;
+  margin: var(--esp-4) 2px 0;
+  overflow: hidden;
+  background: var(--desactive-30);
+  border-radius: var(--radius-pilule);
+}
+
+.carrousel-jauge i {
+  display: block;
+  height: 100%;
+  background: var(--accent1);
+  border-radius: var(--radius-pilule);
+  transition: transform 90ms linear;
+}

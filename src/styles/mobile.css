@@ -11,7 +11,4 @@
   .reponses {
     grid-template-columns: 1fr;
   }
-  .themes {
-    grid-template-columns: 1fr;
-  }
 }

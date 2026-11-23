@@ -197,6 +197,8 @@ const CHEMINS: Record<string, ReactNode> = {
       <line x1="6" y1="6" x2="18" y2="18" />
     </>
   ),
+  'chevron-left': <polyline points="15 18 9 12 15 6" />,
+  'chevron-right': <polyline points="9 18 15 12 9 6" />,
   plus: (
     <>
       <line x1="12" y1="5" x2="12" y2="19" />

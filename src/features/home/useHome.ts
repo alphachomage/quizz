@@ -118,7 +118,8 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
   const displayedThemes = useMemo(
     // `nom` est toujours renseigné dans le catalogue ; le cast garde le comportement
     // exact de l'ancien JS (localeCompare sur nom, sans fallback).
-    () => [...(themes ?? [])].sort((a, b) => (a.nom as string).localeCompare(b.nom as string, 'fr')),
+    () =>
+      [...(themes ?? [])].sort((a, b) => (a.nom as string).localeCompare(b.nom as string, 'fr')),
     [themes]
   );
   function lancer(): void {

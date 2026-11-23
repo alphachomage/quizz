@@ -5,7 +5,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--esp-8);
+  gap: var(--esp-6);
   margin-bottom: var(--esp-18);
 }
 
@@ -66,9 +66,26 @@
   display: flex;
   align-items: center;
   gap: var(--esp-8);
+  min-width: 0;
+}
+
+/* Pseudo long : coupé avec « … » au lieu de passer sous les boutons */
+.user-pseudo {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-progression {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-6);
+  min-width: 0;
 }
 
 .user-niv {
+  flex-shrink: 0;
   padding: 1px 8px;
   font-size: 0.7rem;
   font-weight: 800;
@@ -79,8 +96,10 @@
 
 .user-xpbar {
   display: block;
-  width: 150px;
-  max-width: 40vw;
+  flex: 1;
+  width: 100%;
+  max-width: 150px;
+  min-width: 36px;
   height: 6px;
   background: var(--desactive-30);
   border-radius: var(--radius-pilule);
@@ -121,7 +140,7 @@
 
 .hero {
   text-align: center;
-  margin-bottom: 26px;
+  margin-bottom: var(--esp-8);
 }
 
 .logo {
@@ -189,7 +208,7 @@
 }
 
 .mode-desc-ligne {
-  margin: 12px 2px 0;
+  margin: 0 2px 18px;
   font-size: 0.88rem;
   color: var(--texte-doux);
   text-align: center;

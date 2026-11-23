@@ -59,7 +59,8 @@ voir `docs/questions.md`). Source de vérité : `npm run count:questions` + `src
 
 ## Mise en page actuelle (« épuré »)
 
-Accueil allégé : 4 onglets pilule pour les modes, grille de thèmes en cartes compactes,
+Accueil allégé : 4 onglets pilule pour les modes (grille 2×2, cases de même taille), description du mode sous le logo,
+thèmes en carrousel horizontal de cartes compactes (`src/styles/carrousel-themes.css`),
 choix du niveau en modale au clic sur le thème, gros bouton « C'est parti » fixé en bas
 (`.cta-fixe`). Coins très arrondis (pilule `999px`, cartes `26px`), cartes plates sans ombre
 ni backdrop-filter, titres fins (weight 400). Pas de compteur de questions côté joueur

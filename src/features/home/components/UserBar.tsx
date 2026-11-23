@@ -43,24 +43,23 @@ export default function UserBar({
         )}
         <div className="user-infos">
           <span className="user-nom">
-            {pseudo}{' '}
-            {isGuest ? (
-              <span className="chip-invite">Invité</span>
-            ) : (
-              <span className="user-niv">Niv. {a.nivGlobal}</span>
-            )}
+            <span className="user-pseudo">{pseudo}</span>
+            {isGuest && <span className="chip-invite">Invité</span>}
           </span>
           {!isGuest && (
             <>
-              <span
-                className="user-xpbar"
-                title={`${a.totalXp} XP au total — niveau ${a.nivGlobal + 1} à ${a.xpNext} XP`}
-              >
-                <i
-                  style={{
-                    width: `${a.pctXpGlobal}%`,
-                  }}
-                />
+              <span className="user-progression">
+                <span className="user-niv">Niv. {a.nivGlobal}</span>
+                <span
+                  className="user-xpbar"
+                  title={`${a.totalXp} XP au total — niveau ${a.nivGlobal + 1} à ${a.xpNext} XP`}
+                >
+                  <i
+                    style={{
+                      width: `${a.pctXpGlobal}%`,
+                    }}
+                  />
+                </span>
               </span>
               {a.profileTitle && (
                 <span

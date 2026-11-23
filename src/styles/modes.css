@@ -2,11 +2,14 @@
 /* --- Nouveaux modes (survie / quizz du jour) + r�glages --- */
 
 .modes-tabs {
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 1fr;
 }
 
 .mode-tab {
-  flex: 1 1 40%;
+  justify-content: center;
+  min-height: 74px;
 }
 
 .btn-icone {
@@ -33,7 +36,15 @@
 
 .barre-user > .btn-icone,
 .barre-user > .btn-suppr {
-  margin-left: var(--esp-8);
+  flex-shrink: 0;
+}
+
+@media (max-width: 420px) {
+  .barre-user > .btn-icone,
+  .barre-user > .btn-suppr {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 .info-mix {
