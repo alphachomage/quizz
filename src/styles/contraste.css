@@ -98,3 +98,15 @@ body.theme-clair .rate strong {
 body.theme-clair .btn-signaler:hover {
   color: var(--erreur-fond);
 }
+
+/* Titres d'écran (Classement, Compte, Proposer une question) : gras, blanc en sombre,
+   bleu roi en clair. Avant : blanc sur blanc en mode clair sur l'écran Classement. */
+.hero .logo {
+  color: var(--titre);
+  font-weight: 700;
+}
+
+/* Toutes les questions : blanc en sombre, bleu roi en clair (demande client) */
+.question {
+  color: var(--question);
+}

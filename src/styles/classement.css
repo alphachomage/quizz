@@ -8,7 +8,7 @@
   padding: 6px;
   background: var(--carte);
   border: 1px solid var(--bordure);
-  border-radius: var(--radius-pilule);
+  border-radius: var(--radius-16); /* coins arrondis plutôt que pilule (atelier) */
   margin-bottom: var(--esp-18);
 }
 
@@ -19,7 +19,7 @@
   color: var(--texte-doux);
   background: transparent;
   border: none;
-  border-radius: var(--radius-pilule);
+  border-radius: var(--radius-11);
   cursor: pointer;
   transition:
     background var(--dur-court) ease,

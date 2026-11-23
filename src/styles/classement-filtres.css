@@ -30,3 +30,15 @@
   align-items: center;
   gap: var(--esp-6);
 }
+
+/* Écran Classement : filtres centrés, en 2 colonnes de même largeur (atelier) */
+.classement .filtres-niveau {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 340px;
+  margin-inline: auto;
+}
+
+.classement .filtre {
+  text-align: center;
+}

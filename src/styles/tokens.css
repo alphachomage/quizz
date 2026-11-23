@@ -45,6 +45,7 @@
   --accent2: #ffd23f;
   --or: #ffd23f;
   --question: #ffffff; /* texte des questions en partie */
+  --titre: #ffffff; /* titres d'écran (Classement, Compte, Proposer une question) */
 
   /* Jaune #FFD23F à alpha */
   --accent-08: rgba(255, 210, 63, 0.08);
@@ -100,6 +101,7 @@
   --radius-micro: 10px;
   --radius-rond: 50%;
   --radius-2: 2px;
+  --radius-5: 5px;
   --radius-9: 9px;
   --radius-11: 11px;
   --radius-15: 15px;

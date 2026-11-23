@@ -12,9 +12,11 @@
 
 .barre-haut-theme {
   display: flex;
+  justify-content: center; /* thème centré sur l'écran (atelier) */
 }
 
 .barre-haut-theme .theme-chip {
+  border-radius: var(--radius-5); /* étiquette à coins légers plutôt que pilule (atelier) */
   padding: 7px 14px;
   font-size: 0.95rem;
   font-weight: 800;
@@ -23,6 +25,7 @@
 .barre-haut-infos {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
   gap: var(--esp-6);
 }
@@ -134,4 +137,9 @@
     padding: 3px 8px;
     font-size: 0.66rem;
   }
+}
+
+/* Infos centrées sous le thème : le score ne part plus à droite */
+.barre-haut-infos .score {
+  margin-left: 0;
 }

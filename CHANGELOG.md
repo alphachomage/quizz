@@ -6,6 +6,11 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 ## Non publié
 
 ### Modifié
+- **Écran Classement (atelier)** : onglets de mode à coins arrondis 16 px (au lieu de pilule, aussi sur Badges et Compte), filtres centrés en 2 colonnes de même largeur.
+- **Partie (atelier)** : étiquette du thème centrée à coins de 5 px, infos centrées dessous ; toutes les questions en bleu roi en mode clair (règle globale `.question`).
+
+### Corrigé
+- **Titres d'écran invisibles en mode clair** (« Classement » blanc sur blanc) : titres `.hero .logo` en gras, token `--titre` (blanc en sombre, bleu roi en clair).
 - **Écran de partie sur un seul écran (demande client)** : en-tête sur deux niveaux (thème en gros, puis infos niveau / manche / question / score sur une ligne), question dont la taille suit la hauteur d'écran, réponses plus compactes, bouton « Signaler » discret ; le retour après réponse (« Raté. La bonne réponse était… », anecdote) s'affiche dans un encart **épinglé en bas de l'écran**, toujours visible. Questions (> 110 caractères, ~1 % du corpus) et réponses (> 45 caractères) très longues en texte réduit. Vérifié sans défilement de 320×568 à 1280×800, y compris sur les 3 questions les plus longues du corpus. Nouveau `src/styles/partie-compacte.css`.
 - **Texte des questions en bleu roi `#1E3FA8` en mode clair** (choix client ; blanc en sombre), via le token `--question`.
 - **Accueil sur un seul écran, sans défilement, quelle que soit la taille** (vérifié de 320×568 à 1280×800) : logo et tuiles dimensionnés aussi selon la hauteur d'écran (`dvh`), espacements resserrés sous 760 px et 660 px de haut. Tuiles un peu plus petites mais pictos (48 % de la tuile) et libellés plus grands ; logo remonté de 5 px ; liens du bas sur une seule ligne (icônes masquées sous 380 px de large).
