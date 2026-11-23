@@ -16,6 +16,11 @@
 .modal {
   width: 100%;
   max-width: 420px;
+  /* Petit écran : une modale plus haute que l'écran défile au lieu d'être coupée */
+  max-height: calc(100vh - 40px);
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background: var(--carte);
   border: 1px solid var(--bordure-foncee);
   border-radius: var(--radius-moyen);
