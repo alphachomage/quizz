@@ -2,9 +2,6 @@
 /* ===== Petit écran (mobile) ===== */
 
 @media (max-width: 520px) {
-  .logo {
-    font-size: 1.6rem;
-  }
   .question {
     font-size: 1.22rem;
   }

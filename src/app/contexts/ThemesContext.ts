@@ -41,8 +41,12 @@ interface ThemesProviderProps {
 
 export function ThemesProvider({ children }: ThemesProviderProps) {
   const [baseThemes, setBaseThemes] = useState<Theme[] | null>(null); // null = questions en cours de chargement (chunks lazy)
-  const [submissions, setSubmissions] = useState<Submission[]>(() => validateSubmissions(loadSubmissions())); // en attente de validation
-  const [validees, setValidees] = useState<ApprovedSubmission[]>(() => validateSubmissions(loadApproved())); // validées = jouables
+  const [submissions, setSubmissions] = useState<Submission[]>(() =>
+    validateSubmissions(loadSubmissions())
+  ); // en attente de validation
+  const [validees, setValidees] = useState<ApprovedSubmission[]>(() =>
+    validateSubmissions(loadApproved())
+  ); // validées = jouables
 
   // Au chargement : on charge les questions (chunks lazy) puis on fusionne le
   // fichier questions-utilisateur.json par-dessus la base intégrée.

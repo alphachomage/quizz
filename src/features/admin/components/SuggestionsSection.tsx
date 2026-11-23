@@ -24,8 +24,8 @@ export default function SuggestionsSection({
         Suggestions des joueurs <span className="badge-compte">{suggestions.length}</span>
       </h2>
       <p className="vide">
-        Remontées envoyées via le bouton « Suggestion » de l'accueil (idée, bug,
-        amélioration). Visibles UNIQUEMENT ici, côté admin — jamais dans l'interface joueur.
+        Remontées envoyées via le bouton « Suggestion » de l'accueil (idée, bug, amélioration).
+        Visibles UNIQUEMENT ici, côté admin — jamais dans l'interface joueur.
       </p>
       {suggestions.length === 0 ? (
         <p className="vide">Aucune suggestion pour l'instant.</p>
@@ -36,8 +36,7 @@ export default function SuggestionsSection({
               <div className="prop-corps">
                 <span className="prop-texte-suggestion">{s.text}</span>
                 <span className="prop-meta">
-                  par <strong>{s.pseudo}</strong> ·{' '}
-                  {new Date(s.date || '').toLocaleString('fr-FR')}
+                  par <strong>{s.pseudo}</strong> · {new Date(s.date || '').toLocaleString('fr-FR')}
                 </span>
               </div>
               <button

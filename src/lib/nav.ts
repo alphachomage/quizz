@@ -23,3 +23,13 @@ function reloadPage(): void {
   window.location.reload();
 }
 export { reloadPage };
+
+// Le système demande moins d'animations (réglage d'accessibilité) : la roulette du choix de
+// thème saute alors directement au résultat. try/catch : sans navigateur -> false.
+export function prefersReducedMotion(): boolean {
+  try {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  } catch {
+    return false;
+  }
+}

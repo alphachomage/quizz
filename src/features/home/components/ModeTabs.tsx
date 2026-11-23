@@ -1,11 +1,12 @@
-// ModesTabs.tsx — les 4 onglets de mode (description : ModeDescription.tsx).
+// ModesTabs.tsx — les 4 grandes tuiles de mode de l'accueil (gros picto, nom dessous).
+// Un clic ouvre la popin du mode : choix du thème (Solo) ou confirmation (Survie, Quizz du jour).
 import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import type { GameMode } from '@lib/types.js';
 import type { HomeState } from '../useHome.js';
 
-// Onglet de mode : `badge` = pastille « à venir », `streak` = pastille série de jours.
-interface ModeTab {
+// Tuile de mode : `badge` = pastille « à venir », `streak` = pastille série de jours.
+interface ModeTile {
   id: GameMode;
   icone: string;
   nom: string;
@@ -13,7 +14,7 @@ interface ModeTab {
   streak?: boolean;
 }
 
-const MODES: ModeTab[] = [
+const MODES: ModeTile[] = [
   { id: 'solo', icone: 'timer', nom: 'Solo' },
   { id: 'duel', icone: 'swords', nom: 'Duel en ligne', badge: 'à venir' },
   { id: 'survie', icone: 'skull', nom: 'Survie' },
@@ -25,23 +26,19 @@ interface ModeTabsProps {
 }
 
 export default function ModeTabs({ a }: ModeTabsProps): ReactElement {
-  const { mode, setMode, dailyStreak } = a;
+  const { dailyStreak, openMode } = a;
   return (
-    <section className="modes-tabs">
+    <nav className="modes-tabs" aria-label="Modes de jeu">
       {MODES.map((m) => (
         <button
           key={m.id}
-          className={mode === m.id ? 'mode-tab actif' : 'mode-tab'}
-          disabled={m.id === 'duel'} // duel local verrouillé : le mode en ligne arrive plus tard
-          title={
-            m.id === 'duel'
-              ? 'Mode en ligne à venir — le duel local est désactivé pour l’instant'
-              : undefined
-          }
-          onClick={() => setMode(m.id)}
+          className="mode-tab"
+          disabled={m.id === 'duel'} // le duel en ligne arrive plus tard
+          title={m.id === 'duel' ? 'Mode en ligne à venir' : undefined}
+          onClick={() => openMode(m.id)}
         >
-          <Icon nom={m.icone} taille={30} />
-          <span>{m.nom}</span>
+          <Icon nom={m.icone} taille={48} />
+          <span className="mode-tab-nom">{m.nom}</span>
           {m.badge && <span className="tab-badge">{m.badge}</span>}
           {m.streak && dailyStreak > 0 && (
             <span
@@ -53,6 +50,6 @@ export default function ModeTabs({ a }: ModeTabsProps): ReactElement {
           )}
         </button>
       ))}
-    </section>
+    </nav>
   );
 }

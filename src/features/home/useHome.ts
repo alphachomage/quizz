@@ -57,12 +57,13 @@ export interface HomeState {
   setShowSettings: Dispatch<SetStateAction<boolean>>;
   showSuggestions: boolean;
   setShowSuggestionsN: Dispatch<SetStateAction<boolean>>;
-  levelModal: boolean;
-  showRandom: boolean;
   badgeDetail: boolean;
   setBadgeDetail: Dispatch<SetStateAction<boolean>>;
-  setShowRandom: Dispatch<SetStateAction<boolean>>;
-  setLevelModal: Dispatch<SetStateAction<boolean>>;
+  /** Popin de mode ouverte (choix du thème ou confirmation), null = aucune. */
+  picker: GameMode | null;
+  setPicker: Dispatch<SetStateAction<GameMode | null>>;
+  /** Clic sur une tuile de mode : sélectionne le mode et ouvre sa popin. */
+  openMode: (m: GameMode) => void;
   nom1: string;
   setNom1: Dispatch<SetStateAction<string>>;
   nom2: string;
@@ -97,9 +98,8 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
   const [themeId, setThemeId] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showSuggestions, setShowSuggestionsN] = useState(false);
-  const [showRandom, setShowRandom] = useState(false); // roulette « Aléatoire » (solo)
   const [badgeDetail, setBadgeDetail] = useState(false); // détail du prochain badge
-  const [levelModal, setLevelModal] = useState(false); // modale difficulté (solo, au clic sur un thème)
+  const [picker, setPicker] = useState<GameMode | null>(null);
   const [nom1, setNom1] = useState(pseudo || '');
   const [nom2, setNom2] = useState('');
   const [avatar, setAvatar] = useState<string | null>(() => currentAvatar());
@@ -162,6 +162,11 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
   }
 
   // Record du quizz du jour (clé = date du jour) pour afficher « déjà joué » sur la carte.
+  function openMode(m: GameMode): void {
+    setMode(m);
+    setPicker(m);
+  }
+
   function lancerTheme(t: Theme): void {
     setThemeId(t.id);
     onStart({
@@ -215,8 +220,9 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
     setShowSettings: setShowSettings,
     showSuggestions,
     setShowSuggestionsN: setShowSuggestionsN,
-    levelModal: levelModal,
-    setLevelModal: setLevelModal,
+    picker,
+    setPicker,
+    openMode,
     nom1,
     setNom1,
     nom2,
@@ -233,8 +239,6 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
     displayedThemes,
     lancer,
     lancerTheme,
-    showRandom,
-    setShowRandom,
     badgeDetail,
     setBadgeDetail,
     dailyRecord,

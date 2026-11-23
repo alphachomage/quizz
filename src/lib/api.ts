@@ -338,7 +338,8 @@ export const apiJoinRoom = (id: string, pseudo: string): Promise<RoomResponse> =
       pseudo,
     }),
   });
-export const apiRoom = (id: string): Promise<RoomResponse> => appel(`/room/${encodeURIComponent(id)}`);
+export const apiRoom = (id: string): Promise<RoomResponse> =>
+  appel(`/room/${encodeURIComponent(id)}`);
 export function apiDuelSocket(roomId: string): WebSocket {
   // Origine ws déduite de l'origine courante (via nav.js, seul habilité à lire l'URL — R5).
   // Un WebSocket navigateur ne peut pas poser de header Authorization custom : le token

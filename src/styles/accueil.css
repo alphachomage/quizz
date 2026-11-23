@@ -140,28 +140,31 @@
 
 .hero {
   text-align: center;
-  margin-bottom: var(--esp-8);
+  margin-bottom: var(--esp-18);
 }
 
 .logo {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--esp-12);
-  font-size: 1.7rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--texte);
+  display: flex;
+  justify-content: center;
+  margin: 0;
 }
 
-.logo-marque {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-mini);
-  background: var(--accent1);
-  color: var(--texte-sur-accent);
+.logo-img {
+  display: block;
+  width: min(230px, 62vw);
+  height: auto;
+}
+
+.logo-clair {
+  display: none;
+}
+
+body.theme-clair .logo-sombre {
+  display: none;
+}
+
+body.theme-clair .logo-clair {
+  display: block;
 }
 
 .tagline {

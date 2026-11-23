@@ -35,20 +35,21 @@
   color: var(--texte-sur-accent);
 }
 
-/* Bloc cliquable compact centré : petit blason à gauche, texte et barre à droite */
+/* Bloc cliquable centré : petit blason, surtitre, nom, puis barre de progression */
 .prochain-badge {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--esp-10);
+  gap: 3px;
   width: 100%;
-  max-width: 250px;
-  margin: var(--esp-14) auto 0;
-  padding: 6px 10px;
+  max-width: 230px;
+  margin: var(--esp-12) auto 0;
+  padding: 8px 12px;
   border: 0;
   border-radius: var(--radius-petit);
   background: transparent;
   color: var(--texte);
-  text-align: left;
+  text-align: center;
   cursor: pointer;
   transition: background var(--dur-court) ease;
 }
@@ -58,26 +59,12 @@
 }
 
 .prochain-badge .ecusson {
+  margin-bottom: var(--esp-4);
   transition: transform var(--dur-court) ease;
 }
 
 .prochain-badge:hover .ecusson {
   transform: translateY(-2px);
-}
-
-.pb-texte {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-}
-
-.pb-ligne {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--esp-8);
 }
 
 .pb-surtitre {

@@ -61,7 +61,14 @@ function shareLinks(text: string, url: string): ShareLinks {
 // Image "story" 1080x1920 générée en direct, palette sobre (canvas = pas de var() CSS, valeurs en dur
 // à synchroniser avec src/styles/tokens.css) : fond #0A1A40, carte #1E3FA8, accent jaune #FFD23F.
 export { shareLinks };
-export async function storyImage({ pseudo, date, score, bonnes, total, streak }: SharePayload): Promise<File> {
+export async function storyImage({
+  pseudo,
+  date,
+  score,
+  bonnes,
+  total,
+  streak,
+}: SharePayload): Promise<File> {
   const L = 1080,
     H = 1920;
   const c = document.createElement('canvas');

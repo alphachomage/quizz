@@ -85,7 +85,9 @@ export default function Game({ config, prefs, onFinish }: GameProps): ReactEleme
 
   // --- Écran « passe l'appareil » (mode duel uniquement) ---
   if (phase === 'attente') {
-    return <PassDevice joueur={players[p.currentPlayer]} themeColor={theme.couleur} onPret={p.pret} />;
+    return (
+      <PassDevice joueur={players[p.currentPlayer]} themeColor={theme.couleur} onPret={p.pret} />
+    );
   }
   return (
     <div className="partie">

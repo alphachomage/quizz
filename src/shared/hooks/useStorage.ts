@@ -6,7 +6,10 @@ import { read, subscribe } from '@lib/storage.js';
 
 // Hook réactif générique sur une clé du stockage : la valeur lue est `T`
 // (ou la chaîne brute de l'ancien format, ou `defaultValue`).
-export function useStorage<T = unknown>(key: string, defaultValue: T | null = null): T | string | null {
+export function useStorage<T = unknown>(
+  key: string,
+  defaultValue: T | null = null
+): T | string | null {
   // defaultValue est gelé dans une ref : un littéral inline ({} ou []) passé à chaque
   // rendu créerait une référence neuve à chaque appel de getSnapshot, ce qui ferait
   // boucler useSyncExternalStore (erreur React #185 « Maximum update depth exceeded »).

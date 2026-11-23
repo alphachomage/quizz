@@ -1,6 +1,7 @@
-// GrilleThemes.tsx — carrousel des thèmes en boucle infinie (ordre alphabétique fixe), points
-// de navigation en bas, flèches sur grand écran. Carte mémoïsée (React.memo).
-import { memo, useCallback } from 'react';
+// ThemeCarousel.tsx — carrousel des thèmes en boucle infinie (ordre alphabétique fixe) :
+// la carte au centre est la carte choisie ; un clic sur une carte la centre. Points de
+// navigation en dessous. Carte mémoïsée (React.memo). L'état vient de useCarousel.
+import { memo } from 'react';
 import type { CSSProperties, ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import { recordKey } from '@lib/records.js';
@@ -8,28 +9,30 @@ import type { RecordsMap } from '@lib/records.js';
 import { themeLevel, xpForLevel } from '@lib/xp.js';
 import type { XpMap } from '@lib/xp.js';
 import type { GameMode, LevelId, Theme } from '@lib/types.js';
-import type { HomeState } from '../useHome.js';
-import { LOOP_COPIES, useCarousel } from '../useCarousel.js';
+import { LOOP_COPIES } from '../useCarousel.js';
+import type { CarouselState } from '../useCarousel.js';
 
 interface ThemeCardProps {
   t: Theme;
   mode: GameMode;
   niveau: LevelId;
-  themeId: string | null;
+  actif: boolean;
   records: RecordsMap;
   xp: XpMap;
   isAdmin: boolean;
   isGuest: boolean;
   /** Copie de bouclage : invisible pour les lecteurs d'écran et hors du parcours clavier. */
   clone: boolean;
-  onSelect: (id: string) => void;
+  index: number;
+  onSelect: (index: number) => void;
 }
 
 const ThemeCard = memo(function ThemeCard({
   t,
   mode,
   niveau,
-  themeId,
+  actif,
+  index,
   records,
   xp,
   isAdmin,
@@ -44,15 +47,16 @@ const ThemeCard = memo(function ThemeCard({
   const pctXp = Math.min(100, Math.round((((xp[t.id] || 0) - xpLevel) / (xpNext - xpLevel)) * 100));
   return (
     <button
-      className={themeId === t.id ? 'theme actif' : 'theme'}
+      className={actif ? 'theme actif' : 'theme'}
       style={
         {
           '--couleur': t.couleur,
         } as CSSProperties
       }
+      aria-pressed={clone ? undefined : actif}
       aria-hidden={clone || undefined}
       tabIndex={clone ? -1 : undefined}
-      onClick={() => onSelect(t.id)}
+      onClick={() => onSelect(index)}
     >
       <span className="theme-icone">
         <Icon nom={t.icone} taille={26} />
@@ -80,71 +84,51 @@ const ThemeCard = memo(function ThemeCard({
   );
 });
 
-interface ThemeGridProps {
-  a: HomeState;
+interface ThemeCarouselProps {
+  themes: Theme[];
+  c: CarouselState;
+  mode: GameMode;
+  niveau: LevelId;
+  records: RecordsMap;
+  xp: XpMap;
   isAdmin: boolean;
   isGuest: boolean;
-  /** Ouvre la roulette « Aléatoire » (absent : pas de bouton, ex. hors solo). */
-  onRandom?: () => void;
 }
 
-export default function ThemeGrid({ a, isAdmin, isGuest, onRandom }: ThemeGridProps): ReactElement {
-  const themes = a.displayedThemes;
-  const c = useCarousel(themes.length);
-  const { mode, setThemeId, setLevelModal } = a;
-  const onSelect = useCallback(
-    (id: string) => {
-      setThemeId(id);
-      // En solo, le choix du niveau se fait dans une modale, sans scroll
-      if (mode === 'solo') setLevelModal(true);
-    },
-    [mode, setThemeId, setLevelModal]
-  );
+export default function ThemeCarousel({
+  themes,
+  c,
+  mode,
+  niveau,
+  records,
+  xp,
+  isAdmin,
+  isGuest,
+}: ThemeCarouselProps): ReactElement {
   const copies = Array.from({ length: LOOP_COPIES }, (_, i) => i);
   const middle = Math.floor(LOOP_COPIES / 2);
   return (
-    <section className="themes-carrousel" aria-roledescription="carrousel" aria-label="Thèmes">
-      <div className="carrousel-entete">
-        <h2 className="titre-section">Choisis ton thème</h2>
-        <div className="carrousel-actions">
-          {onRandom && (
-            <button className="btn-aleatoire" onClick={onRandom}>
-              <Icon nom="dice" taille={16} /> Aléatoire
-            </button>
-          )}
-          <div className="carrousel-fleches">
-            <button
-              className="carrousel-fleche"
-              aria-label="Thèmes précédents"
-              onClick={() => c.page(-1)}
-            >
-              <Icon nom="chevron-left" taille={18} />
-            </button>
-            <button
-              className="carrousel-fleche"
-              aria-label="Thèmes suivants"
-              onClick={() => c.page(1)}
-            >
-              <Icon nom="chevron-right" taille={18} />
-            </button>
-          </div>
-        </div>
-      </div>
-      <div className="themes" ref={c.trackRef} onScroll={c.onScroll}>
+    <div className="themes-carrousel" aria-roledescription="carrousel" aria-label="Thèmes">
+      <div
+        className={c.spinning ? 'themes tourne' : 'themes'}
+        ref={c.trackRef}
+        onScroll={c.onScroll}
+      >
         {copies.map((copy) =>
-          themes.map((t) => (
+          themes.map((t, i) => (
             <ThemeCard
               key={`${copy}-${t.id}`}
               t={t}
-              mode={a.mode}
-              niveau={a.niveau}
-              themeId={a.themeId}
-              records={a.records}
-              xp={a.xp}
+              mode={mode}
+              niveau={niveau}
+              actif={!c.spinning && i === c.active}
+              records={records}
+              xp={xp}
               isAdmin={isAdmin}
               isGuest={isGuest}
               clone={copy !== middle}
-              onSelect={onSelect}
+              index={i}
+              onSelect={c.goTo}
             />
           ))
         )}
@@ -165,6 +149,6 @@ export default function ThemeGrid({ a, isAdmin, isGuest, onRandom }: ThemeGridPr
           />
         ))}
       </div>
-    </section>
+    </div>
   );
 }

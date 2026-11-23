@@ -3,23 +3,48 @@
 
 .modes-tabs {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--esp-8);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--esp-14);
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
 }
 
-/* 4 carrés arrondis : gros picto du mode, libellé en dessous */
+/* Grandes tuiles carrées : gros picto jaune, nom en capitales dessous */
 .mode-tab {
   position: relative;
   aspect-ratio: 1;
   flex-direction: column;
   justify-content: center;
-  gap: var(--esp-6);
+  gap: var(--esp-10);
   min-height: 0;
-  padding: 8px 4px;
-  border-radius: var(--radius-moyen);
-  font-size: 0.72rem;
+  padding: 12px 8px;
+  border: 0;
+  border-radius: var(--radius-carte);
+  background: var(--carte);
+  color: var(--texte-carte);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
   line-height: 1.15;
   text-align: center;
+  text-transform: uppercase;
+  transition:
+    transform var(--dur-court) ease,
+    background var(--dur-court) ease;
+}
+
+.mode-tab .icone {
+  color: var(--accent1);
+}
+
+.mode-tab:hover:not(:disabled) {
+  background: var(--carte-2);
+  transform: translateY(-3px);
+}
+
+.mode-tab:active:not(:disabled) {
+  transform: scale(0.97);
 }
 
 /* Pastilles posées sur le bord de l'onglet : elles n'agrandissent plus la case */

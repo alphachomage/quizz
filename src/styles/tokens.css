@@ -182,8 +182,7 @@ textarea {
 .app {
   max-width: 720px;
   margin: 0 auto;
-  /* padding-bottom réserve la place de la barre d'action fixe (bouton "C'est parti") */
-  padding: 36px 20px calc(110px + env(safe-area-inset-bottom));
+  padding: 28px 20px calc(28px + env(safe-area-inset-bottom));
   min-height: 100vh;
   display: flex;
   flex-direction: column;

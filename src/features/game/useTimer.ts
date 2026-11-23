@@ -15,7 +15,11 @@ export interface Timer {
   reset: () => void;
 }
 
-export function useTimer(active: boolean, duration: number = SECONDS_PER_QUESTION, onExpire?: () => void): Timer {
+export function useTimer(
+  active: boolean,
+  duration: number = SECONDS_PER_QUESTION,
+  onExpire?: () => void
+): Timer {
   const [time, setTime] = useState(duration); // secondes restantes, décimal
   const deadlineRef = useRef(0); // timestamp (ms) de fin de la question courante
   const expireFaitRef = useRef(false);

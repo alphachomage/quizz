@@ -33,8 +33,9 @@ src/
 │   ├── urlFlags.ts         # flags URL (?admin=1, ?tuto=1, ?reset=1...) + redirigerVers
 │   └── contexts/           # SessionContext.ts · PrefsContext.ts · ThemesContext.ts (3 max)
 ├── features/               # UNE feature = UN dossier autonome (jamais features/X -> features/Y, R4)
-│   ├── home/               # Home.tsx + useHome.ts + components/ (ModeTabs, ThemeGrid,
-│   │                       #   LevelModal, FixedCta, UserBar, BadgeBanner, DuelNames)
+│   ├── home/               # Home.tsx + useHome.ts + useCarousel.ts + components/ (ModeTabs,
+│   │                       #   ThemePickerModal, ThemeCarousel, ModeConfirmModal, UserBar,
+│   │                       #   BadgeBanner, Crest, BadgeDetailModal)
 │   ├── game/               # Game.tsx + useGame.ts + useTimer.ts + draw.ts + constants.ts
 │   │                       #   + components/ (TopBar, TimerLine, Answers, Feedback,
 │   │                       #   PassDevice, Confetti, ReportButton)

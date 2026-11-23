@@ -454,7 +454,13 @@ interface BarsProps {
 // Petite jauge de difficulté : 3 barres, les `actives` premières sont allumées.
 export function Bars({ actives, taille = 20, couleur = 'currentColor' }: BarsProps): ReactElement {
   return (
-    <svg width={taille} height={taille} viewBox="0 0 24 24" className="barres" aria-hidden="true">
+    <svg
+      width={taille}
+      height={taille}
+      viewBox="0 0 24 24"
+      className="icone-barres"
+      aria-hidden="true"
+    >
       {[0, 1, 2].map((i) => {
         const h = (i + 1) * 5;
         return (

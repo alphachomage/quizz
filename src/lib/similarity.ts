@@ -71,7 +71,10 @@ function prevScore(pa: Prep, pb: Prep): number {
 }
 
 // Score de similarité entre deux textes, entre 0 et 1.
-export function similarityScore(a: string | null | undefined, b: string | null | undefined): number {
+export function similarityScore(
+  a: string | null | undefined,
+  b: string | null | undefined
+): number {
   return prevScore(prep(a), prep(b));
 }
 export const THRESHOLD_SIMILAR = 0.4; // à partir de là, on avertit l'utilisateur

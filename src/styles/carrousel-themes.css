@@ -1,73 +1,23 @@
-/* VoltQuiz — carrousel horizontal des thèmes sur l'accueil (scroll-snap natif, sans librairie) */
+/* VoltQuiz — carrousel des thèmes (popin Solo) : boucle infinie, carte centrale = choix,
+   scroll-snap natif sans librairie. Plus liens du bas et centrage vertical de l'accueil. */
 
 .themes-carrousel {
-  margin-top: 26px;
+  margin: var(--esp-6) calc(-1 * var(--esp-18)) 0;
 }
 
-.carrousel-entete {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--esp-12);
-  margin-bottom: var(--esp-12);
-}
-
-.carrousel-entete .titre-section {
-  margin: 0;
-}
-
-.carrousel-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--esp-8);
-}
-
-.carrousel-fleches {
-  display: none;
-  gap: var(--esp-8);
-}
-
-/* Sur mobile on swipe : les flèches ne servent qu'à la souris, sur grand écran */
-@media (min-width: 721px) {
-  .carrousel-fleches {
-    display: flex;
-  }
-}
-
-.carrousel-fleche {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  padding: 0;
-  border: 1px solid var(--bordure);
-  border-radius: var(--radius-pilule);
-  background: var(--carte);
-  color: var(--texte);
-  cursor: pointer;
-  transition:
-    background var(--dur-court) ease,
-    opacity var(--dur-court) ease;
-}
-
-.carrousel-fleche:hover:not(:disabled) {
-  background: var(--carte-2);
-}
-
-/* La piste : une seule rangée qui défile, chaque carte s'aligne au début de la zone */
+/* Une seule rangée qui défile ; chaque carte se cale au centre de la popin */
 .themes {
+  position: relative;
   display: grid;
   grid-template-columns: none;
   grid-auto-flow: column;
-  grid-auto-columns: 116px;
-  gap: var(--esp-12);
+  grid-auto-columns: 112px;
+  gap: var(--esp-10);
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
-  padding: 4px 2px 10px;
-  position: relative;
+  padding: 10px 0 12px;
 }
 
 .themes::-webkit-scrollbar {
@@ -81,30 +31,45 @@
 }
 
 .themes .theme {
-  scroll-snap-align: start;
-  min-height: 128px;
+  scroll-snap-align: center;
+  min-height: 124px;
   gap: var(--esp-8);
   padding: 11px;
   border-radius: var(--radius-mini);
   font-size: 0.6875rem;
   align-items: center;
   text-align: center;
+  opacity: 0.55;
+  transition:
+    opacity var(--dur-court) ease,
+    transform var(--dur-court) ease,
+    border-color var(--dur-court) ease;
+}
+
+/* Carte au centre = thème choisi : pleine opacité, légèrement agrandie, bordure jaune */
+.themes .theme.actif {
+  opacity: 1;
+  transform: scale(1.06);
+  border-color: var(--accent1);
+  background: var(--carte);
 }
 
 .themes .theme:hover {
-  transform: translateY(-3px);
+  transform: none;
 }
 
-/* Thème choisi : bordure + fond légèrement teinté de la couleur du thème (aplat, pas de dégradé) */
-.themes .theme.actif {
-  transform: none;
-  border-color: var(--couleur, var(--accent1));
-  background: color-mix(in srgb, var(--couleur, var(--accent1)) 16%, var(--carte));
+.themes .theme.actif:hover {
+  transform: scale(1.06);
+}
+
+/* Pendant la roulette, les cartes défilent sans effet de sélection */
+.themes.tourne .theme {
+  opacity: 0.8;
 }
 
 .themes .theme-icone {
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
   border-radius: var(--radius-mini);
 }
 
@@ -114,7 +79,7 @@
   -webkit-line-clamp: 2;
   line-clamp: 2;
   min-height: 2.4em;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   line-height: 1.2;
   white-space: normal;
 }
@@ -124,16 +89,17 @@
   justify-content: center;
 }
 
-/* Points de navigation : un par thème, le point actif s'allonge et prend la couleur du thème */
+/* Points de navigation : un par thème, le point actif s'allonge à la couleur du thème */
 .carrousel-points {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--esp-6);
-  margin-top: var(--esp-6);
+  padding: 0 var(--esp-18);
 }
 
 .carrousel-point {
+  position: relative;
   width: 6px;
   height: 6px;
   padding: 0;
@@ -152,23 +118,99 @@
 }
 
 /* Zone de clic confortable au doigt sans grossir le point */
-.carrousel-point {
-  position: relative;
-}
-
 .carrousel-point::after {
   content: '';
   position: absolute;
   inset: -8px -3px;
 }
 
-/* Liens du bas de l'accueil regroupés sur une ligne discrète (interface moins chargée) */
+/* --- Popin Solo --- */
+.modal-picker {
+  max-width: 400px;
+  overflow-x: hidden;
+}
+
+.picker-sous-titre {
+  margin: calc(-1 * var(--esp-6)) 0 0;
+  font-size: 0.82rem;
+  color: var(--texte-doux-carte);
+}
+
+.btn-aleatoire {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-8);
+  margin: var(--esp-14) auto 0;
+  padding: 8px 16px;
+  border: 1px solid var(--accent1);
+  border-radius: var(--radius-pilule);
+  background: transparent;
+  color: var(--accent1);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--dur-court) ease;
+}
+
+.btn-aleatoire:hover:not(:disabled) {
+  background: var(--accent-12);
+}
+
+.btn-aleatoire:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.picker-niveaux {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--esp-8);
+  margin-top: var(--esp-14);
+}
+
+.picker-niveaux .niveau-modal {
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--esp-4);
+  min-height: 0;
+  height: auto;
+  padding: 9px 4px;
+  font-size: 0.78rem;
+}
+
+.modal-picker .btn-principal {
+  margin-top: var(--esp-14);
+}
+
+/* --- Popin Survie / Quizz du jour --- */
+.modal-mode {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--esp-8);
+  max-width: 340px;
+  padding-top: 26px;
+  text-align: center;
+}
+
+.modal-mode-icone {
+  display: flex;
+  color: var(--accent1);
+}
+
+.modal-mode .btn-principal {
+  margin-top: var(--esp-10);
+}
+
+/* Liens du bas de l'accueil regroupés sur une ligne discrète */
 .liens-accueil {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--esp-4) var(--esp-16);
-  margin-top: var(--esp-24);
+  margin-top: var(--esp-12);
 }
 
 .accueil .liens-accueil .btn-secondaire {
@@ -179,7 +221,7 @@
 }
 
 /* Centrage vertical de l'accueil : la barre du joueur reste en haut, le bloc logo -> liens
-   se centre dans la hauteur restante (au-dessus de la barre fixe « C'est parti »). */
+   se centre dans la hauteur restante. */
 .accueil {
   flex: 1;
   display: flex;

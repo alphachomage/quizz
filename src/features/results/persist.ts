@@ -41,7 +41,11 @@ export interface Persistance {
   dailyStreak: number;
 }
 
-export function persistResult(result: GameResult, isGuest: boolean, prefs?: Prefs | null): Persistance {
+export function persistResult(
+  result: GameResult,
+  isGuest: boolean,
+  prefs?: Prefs | null
+): Persistance {
   const { mode, niveau, theme, players, scores, bonnes, total, details } = result;
   const key = recordKey(mode, niveau, theme.id);
 

@@ -123,7 +123,8 @@ export default function Leaderboard({ themes, onHome: onHome, onStats }: Leaderb
               score: row.score,
               bonnes: row.bonnes,
               total: row.total,
-              themeName: row.themeId === 'tous' ? 'Tous les thèmes' : theme ? theme.nom : row.themeId || '',
+              themeName:
+                row.themeId === 'tous' ? 'Tous les thèmes' : theme ? theme.nom : row.themeId || '',
               themeColor: theme ? theme.couleur : '#8b5cf6',
               themeIcon: theme ? theme.icone : 'sparkles',
               niveau: row.niveau,
@@ -263,7 +264,8 @@ export default function Leaderboard({ themes, onHome: onHome, onStats }: Leaderb
           <p className="vide">Chargement du classement global…</p>
         ) : source === 'global' && erreurGlobal ? (
           <p className="vide">
-            Classement global indisponible ({erreurGlobal}) — vérifie ta connexion, ou repasse en local.
+            Classement global indisponible ({erreurGlobal}) — vérifie ta connexion, ou repasse en
+            local.
           </p>
         ) : !lignes || lignes.length === 0 ? (
           <p className="vide">

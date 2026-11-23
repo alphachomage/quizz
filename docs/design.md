@@ -82,11 +82,11 @@ voir `docs/questions.md`). Source de vérité : `npm run count:questions` + `src
 
 ## Mise en page actuelle (« épuré »)
 
-Accueil allégé : 4 onglets pilule pour les modes (grille 2×2, cases de même taille), description du mode sous le logo,
-thèmes en carrousel horizontal de cartes compactes (`src/styles/carrousel-themes.css`),
-choix du niveau en modale au clic sur le thème, gros bouton « C'est parti » fixé en bas
-(`.cta-fixe`). Coins très arrondis (pilule `999px`, cartes `26px`), cartes plates sans ombre
-ni backdrop-filter, titres fins (weight 400). Pas de compteur de questions côté joueur
+Accueil sans défilement : logo VQuizz (image, variante claire), 4 grandes tuiles de mode
+carrées (picto jaune, nom en capitales), « prochain badge », liens discrets. Le choix du
+thème et du niveau se fait dans une popin (carrousel en boucle, carte centrale = choix,
+roulette « Thème aléatoire ») — voir `docs/features/accueil.md`. Coins très arrondis
+(pilule `999px`, cartes `26px`), cartes plates. Pas de compteur de questions côté joueur
 (uniquement dans la visu admin `?admin=1`).
 
 ## Accessibilité (3 réglages OFF par défaut, classes sur `body` posées par PrefsContext)
@@ -110,7 +110,7 @@ Préférences `animations: false` -> classe `.sans-animations` sur `.app` (tout 
 - Un fichier CSS par écran / feature (`accueil.css`, `partie.css`, `resultat.css`,
   `classement.css`, `stats.css`, `badges.css`, `profil.css`, `formulaire.css`, `partage.css`,
   `modes.css`, `parametres.css`, `tuto.css`, `propositions.css`, `signaler.css`,
-  `deblocage.css`, `streak.css`, `suggestions.css`, `cta-fixe.css`, `epure.css`, `mobile.css`,
+  `deblocage.css`, `streak.css`, `suggestions.css`, `epure.css`, `mobile.css`,
   `animations.css`, `modale-niveau.css`, `partie-points.css`, `classement-filtres.css`,
   `accueil-extras.css`, `stats-avancees.css`, `boutons.css`).
 - `src/styles/palette.css` : surcharges du **thème clair** (`body.theme-clair`) + règles
@@ -170,7 +170,7 @@ indicatif 200 lignes par fichier (souple, voir AGENTS.md).
 `tokens, boutons, accueil, partie, animations, mobile, formulaire, propositions,
 classement, modes, parametres, tuto, resultat, stats, partie-points, classement-filtres,
 signaler, accessibilite, palette, streak, badges, profil, partage, epure, suggestions,
-deblocage, cta-fixe, stats-avancees, modale-niveau, accueil-extras`
+deblocage, stats-avancees, modale-niveau, accueil-extras`
 
 Pourquoi : des modules se surchargent volontairement (`modes.css` après `accueil.css` pour
 `.mode-tab`, `palette.css` et `accessibilite.css` en dernier pour l'emporter sur tout).

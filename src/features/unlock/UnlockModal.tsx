@@ -20,7 +20,11 @@ interface UnlockModalProps {
   onSeeBadges: () => void;
 }
 
-export default function UnlockModal({ celebration, onClose, onSeeBadges }: UnlockModalProps): ReactElement | null {
+export default function UnlockModal({
+  celebration,
+  onClose,
+  onSeeBadges,
+}: UnlockModalProps): ReactElement | null {
   const { badges = [], titles = [] } = celebration || {};
   if (!badges.length && !titles.length) return null;
   return (

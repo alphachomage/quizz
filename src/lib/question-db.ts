@@ -77,7 +77,13 @@ export async function saveCorpus(themes: Theme[], version: string): Promise<void
   store.clear();
   for (const t of themes) {
     for (const q of t.questions) {
-      const sq: StoredQuestion = { themeId: t.id, q: q.q, reponses: q.reponses, bonne: q.bonne, niveau: q.niveau };
+      const sq: StoredQuestion = {
+        themeId: t.id,
+        q: q.q,
+        reponses: q.reponses,
+        bonne: q.bonne,
+        niveau: q.niveau,
+      };
       if (q.info) sq.info = q.info;
       store.add(sq);
     }
@@ -87,9 +93,7 @@ export async function saveCorpus(themes: Theme[], version: string): Promise<void
 
 // Lit tout le corpus depuis IndexedDB et reconstruit les thèmes (métadonnées fournies
 // par l'appelant — lib/ ne dépend pas de data/, R2).
-export async function loadCorpus(
-  themesMeta: Array<Omit<Theme, 'questions'>>
-): Promise<Theme[]> {
+export async function loadCorpus(themesMeta: Array<Omit<Theme, 'questions'>>): Promise<Theme[]> {
   const db = await openDb();
   const rows = await new Promise<StoredQuestion[]>((resolve, reject) => {
     const tx = db.transaction(STORE_QUESTIONS, 'readonly');

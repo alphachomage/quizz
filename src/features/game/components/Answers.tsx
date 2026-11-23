@@ -15,7 +15,13 @@ interface AnswersProps {
   onAnswer: (i: number) => void;
 }
 
-export default function Answers({ question, phase, selection, answerColor, onAnswer }: AnswersProps) {
+export default function Answers({
+  question,
+  phase,
+  selection,
+  answerColor,
+  onAnswer,
+}: AnswersProps) {
   return (
     <div className="reponses">
       {question.reponses.map((r, i) => {
