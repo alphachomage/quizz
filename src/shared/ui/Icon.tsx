@@ -197,6 +197,16 @@ const CHEMINS: Record<string, ReactNode> = {
       <line x1="6" y1="6" x2="18" y2="18" />
     </>
   ),
+  dice: (
+    <>
+      <rect x="3.5" y="3.5" width="17" height="17" rx="4" />
+      <circle cx="8.5" cy="8.5" r="1.3" fill="currentColor" stroke="none" />
+      <circle cx="15.5" cy="8.5" r="1.3" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none" />
+      <circle cx="8.5" cy="15.5" r="1.3" fill="currentColor" stroke="none" />
+      <circle cx="15.5" cy="15.5" r="1.3" fill="currentColor" stroke="none" />
+    </>
+  ),
   'chevron-left': <polyline points="15 18 9 12 15 6" />,
   'chevron-right': <polyline points="9 18 15 12 9 6" />,
   plus: (

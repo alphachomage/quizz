@@ -18,6 +18,7 @@ import DuelNames from './components/DuelNames.jsx';
 import ThemeGrid from './components/ThemeGrid.jsx';
 import LevelModal from './components/LevelModal.jsx';
 import FixedCta from './components/FixedCta.jsx';
+import RandomModal from './components/RandomModal.jsx';
 
 /** Props de l'écran d'accueil, déléguées par app/Screens.tsx. */
 export interface HomeProps {
@@ -88,7 +89,14 @@ export default function Home({
 
       {a.mode === 'duel' && <DuelNames a={a} />}
 
-      {['solo', 'duel'].includes(a.mode) && <ThemeGrid a={a} isAdmin={isAdmin} isGuest={isGuest} />}
+      {['solo', 'duel'].includes(a.mode) && (
+        <ThemeGrid
+          a={a}
+          isAdmin={isAdmin}
+          isGuest={isGuest}
+          onRandom={a.mode === 'solo' ? () => a.setShowRandom(true) : undefined}
+        />
+      )}
 
       <nav className="liens-accueil" aria-label="Autres actions">
         {!isGuest && (
@@ -122,6 +130,14 @@ export default function Home({
 
       {/* Modale difficulté (solo) : s'ouvre au clic sur un thème, zéro scroll */}
       {a.mode === 'solo' && a.themeId && a.levelModal && a.theme && <LevelModal a={a} />}
+
+      {a.showRandom && a.mode === 'solo' && (
+        <RandomModal
+          a={a}
+          animated={prefs.animations !== false}
+          onClose={() => a.setShowRandom(false)}
+        />
+      )}
 
       {a.profilOuvert && (
         <Profile

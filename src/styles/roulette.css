@@ -1,0 +1,150 @@
+/* VoltQuiz — popin « Aléatoire » : roulette de thèmes (aplats uniquement, pas de dégradé) */
+
+.modal-roulette {
+  max-width: 360px;
+  text-align: center;
+}
+
+.modal-roulette .modal-titre h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-8);
+  font-size: 1.05rem;
+}
+
+.roulette-fenetre {
+  position: relative;
+  height: 92px;
+  margin: var(--esp-6) 0 var(--esp-14);
+  overflow: hidden;
+  border-radius: var(--radius-petit);
+  background: var(--carte-2);
+}
+
+.roulette-bande {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  will-change: transform;
+}
+
+/* Démarre vite et ralentit longuement, comme une vraie roue qui s'arrête */
+.roulette-bande.tourne {
+  transition: transform var(--roulette-ms, 2600ms) cubic-bezier(0.12, 0.72, 0.16, 1);
+}
+
+.sans-animations .roulette-bande.tourne {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .roulette-bande.tourne {
+    transition: none;
+  }
+}
+
+/* 76 px par case : doit suivre CASE_PX de RandomModal.tsx */
+.roulette-case {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 76px;
+  height: 100%;
+  opacity: 0.45;
+  transition:
+    opacity var(--dur-standard) ease,
+    transform var(--dur-standard) ease;
+}
+
+.roulette-case .theme-icone {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-mini);
+}
+
+.roulette-case.gagnante {
+  opacity: 1;
+  transform: scale(1.12);
+}
+
+/* Repère fixe au centre de la fenêtre */
+.roulette-repere {
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 50%;
+  width: 70px;
+  transform: translateX(-50%);
+  border: 2px solid var(--accent1);
+  border-radius: var(--radius-mini);
+  pointer-events: none;
+}
+
+.roulette-resultat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--esp-2);
+  min-height: 2.9rem;
+  margin: 0 0 var(--esp-6);
+}
+
+.roulette-resultat strong {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--couleur, var(--texte));
+  animation: pop var(--dur-standard) ease;
+}
+
+.roulette-resultat small,
+.roulette-attente {
+  font-size: 0.8rem;
+  color: var(--texte-doux-carte);
+}
+
+.modal-roulette .btn-principal {
+  margin-top: var(--esp-8);
+}
+
+.roulette-relancer {
+  margin-top: var(--esp-10);
+  padding: 6px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--texte-doux-carte);
+  font-size: 0.82rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.roulette-relancer:hover:not(:disabled) {
+  color: var(--texte-carte);
+}
+
+.roulette-relancer:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Bouton « Aléatoire » dans l'en-tête du carrousel */
+.btn-aleatoire {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-6);
+  padding: 6px 12px;
+  border: 1px solid var(--bordure);
+  border-radius: var(--radius-pilule);
+  background: var(--carte);
+  color: var(--texte);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-aleatoire:hover {
+  background: var(--carte-2);
+}

@@ -1,7 +1,7 @@
 /* VoltQuiz — carrousel horizontal des thèmes sur l'accueil (scroll-snap natif, sans librairie) */
 
 .themes-carrousel {
-  margin-top: 30px;
+  margin-top: 26px;
 }
 
 .carrousel-entete {
@@ -14,6 +14,12 @@
 
 .carrousel-entete .titre-section {
   margin: 0;
+}
+
+.carrousel-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-8);
 }
 
 .carrousel-fleches {
@@ -32,8 +38,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   padding: 0;
   border: 1px solid var(--bordure);
   border-radius: var(--radius-pilule);
@@ -54,7 +60,7 @@
   display: grid;
   grid-template-columns: none;
   grid-auto-flow: column;
-  grid-auto-columns: 136px;
+  grid-auto-columns: 116px;
   gap: var(--esp-12);
   overflow-x: auto;
   overscroll-behavior-x: contain;
@@ -76,7 +82,7 @@
 
 .themes .theme {
   scroll-snap-align: start;
-  min-height: 156px;
+  min-height: 128px;
   gap: var(--esp-8);
   padding: 11px;
   border-radius: var(--radius-mini);
@@ -108,7 +114,7 @@
   -webkit-line-clamp: 2;
   line-clamp: 2;
   min-height: 2.4em;
-  font-size: 0.92rem;
+  font-size: 0.8rem;
   line-height: 1.2;
   white-space: normal;
 }
@@ -168,6 +174,22 @@
 .accueil .liens-accueil .btn-secondaire {
   width: auto;
   margin: 0;
-  padding: 8px 4px;
-  font-size: 0.85rem;
+  padding: 6px 4px;
+  font-size: 0.78rem;
+}
+
+/* Centrage vertical de l'accueil : la barre du joueur reste en haut, le bloc logo -> liens
+   se centre dans la hauteur restante (au-dessus de la barre fixe « C'est parti »). */
+.accueil {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.accueil > .hero {
+  margin-top: auto;
+}
+
+.accueil > .liens-accueil {
+  margin-bottom: auto;
 }

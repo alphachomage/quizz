@@ -8,9 +8,22 @@
 }
 
 .mode-tab {
+  position: relative;
+  flex-direction: row;
+  flex-wrap: nowrap;
   justify-content: center;
-  min-height: 64px;
-  padding-block: 9px;
+  gap: var(--esp-6);
+  min-height: 46px;
+  padding: 8px 10px;
+  font-size: 0.78rem;
+}
+
+/* Pastilles posées sur le bord de l'onglet : elles n'agrandissent plus la case */
+.mode-tab .tab-badge,
+.mode-tab .tab-streak {
+  position: absolute;
+  top: -8px;
+  right: 14px;
 }
 
 .btn-icone {

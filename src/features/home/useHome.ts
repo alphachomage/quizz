@@ -58,6 +58,8 @@ export interface HomeState {
   showSuggestions: boolean;
   setShowSuggestionsN: Dispatch<SetStateAction<boolean>>;
   levelModal: boolean;
+  showRandom: boolean;
+  setShowRandom: Dispatch<SetStateAction<boolean>>;
   setLevelModal: Dispatch<SetStateAction<boolean>>;
   nom1: string;
   setNom1: Dispatch<SetStateAction<string>>;
@@ -74,6 +76,8 @@ export interface HomeState {
   players: string[];
   displayedThemes: Theme[];
   lancer: () => void;
+  /** Solo : lance directement une partie sur ce thème (roulette « Aléatoire »). */
+  lancerTheme: (t: Theme) => void;
   dailyRecord: number;
   nextBadge: ReturnType<typeof computeNextBadge>;
   dailyStreak: number;
@@ -91,6 +95,7 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
   const [themeId, setThemeId] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showSuggestions, setShowSuggestionsN] = useState(false);
+  const [showRandom, setShowRandom] = useState(false); // roulette « Aléatoire » (solo)
   const [levelModal, setLevelModal] = useState(false); // modale difficulté (solo, au clic sur un thème)
   const [nom1, setNom1] = useState(pseudo || '');
   const [nom2, setNom2] = useState('');
@@ -154,6 +159,17 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
   }
 
   // Record du quizz du jour (clé = date du jour) pour afficher « déjà joué » sur la carte.
+  function lancerTheme(t: Theme): void {
+    setThemeId(t.id);
+    onStart({
+      mode: 'solo',
+      niveau,
+      theme: t,
+      players: [pseudo || 'Toi'],
+      allThemes: themes ?? undefined,
+    });
+  }
+
   const dailyRecord = records[recordKey('quotidien', todayDate(), 'tous')] || 0;
   // Prochain badge à portée (effet « reviens-y » sur l'accueil), recalculé si les données changent.
   const nextBadge = useMemo(
@@ -213,6 +229,9 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
     players,
     displayedThemes,
     lancer,
+    lancerTheme,
+    showRandom,
+    setShowRandom,
     dailyRecord,
     nextBadge,
     dailyStreak,

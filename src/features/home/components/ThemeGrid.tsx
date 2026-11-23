@@ -84,9 +84,11 @@ interface ThemeGridProps {
   a: HomeState;
   isAdmin: boolean;
   isGuest: boolean;
+  /** Ouvre la roulette « Aléatoire » (absent : pas de bouton, ex. hors solo). */
+  onRandom?: () => void;
 }
 
-export default function ThemeGrid({ a, isAdmin, isGuest }: ThemeGridProps): ReactElement {
+export default function ThemeGrid({ a, isAdmin, isGuest, onRandom }: ThemeGridProps): ReactElement {
   const themes = a.displayedThemes;
   const c = useCarousel(themes.length);
   const { mode, setThemeId, setLevelModal } = a;
@@ -104,21 +106,28 @@ export default function ThemeGrid({ a, isAdmin, isGuest }: ThemeGridProps): Reac
     <section className="themes-carrousel" aria-roledescription="carrousel" aria-label="Thèmes">
       <div className="carrousel-entete">
         <h2 className="titre-section">Choisis ton thème</h2>
-        <div className="carrousel-fleches">
-          <button
-            className="carrousel-fleche"
-            aria-label="Thèmes précédents"
-            onClick={() => c.page(-1)}
-          >
-            <Icon nom="chevron-left" taille={18} />
-          </button>
-          <button
-            className="carrousel-fleche"
-            aria-label="Thèmes suivants"
-            onClick={() => c.page(1)}
-          >
-            <Icon nom="chevron-right" taille={18} />
-          </button>
+        <div className="carrousel-actions">
+          {onRandom && (
+            <button className="btn-aleatoire" onClick={onRandom}>
+              <Icon nom="dice" taille={16} /> Aléatoire
+            </button>
+          )}
+          <div className="carrousel-fleches">
+            <button
+              className="carrousel-fleche"
+              aria-label="Thèmes précédents"
+              onClick={() => c.page(-1)}
+            >
+              <Icon nom="chevron-left" taille={18} />
+            </button>
+            <button
+              className="carrousel-fleche"
+              aria-label="Thèmes suivants"
+              onClick={() => c.page(1)}
+            >
+              <Icon nom="chevron-right" taille={18} />
+            </button>
+          </div>
         </div>
       </div>
       <div className="themes" ref={c.trackRef} onScroll={c.onScroll}>

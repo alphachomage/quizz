@@ -87,7 +87,7 @@
 .pb-texte {
   flex: 1;
   min-width: 0;
-  font-size: 0.8rem;
+  font-size: 0.74rem;
   color: var(--texte-doux);
   white-space: nowrap;
   overflow: hidden;

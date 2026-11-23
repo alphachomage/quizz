@@ -13,9 +13,11 @@
 .cta-fixe-interieur {
   max-width: 720px;
   margin: 0 auto;
-  padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+  padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
 }
 
 .cta-fixe .btn-principal {
   margin-top: 0;
+  padding: 13px 20px;
+  font-size: 0.98rem;
 }
