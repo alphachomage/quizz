@@ -125,3 +125,17 @@ Le client n'est pas développeur : `README.md` (racine) reste le guide pas à pa
   uniquement les fichiers concernés (en-tête et nom d'export conservés).
   Résultat : 73 doublons supprimés, `doublons exacts : 0`, 13 488 questions, 12 thèmes actifs ≥ 1079.
   Sauvegarde des données avant run : `backups/data-avant-dedup-*`.
+
+## 4 nouveaux thèmes (ajoutés le 2026-11-22, objectif 1000 questions chacun ATTEINT)
+
+- `technologie` (Technologie & Internet, icône `chip`, `#38bdf8`) : 1000 questions
+- `nature` (Nature & Animaux, icône `paw`, `#4ade80`) : 1000 questions
+- `economie` (Économie & Marques, icône `coins`, `#fbbf24`) : 1000 questions
+- `auto` (Voitures & Auto-moto, icône `car`, `#fb7185`) : 1001 questions
+- Packs de départ écrits à la main (`questions-<theme>.js`, 40 q) puis vagues de sous-agents
+  (`questions-vague<N>-<theme>-*.js`, 300 q par vague = 6 fichiers de 50, complément final
+  `questions-vague5-<theme>-a1.js` de 60). Anti-doublons normalisé à chaque lot -> corpus à 0 doublon.
+- 12 titres dédiés (3 par thème dans `TITLES_PER_THEME`, `src/lib/titles.ts`) -> 62 titres au total.
+- 9 badges dédiés (`src/lib/badges.ts` : niveau 3 + 5 sur chacun des 4 thèmes via `themeLevels`,
+  + `themes-16`) -> 39 badges au total. Icônes `chip`/`paw`/`coins`/`car` ajoutées dans `src/shared/ui/Icon.tsx`.
+- Couleurs reprises de la palette fixe de `docs/design.md` (jamais de couleur inventée).
