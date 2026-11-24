@@ -99,4 +99,22 @@ describe("modération serveur à l'inscription", () => {
     expect((await inscription(env, 'travail')).status).toBe(200);
     expect((await inscription(env, 'Cassandra')).status).toBe(200);
   });
+
+  it('rejette les doublons de pseudo même en leetspeak (Joris puis J0ris -> 409)', async () => {
+    const { db } = fakeD1();
+    const env = envAvec(db);
+    expect((await inscription(env, 'Joris')).status).toBe(200);
+    // "J0ris" normalisé avec leetspeak = "joris" -> même compte -> 409
+    const res = await inscription(env, 'J0ris');
+    expect(res.status).toBe(409);
+    const body = await res.json();
+    expect(body.error).toContain('déjà pris');
+  });
+
+  it('rejette les doublons avec accents/casse (JÔRIS -> 409)', async () => {
+    const { db } = fakeD1();
+    const env = envAvec(db);
+    expect((await inscription(env, 'Joris')).status).toBe(200);
+    expect((await inscription(env, 'JÔRIS')).status).toBe(409);
+  });
 });
