@@ -96,7 +96,13 @@ export const THEME_MANIFEST = [
     "nom": "Technologie & Internet",
     "icone": "chip",
     "couleur": "#38bdf8"
+  },
+  {
+    "id": "youtube-streaming",
+    "nom": "YouTube & Streaming",
+    "icone": "play",
+    "couleur": "#e879f9"
   }
 ];
 // Version du corpus (hash des fichiers questions-*.js) : invalidation du cache IndexedDB.
-export const CORPUS_VERSION = "4f987ffc89f16641";
+export const CORPUS_VERSION = "3f4d7fcb904a2077";
