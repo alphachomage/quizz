@@ -15,9 +15,14 @@
 - Session : clé `voltquiz_session` (`currentSession()`). Sans session, l'app affiche
   l'écran `Account` (`src/features/account/Account.tsx`).
 - Modération des pseudos à la création (`src/lib/moderation.ts`, `isValidPseudo`) :
-  liste bloquée (nazisme, homophobie, misogynie, racisme, insultes, contenu sexuel),
-  normalisation + leetspeak décodé (`n4z1` -> `nazi`), sous-chaîne pour les termes
-  >= 4 caractères (évite les faux positifs type « Cassandra »).
+  liste bloquée (nazisme, homophobie, **transphobie**, **anti-LGBTQ+**, misogynie,
+  racisme, insultes, contenu sexuel), normalisation + leetspeak décodé (`n4z1` -> `nazi`),
+  sous-chaîne pour les termes >= 4 caractères (évite les faux positifs type « Cassandra »),
+  égalité exacte forcée pour certains termes (`exact: true`, ex. `trav` ne bloque pas
+  « travail »). **Vérifiée des DEUX côtés** : client (`accounts.ts`) ET serveur
+  (`worker-api.ts` route `/api/auth/inscription`, 400 si terme bloqué) pour bloquer
+  aussi les appels directs à l'API. Tests : `tests/unit/lib/accounts.test.ts` +
+  `tests/unit/worker/api-auth-moderation.test.ts`.
 
 ## Mode invité
 
