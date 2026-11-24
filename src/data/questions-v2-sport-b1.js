@@ -33,7 +33,7 @@ export const QUESTIONS_V2_SPORT_B1 = [
       { q: "Combien de Coupes du monde l'Argentine a-t-elle remportées ?", reponses: ["2", "3", "4", "1"], bonne: 1, niveau: "moyen" },
       { q: "Combien de Coupes du monde l'Allemagne a-t-elle remportées ?", reponses: ["4", "3", "5", "2"], bonne: 0, niveau: "moyen" },
       { q: "Combien de Coupes du monde l'Italie a-t-elle remportées ?", reponses: ["3", "5", "2", "4"], bonne: 3, niveau: "moyen" },
-      { q: "Combien de Coupes du monde l'Espagne a-t-elle remportées ?", reponses: ["2", "3", "1", "4"], bonne: 2, niveau: "moyen" },
+      { q: "Combien de Coupes du monde l'Espagne a-t-elle remportées ?", reponses: ["2", "3", "1", "4"], bonne: 0, niveau: "moyen", info: "2010 (Afrique du Sud) et 2026 (États-Unis, Canada, Mexique)." },
       { q: "Qui a remporté le Ballon d'Or 2018 ?", reponses: ["Cristiano Ronaldo", "Luka Modrić", "Antoine Griezmann", "Lionel Messi"], bonne: 1, niveau: "moyen" },
       { q: "Qui a remporté le Ballon d'Or 2019 ?", reponses: ["Lionel Messi", "Virgil van Dijk", "Cristiano Ronaldo", "Sadio Mané"], bonne: 0, niveau: "moyen" },
       { q: "Qui a remporté le Ballon d'Or 2021 ?", reponses: ["Robert Lewandowski", "Jorginho", "Kevin De Bruyne", "Lionel Messi"], bonne: 3, niveau: "moyen" },
