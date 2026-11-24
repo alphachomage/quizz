@@ -110,6 +110,14 @@ function Shell(): ReactElement {
       persistance,
     });
   }
+  // Quitter en cours de partie (croix TopBar) : on persiste les résultats partiels
+  // (record, historique, XP sur les questions répondues) puis on retourne à l'accueil,
+  // sans passer par l'écran de résultats.
+  function quitter(res: GameResult): void {
+    persistResult(res, isGuest, prefs);
+    revelerNouveautes();
+    nav.navigateTo('accueil');
+  }
   function quitterAdmin(): void {
     // Recharge la page sans ?admin=1 : les exclusions admin sont alors retirées du pool.
     redirigerVers(urlWithoutAdminFlag());
@@ -178,6 +186,7 @@ function Shell(): ReactElement {
         deconnexion={deconnexion}
         start={start}
         finish={finish}
+        quitter={quitter}
         changerPrefs={changerPrefs}
         setTutoOuvert={setTutoOuvert}
         allQuestions={allQuestions}
