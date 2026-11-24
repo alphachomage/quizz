@@ -77,6 +77,7 @@ describe('partie survie (flux complet)', () => {
         }
         prefs={TEST_PREFS}
         onFinish={() => {}}
+        onQuit={() => {}}
       />
     );
     expect(screen.getByText('Tous niveaux')).toBeTruthy();
