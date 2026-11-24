@@ -75,6 +75,29 @@ describe('modération des pseudos', () => {
   it('normalise le pseudo pour la comparaison', () => {
     expect(normalizePseudo('  N4z1 ')).toBe('nazi');
   });
+  it('rejette les termes transphobes et anti-LGBTQ+', () => {
+    expect(isValidPseudo('tr4nny')).toBeTruthy(); // leetspeak
+    expect(isValidPseudo('shemale')).toBeTruthy();
+    expect(isValidPseudo('transphobe')).toBeTruthy();
+    expect(isValidPseudo('travelo')).toBeTruthy();
+    expect(isValidPseudo('groomer')).toBeTruthy();
+    expect(isValidPseudo('agendalgbt')).toBeTruthy();
+    expect(isValidPseudo('ideologiedegenre')).toBeTruthy();
+    expect(isValidPseudo('lesbophobe')).toBeTruthy();
+    expect(isValidPseudo('biphobie')).toBeTruthy();
+    // catégorie remontée
+    const t = trouverTermeBloque('transphobe');
+    expect(t?.categorie).toBe('transphobie');
+  });
+  it('ne bloque pas les faux positifs (travail, travesti légitime hors contexte haineux)', () => {
+    expect(isValidPseudo('travail')).toBeNull(); // contient "trav" mais pas en exact
+    expect(isValidPseudo('Cassandra')).toBeNull();
+    expect(isValidPseudo('Thomas')).toBeNull();
+  });
+  it('bloque "trav" uniquement en égalité exacte', () => {
+    expect(isValidPseudo('trav')).toBeTruthy();
+    expect(isValidPseudo('travailleur')).toBeNull();
+  });
 });
 
 describe('comptes en mode d1 (serveur, défaut)', () => {
