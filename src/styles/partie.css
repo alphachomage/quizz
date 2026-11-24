@@ -42,6 +42,29 @@
   outline: 2px solid var(--or);
 }
 
+/* Bouton croix "quitter la partie" (TopBar) : rond discret, rouge au survol. */
+.bouton-quitter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  margin-left: var(--esp-6);
+  background: var(--carte);
+  border: 1px solid var(--bordure);
+  border-radius: var(--radius-rond);
+  color: var(--texte-doux);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.bouton-quitter:hover,
+.bouton-quitter:focus-visible {
+  color: var(--erreur);
+  border-color: var(--erreur-50);
+}
+
 .tour {
   text-align: center;
   color: var(--texte-doux);

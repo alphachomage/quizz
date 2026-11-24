@@ -32,6 +32,7 @@ describe('partie survie (flux complet)', () => {
   it('la première mauvaise réponse termine la partie (1 vie)', () => {
     const themes = makeThemes(3, 10); // 90 questions au total
     const onFinish = vi.fn<(result: GameResult) => void>();
+    const onQuit = vi.fn<(result: GameResult) => void>();
     render(
       <Game
         config={
@@ -45,6 +46,7 @@ describe('partie survie (flux complet)', () => {
         }
         prefs={TEST_PREFS}
         onFinish={onFinish}
+        onQuit={onQuit}
       />
     );
     answerCorrect(); // index 0 : 20 pts (pas de bonus de manche en survie)
@@ -75,6 +77,7 @@ describe('partie survie (flux complet)', () => {
         }
         prefs={TEST_PREFS}
         onFinish={() => {}}
+        onQuit={() => {}}
       />
     );
     expect(screen.getByText('Tous niveaux')).toBeTruthy();

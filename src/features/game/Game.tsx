@@ -16,18 +16,20 @@ import PassDevice from './components/PassDevice.jsx';
 import Answers from './components/Answers.jsx';
 import ReportButton from './components/ReportButton.jsx';
 
-/** Props de l'écran de jeu : config de lancement (depuis l'accueil), prefs et callback de fin. */
+/** Props de l'écran de jeu : config de lancement (depuis l'accueil), prefs et callbacks de fin. */
 export interface GameProps {
   config: GameLaunchConfig;
   prefs: Prefs;
   onFinish: (result: GameResult) => void;
+  onQuit: (result: GameResult) => void;
 }
 
-export default function Game({ config, prefs, onFinish }: GameProps): ReactElement {
+export default function Game({ config, prefs, onFinish, onQuit }: GameProps): ReactElement {
   const p = useGame({
     config,
     prefs,
     onFinish,
+    onQuit,
   });
   const { mode, theme, players, question, phase, index, questions, time } = p;
 

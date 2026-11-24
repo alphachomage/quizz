@@ -38,6 +38,7 @@ export interface UseGameParams {
   config: GameLaunchConfig;
   prefs: Prefs;
   onFinish: (result: GameResult) => void;
+  onQuit: (result: GameResult) => void;
 }
 
 /** État complet d'une partie exposé aux composants d'affichage. */
@@ -67,6 +68,7 @@ export interface GameState {
   suivant: () => void;
   pret: () => void;
   finir: () => void;
+  abandonner: () => void;
   reportQuestion: () => void;
 }
 
@@ -85,7 +87,7 @@ export interface GameViewState extends GameState {
   currentTheme: ThemeBadge;
 }
 
-export function useGame({ config, prefs, onFinish }: UseGameParams): GameState {
+export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): GameState {
   const { mode, niveau, theme, players = [] } = config;
   const nbJoueurs = mode === 'duel' ? 2 : 1;
 
@@ -285,6 +287,24 @@ export function useGame({ config, prefs, onFinish }: UseGameParams): GameState {
       details,
     });
   }
+  // Abandon en cours de partie (croix dans la TopBar) : on enregistre les
+  // résultats partiels (les questions déjà répondues) puis on quitte vers l'accueil.
+  function abandonner() {
+    playSound('clic', prefs);
+    if (mode !== 'quotidien') {
+      saveSeries(seriesKey(mode, niveau, theme.id), questionsPerPlayer.flat());
+    }
+    onQuit({
+      mode,
+      niveau,
+      theme,
+      players,
+      scores: scores.slice(0, nbJoueurs),
+      bonnes: bonnes.slice(0, nbJoueurs),
+      total: index, // questions effectivement répondues avant l'abandon
+      details,
+    });
+  }
   return {
     config,
     mode,
@@ -311,6 +331,7 @@ export function useGame({ config, prefs, onFinish }: UseGameParams): GameState {
     suivant,
     pret,
     finir,
+    abandonner,
     reportQuestion,
   };
 }

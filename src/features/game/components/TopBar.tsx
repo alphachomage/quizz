@@ -99,6 +99,15 @@ export default function TopBar({ p }: TopBarProps): ReactElement {
           {Math.min(10, streaks[currentPlayer] - 1)}
         </span>
       )}
+      <button
+        type="button"
+        className="bouton-quitter"
+        onClick={p.abandonner}
+        title="Quitter la partie (les points sont enregistrés)"
+        aria-label="Quitter la partie et revenir au menu"
+      >
+        <Icon nom="x" taille={16} />
+      </button>
     </div>
   );
 }

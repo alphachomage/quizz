@@ -28,6 +28,7 @@ describe('quizz du jour (flux complet)', () => {
   it('10 questions seedées, 10 bonnes réponses, score 245 (20 x 10 + bonus de série)', () => {
     const themes = makeThemes(6, 10); // 180 questions brassées par le tirage seedé
     const onFinish = vi.fn<(result: GameResult) => void>();
+    const onQuit = vi.fn<(result: GameResult) => void>();
     render(
       <Game
         config={{
@@ -39,6 +40,7 @@ describe('quizz du jour (flux complet)', () => {
         }}
         prefs={TEST_PREFS}
         onFinish={onFinish}
+        onQuit={onQuit}
       />
     );
 

@@ -47,6 +47,7 @@ describe('partie solo (flux complet)', () => {
       perLevel: 10,
     }); // 20 questions "facile"
     const onFinish = vi.fn<(result: GameResult) => void>();
+    const onQuit = vi.fn<(result: GameResult) => void>();
     render(
       <Game
         config={{
@@ -57,6 +58,7 @@ describe('partie solo (flux complet)', () => {
         }}
         prefs={TEST_PREFS}
         onFinish={onFinish}
+        onQuit={onQuit}
       />
     );
     const gains: number[] = [];
@@ -86,6 +88,7 @@ describe('partie solo (flux complet)', () => {
       perLevel: 10,
     });
     const onFinish = vi.fn<(result: GameResult) => void>();
+    const onQuit = vi.fn<(result: GameResult) => void>();
     render(
       <Game
         config={{
@@ -96,6 +99,7 @@ describe('partie solo (flux complet)', () => {
         }}
         prefs={TEST_PREFS}
         onFinish={onFinish}
+        onQuit={onQuit}
       />
     );
 
