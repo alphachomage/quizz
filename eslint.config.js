@@ -1,4 +1,4 @@
-// eslint.config.js — configuration ESLint "flat" de VoltQuiz.
+// eslint.config.js — configuration ESLint "flat" de VQuizz.
 // - react-hooks/rules-of-hooks en erreur, exhaustive-deps en warning
 // - aucun console.log, aucune variable inutilisée (warning)
 // - règles d'architecture R1-R5 en ERREUR (no-restricted-imports / globals / properties)

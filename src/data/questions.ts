@@ -76,7 +76,8 @@ async function loadFromChunks(): Promise<Theme[]> {
 // les chunks JS si le fetch échoue ou si la version ne correspond pas.
 async function loadFromCorpus(): Promise<Theme[]> {
   try {
-    const r = await fetch('/corpus.json');
+    // BASE_URL : '/' en prod, './' quand l'appli est servie depuis un sous-dossier (atelier)
+    const r = await fetch(`${import.meta.env.BASE_URL}corpus.json`);
     if (r.ok) {
       const data = (await r.json()) as { version?: string; themes?: unknown };
       if (

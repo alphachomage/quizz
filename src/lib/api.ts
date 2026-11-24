@@ -1,4 +1,4 @@
-// api.ts — client HTTP de l'API VoltQuiz (worker-api.ts). La base D1 est le stockage
+// api.ts — client HTTP de l'API VQuizz (worker-api.ts). La base D1 est le stockage
 // par défaut (mode 'd1' de lib/storage.ts) : ce fichier expose toutes les routes
 // (sync_client, auth, parties, records, XP, soumissions, admin check, rooms).
 // Zéro dépendance, fetch natif.
@@ -338,7 +338,8 @@ export const apiJoinRoom = (id: string, pseudo: string): Promise<RoomResponse> =
       pseudo,
     }),
   });
-export const apiRoom = (id: string): Promise<RoomResponse> => appel(`/room/${encodeURIComponent(id)}`);
+export const apiRoom = (id: string): Promise<RoomResponse> =>
+  appel(`/room/${encodeURIComponent(id)}`);
 export function apiDuelSocket(roomId: string): WebSocket {
   // Origine ws déduite de l'origine courante (via nav.js, seul habilité à lire l'URL — R5).
   // Un WebSocket navigateur ne peut pas poser de header Authorization custom : le token

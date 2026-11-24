@@ -1,41 +1,68 @@
-/* VoltQuiz — tokens : SEUL endroit où vivent les valeurs brutes de design.
+/* VQuizz — tokens : SEUL endroit où vivent les valeurs brutes de design.
    Refonte en profondeur : on modifie ici, les 30 modules de src/styles/ suivent.
    L'ordre des @import de src/styles.css doit rester identique (cascade) — voir docs/design.md. */
 
+/* ===== 0. Police : Sora (OFL, fichiers dans public/fonts, servis par l'appli -> hors ligne OK) ===== */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url('/fonts/sora-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url('/fonts/sora-latin-ext-wght-normal.woff2') format('woff2-variations');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
 /* ===== 1. Couleurs ===== */
 :root {
-  /* 60-30-10 SOMBRE sobre : 60% noir #000000, 30% gris ardoise #26262B, 10% sable #D9D0B8 */
-  /* (palette "vivante" violet/jaune #FFD60A archivée dans PALETTES.md) */
-  --fond: #000000;
-  --carte: #26262b;
-  --carte-2: #1d1d23;
-  --bordure: rgba(255, 255, 255, 0.14);
-  --bordure-fine: rgba(255, 255, 255, 0.1); /* filets discrets (stats, réglages) */
+  /* 60-30-10 SOMBRE « Bleu roi » (choisie par le client à l'atelier, 2026-11-23) :
+     60% bleu nuit #0A1A40, 30% bleu roi #1E3FA8, 10% jaune #FFD23F.
+     (anciennes palettes « sobre » et « vivante » archivées dans docs/design.md) */
+  --fond: #0a1a40;
+  --carte: #1e3fa8;
+  --carte-2: #18348c;
+  --bordure: rgba(255, 255, 255, 0.2);
+  --bordure-fine: rgba(255, 255, 255, 0.12); /* filets discrets (stats, réglages) */
   --bordure-foncee: rgba(0, 0, 0, 0.35); /* bordure de la modale */
-  --texte: #ececec;
-  --texte-doux: #9c9c94;
-  --texte-carte: #f4f4f2;
-  --texte-doux-carte: rgba(255, 255, 255, 0.62);
-  --accent1: #d9d0b8;
-  --accent2: #d9d0b8;
-  --or: #d9d0b8;
+  --texte: #ffffff;
+  --texte-doux: #b9c8f2;
+  --texte-carte: #ffffff;
+  --texte-doux-carte: rgba(255, 255, 255, 0.72);
+  --accent1: #ffd23f;
+  --accent2: #ffd23f;
+  --or: #ffd23f;
+  --question: #ffffff; /* texte des questions en partie */
+  --titre: #ffffff; /* titres d'écran (Classement, Compte, Proposer une question) */
 
-  /* Sable #D9D0B8 à alpha (remplace les anciens ambres/violets "vivants") */
-  --accent-08: rgba(217, 208, 184, 0.08);
-  --accent-12: rgba(217, 208, 184, 0.12);
-  --accent-16: rgba(217, 208, 184, 0.16);
-  --accent-35: rgba(217, 208, 184, 0.35);
-  --accent-45: rgba(217, 208, 184, 0.45);
-  --accent-50: rgba(217, 208, 184, 0.5);
-  --accent-55: rgba(217, 208, 184, 0.55);
-  --accent-60: rgba(217, 208, 184, 0.6);
-  --accent-65: rgba(217, 208, 184, 0.65);
-  --accent-85: rgba(217, 208, 184, 0.85);
-  --accent-95: rgba(217, 208, 184, 0.95);
+  /* Jaune #FFD23F à alpha */
+  --accent-08: rgba(255, 210, 63, 0.08);
+  --accent-12: rgba(255, 210, 63, 0.12);
+  --accent-16: rgba(255, 210, 63, 0.16);
+  --accent-35: rgba(255, 210, 63, 0.35);
+  --accent-45: rgba(255, 210, 63, 0.45);
+  --accent-50: rgba(255, 210, 63, 0.5);
+  --accent-55: rgba(255, 210, 63, 0.55);
+  --accent-60: rgba(255, 210, 63, 0.6);
+  --accent-65: rgba(255, 210, 63, 0.65);
+  --accent-85: rgba(255, 210, 63, 0.85);
+  --accent-95: rgba(255, 210, 63, 0.95);
 
   /* Sémantique fonctionnelle (hors 60-30-10 mais requise pour lire le feedback ;
      le mode daltonien la remplace par Okabe-Ito dans accessibilite.css) */
-  --texte-sur-accent: #141414; /* texte foncé sur fond accent sable (contraste WCAG AA) */
+  --texte-sur-accent: #141414; /* texte foncé sur fond accent jaune (contraste WCAG AA) */
   --blanc: #ffffff;
   --blanc-doux: rgba(255, 255, 255, 0.25);
   --blanc-40: rgba(255, 255, 255, 0.4);
@@ -74,6 +101,7 @@
   --radius-micro: 10px;
   --radius-rond: 50%;
   --radius-2: 2px;
+  --radius-5: 5px;
   --radius-9: 9px;
   --radius-11: 11px;
   --radius-15: 15px;
@@ -139,18 +167,26 @@ body {
 }
 
 body {
-  font-family: 'Segoe UI', 'Inter', 'Trebuchet MS', Verdana, sans-serif;
+  font-family: 'Sora', 'Segoe UI', 'Trebuchet MS', Verdana, sans-serif;
   background: var(--fond);
   background-attachment: fixed;
   color: var(--texte);
   min-height: 100vh;
 }
 
+/* Les boutons et champs n'héritent pas de la police de la page par défaut : on la leur donne */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
 .app {
   max-width: 720px;
   margin: 0 auto;
-  /* padding-bottom réserve la place de la barre d'action fixe (bouton "C'est parti") */
-  padding: 36px 20px calc(110px + env(safe-area-inset-bottom));
+  /* safe-area : en plein écran sur iPhone, le contenu ne passe pas sous l'heure / l'encoche */
+  padding: calc(28px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom));
   min-height: 100vh;
   display: flex;
   flex-direction: column;

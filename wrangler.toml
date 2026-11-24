@@ -1,4 +1,4 @@
-# Configuration Cloudflare Workers pour VoltQuiz (lue par @cloudflare/vite-plugin
+# Configuration Cloudflare Workers pour VQuizz (lue par @cloudflare/vite-plugin
 # en développement, et par `npx wrangler deploy` après `npm run build`).
 #
 # En dev, le plugin sert le dossier ./public comme assets statiques (binding ASSETS).

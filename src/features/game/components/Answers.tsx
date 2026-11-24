@@ -15,11 +15,21 @@ interface AnswersProps {
   onAnswer: (i: number) => void;
 }
 
-export default function Answers({ question, phase, selection, answerColor, onAnswer }: AnswersProps) {
+/** Au-delà de ce nombre de caractères, une réponse passe en texte réduit. */
+const LONG_ANSWER = 45;
+
+export default function Answers({
+  question,
+  phase,
+  selection,
+  answerColor,
+  onAnswer,
+}: AnswersProps) {
   return (
     <div className="reponses">
       {question.reponses.map((r, i) => {
-        let classe = 'reponse';
+        // Réponse très longue : texte plus petit pour que la partie tienne sur un écran
+        let classe = r.length > LONG_ANSWER ? 'reponse longue' : 'reponse';
         if (phase === 'reponse') {
           if (i === question.bonne) classe += ' bonne';
           else if (i === selection) classe += ' mauvaise';

@@ -1,12 +1,12 @@
-// ModesTabs.tsx — les 4 onglets de mode + la ligne de description du mode choisi.
+// ModesTabs.tsx — les 4 grandes tuiles de mode de l'accueil (gros picto, nom dessous).
+// Un clic ouvre la popin du mode : choix du thème (Solo) ou confirmation (Survie, Quizz du jour).
 import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
-import { recordKey } from '@lib/records.js';
 import type { GameMode } from '@lib/types.js';
 import type { HomeState } from '../useHome.js';
 
-// Onglet de mode : `badge` = pastille « à venir », `streak` = pastille série de jours.
-interface ModeTab {
+// Tuile de mode : `badge` = pastille « à venir », `streak` = pastille série de jours.
+interface ModeTile {
   id: GameMode;
   icone: string;
   nom: string;
@@ -14,7 +14,7 @@ interface ModeTab {
   streak?: boolean;
 }
 
-const MODES: ModeTab[] = [
+const MODES: ModeTile[] = [
   { id: 'solo', icone: 'timer', nom: 'Solo' },
   { id: 'duel', icone: 'swords', nom: 'Duel en ligne', badge: 'à venir' },
   { id: 'survie', icone: 'skull', nom: 'Survie' },
@@ -26,76 +26,30 @@ interface ModeTabsProps {
 }
 
 export default function ModeTabs({ a }: ModeTabsProps): ReactElement {
-  const { mode, setMode, records, dailyStreak, dailyRecord } = a;
+  const { dailyStreak, openMode } = a;
   return (
-    <>
-      <section className="modes-tabs">
-        {MODES.map((m) => (
-          <button
-            key={m.id}
-            className={mode === m.id ? 'mode-tab actif' : 'mode-tab'}
-            disabled={m.id === 'duel'} // duel local verrouillé : le mode en ligne arrive plus tard
-            title={
-              m.id === 'duel'
-                ? 'Mode en ligne à venir — le duel local est désactivé pour l’instant'
-                : undefined
-            }
-            onClick={() => setMode(m.id)}
-          >
-            <Icon nom={m.icone} taille={19} />
-            <span>{m.nom}</span>
-            {m.badge && <span className="tab-badge">{m.badge}</span>}
-            {m.streak && dailyStreak > 0 && (
-              <span
-                className="tab-streak"
-                title={`Série de ${dailyStreak} jour${dailyStreak > 1 ? 's' : ''} consécutifs sur le quizz du jour`}
-              >
-                <Icon nom="bolt" taille={12} /> ×{dailyStreak}
-              </span>
-            )}
-          </button>
-        ))}
-      </section>
-      <p className="mode-desc-ligne">
-        {mode === 'solo' && '10 questions contre la montre dans le thème choisi.'}
-        {mode === 'duel' && (
-          <>
-            Affronte d'autres joueurs <strong>en ligne</strong>, pas en local :{' '}
-            <span className="a-venir">à venir</span>
-          </>
-        )}
-        {mode === 'survie' && (
-          <>
-            Tous thèmes et niveaux mélangés, 1 vie
-            {records[recordKey('survie', 'mix', 'tous')]
-              ? ` · record ${records[recordKey('survie', 'mix', 'tous')]} pts`
-              : ''}
-          </>
-        )}
-        {mode === 'quotidien' && (
-          <>
-            10 questions identiques pour tous aujourd'hui (points ×1,5 si ta série fait 3 jours ou
-            plus)
-            {dailyRecord ? ` · ton score : ${dailyRecord} pts` : ''}
-            {dailyStreak > 0 ? (
-              <span
-                className="streak-jour gros"
-                title="Série de jours consécutifs sur le quizz du jour — joue chaque jour pour la faire monter !"
-              >
-                <Icon nom="bolt" taille={17} /> Série de {dailyStreak} jour
-                {dailyStreak > 1 ? 's' : ''} !
-              </span>
-            ) : (
-              <span
-                className="streak-jour"
-                title="Joue le quizz du jour chaque jour pour lancer ta série d'éclairs !"
-              >
-                <Icon nom="bolt" taille={13} /> aucune série en cours
-              </span>
-            )}
-          </>
-        )}
-      </p>
-    </>
+    <nav className="modes-tabs" aria-label="Modes de jeu">
+      {MODES.map((m) => (
+        <button
+          key={m.id}
+          className="mode-tab"
+          disabled={m.id === 'duel'} // le duel en ligne arrive plus tard
+          title={m.id === 'duel' ? 'Mode en ligne à venir' : undefined}
+          onClick={() => openMode(m.id)}
+        >
+          <Icon nom={m.icone} taille={48} />
+          <span className="mode-tab-nom">{m.nom}</span>
+          {m.badge && <span className="tab-badge">{m.badge}</span>}
+          {m.streak && dailyStreak > 0 && (
+            <span
+              className="tab-streak"
+              title={`Série de ${dailyStreak} jour${dailyStreak > 1 ? 's' : ''} consécutifs sur le quizz du jour`}
+            >
+              <Icon nom="bolt" taille={12} /> ×{dailyStreak}
+            </span>
+          )}
+        </button>
+      ))}
+    </nav>
   );
 }

@@ -1,5 +1,5 @@
 /* global Env, ExecutionContext */
-// worker.ts — point d'entrée Cloudflare Worker de VoltQuiz.
+// worker.ts — point d'entrée Cloudflare Worker de VQuizz.
 //
 // Avec `run_worker_first = true` (wrangler.toml), CHAQUE requête passe par ici :
 // le Worker sert les fichiers statiques via le binding ASSETS (dist/client),

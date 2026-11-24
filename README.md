@@ -1,6 +1,6 @@
-# VoltQuiz — Guide de lancement (sans être développeur)
+# VQuizz — Guide de lancement (sans être développeur)
 
-Ce guide t'explique, étape par étape, comment faire tourner **VoltQuiz** sur ton PC Windows.
+Ce guide t'explique, étape par étape, comment faire tourner **VQuizz** sur ton PC Windows.
 Aucune compétence en code n'est nécessaire : il suffit de copier-coller quelques commandes.
 
 ---
@@ -71,14 +71,14 @@ meilleurs scores.
 
 ---
 
-## Installer VoltQuiz comme une vraie appli (PWA)
+## Installer VQuizz comme une vraie appli (PWA)
 
 Une **PWA** = un site qu'on installe comme une appli : icône sur le bureau, fenêtre
 dédiée, fonctionne même **sans internet**.
 
 1. Dans la barre d'adresse, à droite de `localhost:5173`, clique sur le bouton
- **« Installer »** (ou menu « Installer VoltQuiz »).
-2. L'icône de VoltQuiz apparaît sur le bureau et dans le menu Démarrer.
+ **« Installer »** (ou menu « Installer VQuizz »).
+2. L'icône de VQuizz apparaît sur le bureau et dans le menu Démarrer.
 
 ---
 

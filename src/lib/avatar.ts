@@ -29,7 +29,10 @@ function loadImage(dataUrl: string): Promise<HTMLImageElement> {
 }
 
 // Recadre en carré centré et réduit à `taille` px (JPEG qualité 0.85) -> dataURL compact pour localStorage.
-async function imageToResizedDataUrl(dataUrl: string, taille: number = AVATAR_SIZE): Promise<string> {
+async function imageToResizedDataUrl(
+  dataUrl: string,
+  taille: number = AVATAR_SIZE
+): Promise<string> {
   const img = await loadImage(dataUrl);
   const canvas = document.createElement('canvas');
   canvas.width = taille;
@@ -148,7 +151,7 @@ export async function validateAvatar(file: File | null): Promise<AvatarResult> {
   // 2) Personnages / contenus bloqués (hash perceptuel vs liste locale)
   const hash = await aHash(dataUrl);
   try {
-    const res = await fetch('/avatars-bloques.json');
+    const res = await fetch(`${import.meta.env.BASE_URL}avatars-bloques.json`);
     const list: { images?: BlockedAvatarEntry[] } = res.ok
       ? await res.json()
       : {

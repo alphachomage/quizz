@@ -71,7 +71,7 @@ describe("shell de l'application (app/)", () => {
         const data = url.startsWith('/api/admin/check')
           ? { ok: true, admin: true }
           : url.startsWith('/api/health')
-            ? { ok: true, app: 'VoltQuiz', version: '0.1.0', hour: new Date().toISOString() }
+            ? { ok: true, app: 'VQuizz', version: '0.1.0', hour: new Date().toISOString() }
             : url.startsWith('/api/stats')
               ? { ok: true, rooms: 0, rapportsCsp: 0, hits429: 0 }
               : { ok: true };
@@ -85,21 +85,28 @@ describe("shell de l'application (app/)", () => {
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
   });
-  it('parcours invité complet : accueil -> thème -> niveau -> partie -> réponse', async () => {
+  it('parcours invité complet : accueil -> mode Solo -> thème + niveau -> partie -> réponse', async () => {
     render(<App />);
-    // Accueil : les thèmes factices apparaissent (catalogue + chunk lazy résolus).
-    await waitForText('Thème 0');
-    expect(screen.getByText('Thème 1')).toBeTruthy();
+    // Accueil : les 4 tuiles de mode apparaissent.
+    await waitForText('Solo');
 
     // Le tuto de bienvenue s'ouvre à la première connexion : on le ferme.
     const tutorialButton = screen.queryByText("C'est parti");
     if (tutorialButton) fireEvent.click(tutorialButton);
 
-    // Clic sur un thème -> modale de choix du niveau (solo).
-    fireEvent.click(screen.getByText('Thème 0'));
-    expect(screen.getByText('Choisis la difficulté :')).toBeTruthy();
+    // Tuile Solo -> popin de choix du thème (carrousel) + difficulté.
+    fireEvent.click(screen.getByRole('button', { name: 'Solo' }));
+    await waitForText('Thème aléatoire');
+    // Le carrousel boucle : chaque carte existe en plusieurs exemplaires, seul celui du
+    // milieu est exposé aux lecteurs d'écran (les copies sont aria-hidden). La carte au
+    // centre (la 1re au départ) est la carte choisie.
+    expect(screen.getByRole('button', { name: /^Thème 1\b/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /^Thème 0\b/ }).getAttribute('aria-pressed')).toBe(
+      'true'
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Difficile' }));
 
-    // Clic sur "C'est parti" DANS LA MODALE (le CTA fixe du bas a le même libellé).
+    // « C'est parti ! » dans la popin.
     fireEvent.click(document.querySelector('.modal .btn-principal')!);
     // Navigation vers l'écran Partie (lazy) : on avance les timers jusqu'à la 1re question.
     await waitForText(/Question \S+ \?/);
@@ -149,7 +156,7 @@ describe("shell de l'application (app/)", () => {
     window.history.replaceState(null, '', '/?admin=1');
     try {
       render(<App />); // beforeEach a posé une session invité (startGuest)
-      await waitForText('Thème 0'); // accueil normal
+      await waitForText('Solo'); // accueil normal (tuiles de mode)
       expect(screen.queryByText('Tableau de bord')).toBeNull();
     } finally {
       window.history.replaceState(null, '', '/');

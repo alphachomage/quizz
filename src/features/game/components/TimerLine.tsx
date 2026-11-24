@@ -10,7 +10,12 @@ interface TimerLineProps {
   danger: boolean;
 }
 
-export default function TimerLine({ pct, barColor, remainingPoints, danger }: TimerLineProps): ReactElement {
+export default function TimerLine({
+  pct,
+  barColor,
+  remainingPoints,
+  danger,
+}: TimerLineProps): ReactElement {
   return (
     <div className={danger ? 'minuteur-ligne danger' : 'minuteur-ligne'}>
       <div className="minuteur">

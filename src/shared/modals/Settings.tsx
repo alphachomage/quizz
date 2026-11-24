@@ -72,7 +72,13 @@ interface SettingsProps {
   onClose: () => void;
 }
 
-export default function Settings({ prefs, avatar, onChangerAvatar, onChanger, onClose }: SettingsProps): ReactElement {
+export default function Settings({
+  prefs,
+  avatar,
+  onChangerAvatar,
+  onChanger,
+  onClose,
+}: SettingsProps): ReactElement {
   const fileRef = useRef<HTMLInputElement>(null);
   const [avatarError, setAvatarError] = useState('');
   // Vue lâche des prefs pour lire aussi les clés historiques (ex. « musique ») :

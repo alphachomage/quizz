@@ -9,13 +9,7 @@ import type { persistResult } from '@features/results/persist.js';
 
 /** Écrans gérés par le routing interne. */
 export type ScreenId =
-  | 'accueil'
-  | 'partie'
-  | 'resultat'
-  | 'formulaire'
-  | 'classement'
-  | 'stats'
-  | 'badges';
+  'accueil' | 'partie' | 'resultat' | 'formulaire' | 'classement' | 'stats' | 'badges';
 
 /** Config de lancement d'une partie envoyée par l'accueil (useHome) : proche de
     GameConfig (lib/types.ts), mais `niveau` vaut aussi 'mix' ou une date pour la

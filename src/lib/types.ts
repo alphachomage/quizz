@@ -1,4 +1,4 @@
-// types.ts — types métier cœur de VoltQuiz, partagés par tout src/.
+// types.ts — types métier cœur de VQuizz, partagés par tout src/.
 // Rappel règle 2 : les CLÉS du schéma de données restent en français (q, reponses, bonne,
 // niveau, info, nom, icone, couleur) car c'est le format JSON documenté pour le client ;
 // le schéma zod (schema.ts) en reste la validation runtime (z.infer pour les types).
@@ -116,9 +116,7 @@ export interface Report {
 }
 
 /** Override admin posé sur une question du corpus (clé = texte normalisé de la question). */
-export type OverrideEntry =
-  | { action: 'supprimer' }
-  | { action: 'modifier'; question: Question };
+export type OverrideEntry = { action: 'supprimer' } | { action: 'modifier'; question: Question };
 
 /** Suggestion de joueur (vue admin). */
 export interface Suggestion {

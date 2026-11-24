@@ -10,16 +10,7 @@ interface FeedbackProps {
 }
 
 export default function Feedback({ p }: FeedbackProps): ReactElement | null {
-  const {
-    phase,
-    selection,
-    question,
-    mode,
-    lastGain,
-    lastBonus,
-    streaks,
-    currentPlayer,
-  } = p;
+  const { phase, selection, question, mode, lastGain, lastBonus, streaks, currentPlayer } = p;
   if (phase !== 'reponse') return null;
   const bonne = selection !== null && selection === question.bonne;
   return (

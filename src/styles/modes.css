@@ -1,12 +1,71 @@
-/* VoltQuiz — modes (extrait de l'ancien styles.css, ordre conservé) */
+/* VQuizz — modes (extrait de l'ancien styles.css, ordre conservé) */
 /* --- Nouveaux modes (survie / quizz du jour) + r�glages --- */
 
 .modes-tabs {
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--esp-14);
+  width: 100%;
+  /* Taille pilotée aussi par la HAUTEUR d'écran : l'accueil tient toujours sans défilement */
+  max-width: min(290px, 40vh);
+  max-width: min(290px, 40dvh);
+  margin: 0 auto;
 }
 
+/* Grandes tuiles carrées : gros picto jaune, nom en capitales dessous */
 .mode-tab {
-  flex: 1 1 40%;
+  position: relative;
+  aspect-ratio: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8%;
+  min-height: 0;
+  padding: 8px 6px;
+  border: 0;
+  border-radius: var(--radius-carte);
+  background: var(--carte);
+  color: var(--texte-carte);
+  font-size: clamp(0.78rem, 0.68rem + 0.9vw, 0.98rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+  text-align: center;
+  text-transform: uppercase;
+  transition:
+    transform var(--dur-court) ease,
+    background var(--dur-court) ease;
+}
+
+.mode-tab .icone {
+  /* Picto proportionnel à la tuile (gros, comme sur la maquette) */
+  width: 48%;
+  height: auto;
+  aspect-ratio: 1;
+  color: var(--accent1);
+}
+
+.mode-tab:hover:not(:disabled) {
+  background: var(--carte-2);
+  transform: translateY(-3px);
+}
+
+.mode-tab:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Pastilles posées sur le bord de l'onglet : elles n'agrandissent plus la case */
+.mode-tab .tab-badge,
+.mode-tab .tab-streak {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+/* La pastille reste centrée : seule l'icône éclair pulse */
+.mode-tab .tab-streak {
+  animation: none;
 }
 
 .btn-icone {
@@ -33,7 +92,17 @@
 
 .barre-user > .btn-icone,
 .barre-user > .btn-suppr {
-  margin-left: var(--esp-8);
+  flex-shrink: 0;
+  border-color: transparent;
+  background: transparent;
+}
+
+@media (max-width: 420px) {
+  .barre-user > .btn-icone,
+  .barre-user > .btn-suppr {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 .info-mix {

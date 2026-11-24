@@ -5,13 +5,13 @@
 import { useMemo } from 'react';
 import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
-import { levelName } from '@lib/scoring.js';
-import { themeLevel } from '@lib/xp.js';
 import type { GameResult, Theme } from '@lib/types.js';
-import { computeGameStats, levelPercent } from './gameStats.js';
+import { computeGameStats } from './gameStats.js';
 import type { Persistance } from './persist.js';
 import { useShare } from './useShare.js';
 import ShareModal from './components/ShareModal.jsx';
+import ResultTiles from './components/ResultTiles.jsx';
+import ResultXp from './components/ResultXp.jsx';
 
 /** Props de l'écran de résultats (déléguées par app/Screens.tsx). */
 export interface ResultsProps {
@@ -62,42 +62,10 @@ export default function Results({
         ? 'Game over !'
         : mode === 'quotidien'
           ? `Quizz du jour du ${niveau} terminé !`
-          : 'Partie terminée !';
-  const labelRecord =
-    mode === 'solo'
-      ? `Record niveau ${levelName(niveau)} · ${theme.nom}`
-      : mode === 'duel'
-        ? `Record duel · ${theme.nom}`
-        : mode === 'survie'
-          ? 'Record survie · tous niveaux'
-          : `Record du quizz du ${niveau}`;
-  const leaderboardLabel =
-    mode === 'solo'
-      ? `Solo · ${levelName(niveau)} · ${theme.nom}`
-      : mode === 'duel'
-        ? `Duel · ${theme.nom}`
-        : mode === 'survie'
-          ? 'Survie · tous niveaux'
-          : `Quizz du ${niveau}`;
+          : 'Partie terminée';
   return (
     <div className="ecran-centre">
       <div className="resultat">
-        <div className="gros-icone">
-          {mode === 'duel' ? (
-            gagnant === null ? (
-              <Icon nom="swords" taille={56} />
-            ) : (
-              <Icon nom="trophy" taille={56} />
-            )
-          ) : mode === 'survie' ? (
-            <Icon nom="skull" taille={56} />
-          ) : mode === 'quotidien' ? (
-            <Icon nom="calendar" taille={56} />
-          ) : (
-            <Icon nom="sparkles" taille={56} />
-          )}
-        </div>
-
         {mode === 'duel' ? (
           <>
             <h2>{title}</h2>
@@ -122,14 +90,18 @@ export default function Results({
         ) : (
           <>
             <h2>{title}</h2>
-            <div className="gros-score">
-              {scores[0]} <span>pts</span>
+            {/* Score et « Nouveau record » forment une seule section */}
+            <div className="bloc-score">
+              <div className="gros-score">
+                {scores[0]} <span>pts</span>
+              </div>
+              {nouveauRecord && (
+                <div className="record">
+                  <Icon nom="bolt" taille={16} /> Nouveau record !
+                  {recordAvant > 0 ? ` (avant : ${recordAvant} pts)` : ''}
+                </div>
+              )}
             </div>
-            <p className="sous-score">
-              {mode === 'survie'
-                ? `${bonnes[0]} bonne(s) réponse(s) d'affilée · niveau ${levelName(niveau)}`
-                : `${bonnes[0]} bonne(s) réponse(s) sur ${total}${mode === 'solo' ? ` · niveau ${levelName(niveau)}` : ''}`}
-            </p>
             {mode === 'quotidien' && dailyStreak > 0 && (
               <div className="streak-jour gros">
                 <Icon nom="bolt" taille={20} /> Série de {dailyStreak} jour
@@ -139,94 +111,34 @@ export default function Results({
           </>
         )}
 
-        {nouveauRecord && (
+        {mode === 'duel' && nouveauRecord && (
           <div className="record">
             <Icon nom="bolt" taille={16} /> Nouveau record !
             {recordAvant > 0 ? ` (avant : ${recordAvant} pts)` : ''}
           </div>
         )}
-        <div className="record-current">
-          <Icon nom="trophy" taille={15} /> {labelRecord} : {record} pts
-        </div>
-
-        <div className="stats-partie">
-          {gameStats.avgTime !== null && (
-            <span>
-              <Icon nom="timer" taille={14} /> {gameStats.avgTime} s / question en moyenne
-            </span>
-          )}
-          {gameStats.meilleureSerie > 1 && (
-            <span>
-              <Icon nom="flame" taille={14} /> meilleure série : {gameStats.meilleureSerie} bonnes
-              d’affilée
-            </span>
-          )}
-        </div>
-
-        {!isGuest && rang !== null && rang <= 10 && (
-          <div className="record top10">
-            <Icon nom="podium" taille={16} /> Top 10 ! Tu es #{rang} au classement{' '}
-            {leaderboardLabel}
-          </div>
+        {mode !== 'duel' && (
+          <ResultTiles
+            mode={mode}
+            bonnes={bonnes[0]}
+            total={total}
+            avgTime={gameStats.avgTime}
+            meilleureSerie={gameStats.meilleureSerie}
+          />
         )}
 
-        {!isGuest && (
-          <div className="xp-bloc">
-            <h3 className="titre-section">
-              <Icon nom="star" taille={18} /> XP gagnée
-            </h3>
-            <div className="xp-globale">
-              <div className="xp-globale-titre">
-                <span>XP totale du compte</span>
-                <span className="xp-globale-val">
-                  +{globalXp.gain} XP · niv. {themeLevel(globalXp.apres)}
-                </span>
-              </div>
-              <div className="xp-barre">
-                <i
-                  style={{
-                    width: `${levelPercent(globalXp.apres)}%`,
-                  }}
-                />
-              </div>
-              <div className="xp-globale-sous">
-                {globalXp.apres} XP au total (avant : {globalXp.avant})
-              </div>
-            </div>
-            {themeXp.length > 0 && (
-              <ul className="xp-themes">
-                {themeXp.map((l) => {
-                  const t = (themes || []).find((x) => x.id === l.themeId);
-                  return (
-                    <li key={l.themeId} className="xp-theme">
-                      <span
-                        className="xp-theme-nom"
-                        style={{
-                          color: t ? t.couleur : '#a78bfa',
-                        }}
-                      >
-                        <Icon nom={t ? t.icone : 'sparkles'} taille={15} /> {t ? t.nom : l.themeId}
-                      </span>
-                      <span className="xp-theme-gain">+{l.gain} XP</span>
-                      <span className="xp-theme-niv">
-                        Niv. {l.nivAvant}
-                        {l.nivApres > l.nivAvant ? ` vers ${l.nivApres}` : ''}
-                      </span>
-                      <span className="xp-barre petite">
-                        <i
-                          style={{
-                            width: `${l.pct}%`,
-                            background: t ? t.couleur : '#a78bfa',
-                          }}
-                        />
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-        )}
+        <div className="resultat-record">
+          <span>
+            <Icon nom="trophy" taille={22} /> Record : <strong>{record} pts</strong>
+          </span>
+          {!isGuest && rang !== null && rang <= 10 && (
+            <span className="resultat-top10">
+              <Icon nom="podium" taille={20} /> Top 10 · #{rang}
+            </span>
+          )}
+        </div>
+
+        {!isGuest && <ResultXp globalXp={globalXp} themeXp={themeXp} themes={themes} />}
 
         {isGuest && (
           <p className="info-mix">
@@ -238,7 +150,7 @@ export default function Results({
         <div className="actions">
           {mode !== 'quotidien' && (
             <button className="btn-principal" onClick={onReplay}>
-              <Icon nom="replay" taille={18} /> Rejouer (nouvelles questions)
+              <Icon nom="replay" taille={20} /> Rejouer
             </button>
           )}
           {mode === 'quotidien' && (

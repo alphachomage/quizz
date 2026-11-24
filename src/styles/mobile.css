@@ -1,17 +1,11 @@
-/* VoltQuiz — mobile (extrait de l'ancien styles.css, ordre conservé) */
+/* VQuizz — mobile (extrait de l'ancien styles.css, ordre conservé) */
 /* ===== Petit écran (mobile) ===== */
 
 @media (max-width: 520px) {
-  .logo {
-    font-size: 2rem;
-  }
   .question {
     font-size: 1.22rem;
   }
   .reponses {
-    grid-template-columns: 1fr;
-  }
-  .themes {
     grid-template-columns: 1fr;
   }
 }

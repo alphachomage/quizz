@@ -19,7 +19,13 @@ interface ProfileProps {
   onBadges: () => void;
 }
 
-export default function Profile({ pseudo, avatar, themes, onClose, onBadges }: ProfileProps): ReactElement {
+export default function Profile({
+  pseudo,
+  avatar,
+  themes,
+  onClose,
+  onBadges,
+}: ProfileProps): ReactElement {
   const xp = useMemo(() => loadXp(), []);
   const badges = useMemo(() => computeBadges(), []);
   const [favori, setFavori] = useState(() => favoriteBadge());

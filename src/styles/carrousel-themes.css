@@ -1,0 +1,295 @@
+/* VQuizz — carrousel des thèmes (popin Solo) : boucle infinie, carte centrale = choix,
+   scroll-snap natif sans librairie. Plus liens du bas et centrage vertical de l'accueil. */
+
+.themes-carrousel {
+  margin: var(--esp-6) calc(-1 * var(--esp-18)) 0;
+}
+
+/* Une seule rangée qui défile ; chaque carte se cale au centre de la popin */
+.themes {
+  position: relative;
+  display: grid;
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: 112px;
+  gap: var(--esp-10);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding: 10px 0 12px;
+}
+
+.themes::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .themes {
+    scroll-behavior: smooth;
+  }
+}
+
+.themes .theme {
+  scroll-snap-align: center;
+  min-height: 124px;
+  gap: var(--esp-8);
+  padding: 11px;
+  border-radius: var(--radius-mini);
+  font-size: 0.6875rem;
+  align-items: center;
+  text-align: center;
+  opacity: 0.55;
+  transition:
+    opacity var(--dur-court) ease,
+    transform var(--dur-court) ease,
+    border-color var(--dur-court) ease;
+}
+
+/* Carte au centre = thème choisi : pleine opacité, légèrement agrandie, bordure jaune */
+.themes .theme.actif {
+  opacity: 1;
+  transform: scale(1.06);
+  border-color: var(--accent1);
+  background: var(--carte);
+}
+
+.themes .theme:hover {
+  transform: none;
+}
+
+.themes .theme.actif:hover {
+  transform: scale(1.06);
+}
+
+/* Pendant la roulette, les cartes défilent sans effet de sélection */
+.themes.tourne .theme {
+  opacity: 0.8;
+}
+
+.themes .theme-icone {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-mini);
+}
+
+.themes .theme-nom {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  min-height: 2.4em;
+  font-size: 0.78rem;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+.themes .theme-meta {
+  margin-top: auto;
+  justify-content: center;
+}
+
+/* Points de navigation : un par thème, le point actif s'allonge à la couleur du thème */
+.carrousel-points {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--esp-6);
+  padding: 0 var(--esp-18);
+}
+
+.carrousel-point {
+  position: relative;
+  width: 6px;
+  height: 6px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pilule);
+  background: var(--desactive-30);
+  cursor: pointer;
+  transition:
+    width var(--dur-court) ease,
+    background var(--dur-court) ease;
+}
+
+.carrousel-point.actif {
+  width: 18px;
+  background: var(--couleur, var(--accent1));
+}
+
+/* Zone de clic confortable au doigt sans grossir le point */
+.carrousel-point::after {
+  content: '';
+  position: absolute;
+  inset: -8px -3px;
+}
+
+/* --- Popin Solo --- */
+.modal-picker {
+  max-width: 400px;
+  overflow-x: hidden;
+}
+
+.picker-sous-titre {
+  margin: calc(-1 * var(--esp-6)) 0 0;
+  font-size: 0.82rem;
+  color: var(--texte-doux-carte);
+}
+
+.btn-aleatoire {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-8);
+  margin: var(--esp-14) auto 0;
+  padding: 8px 16px;
+  border: 1px solid var(--accent1);
+  border-radius: var(--radius-pilule);
+  background: transparent;
+  color: var(--accent1);
+  font-size: 0.9rem; /* >= 14 px en gras : contraste suffisant jaune sur bleu (mode clair) */
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--dur-court) ease;
+}
+
+.btn-aleatoire:hover:not(:disabled) {
+  background: var(--accent-12);
+}
+
+.btn-aleatoire:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.picker-niveaux {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--esp-8);
+  margin-top: var(--esp-14);
+}
+
+.picker-niveaux .niveau-modal {
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--esp-4);
+  min-height: 0;
+  height: auto;
+  padding: 9px 4px;
+  font-size: 0.78rem;
+}
+
+.modal-picker .btn-principal {
+  margin-top: var(--esp-14);
+}
+
+/* --- Popin Survie / Quizz du jour --- */
+.modal-mode {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--esp-8);
+  max-width: 340px;
+  padding-top: 26px;
+  text-align: center;
+}
+
+.modal-mode-icone {
+  display: flex;
+  color: var(--accent1);
+}
+
+.modal-mode .btn-principal {
+  margin-top: var(--esp-10);
+}
+
+/* Liens du bas de l'accueil regroupés sur une ligne discrète */
+.liens-accueil {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: clamp(6px, 2.4vw, 12px);
+  margin-top: var(--esp-8);
+}
+
+.accueil .liens-accueil .btn-secondaire {
+  flex-shrink: 1;
+  gap: var(--esp-4);
+  width: auto;
+  min-width: 0;
+  margin: 0;
+  padding: 6px 2px;
+  font-size: clamp(0.62rem, 0.45rem + 1.2vw, 0.72rem);
+  white-space: nowrap;
+}
+
+.liens-accueil .icone {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* Écrans peu hauts : on resserre les espacements verticaux pour rester sans défilement */
+@media (max-height: 760px) {
+  .app:has(.accueil) {
+    padding-top: calc(14px + env(safe-area-inset-top));
+  }
+
+  .accueil .barre-user {
+    margin-bottom: var(--esp-8);
+  }
+
+  .accueil .hero {
+    margin-bottom: var(--esp-10);
+  }
+
+  .accueil .modes-tabs {
+    gap: var(--esp-10);
+  }
+}
+
+/* Très petits écrans (ex. 320 x 568) : tuiles et logo encore un peu réduits */
+@media (max-height: 660px) {
+  .accueil .modes-tabs {
+    max-width: min(290px, 37vh);
+    max-width: min(290px, 37dvh);
+  }
+
+  .accueil .logo-img {
+    width: min(220px, 60vw, 21vh);
+    width: min(220px, 60vw, 21dvh);
+  }
+
+  .accueil .prochain-badge {
+    margin-top: var(--esp-4);
+    padding-block: 4px;
+  }
+
+  .accueil .prochain-badge .ecusson {
+    display: none;
+  }
+}
+
+/* Centrage vertical de l'accueil : la barre du joueur reste en haut, le bloc logo -> liens
+   se centre dans la hauteur restante. */
+.accueil {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.accueil > .hero {
+  margin-top: auto;
+}
+
+.accueil > .liens-accueil {
+  margin-bottom: auto;
+}
+
+/* Écrans étroits : les liens restent sur une ligne en masquant leurs petites icônes */
+@media (max-width: 380px) {
+  .liens-accueil .icone {
+    display: none;
+  }
+}

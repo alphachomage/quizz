@@ -1,11 +1,11 @@
-/* VoltQuiz — accueil (extrait de l'ancien styles.css, ordre conservé) */
+/* VQuizz — accueil (extrait de l'ancien styles.css, ordre conservé) */
 /* ===== Accueil ===== */
 
 .barre-user {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--esp-8);
+  gap: var(--esp-6);
   margin-bottom: var(--esp-18);
 }
 
@@ -62,13 +62,30 @@
 
 .user-nom {
   font-weight: 800;
-  font-size: 0.98rem;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
   gap: var(--esp-8);
+  min-width: 0;
+}
+
+/* Pseudo long : coupé avec « … » au lieu de passer sous les boutons */
+.user-pseudo {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-progression {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-6);
+  min-width: 0;
 }
 
 .user-niv {
+  flex-shrink: 0;
   padding: 1px 8px;
   font-size: 0.7rem;
   font-weight: 800;
@@ -79,8 +96,10 @@
 
 .user-xpbar {
   display: block;
-  width: 150px;
-  max-width: 40vw;
+  flex: 1;
+  width: 100%;
+  max-width: 150px;
+  min-width: 36px;
   height: 6px;
   background: var(--desactive-30);
   border-radius: var(--radius-pilule);
@@ -121,29 +140,34 @@
 
 .hero {
   text-align: center;
-  margin-bottom: 26px;
+  margin-bottom: var(--esp-18);
 }
 
 .logo {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--esp-12);
-  font-family: Georgia, 'Palatino Linotype', 'Book Antiqua', serif;
-  font-size: 2.2rem;
-  font-weight: 400;
-  letter-spacing: 1px;
-  color: var(--texte);
+  display: flex;
+  justify-content: center;
+  margin: 0;
 }
 
-.logo-marque {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-15);
-  background: var(--accent1);
-  color: var(--texte-sur-accent);
+.logo-img {
+  position: relative;
+  top: -5px; /* demande client : logo légèrement remonté */
+  display: block;
+  width: min(220px, 60vw, 25vh);
+  width: min(220px, 60vw, 25dvh);
+  height: auto;
+}
+
+.logo-clair {
+  display: none;
+}
+
+body.theme-clair .logo-sombre {
+  display: none;
+}
+
+body.theme-clair .logo-clair {
+  display: block;
 }
 
 .tagline {
@@ -189,8 +213,8 @@
 }
 
 .mode-desc-ligne {
-  margin: 12px 2px 0;
-  font-size: 0.88rem;
+  margin: 0 2px 16px;
+  font-size: 0.8rem;
   color: var(--texte-doux);
   text-align: center;
   min-height: 1.3em;
@@ -226,7 +250,7 @@
 
 .titre-section {
   margin: 36px 0 14px;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--texte-doux);
   text-transform: uppercase;
@@ -318,7 +342,8 @@
   padding: 2px 9px;
   font-size: 0.72rem;
   font-weight: 800;
-  color: var(--blanc);
+  /* texte foncé : lisible sur toutes les couleurs de thèmes (claires et vives) */
+  color: var(--texte-sur-accent);
   background: var(--couleur, var(--accent1));
   border-radius: var(--radius-pilule);
 }

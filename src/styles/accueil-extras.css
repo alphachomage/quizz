@@ -1,4 +1,4 @@
-/* VoltQuiz — accueil-extras (extrait de l'ancien styles.css, ordre conservé) */
+/* VQuizz — accueil-extras (extrait de l'ancien styles.css, ordre conservé) */
 /* --- Mention "à venir" sur un onglet de mode --- */
 .tab-badge {
   font-size: 0.58rem;
@@ -58,62 +58,6 @@
   50% {
     transform: scale(1.35);
   }
-}
-
-/* --- Bannière « prochain badge » (effet reviens-y sur l'accueil) --- */
-.prochain-badge {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  margin-top: var(--esp-10);
-  padding: 7px 12px;
-  background: var(--carte);
-  border: 1px solid var(--bordure);
-  border-radius: var(--radius-pilule);
-}
-
-.pb-icone {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  flex-shrink: 0;
-  border-radius: var(--radius-rond);
-  background: var(--accent1);
-  color: var(--texte-sur-accent);
-}
-
-.pb-texte {
-  flex: 1;
-  min-width: 0;
-  font-size: 0.8rem;
-  color: var(--texte-doux);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.pb-texte strong {
-  color: var(--texte);
-}
-
-.pb-barre {
-  display: block;
-  width: 80px;
-  height: 5px;
-  flex-shrink: 0;
-  background: var(--desactive-30);
-  border-radius: var(--radius-pilule);
-  overflow: hidden;
-}
-
-.pb-barre i {
-  display: block;
-  height: 100%;
-  background: var(--accent1);
-  border-radius: var(--radius-pilule);
-  transition: width var(--dur-standard) ease;
 }
 
 /* Pastille "Invite" (mode invite : pas d'XP, badges, titres ni leaderboard) */

@@ -1,21 +1,23 @@
-/* VoltQuiz — palette (extrait de l'ancien styles.css, ordre conservé) */
+/* VQuizz — palette (extrait de l'ancien styles.css, ordre conservé) */
 /* ===== 60-30-10, AUCUN dégradé ===== */
-/* Sombre (défaut, voir :root) : 60% noir #000000, 30% gris ardoise #26262B, 10% sable #D9D0B8 (vivante sauvegardee dans PALETTES.md) */
-/* Clair : 60% blanc #FFFFFF, 30% gris perle #ECECF1, 10% sable #D9D0B8 */
+/* Sombre (défaut, voir :root) : 60% bleu nuit #0A1A40, 30% bleu roi #1E3FA8, 10% jaune #FFD23F */
+/* Clair : 60% blanc #FFFFFF, 30% bleu roi #2D5BFF, 10% jaune #FFD23F */
 body.theme-clair {
-  /* 60-30-10 CLAIR sobre : 60% blanc #FFFFFF, 30% gris perle #ECECF1, 10% sable #D9D0B8 */
+  /* 60-30-10 CLAIR « Bleu roi » : 60% blanc #FFFFFF, 30% bleu roi #2D5BFF (texte blanc), 10% jaune #FFD23F */
   --fond: #ffffff;
-  --carte: #ececf1;
-  --carte-2: #e2e2e9;
-  --bordure: rgba(0, 0, 0, 0.14);
+  --carte: #2d5bff;
+  --carte-2: #1f47d6;
+  --bordure: rgba(0, 0, 0, 0.16);
   --bordure-fine: rgba(0, 0, 0, 0.1);
-  --texte: #1a1a1a;
-  --texte-doux: #595959;
-  --texte-carte: #1a1a1a;
-  --texte-doux-carte: rgba(0, 0, 0, 0.6);
-  --accent1: #d9d0b8;
-  --accent2: #d9d0b8;
-  --or: #d9d0b8;
+  --texte: #141414;
+  --texte-doux: #55595f;
+  --texte-carte: #ffffff;
+  --texte-doux-carte: rgba(255, 255, 255, 0.92);
+  --accent1: #ffd23f;
+  --accent2: #ffd23f;
+  --or: #ffd23f;
+  --question: #1e3fa8; /* texte des questions : bleu roi (choix client à l'atelier) */
+  --titre: #1e3fa8; /* titres d'écran : bleu roi, même logique que les questions */
 }
 
 /* 30% secondaire (cartes jaunes) : texte foncé par-dessus */
@@ -66,7 +68,6 @@ body.theme-clair {
 .filtre.actif,
 .record.top10,
 .avatar-defaut,
-.logo-marque,
 .tuto-icone {
   color: var(--texte-sur-accent);
 }

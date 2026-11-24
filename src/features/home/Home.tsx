@@ -8,15 +8,19 @@ import Settings from '@shared/modals/Settings.jsx';
 import Profile from '@shared/modals/Profile.jsx';
 import Suggestions from '@shared/modals/Suggestions.jsx';
 import type { Prefs, Theme } from '@lib/types.js';
+import { prefersReducedMotion } from '@lib/nav.js';
 import { useHome } from './useHome.js';
 import type { StartConfig } from './useHome.js';
 import UserBar from './components/UserBar.jsx';
 import ModeTabs from './components/ModeTabs.jsx';
 import BadgeBanner from './components/BadgeBanner.jsx';
-import DuelNames from './components/DuelNames.jsx';
-import ThemeGrid from './components/ThemeGrid.jsx';
-import LevelModal from './components/LevelModal.jsx';
-import FixedCta from './components/FixedCta.jsx';
+import ThemePickerModal from './components/ThemePickerModal.jsx';
+import ModeConfirmModal from './components/ModeConfirmModal.jsx';
+import BadgeDetailModal from './components/BadgeDetailModal.jsx';
+
+// Logo fourni par le client (fond transparent) ; variante lettres bleu nuit pour le mode clair
+const LOGO = `${import.meta.env.BASE_URL}logo-vquizz.png`;
+const LOGO_CLAIR = `${import.meta.env.BASE_URL}logo-vquizz-clair.png`;
 
 /** Props de l'écran d'accueil, déléguées par app/Screens.tsx. */
 export interface HomeProps {
@@ -68,39 +72,34 @@ export default function Home({
       />
 
       <header className="hero">
-        <div className="logo">
-          <span className="logo-marque">
-            <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                fill="currentColor"
-                d="M13.6 1.5 4.2 13.6h5.6L8.6 22.5l9.4-12.1h-5.6l1.2-8.9z"
-              />
-            </svg>
-          </span>
-          VoltQuiz
-        </div>
+        <h1 className="logo">
+          <img className="logo-img logo-sombre" src={LOGO} alt="VQuizz" width={260} height={198} />
+          <img
+            className="logo-img logo-clair"
+            src={LOGO_CLAIR}
+            alt="VQuizz"
+            width={260}
+            height={198}
+          />
+        </h1>
       </header>
 
       <ModeTabs a={a} />
       <BadgeBanner a={a} isGuest={isGuest} />
 
-      {a.mode === 'duel' && <DuelNames a={a} />}
-
-      {['solo', 'duel'].includes(a.mode) && <ThemeGrid a={a} isAdmin={isAdmin} isGuest={isGuest} />}
-
-      {!isGuest && (
-        <button className="btn-secondaire" onClick={onLeaderboard}>
-          <Icon nom="podium" taille={18} /> Voir le classement
+      <nav className="liens-accueil" aria-label="Autres actions">
+        {!isGuest && (
+          <button className="btn-secondaire" onClick={onLeaderboard}>
+            <Icon nom="podium" taille={16} /> Classement
+          </button>
+        )}
+        <button className="btn-secondaire" onClick={onPropose}>
+          <Icon nom="plus" taille={16} /> Proposer une question
         </button>
-      )}
-
-      <button className="btn-secondaire" onClick={onPropose}>
-        <Icon nom="plus" taille={18} /> Proposer une question
-      </button>
-
-      <button className="btn-secondaire" onClick={() => a.setShowSuggestionsN(true)}>
-        <Icon nom="pencil" taille={18} /> Une suggestion ? (idée, bug, amélioration)
-      </button>
+        <button className="btn-secondaire" onClick={() => a.setShowSuggestionsN(true)}>
+          <Icon nom="pencil" taille={16} /> Suggestion
+        </button>
+      </nav>
 
       {a.showSettings && (
         <Settings
@@ -118,8 +117,19 @@ export default function Home({
         <Suggestions pseudo={pseudo} onClose={() => a.setShowSuggestionsN(false)} />
       )}
 
-      {/* Modale difficulté (solo) : s'ouvre au clic sur un thème, zéro scroll */}
-      {a.mode === 'solo' && a.themeId && a.levelModal && a.theme && <LevelModal a={a} />}
+      {a.picker === 'solo' && (
+        <ThemePickerModal
+          a={a}
+          isAdmin={isAdmin}
+          isGuest={isGuest}
+          animated={prefs.animations !== false && !prefersReducedMotion()}
+        />
+      )}
+      {(a.picker === 'survie' || a.picker === 'quotidien') && (
+        <ModeConfirmModal a={a} mode={a.picker} />
+      )}
+
+      {a.badgeDetail && !isGuest && <BadgeDetailModal a={a} onBadges={onBadges} />}
 
       {a.profilOuvert && (
         <Profile
@@ -133,9 +143,6 @@ export default function Home({
           }}
         />
       )}
-
-      {/* Barre d'action fixe en bas : le bouton pour lancer est TOUJOURS visible, sans scroller */}
-      <FixedCta a={a} />
     </div>
   );
 }

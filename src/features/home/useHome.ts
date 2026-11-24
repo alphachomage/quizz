@@ -57,8 +57,13 @@ export interface HomeState {
   setShowSettings: Dispatch<SetStateAction<boolean>>;
   showSuggestions: boolean;
   setShowSuggestionsN: Dispatch<SetStateAction<boolean>>;
-  levelModal: boolean;
-  setLevelModal: Dispatch<SetStateAction<boolean>>;
+  badgeDetail: boolean;
+  setBadgeDetail: Dispatch<SetStateAction<boolean>>;
+  /** Popin de mode ouverte (choix du thème ou confirmation), null = aucune. */
+  picker: GameMode | null;
+  setPicker: Dispatch<SetStateAction<GameMode | null>>;
+  /** Clic sur une tuile de mode : sélectionne le mode et ouvre sa popin. */
+  openMode: (m: GameMode) => void;
   nom1: string;
   setNom1: Dispatch<SetStateAction<string>>;
   nom2: string;
@@ -74,6 +79,8 @@ export interface HomeState {
   players: string[];
   displayedThemes: Theme[];
   lancer: () => void;
+  /** Solo : lance directement une partie sur ce thème (roulette « Aléatoire »). */
+  lancerTheme: (t: Theme) => void;
   dailyRecord: number;
   nextBadge: ReturnType<typeof computeNextBadge>;
   dailyStreak: number;
@@ -91,7 +98,8 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
   const [themeId, setThemeId] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showSuggestions, setShowSuggestionsN] = useState(false);
-  const [levelModal, setLevelModal] = useState(false); // modale difficulté (solo, au clic sur un thème)
+  const [badgeDetail, setBadgeDetail] = useState(false); // détail du prochain badge
+  const [picker, setPicker] = useState<GameMode | null>(null);
   const [nom1, setNom1] = useState(pseudo || '');
   const [nom2, setNom2] = useState('');
   const [avatar, setAvatar] = useState<string | null>(() => currentAvatar());
@@ -118,7 +126,8 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
   const displayedThemes = useMemo(
     // `nom` est toujours renseigné dans le catalogue ; le cast garde le comportement
     // exact de l'ancien JS (localeCompare sur nom, sans fallback).
-    () => [...(themes ?? [])].sort((a, b) => (a.nom as string).localeCompare(b.nom as string, 'fr')),
+    () =>
+      [...(themes ?? [])].sort((a, b) => (a.nom as string).localeCompare(b.nom as string, 'fr')),
     [themes]
   );
   function lancer(): void {
@@ -153,6 +162,22 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
   }
 
   // Record du quizz du jour (clé = date du jour) pour afficher « déjà joué » sur la carte.
+  function openMode(m: GameMode): void {
+    setMode(m);
+    setPicker(m);
+  }
+
+  function lancerTheme(t: Theme): void {
+    setThemeId(t.id);
+    onStart({
+      mode: 'solo',
+      niveau,
+      theme: t,
+      players: [pseudo || 'Toi'],
+      allThemes: themes ?? undefined,
+    });
+  }
+
   const dailyRecord = records[recordKey('quotidien', todayDate(), 'tous')] || 0;
   // Prochain badge à portée (effet « reviens-y » sur l'accueil), recalculé si les données changent.
   const nextBadge = useMemo(
@@ -195,8 +220,9 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
     setShowSettings: setShowSettings,
     showSuggestions,
     setShowSuggestionsN: setShowSuggestionsN,
-    levelModal: levelModal,
-    setLevelModal: setLevelModal,
+    picker,
+    setPicker,
+    openMode,
     nom1,
     setNom1,
     nom2,
@@ -212,6 +238,9 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
     players,
     displayedThemes,
     lancer,
+    lancerTheme,
+    badgeDetail,
+    setBadgeDetail,
     dailyRecord,
     nextBadge,
     dailyStreak,

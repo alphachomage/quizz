@@ -1,4 +1,4 @@
-/* ===== VoltQuiz — feuilles de style modulaires ===== */
+/* ===== VQuizz — feuilles de style modulaires ===== */
 /* L'ordre des @import reprend exactement l'ordre de l'ancien styles.css
    monolithique : la cascade (quelle règle gagne) est strictement conservée. */
 @import './styles/tokens.css';
@@ -27,8 +27,11 @@
 @import './styles/epure.css';
 @import './styles/suggestions.css';
 @import './styles/deblocage.css';
-@import './styles/cta-fixe.css';
 @import './styles/stats-avancees.css';
 @import './styles/modale-niveau.css';
 @import './styles/accueil-extras.css';
 @import './styles/admin-dashboard.css';
+@import './styles/carrousel-themes.css';
+@import './styles/ecusson.css';
+@import './styles/partie-compacte.css';
+@import './styles/contraste.css';

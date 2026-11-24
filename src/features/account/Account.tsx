@@ -48,26 +48,22 @@ export default function Account({ onConnexion }: AccountProps) {
             marginBottom: 18,
           }}
         >
-          <div
-            className="logo"
-            style={{
-              fontSize: '1.9rem',
-            }}
-          >
-            <span
-              className="logo-marque"
-              style={{
-                width: 46,
-                height: 46,
-                borderRadius: 14,
-              }}
-            >
-              <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
-                <path fill="#fff" d="M13.6 1.5 4.2 13.6h5.6L8.6 22.5l9.4-12.1h-5.6l1.2-8.9z" />
-              </svg>
-            </span>
-            VoltQuiz
-          </div>
+          <h1 className="logo">
+            <img
+              className="logo-img logo-sombre"
+              src={`${import.meta.env.BASE_URL}logo-vquizz.png`}
+              alt="VQuizz"
+              width={220}
+              height={168}
+            />
+            <img
+              className="logo-img logo-clair"
+              src={`${import.meta.env.BASE_URL}logo-vquizz-clair.png`}
+              alt="VQuizz"
+              width={220}
+              height={168}
+            />
+          </h1>
           <p className="tagline">Réponds vite, réponds juste.</p>
         </div>
 

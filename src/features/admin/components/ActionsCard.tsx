@@ -31,9 +31,7 @@ export default function ActionsCard({ mode }: ActionsCardProps): ReactElement {
       if (window.confirm('Passer en stockage 100 % local hors-ligne (?stockage=local) ?')) {
         redirigerVers(urlWithParam('stockage', 'local'));
       }
-    } else if (
-      window.confirm('Revenir au stockage D1 (synchro serveur via /api/kv, défaut) ?')
-    ) {
+    } else if (window.confirm('Revenir au stockage D1 (synchro serveur via /api/kv, défaut) ?')) {
       redirigerVers(urlWithoutParam('stockage'));
     }
   }

@@ -1,4 +1,4 @@
-/* VoltQuiz — resultat (extrait de l'ancien styles.css, ordre conservé) */
+/* VQuizz — resultat (extrait de l'ancien styles.css, ordre conservé) */
 /* --- �cran de r�sultats : XP gagn�e (globale + par th�me) et top 10 --- */
 .record.top10 {
   margin-top: var(--esp-8);
@@ -178,4 +178,159 @@
 
 .switch.on i {
   left: 23px;
+}
+
+/* --- Fin de partie retravaillée à l'atelier (2026-11-23) --- */
+.resultat h2 {
+  margin-bottom: var(--esp-10);
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase; /* « PARTIE TERMINÉE » */
+}
+
+/* Score + « Nouveau record » : une seule section, serrée */
+.bloc-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.resultat .gros-score {
+  margin: 0;
+  font-size: 2.75rem;
+  line-height: 1.1;
+}
+
+.resultat .gros-score span {
+  color: var(--accent1);
+}
+
+.bloc-score .record {
+  gap: var(--esp-4);
+  margin-top: 0;
+  padding: 4px;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+/* 3 tuiles : bonnes réponses, temps moyen, meilleure série (gros pictos lisibles) */
+.resultat-tuiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--esp-10);
+  margin-top: var(--esp-18);
+}
+
+.resultat-tuile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--esp-4);
+  padding: 12px 6px;
+  border-radius: var(--radius-petit);
+  background: var(--carte-2);
+}
+
+.resultat-tuile .icone {
+  color: var(--accent1);
+}
+
+.resultat-tuile strong {
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.resultat-tuile span {
+  font-size: 0.72rem;
+  color: var(--texte-doux);
+}
+
+/* Record + Top 10 sur une seule ligne */
+.resultat-record {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-8) var(--esp-16);
+  margin-top: var(--esp-16);
+  font-size: 0.95rem;
+}
+
+.resultat-record > span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-6);
+}
+
+.resultat-record .icone {
+  color: var(--accent1);
+}
+
+.resultat-top10 {
+  padding: 4px 12px;
+  border-radius: var(--radius-pilule);
+  background: var(--accent1);
+  color: var(--texte-sur-accent);
+  font-weight: 800;
+}
+
+.resultat-record .resultat-top10 .icone {
+  color: var(--texte-sur-accent);
+}
+
+/* XP gagnée : une ligne + barre de niveau */
+.resultat-xp {
+  margin-top: var(--esp-16);
+  padding: 14px 16px;
+  border-radius: var(--radius-petit);
+  background: var(--carte-2);
+}
+
+.resultat-xp-ligne {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-8);
+  margin-bottom: var(--esp-10);
+}
+
+.resultat-xp-ligne .icone {
+  color: var(--accent1);
+}
+
+.resultat-xp-ligne strong {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--accent1);
+}
+
+.resultat-xp-niv {
+  font-size: 0.85rem;
+  color: var(--texte-doux);
+}
+
+.resultat-xp-themes {
+  display: grid;
+  gap: var(--esp-6);
+  margin: var(--esp-12) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.82rem;
+}
+
+.resultat-xp-themes li {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-8);
+}
+
+.resultat-xp-themes strong {
+  margin-left: auto;
+  color: var(--accent1);
+}
+
+.resultat .actions {
+  margin-top: var(--esp-18);
 }

@@ -10,7 +10,11 @@ export type RecordsMap = Record<string, number>;
 
 // Clé de record : un record par mode, par niveau (solo) et par thème.
 // En duel, le niveau est « mix » (toutes difficultés confondues).
-export function recordKey(mode: string, niveau: string | null | undefined, themeId: string): string {
+export function recordKey(
+  mode: string,
+  niveau: string | null | undefined,
+  themeId: string
+): string {
   return `${mode}:${niveau || 'mix'}:${themeId}`;
 }
 export function loadRecords(): RecordsMap {

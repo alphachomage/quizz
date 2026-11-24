@@ -155,10 +155,7 @@ export const SuggestionsRepo = {
   },
 };
 export const ExcludedRepo = repoSimple<string[]>(STORAGE_KEYS.excluded, []);
-export const OverridesRepo = repoSimple<Record<string, OverrideEntry>>(
-  STORAGE_KEYS.overrides,
-  {}
-);
+export const OverridesRepo = repoSimple<Record<string, OverrideEntry>>(STORAGE_KEYS.overrides, {});
 /** Stats de qualité par question : texte normalisé -> { total, correct }. */
 export interface QuestionStats {
   total: number;

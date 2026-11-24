@@ -24,6 +24,9 @@ export interface GameProps {
   onQuit: (result: GameResult) => void;
 }
 
+/** Au-delà de ce nombre de caractères, la question passe en texte réduit. */
+const LONG_QUESTION = 110;
+
 export default function Game({ config, prefs, onFinish, onQuit }: GameProps): ReactElement {
   const p = useGame({
     config,
@@ -87,7 +90,9 @@ export default function Game({ config, prefs, onFinish, onQuit }: GameProps): Re
 
   // --- Écran « passe l'appareil » (mode duel uniquement) ---
   if (phase === 'attente') {
-    return <PassDevice joueur={players[p.currentPlayer]} themeColor={theme.couleur} onPret={p.pret} />;
+    return (
+      <PassDevice joueur={players[p.currentPlayer]} themeColor={theme.couleur} onPret={p.pret} />
+    );
   }
   return (
     <div className="partie">
@@ -107,7 +112,10 @@ export default function Game({ config, prefs, onFinish, onQuit }: GameProps): Re
         danger={time <= 3 && phase === 'question'}
       />
 
-      <h1 className="question">{question.q}</h1>
+      {/* Question très longue (≈ 1 % du corpus) : texte réduit, la partie tient sur un écran */}
+      <h1 className={question.q.length > LONG_QUESTION ? 'question longue' : 'question'}>
+        {question.q}
+      </h1>
 
       <Answers
         question={question}

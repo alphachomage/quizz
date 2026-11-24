@@ -1,5 +1,5 @@
 /* global Env */
-// worker-api.ts — mini-routeur /api/* de VoltQuiz (zéro dépendance), importé par worker.ts.
+// worker-api.ts — mini-routeur /api/* de VQuizz (zéro dépendance), importé par worker.ts.
 // Modération des pseudos à l'inscription : la même blocklist que le client
 // (src/lib/moderation.ts) est vérifiée CÔTÉ SERVEUR, pour bloquer aussi les appels
 // directs à l'API (contournement du client).
@@ -715,7 +715,7 @@ export async function apiRouter(request: Request, env: Env, url: URL): Promise<R
   if (p === '/api/ping' || p === '/api/health') {
     return json({
       ok: true,
-      app: 'VoltQuiz',
+      app: 'VQuizz',
       version: env.APP_VERSION || '0.1.0',
       hour: new Date().toISOString(),
     });

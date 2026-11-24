@@ -3,7 +3,11 @@
 import { SeriesRepo } from './repositories.js';
 import { normalizeQuestionText } from './text.js';
 
-export function seriesKey(mode: string, niveau: string | null | undefined, themeId: string): string {
+export function seriesKey(
+  mode: string,
+  niveau: string | null | undefined,
+  themeId: string
+): string {
   return `${mode}:${niveau || 'mix'}:${themeId}`;
 }
 export function loadSeries(key: string): string[] {

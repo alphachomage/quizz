@@ -21,3 +21,12 @@ sans passer par l'écran de résultats.
 
 Règles du jeu : voir `docs/jeu.md`. Tests : `tests/integration/game-*.test.tsx` +
 `tests/unit/features/game-draw.test.ts`.
+
+## Mise en page (2026-11-23)
+
+L'écran de partie tient sur un seul écran sans défilement (`src/styles/partie-compacte.css`) :
+en-tête `TopBar` sur deux niveaux (`.barre-haut-theme` puis `.barre-haut-infos`), question en
+`clamp(... dvh ...)`, classes `.question.longue` (> 110 car., `LONG_QUESTION` dans `Game.tsx`) et
+`.reponse.longue` (> 45 car., `LONG_ANSWER` dans `Answers.tsx`) pour les textes très longs, et
+`Feedback` affiché dans un encart fixé en bas de l'écran. Couleur du texte des questions : token
+`--question` (blanc en sombre, bleu roi en clair).

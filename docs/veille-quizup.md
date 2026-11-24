@@ -1,6 +1,6 @@
-# Comparaison QuizUp vs VoltQuiz
+# Comparaison QuizUp vs VQuizz
 
-Document de recherche — projet **VoltQuiz** (`C:\Users\Joris\Downloads\QUIZZWALLAH`)
+Document de recherche — projet **VQuizz** (`C:\Users\Joris\Downloads\QUIZZWALLAH`)
 Sources web citées en fin de document.
 
 ---
@@ -80,9 +80,9 @@ Sources web citées en fin de document.
 
 ---
 
-## . Tableau comparatif : QuizUp vs VoltQuiz
+## . Tableau comparatif : QuizUp vs VQuizz
 
-| Critère | **QuizUp** (-) | **VoltQuiz** (en construction) |
+| Critère | **QuizUp** (-) | **VQuizz** (en construction) |
 |---|---|---|
 | **Plateforme** | Apps natives iOS (nov. ), Android (mars ), Windows Phone () + web | Appli web **locale (React + Vite) installable en WPA** sur PC (et tout navigateur) |
 | **Timer par question** | secondes | ** secondes** identique |
@@ -100,13 +100,13 @@ Sources web citées en fin de document.
 
 ---
 
-## . Ce que VoltQuiz reprend de QuizUp / ce qu'il faudra ajouter pour s'en rapprocher
+## . Ce que VQuizz reprend de QuizUp / ce qu'il faudra ajouter pour s'en rapprocher
 
-### Ce que VoltQuiz reprend déjà de QuizUp
+### Ce que VQuizz reprend déjà de QuizUp
 
 - **Duel v sur les mêmes questions** pour les deux joueurs (version locale, même appareil).
 - **Timer de secondes par question** — identique à QuizUp.
-- **Score fondé sur la vitesse de réponse** (QuizUp : max pts, − pt/s ; VoltQuiz : + ×secondes restantes) — même principe « plus on répond vite, plus on marque ».
+- **Score fondé sur la vitesse de réponse** (QuizUp : max pts, − pt/s ; VQuizz : + ×secondes restantes) — même principe « plus on répond vite, plus on marque ».
 - **Choix d'un thème avant la partie** et banque de questions catégorisées.
 - **Leaderboard** (version locale) et records personnels.
 - **Soumission communautaire de questions** — mais avec une détection automatique de doublons/similarité, plus fiable que la modération manuelle de QuizUp.
@@ -118,7 +118,7 @@ Sources web citées en fin de document.
 . **Question bonus en fin de partie** à points doublés (QuizUp : ᵉ manche ×, max pts/match).
 . **Progression XP / niveaux par thème**, trophées et éventuellement **ligues/classements hebdomadaires** avec promotion/relégation.
 . **Enrichir le contenu** : passer de thèmes / questions à plusieurs dizaines de thèmes et des milliers de questions via la soumission communautaire (détection de doublons déjà en place).
-. **Appli mobile native via Capacitor** (iOS/Android) pour installer VoltQuiz comme une vraie app.
+. **Appli mobile native via Capacitor** (iOS/Android) pour installer VQuizz comme une vraie app.
 . **Power-ups optionnels** (aide sur une question, double chance...) — à concevoir dans le respect du « % local, aucune donnée envoyée ».
 . **Écran de statistiques** (matchs joués, taux de réussite, série en cours) pour remplacer l'engagement social de QuizUp par un suivi personnel local.
 . **Mode solo contre « ghost »** : affronter le score d'un autre joueur recorded localement (en attendant le vrai online).
