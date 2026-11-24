@@ -22,6 +22,7 @@ export interface ScreensProps {
   deconnexion: () => void;
   start: (cfg: NavConfig) => void;
   finish: (res: GameResult) => void;
+  quitter: (res: GameResult) => void;
   changerPrefs: (nouvelles: Prefs) => void;
   setTutoOuvert: Dispatch<SetStateAction<boolean>>;
   allQuestions: TaggedQuestion[];
@@ -41,6 +42,7 @@ export default function Screens({
   deconnexion,
   start,
   finish,
+  quitter,
   changerPrefs,
   setTutoOuvert,
   allQuestions,
@@ -92,7 +94,7 @@ export default function Screens({
         <ROUTES.badges themes={themes} onHome={() => nav.navigateTo('accueil')} />
       )}
       {nav.screen === 'partie' && nav.config && (
-        <Game config={nav.config} prefs={prefs} onFinish={finish} />
+        <Game config={nav.config} prefs={prefs} onFinish={finish} onQuit={quitter} />
       )}
       {nav.screen === 'resultat' && nav.result && nav.config && (
         <Results
