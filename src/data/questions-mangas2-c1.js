@@ -39,7 +39,7 @@ export const QUESTIONS_MANGAS2_C1 = [
       { q: "Combien de tomes compte le manga Sailor Moon dans son édition originale ?", reponses: ["18", "12", "24", "30"], bonne: 0, niveau: "dur" },
       { q: "Combien de tomes compte le manga Naruto une fois terminé ?", reponses: ["72", "42", "100", "220"], bonne: 0, niveau: "dur" },
       { q: "Combien de tomes compte le manga Demon Slayer une fois terminé ?", reponses: ["23", "26", "34", "45"], bonne: 0, niveau: "dur" },
-      { q: "En 2026, combien de tomes compte environ le manga Hunter x Hunter ?", reponses: ["Plus de 40 tomes", "Plus de 100 tomes", "Plus de 20 tomes", "Plus de 200 tomes"], bonne: 0, niveau: "dur" },
+      { q: "En 2026, combien de tomes compte environ le manga Hunter x Hunter ?", reponses: ["Plus de 40 tomes", "Plus de 100 tomes", "Plus de 20 tomes", "Plus de 200 tomes"], bonne: 2, niveau: "dur", info: "Tome 39 sorti au Japon le 3 juillet 2026 : environ 39 tomes, donc « plus de 20 » et non « plus de 40 »." },
       { q: "Combien de tomes compte le manga Fairy Tail une fois terminé ?", reponses: ["63", "45", "72", "100"], bonne: 0, niveau: "dur" },
       { q: "Combien de tomes compte le manga Bleach une fois terminé ?", reponses: ["74", "48", "63", "100"], bonne: 0, niveau: "dur" },
       { q: "Combien de tomes compte le manga Fullmetal Alchemist ?", reponses: ["27", "64", "34", "108"], bonne: 0, niveau: "dur" },
