@@ -39,9 +39,12 @@ export function normalizePseudo(p: string): string {
 }
 
 // Terme bloqué avec sa catégorie (affichée dans le message d'erreur).
+// `exact: true` force la correspondance exacte (pas en sous-chaîne) même si le
+// terme fait >= 4 caractères — pour éviter les faux positifs (ex: "trav" dans "travail").
 interface BlockedTerm {
   terme: string;
   categorie: string;
+  exact?: boolean;
 }
 
 // Liste de modération par catégorie. Les termes sont volontairement écrits tels quels :
@@ -293,16 +296,95 @@ const BLOCKLIST: BlockedTerm[] = [
     terme: 'sexe',
     categorie: 'contenu sexuel',
   },
+  // transphobie
+  {
+    terme: 'tranny',
+    categorie: 'transphobie',
+  },
+  {
+    terme: 'shemale',
+    categorie: 'transphobie',
+  },
+  {
+    terme: 'transphobe',
+    categorie: 'transphobie',
+  },
+  {
+    terme: 'transphobie',
+    categorie: 'transphobie',
+  },
+  {
+    terme: 'travelo',
+    categorie: 'transphobie',
+  },
+  {
+    terme: 'trav',
+    categorie: 'transphobie',
+    exact: true, // égalité seule : "travail", "travailleur" ne doivent pas être bloqués
+  },
+  {
+    terme: 'hermaphrodite',
+    categorie: 'transphobie',
+  },
+  {
+    terme: 'delusionnel',
+    categorie: 'transphobie',
+  },
+  {
+    terme: 'chromosome',
+    categorie: 'transphobie',
+  },
+  // anti-LGBTQ+ (au-delà de l'homophobie déjà couverte)
+  {
+    terme: 'lesbophobe',
+    categorie: 'lesbophobie',
+  },
+  {
+    terme: 'lesbophobie',
+    categorie: 'lesbophobie',
+  },
+  {
+    terme: 'biphobe',
+    categorie: 'biphobie',
+  },
+  {
+    terme: 'biphobie',
+    categorie: 'biphobie',
+  },
+  {
+    terme: 'queerphobe',
+    categorie: 'anti-LGBTQ+',
+  },
+  {
+    terme: 'sodomite',
+    categorie: 'anti-LGBTQ+',
+  },
+  {
+    terme: 'groomer',
+    categorie: 'anti-LGBTQ+',
+  },
+  {
+    terme: 'agendalgbt',
+    categorie: 'anti-LGBTQ+',
+  },
+  {
+    terme: 'ideologiedegenre',
+    categorie: 'anti-LGBTQ+',
+  },
+  {
+    terme: 'lgbtideologie',
+    categorie: 'anti-LGBTQ+',
+  },
 ];
 
 // Retourne { terme, categorie } si le pseudo contient un terme bloqué, sinon null.
 export function trouverTermeBloque(pseudo: string): BlockedTerm | null {
   const n = normalizePseudo(pseudo);
   if (!n) return null;
-  for (const { terme, categorie } of BLOCKLIST) {
+  for (const { terme, categorie, exact } of BLOCKLIST) {
     const t = normalizePseudo(terme);
     if (!t) continue;
-    if (t.length < 4) {
+    if (t.length < 4 || exact) {
       if (n === t)
         return {
           terme,
