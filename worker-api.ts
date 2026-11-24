@@ -1,5 +1,9 @@
 /* global Env */
 // worker-api.ts — mini-routeur /api/* de VoltQuiz (zéro dépendance), importé par worker.ts.
+// Modération des pseudos à l'inscription : la même blocklist que le client
+// (src/lib/moderation.ts) est vérifiée CÔTÉ SERVEUR, pour bloquer aussi les appels
+// directs à l'API (contournement du client).
+import { trouverTermeBloque } from './src/lib/moderation.js';
 // La base D1 est le stockage par défaut (plus de porte V2_ENABLED) : toutes les routes
 // répondent dès que les bindings sont présents ; une route renvoie 503 « binding
 // manquant » si D1/KV/DO n'est pas configuré (voir chaque handler).
@@ -247,6 +251,9 @@ async function routeAuth(
       return jsonError('E-mail invalide.', 400);
     if (password.length < 8)
       return jsonError('Mot de passe : 8 caractères minimum.', 400);
+    // Modération serveur du pseudo (même blocklist que le client, anti-contournement API).
+    const bloque = trouverTermeBloque(pseudo);
+    if (bloque) return jsonError(`Ce pseudo n'est pas autorisé (modération : ${bloque.categorie}).`, 400);
     const exists = await env.DB.prepare('SELECT pseudo FROM comptes WHERE pseudo_normalise = ?')
       .bind(n)
       .first();
