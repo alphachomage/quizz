@@ -80,6 +80,14 @@ const CHEMINS: Record<string, ReactNode> = {
       <path d="M10.2 9.1v5.8l5-2.9z" fill="var(--couleur, #8b5cf6)" stroke="none" />
     </>
   ),
+  play: (
+    // bouton play plein (YouTube & streaming)
+    <path
+      fill="currentColor"
+      stroke="none"
+      d="M7 4.8c0-1.1 1.2-1.8 2.2-1.2l11 6.4c.9.5.9 1.8 0 2.3l-11 6.4c-1 .6-2.2-.1-2.2-1.2V4.8z"
+    />
+  ),
   music: (
     // note pleine (Material "music_note")
     <path fill="currentColor" stroke="none" d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" />
