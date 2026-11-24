@@ -38,18 +38,6 @@ export const THEME_MANIFEST = [
     "couleur": "#38bdf8"
   },
   {
-    "id": "pop-culture",
-    "nom": "Pop culture",
-    "icone": "sparkles",
-    "couleur": "#e879f9"
-  },
-  {
-    "id": "insolite",
-    "nom": "Insolite",
-    "icone": "question",
-    "couleur": "#fb923c"
-  },
-  {
     "id": "geographie",
     "nom": "Géographie",
     "icone": "pin",
@@ -99,9 +87,9 @@ export const THEME_MANIFEST = [
   },
   {
     "id": "sciences",
-    "nom": "sciences",
-    "icone": "question",
-    "couleur": "#8b5cf6"
+    "nom": "Sciences",
+    "icone": "flask",
+    "couleur": "#2dd4bf"
   },
   {
     "id": "technologie",
@@ -111,4 +99,4 @@ export const THEME_MANIFEST = [
   }
 ];
 // Version du corpus (hash des fichiers questions-*.js) : invalidation du cache IndexedDB.
-export const CORPUS_VERSION = "9a5c269e0efd96bc";
+export const CORPUS_VERSION = "57ab625927520243";
