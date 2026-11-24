@@ -3,7 +3,14 @@
 // Modération des pseudos à l'inscription : la même blocklist que le client
 // (src/lib/moderation.ts) est vérifiée CÔTÉ SERVEUR, pour bloquer aussi les appels
 // directs à l'API (contournement du client).
-import { trouverTermeBloque } from './src/lib/moderation.js';
+import { trouverTermeBloque, normalizePseudo as normalizePseudoClient } from './src/lib/moderation.js';
+
+// Normalisation serveur = CELLE DU CLIENT (avec décodage leetspeak) :
+// sinon "Joris" et "J0ris" seraient deux comptes distincts (doublon visuel).
+// On garde un wrapper `unknown -> string` pour les appels existants.
+function normalizePseudo(p: unknown): string {
+  return normalizePseudoClient(String(p || ''));
+}
 // La base D1 est le stockage par défaut (plus de porte V2_ENABLED) : toutes les routes
 // répondent dès que les bindings sont présents ; une route renvoie 503 « binding
 // manquant » si D1/KV/DO n'est pas configuré (voir chaque handler).
@@ -213,13 +220,6 @@ async function pbkdf2(password: string, sel: string): Promise<string> {
     256
   );
   return [...new Uint8Array(bits)].map((b) => b.toString(16).padStart(2, '0')).join('');
-}
-function normalizePseudo(p: unknown): string {
-  return String(p || '')
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/[^a-z0-9]/g, '');
 }
 // Ligne de la table D1 `comptes` (schéma : migrations/0001_init.sql + 0003_admin_flag.sql).
 interface CompteRow {
