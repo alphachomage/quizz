@@ -36,6 +36,7 @@ describe('partie duel 1v1 (flux complet)', () => {
       perLevel: 10,
     }); // 30 questions au total
     const onFinish = vi.fn<(result: GameResult) => void>();
+    const onQuit = vi.fn<(result: GameResult) => void>();
     render(
       <Game
         config={
@@ -48,6 +49,7 @@ describe('partie duel 1v1 (flux complet)', () => {
         }
         prefs={TEST_PREFS}
         onFinish={onFinish}
+        onQuit={onQuit}
       />
     );
 
