@@ -5,6 +5,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 
 ## Non publié
 
+### Corrigé
+- **Audit du corpus (questions à jour)** : 2 erreurs factuelles corrigées après vérification web (nov. 2026) — (1) « Combien de Coupes du monde l'Espagne a-t-elle remportées ? » : bonne réponse « 1 » → **« 2 »** (2010 + finale gagnée le 19 juillet 2026 contre l'Argentine 1-0 a.p.) ; (2) « En 2026, combien de tomes compte Hunter x Hunter ? » : « plus de 40 » → **« plus de 20 »** (tome 39 sorti au Japon le 3 juillet 2026). Toutes les autres questions « Coupe du monde » (Argentine 3, Allemagne 4, Italie 4, Brésil 5, France 2, USA féminines 4, Pelé 3, handball France 6) et événements 2024-2026 (JO Paris 2024, Euro 2024, Ballon d'Or 2024/2025, JO hiver 2026 Milan-Cortina, CDM 2026 à 48 équipes/16 villes, zone euro 20 pays, Switch 2 en 2025…) vérifiées et correctes.
+- **Nouveau script d'audit** `npm run audit:questions` (`scripts/audit-questions.mjs`) : liste automatiquement les 313 questions « à risque de péremption » (année >= 2024 ou marqueur temporel « actuellement », « dernier… ») par thème, avec la bonne réponse affichée — à relrelire périodiquement (`--theme sport` pour filtrer).
+
 ### Modifié
 - **Thèmes « insolite » et « pop-culture » retirés du corpus servi** : exclus des générateurs (`scripts/gen-manifest.mjs`, `gen-corpus-json.mjs`, `count-questions.mjs` via `RETIRED`) — 16 thèmes actifs servis (17 192 questions), les 2 thèmes restent dans les fichiers source (règle 7) mais n'apparaissent plus dans le manifeste, `corpus.json` ni le comptage. Correction au passage : les métadonnées vides de `questions-redistribution.js` n'écrasent plus celles des autres fichiers (thème `sciences` affiche désormais « Sciences | flask | #2dd4bf » au lieu de valeurs par défaut).
 
