@@ -16,6 +16,8 @@ const files = fs
   .readdirSync(dir)
   .filter((f) => /^questions-.*\.js$/.test(f))
   .sort();
+// Thèmes retirés du jeu (restent dans les fichiers source, mais pas dans le corpus servi) :
+const RETIRED = ['insolite', 'pop-culture'];
 const corpusHash = crypto
   .createHash('sha256')
   .update(files.map((f) => `${f}:${fs.statSync(path.join(dir, f)).size}`).join('|'))
@@ -30,14 +32,15 @@ for (const f of files) {
   if (!Array.isArray(lot)) continue;
   for (const t of lot) {
     if (!t || !t.id || !Array.isArray(t.questions)) continue;
+    if (RETIRED.includes(t.id)) continue; // thème retiré : pas dans corpus.json
     const ex = map.get(t.id);
     if (ex) {
       ex.questions.push(...t.questions);
-      if (!ex.nom && t.nom) {
-        ex.nom = t.nom;
-        ex.icone = t.icone;
-        ex.couleur = t.couleur;
-      }
+      // Complète les métadonnées si elles sont vides ou des valeurs par défaut
+      // (questions-redistribution.js déclare certains thèmes avec nom: undefined).
+      if (t.nom && (!ex.nom || ex.nom === t.id)) ex.nom = t.nom;
+      if (t.icone && (!ex.icone || ex.icone === 'question')) ex.icone = t.icone;
+      if (t.couleur && (!ex.couleur || ex.couleur === '#8b5cf6')) ex.couleur = t.couleur;
     } else {
       map.set(t.id, { id: t.id, nom: t.nom, icone: t.icone, couleur: t.couleur, questions: [...t.questions] });
     }

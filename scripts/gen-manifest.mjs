@@ -12,6 +12,9 @@ const files = fs
   .readdirSync(dir)
   .filter((f) => /^questions-.*\.js$/.test(f))
   .sort();
+// Thèmes retirés du jeu (leurs questions restent dans les fichiers source, règle 7,
+// mais ils ne figurent plus dans le manifeste ni le corpus servi) :
+const RETIRED = ['insolite', 'pop-culture'];
 // Version du corpus = hash des noms + tailles des fichiers questions-*.js :
 // change dès qu'un fichier est ajouté/modifié/supprimé -> invalidation du cache IndexedDB.
 const corpusHash = crypto
@@ -27,6 +30,7 @@ for (const f of files) {
   if (!Array.isArray(lot)) continue;
   for (const t of lot) {
     if (!t || !t.id) continue;
+    if (RETIRED.includes(t.id)) continue; // thème retiré : pas dans le manifeste
     if (!metas.has(t.id)) {
       metas.set(t.id, {
         id: t.id,
@@ -34,6 +38,13 @@ for (const f of files) {
         icone: t.icone || 'question',
         couleur: t.couleur || '#8b5cf6',
       });
+    } else if (t.nom) {
+      // Complète les métadonnées si le 1er fichier les avait laissées vides
+      // (ex: questions-redistribution.js déclare sciences avec nom: undefined).
+      const ex = metas.get(t.id);
+      if (ex.nom === t.id) ex.nom = t.nom;
+      if (ex.icone === 'question' && t.icone) ex.icone = t.icone;
+      if (ex.couleur === '#8b5cf6' && t.couleur) ex.couleur = t.couleur;
     }
   }
 }

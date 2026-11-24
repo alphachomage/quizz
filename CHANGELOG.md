@@ -5,6 +5,9 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 
 ## Non publié
 
+### Modifié
+- **Thèmes « insolite » et « pop-culture » retirés du corpus servi** : exclus des générateurs (`scripts/gen-manifest.mjs`, `gen-corpus-json.mjs`, `count-questions.mjs` via `RETIRED`) — 16 thèmes actifs servis (17 192 questions), les 2 thèmes restent dans les fichiers source (règle 7) mais n'apparaissent plus dans le manifeste, `corpus.json` ni le comptage. Correction au passage : les métadonnées vides de `questions-redistribution.js` n'écrasent plus celles des autres fichiers (thème `sciences` affiche désormais « Sciences | flask | #2dd4bf » au lieu de valeurs par défaut).
+
 ### Ajouté
 - **Anti-doublons de pseudos renforcé (leetspeak côté serveur)** : la normalisation serveur (`worker-api.ts`) réutilise désormais `normalizePseudo` du client (`src/lib/moderation.ts`) qui décode le leetspeak — avant, `Joris` et `J0ris` étaient deux comptes distincts. Désormais `J0ris`, `JÔRIS`, `joris` = même `pseudo_normalise` → 409 « déjà pris ». Tests : 2 nouveaux cas dans `api-auth-moderation.test.ts` (J0ris et JÔRIS → 409).
 - **Modération renforcée des pseudos (transphobie, anti-LGBTQ+) + vérification serveur** : la blocklist `src/lib/moderation.ts` couvre désormais aussi la transphobie (`tranny`, `shemale`, `travelo`, `transphobe`…) et l'anti-LGBTQ+ (`groomer`, `agendalgbt`, `ideologiedegenre`, `lesbophobe`, `biphobie`…), avec un flag `exact: true` pour forcer l'égalité exacte sur les termes à risque de faux positifs (`trav` ne bloque pas « travail »). La modération est désormais vérifiée **côté serveur** dans `worker-api.ts` (route `/api/auth/inscription` → 400 si terme bloqué), pour bloquer aussi les appels directs à l'API qui contournent le client. Tests : 5 nouveaux tests serveur (`tests/unit/worker/api-auth-moderation.test.ts`) + 3 nouveaux tests unitaires dans `accounts.test.ts`.
