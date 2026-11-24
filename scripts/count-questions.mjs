@@ -4,6 +4,8 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'src', 'data');
 const files = fs.readdirSync(dir).filter((f) => /^questions-.*\.js$/.test(f));
+// Thèmes retirés du jeu : comptés à part (info) mais exclus du total servi.
+const RETIRED = ['insolite', 'pop-culture'];
 function norm(s) {
   return String(s)
     .toLowerCase()
@@ -24,13 +26,20 @@ for (const f of files) {
   if (!Array.isArray(lot)) continue;
   for (const t of lot) {
     perTheme[t.id] = (perTheme[t.id] || 0) + t.questions.length;
-    total += t.questions.length;
+    if (!RETIRED.includes(t.id)) total += t.questions.length; // total = thèmes servis
     if (!meta[t.id])
       meta[t.id] = {
         nom: t.nom,
         icone: t.icone,
         couleur: t.couleur,
       };
+    else {
+      // Complète si le 1er fichier avait des métadonnées vides (redistribution.js).
+      const m = meta[t.id];
+      if (t.nom && !m.nom) m.nom = t.nom;
+      if (t.icone && !m.icone) m.icone = t.icone;
+      if (t.couleur && !m.couleur) m.couleur = t.couleur;
+    }
     for (const q of t.questions) {
       const ok =
         Array.isArray(q.reponses) &&
@@ -49,11 +58,16 @@ for (const f of files) {
     }
   }
 }
-for (const k of Object.keys(perTheme).sort()) {
+const actifs = Object.keys(perTheme).filter((k) => !RETIRED.includes(k));
+const retires = Object.keys(perTheme).filter((k) => RETIRED.includes(k));
+for (const k of actifs.sort()) {
   const m = meta[k] || {};
   console.log(
-    k + ' : ' + perTheme[k] + '  (' + m.nom + ' | icone=' + m.icone + ' | ' + m.couleur + ')'
+    k + ' : ' + perTheme[k] + '  (' + (m.nom || '?') + ' | icone=' + (m.icone || '?') + ' | ' + (m.couleur || '?') + ')'
   );
 }
-console.log('TOTAL : ' + total + ' | themes : ' + Object.keys(perTheme).length);
+for (const k of retires.sort()) {
+  console.log(k + ' : ' + perTheme[k] + '  [RETIRÉ du jeu]');
+}
+console.log('TOTAL servi : ' + total + ' | themes actifs : ' + actifs.length + ' | retirés : ' + retires.length);
 console.log('doublons exacts : ' + doublons + ' | invalides : ' + invalides);
