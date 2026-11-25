@@ -86,8 +86,8 @@
   display: flex;
   align-items: center;
   gap: var(--esp-12);
-  /* un peu plus d'air sous le timer : les réponses sont moins « collées » */
-  margin-bottom: calc(var(--esp-24) + var(--esp-8));
+  /* bien plus d'air sous le timer : la question n'est plus « collée » à la barre de temps */
+  margin-bottom: calc(var(--esp-24) + var(--esp-20));
 }
 
 .minuteur {
@@ -145,7 +145,7 @@
 .reponses {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--esp-12);
+  gap: var(--esp-14);
   margin-top: var(--esp-6);
 }
 
@@ -155,9 +155,9 @@
   align-items: center;
   justify-content: center; /* texte centré dans la case */
   gap: var(--esp-10);
-  padding: 16px 52px; /* marges latérales pour la lettre (gauche) et les icônes (droite) */
-  min-height: 62px;
-  font-size: 1rem;
+  padding: 22px 56px; /* marges latérales pour la lettre (gauche) et les icônes (droite) */
+  min-height: 78px;
+  font-size: 1.12rem;
   font-weight: 600;
   color: var(--blanc);
   background: var(--couleur, var(--accent1));
