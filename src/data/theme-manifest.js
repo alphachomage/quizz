@@ -105,4 +105,4 @@ export const THEME_MANIFEST = [
   }
 ];
 // Version du corpus (hash des fichiers questions-*.js) : invalidation du cache IndexedDB.
-export const CORPUS_VERSION = "957d6e5112b93597";
+export const CORPUS_VERSION = "ff65d1aa1c0a1871";
