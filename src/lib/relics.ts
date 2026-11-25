@@ -1,23 +1,36 @@
-// relics.ts — mode Rogue Quizz : les 60 reliques, le tirage des choix et le calcul
-// des bonus agrégés. Module PUR : aucune dépendance au DOM ni au stockage.
-import type { LevelId } from './types.js';
+// relics.ts — mode Rogue Quizz : les 60 reliques (édition « donjon »), le tirage des
+// choix et le calcul des bonus agrégés. Module PUR : aucune dépendance au DOM ni au stockage.
+//
+// Les reliques sont numérotées 1..60 (colonne « n° » du tableau de conception) :
+// `synergies` et `conflits` référencent ces numéros. Deux reliques en conflit sont
+// mutuellement exclusives (on ne peut pas les posséder toutes les deux). `cumulable`
+// = on peut en posséder plusieurs exemplaires (elles s'additionnent).
 
 /** Rareté d'une relique (couleur + poids de tirage). */
-export type RelicRarity = 'commun' | 'rare' | 'epique' | 'legendaire';
+export type RelicRarity = 'commun' | 'rare' | 'legendaire';
+
+/** Catégorie d'une relique (template du tableau de conception). */
+export type RelicCategorie =
+  | 'temps'
+  | 'vision'
+  | 'serie'
+  | 'points'
+  | 'vies'
+  | 'themes'
+  | 'risque'
+  | 'legendaire';
 
 // Poids de tirage SELON LA PROGRESSION dans la run (0 = départ, 1 = fin) :
-// au début surtout du commun, à la fin de plus en plus de rare/épique/légendaire.
+// au début surtout du commun, à la fin de plus en plus de rare/légendaire.
 export const RARETE_POIDS_DEBUT: Record<RelicRarity, number> = {
-  commun: 60,
+  commun: 65,
   rare: 28,
-  epique: 10,
-  legendaire: 2,
+  legendaire: 7,
 };
 export const RARETE_POIDS_FIN: Record<RelicRarity, number> = {
-  commun: 15,
-  rare: 35,
-  epique: 32,
-  legendaire: 18,
+  commun: 10,
+  rare: 45,
+  legendaire: 45,
 };
 
 /** Poids de tirage d'une rareté à une progression donnée (interpolation linéaire 0..1). */
@@ -31,220 +44,348 @@ export function poidsRarete(prog: number, rarete: RelicRarity): number {
 export const RARETE_COULEUR: Record<RelicRarity, string> = {
   commun: '#9ca3af',
   rare: '#38bdf8',
-  epique: '#c084fc',
   legendaire: '#fbbf24',
 };
 
 /** Effet machine d'une relique (les descriptions sont en français pour le joueur). */
 export type RelicEffet =
-  | { t: 'flat'; n: number } // +n pts par bonne réponse
-  | { t: 'pct'; p: number } // +p % de pts par bonne réponse
-  | { t: 'pctEarly'; p: number; seuil: number } // +p % avant la question `seuil`
-  | { t: 'pctLate'; p: number; seuil: number } // +p % après la question `seuil`
-  | { t: 'min'; n: number } // minimum de pointsFor relevé à n
-  | { t: 'timer'; s: number } // +s secondes au timer de chaque question
-  | { t: 'timerMalus'; s: number; p: number } // timer -s s mais +p % de pts
-  | { t: 'zen'; s: number; div: number } // timer fixé à s secondes, pts /div
+  // --- Temps ---
+  | { t: 'timer'; s: number } // +s secondes par question
+  | { t: 'timerMalus'; s: number; p: number } // −s s au chrono mais +p % de points
+  | { t: 'timerMult'; m: number; flat?: number } // chrono × m (et points fixes si flat)
+  | { t: 'pointsFlat'; n: number } // n points fixes par bonne réponse
+  | { t: 'carryOver'; max: number } // temps non utilisé reporté à la suivante (max +s)
+  | { t: 'marathon'; reserve: number; mult: number } // réserve de `reserve` s par palier, temps restant × mult en points
+  | { t: 'gele'; s: number } // bouton « gèle le chrono » s secondes, 1 fois par palier
+  | { t: 'secondSouffle'; s: number } // 1re fois par palier à 0 s : +s s au lieu de rater
   | { t: 'speed'; maxS: number; n: number } // réponse en < maxS s : +n pts
-  | { t: 'speedPct'; maxS: number; p: number } // réponse en < maxS s : +p % de pts
-  | { t: 'streak'; seuil: number; n: number } // streak >= seuil : +n pts par bonne réponse
-  | { t: 'palier'; tous: number; n: number } // toutes les `tous` bonnes réponses : +n pts
-  | { t: 'niveau'; niv: LevelId; mult: number } // questions du niveau `niv` : pts x mult
-  | { t: 'manche'; mult: number } // 3e manche : x mult (défaut 2)
-  | { t: 'final'; mult: number } // score final x mult
-  | { t: 'finalWin'; mult: number } // score final x mult si run terminée à 100
-  | { t: 'finalEarly'; mult: number; seuil: number } // score final x mult si run finie avant `seuil`
-  | { t: 'plancher'; n: number } // score final minimum garanti de n points
-  | { t: 'fifty'; n: number } // 50/50 (retire 1 mauvaise réponse) sur les n prochaines questions
-  | { t: 'skip'; n: number } // n questions passables sans pénalité (10 pts)
-  | { t: 'repioche'; n: number } // n re-pioches de la question courante
-  | { t: 'pardon'; n: number } // n erreurs annulées (la run continue)
-  | { t: 'pardonAuto' } // la DERNIERE erreur de la run compte comme bonne
-  | { t: 'rejouer'; n: number } // n fois : une erreur rejoue la même question
-  | { t: 'fige'; n: number } // timer figé sur les n prochaines questions
-  | { t: 'voir'; n: number } // voir la bonne réponse n fois (vaut 10 pts)
-  | { t: 'immediat'; n: number } // +n pts tout de suite
-  | { t: 'jackpot'; n: number } // la prochaine question vaut n pts si bonne réponse
-  | { t: 'streakOneShot'; seuil: number; n: number } // atteindre le streak `seuil` : +n pts (1 fois)
-  | { t: 'palierPct'; p: number } // +p % de pts sur les questions du palier courant
-  | { t: 'themeCible'; mult: number } // un thème aléatoire de la run rapporte x mult
-  | { t: 'antiRepete'; n: number } // question d'un autre thème que la précédente : +n pts
-  | { t: 'themeBonus'; n: number } // chaque nouveau thème joué rapporte +n pts (1 fois/thème)
-  | { t: 'themeVoyant' } // révèle le thème de la prochaine question
-  | { t: 'niveauVoyant' } // révèle le niveau de la prochaine question
-  | { t: 'palierVoyant' } // révèle le niveau de tout le palier courant
-  | { t: 'reliqueGratuite' } // +1 relique aléatoire offerte immédiatement
-  | { t: 'choixPlus'; n: number } // prochain choix de relique : +n propositions
-  | { t: 'doubleChoix' } // prochain choix : prendre 2 reliques au lieu d'1
-  | { t: 'choixMax' } // tous les prochains paliers : 6 propositions, 2 reliques à prendre
-  | { t: 'premierePalier'; s: number } // 1re question de chaque palier à s secondes
-  | { t: 'tempsFixe' } // le temps écoulé ne retire plus de points (20 pts fixe si correct)
-  | { t: 'intemporel' } // timer +10 s ET tempsFixe
-  | { t: 'comboZen'; s: number; p: number } // timer +s s et +p % de pts
+  | { t: 'primeVitesse' } // jusqu'à 30 pts (−2/s), minimum 5 pts
+  // --- Vision ---
+  | { t: 'loupe'; malusS: number } // 2 réponses surlignées (dont la bonne), chrono −s s
+  | { t: 'cinquante'; n: number; div: number } // retire n mauvaises réponses, n fois par palier, pts /div
+  | { t: 'intuition' } // la bonne réponse scintille 0,5 s, 1 question sur 3
+  | { t: 'elimination'; maxPts: number } // toutes les 3 s une mauvaise réponse disparaît, pts max = maxPts
+  | { t: 'votePublic' } // pourcentage affiché sur chaque réponse (~75 % fiable)
+  | { t: 'barree'; n: number } // la mauvaise réponse la plus piégeuse est barrée, −n pts par question
+  | { t: 'indice'; malusS: number } // l'anecdote s'affiche avant de répondre, chrono −s s
+  | { t: 'deuxiemeChance'; pts: number } // après une erreur, 1 retentative par palier (question = pts)
+  | { t: 'rayonX'; malusS: number } // 1re question du palier : bonne réponse montrée, chrono −s s sur le palier
+  | { t: 'boussole'; malusPct: number } // flèche vers la moitié qui contient la bonne réponse, −p % de pts
+  // --- Série ---
+  | { t: 'streakStep'; step: number } // la série monte de +step par bonne réponse
+  | { t: 'streakCapNone' } // le bonus de série n'est plus plafonné à +10
+  | { t: 'filetSecurite' } // 1 erreur par palier ne casse pas la série
+  | { t: 'combustion'; seuil: number } // streak ≥ seuil : pts ×2 et chrono −1 s par cran (min 4 s)
+  | { t: 'rebond' } // après une erreur, la question suivante vaut ×2
+  | { t: 'momentum'; max: number } // réponse en < 5 s : +1 s à la suivante (max +s cumulés)
+  | { t: 'domino'; vies: number } // après 3 bonnes d'affilée, question à 2 réponses ; ratée = −vies
+  | { t: 'fievre'; n: number; s: number; mult: number } // streak 10 : n questions à s s, pts × mult
+  // --- Points ---
+  | { t: 'plancherPts'; min: number; max: number } // points de la question entre min et max
+  | { t: 'interets'; pct: number } // fin de palier : +p % du score total
+  | { t: 'jackpotPalier'; mult: number } // 1 question cachée par palier vaut × mult
+  | { t: 'toutOuRien'; mult: number; malusPct: number } // palier parfait (10/10) : pts du palier × mult, sinon −p %
+  | { t: 'collectionneur' } // +1 pt par bonne réponse et par relique possédée
+  | { t: 'dernierMot'; mult: number } // la 10e question de chaque palier vaut × mult
+  | { t: 'ascete'; n: number } // refuser un choix de relique rapporte +n pts
+  // --- Vies ---
+  | { t: 'vie'; n: number; soin: number } // +n vie(s) max et soigne `soin` vie(s)
+  | { t: 'bouclier' } // la 1re erreur de chaque palier ne coûte pas de vie
+  | { t: 'vampire'; seuil: number } // toutes les `seuil` bonnes d'affilée rendent 1 vie
+  | { t: 'verreCristal' } // points ×2 mais vies max = 1
+  | { t: 'assuranceVie' } // à la mort : 1 vie (une seule fois), −50 % des points
+  | { t: 'infirmerie' } // palier sans erreur : +1 vie
+  | { t: 'tempsMort' } // le temps écoulé ne coûte plus de vie (0 pt)
+  | { t: 'pacteVies'; vies: number; choix: number } // +vies max, les choix ne proposent plus que `choix` reliques
+  // --- Thèmes ---
+  | { t: 'specialiste'; mult: number; malusPct: number } // thème choisi : ×mult, autres thèmes −p %
+  | { t: 'antiRepete'; n: number } // thème différent de la question précédente : +n pts
+  | { t: 'zoneConfort'; malusPct: number } // 1 question sur 3 vient du meilleur thème, −p %
+  | { t: 'pioche'; n: number } // passer n questions par palier, remplacées par une plus difficile
+  | { t: 'chasseur' } // questions difficiles ×2 et 2 fois plus souvent
+  | { t: 'revision'; mult: number } // les erreurs reviennent plus tard, × mult si réussies
+  | { t: 'encyclopedie'; s: number } // lire l'anecdote donne +s s à la question suivante
+  | { t: 'retourEcole'; malusPct: number } // 1 palier un cran moins difficile, −p % sur ce palier
+  // --- Risque ---
+  | { t: 'pari' } // miser avant chaque question : ×2 si juste, sinon 0 pt et −1 vie de plus
+  | { t: 'brouillard'; pct: number; s: number } // pts +p %, réponses cachées les s premières secondes
+  | { t: 'miroir'; pct: number } // pts +p %, réponses mélangées une fois à mi-chrono
+  | { t: 'monochrome'; pct: number } // pts +p %, les 4 réponses ont la même couleur
+  | { t: 'funambule'; pctParVie: number } // pts + p % par vie manquante
+  | { t: 'mainDuDestin' } // à chaque palier, une relique au hasard est ajoutée
+  // --- Légendaires ---
+  | { t: 'echo' } // la prochaine relique choisie compte en double
+  | { t: 'joker' } // copie l'effet de la dernière relique choisie
+  | { t: 'recyclage' } // retire une de tes reliques et relance un choix de 3 (rares ou mieux)
+  | { t: 'retourArriere'; malusS: number } // 1 fois par palier : annule la dernière réponse, chrono −s s toute la partie
 
 /** Une relique : identité affichée + effet machine. */
 export interface Relic {
   id: string;
+  /** Numéro 1..60 du tableau de conception (référencé par synergies/conflits). */
+  num: number;
   nom: string;
+  categorie: RelicCategorie;
   icone: string;
   rarete: RelicRarity;
+  /** Peut-on en posséder plusieurs exemplaires ? */
+  cumulable: boolean;
+  /** Effet (texte joueur). */
   desc: string;
+  /** Contrepartie (texte joueur), ex. malus. */
+  malus?: string;
+  /** Numéros des reliques avec lesquelles celle-ci synergise (info). */
+  synergies: number[];
+  /** Numéros des reliques mutuellement exclusives avec celle-ci. */
+  conflits: number[];
   effet: RelicEffet;
 }
 
-/** Les 60 reliques du Rogue Quizz (24 commun, 18 rare, 12 épique, 6 légendaire). */
+/** Les 60 reliques du Rogue Quizz (30 communs, 23 rares, 7 légendaires). */
 export const RELICS: Relic[] = [
-  // --- COMMUNS (24) ---
-  { id: 'cuillere-or', nom: 'Cuillère en or', icone: 'utensils', rarete: 'commun', desc: '+5 points à chaque bonne réponse', effet: { t: 'flat', n: 5 } },
-  { id: 'petite-piece', nom: 'Petite pièce', icone: 'star', rarete: 'commun', desc: '+25 % de points sur chaque bonne réponse', effet: { t: 'pct', p: 25 } },
-  { id: 'sablier', nom: 'Sablier', icone: 'hourglass', rarete: 'commun', desc: '+3 secondes par question (13 s)', effet: { t: 'timer', s: 3 } },
-  { id: 'fer-a-cheval', nom: 'Fer à cheval', icone: 'clover', rarete: 'commun', desc: '+1 relique aléatoire offerte immédiatement', effet: { t: 'reliqueGratuite' } },
-  { id: 'carte-tresor', nom: 'Carte au trésor', icone: 'map', rarete: 'commun', desc: 'Révèle le thème de la prochaine question', effet: { t: 'themeVoyant' } },
-  { id: 'mulligan', nom: 'Mulligan', icone: 'refresh', rarete: 'commun', desc: 'Re-piocher la question courante (1 fois)', effet: { t: 'repioche', n: 1 } },
-  { id: 'sprinter', nom: 'Sprinter', icone: 'play', rarete: 'commun', desc: '+25 % de points avant la 20e question', effet: { t: 'pctEarly', p: 25, seuil: 20 } },
-  { id: 'lunettes', nom: 'Lunettes', icone: 'glasses', rarete: 'commun', desc: 'Affiche le niveau de la prochaine question', effet: { t: 'niveauVoyant' } },
-  { id: 'cartographe', nom: 'Cartographe', icone: 'compass', rarete: 'commun', desc: 'Question d’un autre thème que la précédente : +25 points', effet: { t: 'antiRepete', n: 25 } },
-  { id: 'montre', nom: 'Montre', icone: 'watch', rarete: 'commun', desc: '+2 secondes par question (12 s)', effet: { t: 'timer', s: 2 } },
-  { id: 'cinquante', nom: '50/50', icone: 'scissors', rarete: 'commun', desc: 'Retire 1 mauvaise réponse sur la prochaine question', effet: { t: 'fifty', n: 1 } },
-  { id: 'regard', nom: 'Regard perçant', icone: 'eye', rarete: 'commun', desc: 'Voir la bonne réponse (1 fois, vaut 10 pts)', effet: { t: 'voir', n: 1 } },
-  { id: 'regen', nom: 'Régénération', icone: 'heart', rarete: 'commun', desc: '+50 points toutes les 10 bonnes réponses', effet: { t: 'palier', tous: 10, n: 50 } },
-  { id: 'flamme', nom: 'Flamme', icone: 'flame', rarete: 'commun', desc: 'Dès 3 bonnes d’affilée : +10 points', effet: { t: 'streak', seuil: 3, n: 10 } },
-  { id: 'eclair', nom: 'Éclair', icone: 'bolt', rarete: 'commun', desc: 'Réponse en moins de 3 s : +10 points', effet: { t: 'speed', maxS: 3, n: 10 } },
-  { id: 'minuteur', nom: 'Minuteur', icone: 'alarm-clock', rarete: 'commun', desc: 'Réponse en moins de 5 s : +10 points', effet: { t: 'speed', maxS: 5, n: 10 } },
-  { id: 'petite-montee', nom: 'Petite montée', icone: 'trending-up', rarete: 'commun', desc: 'Minimum de points relevé à 15', effet: { t: 'min', n: 15 } },
-  { id: 'echelle', nom: 'Échelle', icone: 'scale', rarete: 'commun', desc: 'Timer −1 s mais +50 % de points', effet: { t: 'timerMalus', s: 1, p: 50 } },
-  { id: 'zen', nom: 'Zen', icone: 'sun', rarete: 'commun', desc: '30 s par question mais points divisés par 2', effet: { t: 'zen', s: 30, div: 2 } },
-  { id: 'des-fortune', nom: 'Dés de la fortune', icone: 'dice', rarete: 'commun', desc: 'Au prochain palier : 4 reliques proposées au lieu de 3', effet: { t: 'choixPlus', n: 1 } },
-  { id: 'tresor', nom: 'Trésor enfoui', icone: 'gem', rarete: 'commun', desc: '+200 points immédiatement', effet: { t: 'immediat', n: 200 } },
-  { id: 'coquillage', nom: 'Coquillage', icone: 'pin', rarete: 'commun', desc: '+15 % de points avant la 10e question', effet: { t: 'pctEarly', p: 15, seuil: 10 } },
-  { id: 'arc', nom: 'Arc-descente', icone: 'trending-down', rarete: 'commun', desc: 'Toutes les questions du palier courant rapportent +50 %', effet: { t: 'palierPct', p: 50 } },
-  { id: 'cible', nom: 'Cible', icone: 'target', rarete: 'commun', desc: 'Un thème aléatoire de la run rapporte ×2', effet: { t: 'themeCible', mult: 2 } },
-  // --- RARES (18) ---
-  { id: 'grosse-piece', nom: 'Grosse pièce', icone: 'coins', rarete: 'rare', desc: '+50 % de points sur chaque bonne réponse', effet: { t: 'pct', p: 50 } },
-  { id: 'grosse-montee', nom: 'Grosse montée', icone: 'chart', rarete: 'rare', desc: 'Minimum de points relevé à 18', effet: { t: 'min', n: 18 } },
-  { id: 'sablier-long', nom: 'Sablier long', icone: 'hourglass', rarete: 'rare', desc: '+5 secondes par question (15 s)', effet: { t: 'timer', s: 5 } },
-  { id: 'cinquante-plus', nom: '50/50 +', icone: 'scissors', rarete: 'rare', desc: '50/50 sur les 3 prochaines questions', effet: { t: 'fifty', n: 3 } },
-  { id: 'skip', nom: 'Skip', icone: 'forward', rarete: 'rare', desc: 'Passer 1 question sans pénalité (10 pts)', effet: { t: 'skip', n: 1 } },
-  { id: 'mulligan-plus', nom: 'Mulligan +', icone: 'replay', rarete: 'rare', desc: 'Re-piocher la question courante (3 fois)', effet: { t: 'repioche', n: 3 } },
-  { id: 'flamme-vive', nom: 'Flamme vive', icone: 'flame', rarete: 'rare', desc: 'Dès 5 bonnes d’affilée : +20 points', effet: { t: 'streak', seuil: 5, n: 20 } },
-  { id: 'trophee-palier', nom: 'Trophée de palier', icone: 'trophy', rarete: 'rare', desc: '+100 points toutes les 10 bonnes réponses', effet: { t: 'palier', tous: 10, n: 100 } },
-  { id: 'esprit-gardien', nom: 'Esprit gardien', icone: 'shield', rarete: 'rare', desc: '1 fois : une erreur rejoue la même question', effet: { t: 'rejouer', n: 1 } },
-  { id: 'assurance', nom: 'Assurance', icone: 'umbrella', rarete: 'rare', desc: 'Score final minimum garanti de 500 points', effet: { t: 'plancher', n: 500 } },
-  { id: 'sniper', nom: 'Sniper', icone: 'crosshair', rarete: 'rare', desc: 'Réponse en moins de 2 s : +50 % de points', effet: { t: 'speedPct', maxS: 2, p: 50 } },
-  { id: 'moteur', nom: 'Moteur', icone: 'car', rarete: 'rare', desc: 'Réponse en moins de 2 s : points ×2', effet: { t: 'speedPct', maxS: 2, p: 100 } },
-  { id: 'boule-cristal', nom: 'Boule de cristal', icone: 'orbit', rarete: 'rare', desc: 'Révèle le niveau de tout le palier courant', effet: { t: 'palierVoyant' } },
-  { id: 'marathonien', nom: 'Marathonien', icone: 'podium', rarete: 'rare', desc: '+25 % de points après la 50e question', effet: { t: 'pctLate', p: 25, seuil: 50 } },
-  { id: 'equilibre', nom: 'Équilibriste', icone: 'scale', rarete: 'rare', desc: 'Les questions faciles rapportent ×2', effet: { t: 'niveau', niv: 'facile', mult: 2 } },
-  { id: 'verrou', nom: 'Verrou', icone: 'lock', rarete: 'rare', desc: 'Le temps écoulé ne retire plus de points', effet: { t: 'tempsFixe' } },
-  { id: 'alarme', nom: 'Alarme', icone: 'timer', rarete: 'rare', desc: 'La 1re question de chaque palier démarre à 20 s', effet: { t: 'premierePalier', s: 20 } },
-  { id: 'zigzag', nom: 'Zigzag', icone: 'sliders', rarete: 'rare', desc: 'Timer −2 s mais points ×2', effet: { t: 'timerMalus', s: 2, p: 100 } },
-  // --- ÉPIQUES (12) ---
-  { id: 'lame-double', nom: 'Lame double', icone: 'swords', rarete: 'epique', desc: 'Points ×2 sur chaque bonne réponse', effet: { t: 'pct', p: 100 } },
-  { id: 'cinquante-ultime', nom: '50/50 ultime', icone: 'scissors', rarete: 'epique', desc: '50/50 sur toutes les questions restantes', effet: { t: 'fifty', n: 999 } },
-  { id: 'skip-plus', nom: 'Skip +', icone: 'device', rarete: 'epique', desc: 'Passer 3 questions sans pénalité (10 pts)', effet: { t: 'skip', n: 3 } },
-  { id: 'flamme-ardente', nom: 'Flamme ardente', icone: 'flame', rarete: 'epique', desc: 'Dès 10 bonnes d’affilée : +50 points', effet: { t: 'streak', seuil: 10, n: 50 } },
-  { id: 'manches-x3', nom: 'Étincelles', icone: 'sparkles', rarete: 'epique', desc: 'La 3e manche rapporte ×3 au lieu de ×2', effet: { t: 'manche', mult: 3 } },
-  { id: 'ankh', nom: 'Ankh', icone: 'ankh', rarete: 'epique', desc: 'Annule 1 erreur (la run continue)', effet: { t: 'pardon', n: 1 } },
-  { id: 'jackpot', nom: 'Jackpot', icone: 'ticket', rarete: 'epique', desc: 'La prochaine question vaut 300 pts si bonne réponse', effet: { t: 'jackpot', n: 300 } },
-  { id: 'combo-dore', nom: 'Combo doré', icone: 'crown', rarete: 'epique', desc: 'Atteindre 15 bonnes d’affilée : +500 points', effet: { t: 'streakOneShot', seuil: 15, n: 500 } },
-  { id: 'double-choix', nom: 'Double relique', icone: 'copy', rarete: 'epique', desc: 'Au prochain palier, choisir 2 reliques au lieu d’1', effet: { t: 'doubleChoix' } },
-  { id: 'fusee', nom: 'Fusée', icone: 'rocket', rarete: 'epique', desc: 'Run terminée à 100 questions : score final ×2', effet: { t: 'finalWin', mult: 2 } },
-  { id: 'pause', nom: 'Pause', icone: 'pause', rarete: 'epique', desc: 'Timer figé sur les 3 prochaines questions', effet: { t: 'fige', n: 3 } },
-  { id: 'cerveau', nom: 'Cerveau', icone: 'flask', rarete: 'epique', desc: 'Les questions difficiles rapportent ×2', effet: { t: 'niveau', niv: 'dur', mult: 2 } },
-  // --- LÉGENDAIRES (6) ---
-  { id: 'pacte', nom: 'Pacte du diable', icone: 'skull', rarete: 'legendaire', desc: 'Timer à 5 s mais points ×3', effet: { t: 'timerMalus', s: 5, p: 200 } },
-  { id: 'seconde-chance', nom: 'Seconde chance', icone: 'heart-pulse', rarete: 'legendaire', desc: 'Annule 2 erreurs dans la run', effet: { t: 'pardon', n: 2 } },
-  { id: 'intemporel', nom: 'Intemporel', icone: 'infinity', rarete: 'legendaire', desc: 'Timer +10 s ET le temps ne retire plus de points', effet: { t: 'intemporel' } },
-  { id: 'phenix', nom: 'Phénix', icone: 'star', rarete: 'legendaire', desc: 'La dernière erreur de la run compte comme bonne', effet: { t: 'pardonAuto' } },
-  { id: 'tresor-roi', nom: 'Trésor du roi', icone: 'podium', rarete: 'legendaire', desc: '+1000 points immédiatement', effet: { t: 'immediat', n: 1000 } },
-  { id: 'relique-x4', nom: 'Relique ×4', icone: 'gem', rarete: 'legendaire', desc: 'Tous les prochains paliers : 6 propositions, 2 reliques à prendre', effet: { t: 'choixMax' } },
+  // --- TEMPS (1-8) ---
+  { num: 1, id: 'sablier', nom: 'Sablier', categorie: 'temps', icone: 'hourglass', rarete: 'commun', cumulable: true, desc: '+3 s par question', synergies: [5, 8], conflits: [], effet: { t: 'timer', s: 3 } },
+  { num: 2, id: 'adrenaline', nom: 'Adrénaline', categorie: 'temps', icone: 'trending-up', rarete: 'rare', cumulable: false, desc: 'Points ×1,5', malus: 'Chrono −3 s', synergies: [7, 24, 27], conflits: [], effet: { t: 'timerMalus', s: 3, p: 50 } },
+  { num: 3, id: 'arret-sur-image', nom: 'Arrêt sur image', categorie: 'temps', icone: 'pause', rarete: 'commun', cumulable: false, desc: 'Bouton : gèle le chrono 5 s, 1 fois par palier', synergies: [], conflits: [], effet: { t: 'gele', s: 5 } },
+  { num: 4, id: 'second-souffle', nom: 'Second souffle', categorie: 'temps', icone: 'heart', rarete: 'commun', cumulable: false, desc: 'La 1re fois par palier où le chrono tombe à 0 : +5 s au lieu de rater', synergies: [], conflits: [], effet: { t: 'secondSouffle', s: 5 } },
+  { num: 5, id: 'horloge-partagee', nom: 'Horloge partagée', categorie: 'temps', icone: 'watch', rarete: 'rare', cumulable: false, desc: 'Le temps non utilisé s’ajoute à la question suivante (max +5 s)', synergies: [1, 8], conflits: [], effet: { t: 'carryOver', max: 5 } },
+  { num: 6, id: 'tortue', nom: 'Tortue', categorie: 'temps', icone: 'trending-down', rarete: 'commun', cumulable: false, desc: 'Chrono ×2', malus: '10 pts fixes par bonne réponse', synergies: [], conflits: [7, 27], effet: { t: 'timerMult', m: 2, flat: 10 } },
+  { num: 7, id: 'eclair', nom: 'Éclair', categorie: 'temps', icone: 'bolt', rarete: 'commun', cumulable: false, desc: 'Réponse en moins de 3 s : +8 pts', synergies: [2, 24, 27], conflits: [6, 27], effet: { t: 'speed', maxS: 3, n: 8 } },
+  { num: 8, id: 'marathon', nom: 'Marathon', categorie: 'temps', icone: 'podium', rarete: 'legendaire', cumulable: false, desc: 'Plus de chrono par question : réserve de 80 s pour le palier, temps restant converti en points (×3)', malus: 'Réserve à 0 : toutes les questions restantes du palier sont ratées', synergies: [1, 5], conflits: [], effet: { t: 'marathon', reserve: 80, mult: 3 } },
+  // --- VISION (9-18) ---
+  { num: 9, id: 'loupe', nom: 'Loupe', categorie: 'vision', icone: 'eye', rarete: 'commun', cumulable: false, desc: '2 réponses en surbrillance, dont la bonne', malus: 'Chrono −3 s', synergies: [14, 52, 54], conflits: [], effet: { t: 'loupe', malusS: 3 } },
+  { num: 10, id: 'cinquante', nom: '50/50', categorie: 'vision', icone: 'scissors', rarete: 'commun', cumulable: false, desc: 'Retire 2 mauvaises réponses, 2 fois par palier', malus: 'Points de la question divisés par 2', synergies: [], conflits: [], effet: { t: 'cinquante', n: 2, div: 2 } },
+  { num: 11, id: 'intuition', nom: 'Intuition', categorie: 'vision', icone: 'sparkles', rarete: 'rare', cumulable: false, desc: 'La bonne réponse scintille 0,5 s au début, 1 question sur 3 du palier', synergies: [], conflits: [], effet: { t: 'intuition' } },
+  { num: 12, id: 'elimination', nom: 'Élimination', categorie: 'vision', icone: 'trash', rarete: 'commun', cumulable: false, desc: 'Toutes les 3 s, une mauvaise réponse disparaît', malus: 'Maximum 15 pts au lieu de 20', synergies: [], conflits: [], effet: { t: 'elimination', maxPts: 15 } },
+  { num: 13, id: 'vote-du-public', nom: 'Vote du public', categorie: 'vision', icone: 'chart', rarete: 'commun', cumulable: false, desc: 'Pourcentage affiché sur chaque réponse (juste environ 75 % du temps)', synergies: [], conflits: [], effet: { t: 'votePublic' } },
+  { num: 14, id: 'lunettes-rouges', nom: 'Lunettes rouges', categorie: 'vision', icone: 'glasses', rarete: 'commun', cumulable: false, desc: 'La mauvaise réponse la plus piégeuse est barrée', malus: '−2 pts par question', synergies: [9, 52, 54], conflits: [], effet: { t: 'barree', n: -2 } },
+  { num: 15, id: 'indice', nom: 'Indice', categorie: 'vision', icone: 'book', rarete: 'commun', cumulable: false, desc: 'L’anecdote s’affiche avant de répondre', malus: 'Chrono −2 s', synergies: [], conflits: [], effet: { t: 'indice', malusS: 2 } },
+  { num: 16, id: 'deuxieme-chance', nom: 'Deuxième chance', categorie: 'vision', icone: 'refresh', rarete: 'rare', cumulable: false, desc: 'Après une erreur, on peut retenter (1 fois par palier)', malus: 'La question ne rapporte que 5 pts', synergies: [], conflits: [], effet: { t: 'deuxiemeChance', pts: 5 } },
+  { num: 17, id: 'rayon-x', nom: 'Rayon X', categorie: 'vision', icone: 'sun', rarete: 'rare', cumulable: false, desc: 'La 1re question de chaque palier montre la bonne réponse', malus: 'Chrono −1 s sur le reste du palier', synergies: [], conflits: [], effet: { t: 'rayonX', malusS: 1 } },
+  { num: 18, id: 'boussole', nom: 'Boussole', categorie: 'vision', icone: 'compass', rarete: 'rare', cumulable: false, desc: 'Une flèche indique la moitié contenant la bonne réponse (A/B ou C/D)', malus: 'Points −25 %', synergies: [], conflits: [], effet: { t: 'boussole', malusPct: 25 } },
+  // --- SÉRIE (19-26) ---
+  { num: 19, id: 'elan', nom: 'Élan', categorie: 'serie', icone: 'trending-up', rarete: 'commun', cumulable: false, desc: 'La série monte de +2 par cran au lieu de +1', synergies: [20, 21, 26], conflits: [], effet: { t: 'streakStep', step: 2 } },
+  { num: 20, id: 'plafond-brise', nom: 'Plafond brisé', categorie: 'serie', icone: 'rocket', rarete: 'rare', cumulable: false, desc: 'Le bonus de série n’est plus limité à +10', synergies: [19, 21, 26], conflits: [], effet: { t: 'streakCapNone' } },
+  { num: 21, id: 'filet-de-securite', nom: 'Filet de sécurité', categorie: 'serie', icone: 'umbrella', rarete: 'commun', cumulable: false, desc: '1 erreur par palier ne casse pas la série', synergies: [19, 20, 26], conflits: [], effet: { t: 'filetSecurite' } },
+  { num: 22, id: 'combustion', nom: 'Combustion', categorie: 'serie', icone: 'flame', rarete: 'rare', cumulable: false, desc: 'À partir de 5 bonnes d’affilée : points ×2', malus: 'Chrono −1 s par cran de série (minimum 4 s)', synergies: [], conflits: [], effet: { t: 'combustion', seuil: 5 } },
+  { num: 23, id: 'rebond', nom: 'Rebond', categorie: 'serie', icone: 'replay', rarete: 'commun', cumulable: false, desc: 'Après une erreur, la question suivante vaut ×2', synergies: [], conflits: [], effet: { t: 'rebond' } },
+  { num: 24, id: 'momentum', nom: 'Momentum', categorie: 'serie', icone: 'forward', rarete: 'commun', cumulable: false, desc: 'Chaque réponse en moins de 5 s donne +1 s à la suivante (max +5 s)', synergies: [2, 7, 27], conflits: [], effet: { t: 'momentum', max: 5 } },
+  { num: 25, id: 'domino', nom: 'Domino', categorie: 'serie', icone: 'dice', rarete: 'rare', cumulable: false, desc: 'Après 3 bonnes d’affilée, la question suivante n’a que 2 réponses', malus: 'Si tu la rates : −2 vies', synergies: [], conflits: [], effet: { t: 'domino', vies: 2 } },
+  { num: 26, id: 'fievre', nom: 'Fièvre', categorie: 'serie', icone: 'heart-pulse', rarete: 'legendaire', cumulable: false, desc: 'À 10 d’affilée : 3 questions en « fièvre », points ×3', malus: '5 s de chrono pendant la fièvre', synergies: [19, 20, 21], conflits: [], effet: { t: 'fievre', n: 3, s: 5, mult: 3 } },
+  // --- POINTS (27-34) ---
+  { num: 27, id: 'prime-de-vitesse', nom: 'Prime de vitesse', categorie: 'points', icone: 'timer', rarete: 'commun', cumulable: false, desc: 'Jusqu’à 30 pts par bonne réponse (−2 par seconde)', malus: 'Minimum 5 pts au lieu de 10', synergies: [2, 7, 24], conflits: [6, 7], effet: { t: 'primeVitesse' } },
+  { num: 28, id: 'plancher', nom: 'Plancher', categorie: 'points', icone: 'scale', rarete: 'commun', cumulable: false, desc: 'Minimum 15 pts par bonne réponse', malus: 'Maximum 18 pts', synergies: [], conflits: [], effet: { t: 'plancherPts', min: 15, max: 18 } },
+  { num: 29, id: 'interets', nom: 'Intérêts', categorie: 'points', icone: 'coins', rarete: 'rare', cumulable: false, desc: 'Fin de palier : +10 % de ton score total', synergies: [], conflits: [], effet: { t: 'interets', pct: 10 } },
+  { num: 30, id: 'jackpot', nom: 'Jackpot', categorie: 'points', icone: 'ticket', rarete: 'commun', cumulable: false, desc: '1 question cachée par palier vaut ×5', synergies: [], conflits: [], effet: { t: 'jackpotPalier', mult: 5 } },
+  { num: 31, id: 'tout-ou-rien', nom: 'Tout ou rien', categorie: 'points', icone: 'dice', rarete: 'rare', cumulable: false, desc: 'Palier parfait (10/10) : points du palier ×2', malus: 'Sinon −20 % sur le palier', synergies: [], conflits: [], effet: { t: 'toutOuRien', mult: 2, malusPct: 20 } },
+  { num: 32, id: 'collectionneur', nom: 'Collectionneur', categorie: 'points', icone: 'gem', rarete: 'rare', cumulable: false, desc: '+1 pt par bonne réponse pour chaque relique possédée', synergies: [34], conflits: [], effet: { t: 'collectionneur' } },
+  { num: 33, id: 'dernier-mot', nom: 'Dernier mot', categorie: 'points', icone: 'pin', rarete: 'commun', cumulable: false, desc: 'La 10e question de chaque palier vaut ×3', synergies: [], conflits: [], effet: { t: 'dernierMot', mult: 3 } },
+  { num: 34, id: 'ascete', nom: 'Ascète', categorie: 'points', icone: 'x', rarete: 'commun', cumulable: false, desc: 'Refuser un choix de relique rapporte +150 pts', synergies: [32], conflits: [], effet: { t: 'ascete', n: 150 } },
+  // --- VIES (35-42) ---
+  { num: 35, id: 'coeur-en-plus', nom: 'Cœur en plus', categorie: 'vies', icone: 'heart', rarete: 'commun', cumulable: true, desc: '+1 vie max et soigne 1 vie', synergies: [], conflits: [], effet: { t: 'vie', n: 1, soin: 1 } },
+  { num: 36, id: 'bouclier', nom: 'Bouclier', categorie: 'vies', icone: 'shield', rarete: 'rare', cumulable: false, desc: 'La 1re erreur de chaque palier ne coûte pas de vie', synergies: [38, 39, 51, 55], conflits: [], effet: { t: 'bouclier' } },
+  { num: 37, id: 'vampire', nom: 'Vampire', categorie: 'vies', icone: 'skull', rarete: 'rare', cumulable: false, desc: '5 bonnes réponses d’affilée rendent 1 vie', synergies: [], conflits: [], effet: { t: 'vampire', seuil: 5 } },
+  { num: 38, id: 'verre-de-cristal', nom: 'Verre de cristal', categorie: 'vies', icone: 'orbit', rarete: 'legendaire', cumulable: false, desc: 'Points ×2', malus: 'Tu passes à 1 vie max', synergies: [36, 39, 55], conflits: [], effet: { t: 'verreCristal' } },
+  { num: 39, id: 'assurance', nom: 'Assurance', categorie: 'vies', icone: 'umbrella', rarete: 'rare', cumulable: false, desc: 'À la mort, tu reviens avec 1 vie (une seule fois)', malus: 'Tu perds 50 % de tes points', synergies: [36, 38, 55], conflits: [], effet: { t: 'assuranceVie' } },
+  { num: 40, id: 'infirmerie', nom: 'Infirmerie', categorie: 'vies', icone: 'plus', rarete: 'commun', cumulable: false, desc: 'Palier sans erreur : +1 vie', synergies: [], conflits: [], effet: { t: 'infirmerie' } },
+  { num: 41, id: 'temps-mort', nom: 'Temps mort', categorie: 'vies', icone: 'alarm-clock', rarete: 'commun', cumulable: false, desc: 'Le temps écoulé ne coûte plus de vie (la question rapporte 0)', synergies: [], conflits: [], effet: { t: 'tempsMort' } },
+  { num: 42, id: 'pacte', nom: 'Pacte', categorie: 'vies', icone: 'skull', rarete: 'rare', cumulable: false, desc: '+2 vies max', malus: 'Les choix ne proposent plus que 2 reliques au lieu de 3', synergies: [], conflits: [], effet: { t: 'pacteVies', vies: 2, choix: 2 } },
+  // --- THÈMES (43-50) ---
+  { num: 43, id: 'specialiste', nom: 'Spécialiste', categorie: 'themes', icone: 'target', rarete: 'rare', cumulable: false, desc: 'Tu choisis un thème : ses questions valent ×2', malus: 'Les autres thèmes −20 %', synergies: [45, 46, 47], conflits: [], effet: { t: 'specialiste', mult: 2, malusPct: 20 } },
+  { num: 44, id: 'touche-a-tout', nom: 'Touche-à-tout', categorie: 'themes', icone: 'globe', rarete: 'commun', cumulable: false, desc: '+4 pts quand le thème change d’une question à l’autre', synergies: [], conflits: [], effet: { t: 'antiRepete', n: 4 } },
+  { num: 45, id: 'zone-de-confort', nom: 'Zone de confort', categorie: 'themes', icone: 'home', rarete: 'commun', cumulable: false, desc: '1 question sur 3 vient de ton meilleur thème', malus: 'Elle rapporte −25 %', synergies: [43, 46, 47], conflits: [], effet: { t: 'zoneConfort', malusPct: 25 } },
+  { num: 46, id: 'pioche', nom: 'Pioche', categorie: 'themes', icone: 'map', rarete: 'commun', cumulable: false, desc: 'Thème affiché avant la question ; tu peux en passer 2 par palier', malus: 'Une question passée est remplacée par une plus difficile', synergies: [43, 45, 47], conflits: [], effet: { t: 'pioche', n: 2 } },
+  { num: 47, id: 'chasseur', nom: 'Chasseur', categorie: 'themes', icone: 'crosshair', rarete: 'rare', cumulable: false, desc: 'Questions difficiles ×2', malus: 'Elles arrivent 2 fois plus souvent', synergies: [43, 45, 46], conflits: [], effet: { t: 'chasseur' } },
+  { num: 48, id: 'revision', nom: 'Révision', categorie: 'themes', icone: 'scroll', rarete: 'commun', cumulable: false, desc: 'Tes erreurs reviennent plus tard ; réussies, elles valent ×3', synergies: [], conflits: [], effet: { t: 'revision', mult: 3 } },
+  { num: 49, id: 'encyclopedie', nom: 'Encyclopédie', categorie: 'themes', icone: 'book', rarete: 'commun', cumulable: false, desc: 'Lire l’anecdote donne +2 s à la question suivante', synergies: [], conflits: [], effet: { t: 'encyclopedie', s: 2 } },
+  { num: 50, id: 'retour-a-l-ecole', nom: 'Retour à l’école', categorie: 'themes', icone: 'pencil', rarete: 'commun', cumulable: false, desc: 'Niveau abaissé d’un cran pendant 1 palier', malus: 'Points −30 % sur ce palier', synergies: [], conflits: [], effet: { t: 'retourEcole', malusPct: 30 } },
+  // --- RISQUE (51-56) ---
+  { num: 51, id: 'pari', nom: 'Pari', categorie: 'risque', icone: 'chip', rarete: 'rare', cumulable: false, desc: 'Avant chaque question, tu peux miser : ×2 si juste', malus: 'Si faux : 0 pt et −1 vie de plus', synergies: [36], conflits: [], effet: { t: 'pari' } },
+  { num: 52, id: 'brouillard', nom: 'Brouillard', categorie: 'risque', icone: 'question', rarete: 'rare', cumulable: false, desc: 'Points ×1,6', malus: 'Réponses cachées les 2 premières secondes', synergies: [9, 14, 54], conflits: [], effet: { t: 'brouillard', pct: 60, s: 2 } },
+  { num: 53, id: 'miroir', nom: 'Miroir', categorie: 'risque', icone: 'copy', rarete: 'rare', cumulable: false, desc: 'Points ×1,5', malus: 'Les réponses se mélangent une fois à mi-chrono', synergies: [], conflits: [], effet: { t: 'miroir', pct: 50 } },
+  { num: 54, id: 'monochrome', nom: 'Monochrome', categorie: 'risque', icone: 'star', rarete: 'commun', cumulable: false, desc: 'Points ×1,3', malus: 'Les 4 réponses ont la même couleur', synergies: [9, 14, 52], conflits: [], effet: { t: 'monochrome', pct: 30 } },
+  { num: 55, id: 'funambule', nom: 'Funambule', categorie: 'risque', icone: 'sliders', rarete: 'rare', cumulable: false, desc: 'Points ×1,2 par vie manquante', synergies: [36, 38, 39], conflits: [], effet: { t: 'funambule', pctParVie: 20 } },
+  { num: 56, id: 'main-du-destin', nom: 'Main du destin', categorie: 'risque', icone: 'clover', rarete: 'rare', cumulable: false, desc: 'À chaque palier, une relique au hasard est ajoutée (bon ou mauvais)', synergies: [], conflits: [], effet: { t: 'mainDuDestin' } },
+  // --- LÉGENDAIRES (57-60) ---
+  { num: 57, id: 'echo', nom: 'Écho', categorie: 'legendaire', icone: 'share', rarete: 'legendaire', cumulable: false, desc: 'La prochaine relique choisie compte en double', synergies: [], conflits: [], effet: { t: 'echo' } },
+  { num: 58, id: 'joker', nom: 'Joker', categorie: 'legendaire', icone: 'question', rarete: 'legendaire', cumulable: false, desc: 'Copie l’effet de la dernière relique choisie', synergies: [], conflits: [], effet: { t: 'joker' } },
+  { num: 59, id: 'recyclage', nom: 'Recyclage', categorie: 'legendaire', icone: 'refresh', rarete: 'legendaire', cumulable: false, desc: 'Retire une de tes reliques et relance un choix de 3 (rares ou mieux)', synergies: [], conflits: [], effet: { t: 'recyclage' } },
+  { num: 60, id: 'retour-en-arriere', nom: 'Retour en arrière', categorie: 'legendaire', icone: 'chevron-left', rarete: 'legendaire', cumulable: false, desc: '1 fois par palier, annule ta dernière réponse', malus: 'Chrono −1 s pour toute la partie', synergies: [], conflits: [], effet: { t: 'retourArriere', malusS: 1 } },
 ];
 
-/** Bonus agrégés d'une run, calculés à partir des reliques choisies. */
+// --- Helpers de catalogue ---
+
+/** Les reliques en conflit avec au moins une des reliques `ids` (exclusivité mutuelle). */
+export function conflitsDe(ids: string[]): Set<number> {
+  const out = new Set<number>();
+  for (const id of ids) {
+    const r = RELICS.find((x) => x.id === id);
+    if (!r) continue;
+    for (const c of r.conflits) out.add(c);
+    // conflit symétrique : si une relique possédée est listée dans les conflits de r
+    for (const autre of RELICS) if (autre.conflits.includes(r.num)) out.add(autre.num);
+  }
+  return out;
+}
+
+/** Nombre d'exemplaires d'une relique dans la liste (reliques cumulables). */
+export function countRelic(relics: Relic[], id: string): number {
+  return relics.filter((r) => r.id === id).length;
+}
+
+/** La relique est-elle possédée (au moins 1 exemplaire) ? */
+export function aRelic(relics: Relic[], id: string): boolean {
+  return relics.some((r) => r.id === id);
+}
+
+// --- Bonus agrégés d'une run ---
+
 export interface RogueBonus {
-  flat: number;
-  pct: number;
-  pctEarly: { p: number; seuil: number }[];
-  pctLate: { p: number; seuil: number }[];
-  min: number;
   timerBonus: number;
-  timerFixe: number | null; // timer fixé à cette valeur (zen)
-  timerDiv: number; // diviseur de points (zen)
   timerMalusPct: number;
-  tempsFixe: boolean;
-  mancheMult: number;
-  finalMult: number;
-  finalWinMult: number;
-  finalEarly: { mult: number; seuil: number } | null;
-  plancher: number;
-  niveauMult: Partial<Record<LevelId, number>>;
-  streak: { seuil: number; n: number }[];
-  palier: { tous: number; n: number }[];
-  speed: { maxS: number; n: number; p: number }[];
-  charges: {
-    fifty: number;
-    skip: number;
-    repioche: number;
-    pardon: number;
-    rejouer: number;
-    fige: number;
-    voir: number;
-  };
-  jackpot: number;
-  streakOneShot: { seuil: number; n: number }[];
-  premierePalier: number;
-  palierPct: number;
-  themeCibleMult: number;
+  timerMult: number;
+  pointsFlat: number | null;
+  primeVitesse: boolean;
+  plancherMin: number;
+  plancherMax: number;
+  carryMax: number;
+  marathon: { reserve: number; mult: number } | null;
+  speed: { maxS: number; n: number }[];
+  // vision
+  loupeMalusS: number;
+  cinquante: { n: number; div: number } | null;
+  intuition: boolean;
+  eliminationMaxPts: number;
+  votePublic: boolean;
+  barreeFlat: number;
+  indiceMalusS: number;
+  deuxiemeChancePts: number;
+  rayonXMalusS: number;
+  boussoleMalusPct: number;
+  boussole: boolean;
+  // série
+  streakStep: number;
+  streakCap: number; // 10 par défaut, Number.MAX_SAFE_INTEGER si plafond brisé
+  filetSecurite: boolean;
+  combustionSeuil: number;
+  rebond: boolean;
+  momentumMax: number;
+  dominoVies: number;
+  fievre: { n: number; s: number; mult: number } | null;
+  // points
+  pct: number;
+  flat: number;
+  interetsPct: number;
+  jackpotMult: number;
+  toutOuRien: { mult: number; malusPct: number } | null;
+  collectionneur: boolean;
+  dernierMotMult: number;
+  ascete: number;
+  // vies
+  viesMaxBonus: number;
+  soin: number;
+  bouclier: boolean;
+  vampireSeuil: number;
+  verreCristal: boolean;
+  assuranceVie: boolean;
+  infirmerie: boolean;
+  tempsMort: boolean;
+  pacteChoix: number;
+  // thèmes
+  specialiste: { mult: number; malusPct: number } | null;
   antiRepete: number;
-  themeBonus: number;
-  themeVoyant: boolean;
-  niveauVoyant: boolean;
-  palierVoyant: boolean;
-  reliqueGratuite: number;
-  choixPlus: number;
-  doubleChoix: boolean;
-  choixMax: boolean;
-  pardonAuto: boolean;
+  zoneConfortMalusPct: number;
+  piocheParPalier: number;
+  chasseur: boolean;
+  revisionMult: number;
+  encyclopedieS: number;
+  retourEcoleMalusPct: number;
+  // risque
+  pari: boolean;
+  brouillard: { pct: number; s: number } | null;
+  miroirPct: number;
+  monochromePct: number;
+  funambulePctParVie: number;
+  mainDuDestin: boolean;
+  // légendaires
+  echo: boolean;
+  joker: boolean;
+  recyclage: boolean;
+  retourArriereMalusS: number;
+  // fin de run
+  finalMult: number;
+  plancher: number;
 }
 
 /** Bonus vides (aucune relique). */
 export function emptyRogueBonus(): RogueBonus {
   return {
-    flat: 0,
-    pct: 0,
-    pctEarly: [],
-    pctLate: [],
-    min: 0,
     timerBonus: 0,
-    timerFixe: null,
-    timerDiv: 1,
     timerMalusPct: 0,
-    tempsFixe: false,
-    mancheMult: 2,
-    finalMult: 1,
-    finalWinMult: 1,
-    finalEarly: null,
-    plancher: 0,
-    niveauMult: {},
-    streak: [],
-    palier: [],
+    timerMult: 1,
+    pointsFlat: null,
+    primeVitesse: false,
+    plancherMin: 0,
+    plancherMax: 0,
+    carryMax: 0,
+    marathon: null,
     speed: [],
-    charges: { fifty: 0, skip: 0, repioche: 0, pardon: 0, rejouer: 0, fige: 0, voir: 0 },
-    jackpot: 0,
-    streakOneShot: [],
-    premierePalier: 0,
-    palierPct: 0,
-    themeCibleMult: 1,
+    loupeMalusS: 0,
+    cinquante: null,
+    intuition: false,
+    eliminationMaxPts: 0,
+    votePublic: false,
+    barreeFlat: 0,
+    indiceMalusS: 0,
+    deuxiemeChancePts: 0,
+    rayonXMalusS: 0,
+    boussoleMalusPct: 0,
+    boussole: false,
+    streakStep: 1,
+    streakCap: 10,
+    filetSecurite: false,
+    combustionSeuil: 0,
+    rebond: false,
+    momentumMax: 0,
+    dominoVies: 0,
+    fievre: null,
+    pct: 0,
+    flat: 0,
+    interetsPct: 0,
+    jackpotMult: 0,
+    toutOuRien: null,
+    collectionneur: false,
+    dernierMotMult: 0,
+    ascete: 0,
+    viesMaxBonus: 0,
+    soin: 0,
+    bouclier: false,
+    vampireSeuil: 0,
+    verreCristal: false,
+    assuranceVie: false,
+    infirmerie: false,
+    tempsMort: false,
+    pacteChoix: 0,
+    specialiste: null,
     antiRepete: 0,
-    themeBonus: 0,
-    themeVoyant: false,
-    niveauVoyant: false,
-    palierVoyant: false,
-    reliqueGratuite: 0,
-    choixPlus: 0,
-    doubleChoix: false,
-    choixMax: false,
-    pardonAuto: false,
+    zoneConfortMalusPct: 0,
+    piocheParPalier: 0,
+    chasseur: false,
+    revisionMult: 0,
+    encyclopedieS: 0,
+    retourEcoleMalusPct: 0,
+    pari: false,
+    brouillard: null,
+    miroirPct: 0,
+    monochromePct: 0,
+    funambulePctParVie: 0,
+    mainDuDestin: false,
+    echo: false,
+    joker: false,
+    recyclage: false,
+    retourArriereMalusS: 0,
+    finalMult: 1,
+    plancher: 0,
   };
 }
 
@@ -254,21 +395,6 @@ export function computeRogueBonus(relics: Relic[]): RogueBonus {
   for (const r of relics) {
     const e = r.effet;
     switch (e.t) {
-      case 'flat':
-        b.flat += e.n;
-        break;
-      case 'pct':
-        b.pct += e.p;
-        break;
-      case 'pctEarly':
-        b.pctEarly.push({ p: e.p, seuil: e.seuil });
-        break;
-      case 'pctLate':
-        b.pctLate.push({ p: e.p, seuil: e.seuil });
-        break;
-      case 'min':
-        b.min = Math.max(b.min, e.n);
-        break;
       case 'timer':
         b.timerBonus += e.s;
         break;
@@ -276,123 +402,196 @@ export function computeRogueBonus(relics: Relic[]): RogueBonus {
         b.timerBonus -= e.s;
         b.timerMalusPct += e.p;
         break;
-      case 'zen':
-        b.timerFixe = e.s;
-        b.timerDiv = e.div;
+      case 'timerMult':
+        b.timerMult *= e.m;
+        if (e.flat !== undefined) b.pointsFlat = e.flat;
+        break;
+      case 'pointsFlat':
+        b.pointsFlat = e.n;
+        break;
+      case 'carryOver':
+        b.carryMax = Math.max(b.carryMax, e.max);
+        break;
+      case 'marathon':
+        b.marathon = { reserve: e.reserve, mult: e.mult };
         break;
       case 'speed':
-        b.speed.push({ maxS: e.maxS, n: e.n, p: 0 });
+        b.speed.push({ maxS: e.maxS, n: e.n });
         break;
-      case 'speedPct':
-        b.speed.push({ maxS: e.maxS, n: 0, p: e.p });
+      case 'primeVitesse':
+        b.primeVitesse = true;
         break;
-      case 'streak':
-        b.streak.push({ seuil: e.seuil, n: e.n });
+      case 'loupe':
+        b.loupeMalusS = Math.max(b.loupeMalusS, e.malusS);
         break;
-      case 'palier':
-        b.palier.push({ tous: e.tous, n: e.n });
+      case 'cinquante':
+        b.cinquante = { n: e.n, div: e.div };
         break;
-      case 'niveau':
-        b.niveauMult[e.niv] = Math.max(b.niveauMult[e.niv] || 1, e.mult);
+      case 'intuition':
+        b.intuition = true;
         break;
-      case 'manche':
-        b.mancheMult = Math.max(b.mancheMult, e.mult);
+      case 'elimination':
+        b.eliminationMaxPts = Math.max(b.eliminationMaxPts, e.maxPts);
         break;
-      case 'final':
-        b.finalMult *= e.mult;
+      case 'votePublic':
+        b.votePublic = true;
         break;
-      case 'finalWin':
-        b.finalWinMult = Math.max(b.finalWinMult, e.mult);
+      case 'barree':
+        b.barreeFlat += e.n;
         break;
-      case 'finalEarly':
-        b.finalEarly = { mult: e.mult, seuil: e.seuil };
+      case 'indice':
+        b.indiceMalusS = Math.max(b.indiceMalusS, e.malusS);
         break;
-      case 'fifty':
-        b.charges.fifty += e.n;
+      case 'deuxiemeChance':
+        b.deuxiemeChancePts = Math.max(b.deuxiemeChancePts, e.pts);
         break;
-      case 'skip':
-        b.charges.skip += e.n;
+      case 'rayonX':
+        b.rayonXMalusS = Math.max(b.rayonXMalusS, e.malusS);
         break;
-      case 'repioche':
-        b.charges.repioche += e.n;
+      case 'boussole':
+        b.boussole = true;
+        b.boussoleMalusPct = Math.max(b.boussoleMalusPct, e.malusPct);
         break;
-      case 'pardon':
-        b.charges.pardon += e.n;
+      case 'streakStep':
+        b.streakStep = Math.max(b.streakStep, e.step);
         break;
-      case 'pardonAuto':
-        b.pardonAuto = true;
+      case 'streakCapNone':
+        b.streakCap = Number.MAX_SAFE_INTEGER;
         break;
-      case 'rejouer':
-        b.charges.rejouer += e.n;
+      case 'filetSecurite':
+        b.filetSecurite = true;
         break;
-      case 'fige':
-        b.charges.fige += e.n;
+      case 'combustion':
+        b.combustionSeuil = Math.max(b.combustionSeuil, e.seuil);
         break;
-      case 'voir':
-        b.charges.voir += e.n;
+      case 'rebond':
+        b.rebond = true;
         break;
-      case 'immediat':
-        break; // appliqué au choix (pas un bonus passif)
-      case 'jackpot':
-        b.jackpot = Math.max(b.jackpot, e.n);
+      case 'momentum':
+        b.momentumMax = Math.max(b.momentumMax, e.max);
         break;
-      case 'streakOneShot':
-        b.streakOneShot.push({ seuil: e.seuil, n: e.n });
+      case 'domino':
+        b.dominoVies = Math.max(b.dominoVies, e.vies);
         break;
-      case 'palierPct':
-        b.palierPct = Math.max(b.palierPct, e.p);
+      case 'fievre':
+        b.fievre = { n: e.n, s: e.s, mult: e.mult };
         break;
-      case 'themeCible':
-        b.themeCibleMult = Math.max(b.themeCibleMult, e.mult);
+      case 'plancherPts':
+        b.plancherMin = Math.max(b.plancherMin, e.min);
+        b.plancherMax = Math.max(b.plancherMax, e.max);
+        break;
+      case 'interets':
+        b.interetsPct = Math.max(b.interetsPct, e.pct);
+        break;
+      case 'jackpotPalier':
+        b.jackpotMult = Math.max(b.jackpotMult, e.mult);
+        break;
+      case 'toutOuRien':
+        b.toutOuRien = { mult: e.mult, malusPct: e.malusPct };
+        break;
+      case 'collectionneur':
+        b.collectionneur = true;
+        break;
+      case 'dernierMot':
+        b.dernierMotMult = Math.max(b.dernierMotMult, e.mult);
+        break;
+      case 'ascete':
+        b.ascete = Math.max(b.ascete, e.n);
+        break;
+      case 'vie':
+        b.viesMaxBonus += e.n;
+        b.soin += e.soin;
+        break;
+      case 'bouclier':
+        b.bouclier = true;
+        break;
+      case 'vampire':
+        b.vampireSeuil = Math.max(b.vampireSeuil, e.seuil);
+        break;
+      case 'verreCristal':
+        b.verreCristal = true;
+        b.pct += 100;
+        break;
+      case 'assuranceVie':
+        b.assuranceVie = true;
+        break;
+      case 'infirmerie':
+        b.infirmerie = true;
+        break;
+      case 'tempsMort':
+        b.tempsMort = true;
+        break;
+      case 'pacteVies':
+        b.viesMaxBonus += e.vies;
+        b.pacteChoix = Math.max(b.pacteChoix, e.choix);
+        break;
+      case 'specialiste':
+        b.specialiste = { mult: e.mult, malusPct: e.malusPct };
         break;
       case 'antiRepete':
         b.antiRepete = Math.max(b.antiRepete, e.n);
         break;
-      case 'plancher':
-        b.plancher = Math.max(b.plancher, e.n);
+      case 'zoneConfort':
+        b.zoneConfortMalusPct = Math.max(b.zoneConfortMalusPct, e.malusPct);
         break;
-      case 'themeBonus':
-        b.themeBonus = Math.max(b.themeBonus, e.n);
+      case 'pioche':
+        b.piocheParPalier = Math.max(b.piocheParPalier, e.n);
         break;
-      case 'themeVoyant':
-        b.themeVoyant = true;
+      case 'chasseur':
+        b.chasseur = true;
         break;
-      case 'niveauVoyant':
-        b.niveauVoyant = true;
+      case 'revision':
+        b.revisionMult = Math.max(b.revisionMult, e.mult);
         break;
-      case 'palierVoyant':
-        b.palierVoyant = true;
+      case 'encyclopedie':
+        b.encyclopedieS = Math.max(b.encyclopedieS, e.s);
         break;
-      case 'reliqueGratuite':
-        b.reliqueGratuite += 1;
+      case 'retourEcole':
+        b.retourEcoleMalusPct = Math.max(b.retourEcoleMalusPct, e.malusPct);
         break;
-      case 'choixPlus':
-        b.choixPlus += e.n;
+      case 'pari':
+        b.pari = true;
         break;
-      case 'doubleChoix':
-        b.doubleChoix = true;
+      case 'brouillard':
+        b.brouillard = { pct: e.pct, s: e.s };
+        b.pct += e.pct;
         break;
-      case 'choixMax':
-        b.choixMax = true;
+      case 'miroir':
+        b.miroirPct += e.pct;
+        b.pct += e.pct;
         break;
-      case 'premierePalier':
-        b.premierePalier = Math.max(b.premierePalier, e.s);
+      case 'monochrome':
+        b.monochromePct += e.pct;
+        b.pct += e.pct;
         break;
-      case 'tempsFixe':
-        b.tempsFixe = true;
+      case 'funambule':
+        b.funambulePctParVie = Math.max(b.funambulePctParVie, e.pctParVie);
         break;
-      case 'intemporel':
-        b.tempsFixe = true;
-        b.timerBonus += 10;
+      case 'mainDuDestin':
+        b.mainDuDestin = true;
         break;
-      case 'comboZen':
-        b.timerBonus += e.s;
-        b.pct += e.p;
+      case 'echo':
+        b.echo = true;
         break;
+      case 'joker':
+        b.joker = true;
+        break;
+      case 'recyclage':
+        b.recyclage = true;
+        break;
+      case 'retourArriere':
+        b.retourArriereMalusS += e.malusS;
+        break;
+      case 'gele':
+      case 'secondSouffle':
+        break; // comportements gérés directement dans useGame (boutons / état par palier)
     }
   }
+  b.flat += b.barreeFlat;
   return b;
 }
+
+// --- Tirage des propositions ---
 
 /** Tirage pondéré par rareté (poids selon la progression) d'une relique dans le pool. */
 function pickWeighted(pool: Relic[], prog: number, rand: () => number): Relic {
@@ -406,37 +605,40 @@ function pickWeighted(pool: Relic[], prog: number, rand: () => number): Relic {
 }
 
 /**
- * Propose `nb` reliques parmi celles dont les ids ne sont pas dans `dejaPrises`.
- * Tirage pondéré par rareté, sans remise. `prog` (0..1) = avancement dans la run :
- * il fait évoluer les poids (début = plutôt commun, fin = plutôt rare/épique/légendaire).
- * `rand` permet des tests déterministes.
+ * Propose `nb` reliques : ni déjà prises (sauf cumulables), ni en conflit avec une
+ * relique déjà prise. Tirage pondéré par rareté, sans remise. `prog` (0..1) =
+ * avancement dans la run : il fait évoluer les poids (début = plutôt commun,
+ * fin = plutôt rare/légendaire). `rand` permet des tests déterministes.
  */
 export function drawRelicChoices(
   dejaPrises: string[],
   nb = 3,
   rand: () => number = Math.random,
-  prog = 0
+  prog = 0,
+  raretesMin: RelicRarity[] | null = null
 ): Relic[] {
-  const pool = RELICS.filter((r) => !dejaPrises.includes(r.id));
+  const exclus = new Set(dejaPrises.filter((id) => !RELICS.find((r) => r.id === id)?.cumulable));
+  const conf = conflitsDe(dejaPrises);
+  let pool = RELICS.filter(
+    (r) => !exclus.has(r.id) && !conf.has(r.num) && (!raretesMin || raretesMin.includes(r.rarete))
+  );
   const out: Relic[] = [];
-  const restant = [...pool];
-  while (out.length < nb && restant.length > 0) {
-    const r = pickWeighted(restant, prog, rand);
+  while (out.length < nb && pool.length > 0) {
+    const r = pickWeighted(pool, prog, rand);
     out.push(r);
-    restant.splice(restant.indexOf(r), 1);
+    pool = pool.filter((x) => x.id !== r.id);
   }
   return out;
 }
 
-/** Nombre de propositions au prochain choix de relique (3 de base + bonus). */
+/** Nombre de propositions au prochain choix de relique (3 de base, 2 si Pacte). */
 export function nbPropositions(bonus: RogueBonus): number {
-  if (bonus.choixMax) return 6;
-  return 3 + bonus.choixPlus;
+  return bonus.pacteChoix > 0 ? bonus.pacteChoix : 3;
 }
 
-/** Nombre de reliques à prendre à ce choix (1 de base, 2 si doubleChoix/choixMax). */
-export function nbAPrendre(bonus: RogueBonus): number {
-  return bonus.choixMax || bonus.doubleChoix ? 2 : 1;
+/** Nombre de reliques à prendre à ce choix (1 dans cette édition). */
+export function nbAPrendre(_bonus: RogueBonus): number {
+  return 1;
 }
 
 // --- Calcul du gain d'une question en mode rogue (fonction PURE) ---
@@ -454,65 +656,95 @@ export interface GainContext {
   bonnesAvant: number;
   /** Index 0-based de la question dans la run. */
   index: number;
+  /** Position dans le palier (1..10). */
+  questionDansPalier: number;
   niveau: string;
   themeId: string;
   /** Thème de la question précédente (null si 1re question). */
   themePrecedent: string | null;
-  /** Le thème de la question a déjà été joué dans la run. */
-  themeDejaVu: boolean;
-  /** Thème désigné par la relique « Cible » (null si aucune). */
-  themeCibleId: string | null;
+  /** Vies actuelles / vies max (Funambule). */
+  vies: number;
+  viesMax: number;
+  /** Le joueur a misé sur cette question (Pari). */
+  pariPlace: boolean;
+  /** Nombre de reliques possédées (Collectionneur). */
+  nbReliques: number;
+  /** Thème choisi par Spécialiste (null si aucune). */
+  themeSpecialiste: string | null;
+  /** La question vient du meilleur thème (Zone de confort). */
+  zoneConfort: boolean;
+  /** Question de révision (erreur revenue plus tard). */
+  isRevision: boolean;
+  /** Question en « fièvre » (×3, chrono court). */
+  fievreActive: boolean;
+  /** Rebond actif (question après une erreur). */
+  rebondActif: boolean;
+  /** Question jackpot du palier. */
+  jackpotActif: boolean;
+  /** 50/50 actif sur la question : points divisés par 2. */
+  div2: boolean;
 }
 
 /**
  * Gain d'une bonne réponse en Rogue Quizz : base arcade (20 − 1 pt/s, min 10,
- * ×manche en 3e manche) modifiée par toutes les reliques passives.
- * `jackpot` > 0 remplace la base (relique Jackpot).
+ * ramenée à l'échelle de la durée réelle) modifiée par toutes les reliques.
  */
-export function gainRogue(b: RogueBonus, ctx: GainContext, jackpot: number): number {
+export function gainRogue(b: RogueBonus, ctx: GainContext): number {
   if (!ctx.correct) return 0;
-  const sec = b.tempsFixe ? 0 : ctx.secondesEcoulees;
-  const min = Math.max(10, b.min);
-  // Chrono des points ramené à l'échelle de la durée réelle (20 - 1 pt/s sur 10 s de base).
+  const sec = ctx.secondesEcoulees;
   const duree = Math.max(1, ctx.dureeQuestion);
-  let g = Math.max(min, 20 - Math.floor((sec * 10) / duree));
-  if (ctx.mancheBonus) g *= b.mancheMult; // mancheMult vaut 2 par défaut
-  if (jackpot > 0) g = jackpot;
-  const multNiv = b.niveauMult[ctx.niveau as LevelId] || 1;
-  g *= multNiv;
+  let g: number;
+  if (b.pointsFlat !== null) {
+    g = b.pointsFlat; // Tortue : points fixes
+  } else if (b.primeVitesse) {
+    g = Math.max(5, 30 - 2 * Math.floor(sec)); // Prime de vitesse
+  } else {
+    g = Math.max(10, 20 - Math.floor((sec * 10) / duree));
+  }
+  if (b.plancherMax > 0) g = Math.min(b.plancherMax, Math.max(b.plancherMin, g)); // Plancher
+  if (ctx.mancheBonus) g *= 2;
+  // multiplicateurs
   g *= 1 + b.pct / 100;
   g *= 1 + b.timerMalusPct / 100;
-  const numQ = ctx.index + 1;
-  for (const e of b.pctEarly) if (numQ < e.seuil) g *= 1 + e.p / 100;
-  for (const e of b.pctLate) if (numQ > e.seuil) g *= 1 + e.p / 100;
-  if (b.palierPct > 0) g *= 1 + b.palierPct / 100; // palier courant entier
-  g += b.flat;
-  for (const s of b.speed) if (sec < s.maxS) {
-    g += s.n;
-    g *= 1 + s.p / 100;
+  if (b.boussole) g *= 1 - b.boussoleMalusPct / 100;
+  if (b.specialiste) {
+    g *= ctx.themeId === ctx.themeSpecialiste ? b.specialiste.mult : 1 - b.specialiste.malusPct / 100;
   }
-  for (const st of b.streak) if (ctx.streak >= st.seuil) g += st.n;
-  for (const p of b.palier) if ((ctx.bonnesAvant + 1) % p.tous === 0) g += p.n;
+  if (ctx.zoneConfort && b.zoneConfortMalusPct > 0) g *= 1 - b.zoneConfortMalusPct / 100;
+  if (b.chasseur && ctx.niveau === 'dur') g *= 2;
+  if (ctx.isRevision && b.revisionMult > 0) g *= b.revisionMult;
+  if (ctx.fievreActive && b.fievre) g *= b.fievre.mult;
+  if (ctx.rebondActif && b.rebond) g *= 2;
+  if (ctx.pariPlace && b.pari) g *= 2;
+  if (ctx.jackpotActif && b.jackpotMult > 0) g *= b.jackpotMult;
+  if (b.combustionSeuil > 0 && ctx.streak >= b.combustionSeuil) g *= 2;
+  if (ctx.questionDansPalier === 10 && b.dernierMotMult > 0) g *= b.dernierMotMult;
+  if (b.funambulePctParVie > 0) {
+    const manquantes = Math.max(0, ctx.viesMax - ctx.vies);
+    g *= 1 + (b.funambulePctParVie / 100) * manquantes;
+  }
+  // ajouts
+  g += b.flat;
+  for (const s of b.speed) if (sec < s.maxS) g += s.n;
+  if (b.collectionneur) g += ctx.nbReliques;
   if (b.antiRepete > 0 && ctx.themePrecedent !== null && ctx.themePrecedent !== ctx.themeId)
     g += b.antiRepete;
-  if (ctx.themeCibleId && ctx.themeId === ctx.themeCibleId) g *= b.themeCibleMult;
-  if (b.themeBonus > 0 && !ctx.themeDejaVu) g += b.themeBonus;
+  if (ctx.div2 && b.cinquante) g /= b.cinquante.div; // 50/50 : points /2
+  if (b.eliminationMaxPts > 0) g = Math.min(g, b.eliminationMaxPts); // Élimination : plafond
   return Math.round(g);
 }
 
 /**
- * Score final d'une run rogue : multiplicateurs de fin + plancher (Assurance).
- * `win` = run terminée à 100 questions sans erreur. `mortsAvant` = index de la question où la run meurt.
+ * Score final d'une run rogue : multiplicateurs de fin + plancher.
+ * `win` = run terminée à 100 questions. `mortsAvant` = index de la question où la run meurt.
  */
 export function scoreFinalRogue(
   b: RogueBonus,
   score: number,
-  win: boolean,
-  mortsAvant: number
+  _win: boolean,
+  _mortsAvant: number
 ): number {
   let s = score * b.finalMult;
-  if (win) s *= b.finalWinMult;
-  if (b.finalEarly && mortsAvant < b.finalEarly.seuil) s *= b.finalEarly.mult;
   if (b.plancher > 0) s = Math.max(s, b.plancher);
   return Math.round(s);
 }

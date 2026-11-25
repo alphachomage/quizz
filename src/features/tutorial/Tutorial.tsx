@@ -79,10 +79,11 @@ export default function Tutorial({ onClose, isGuest }: TutorialProps): ReactElem
                 <em>À venir.</em>
               </li>
               <li>
-                <strong>Rogue Quizz</strong> — tous les thèmes, jusqu'à 100 questions, une seule
-                vie : la première erreur termine la run. La difficulté monte tous les 10
-                questions et tu choisis <strong>1 relique parmi 3</strong> au départ puis à chaque
-                palier (60 reliques au total, effets cumulables).
+                <strong>Rogue Quizz</strong> — tous les thèmes, jusqu'à 100 questions. Tu as{' '}
+                <strong>1 vie</strong> au départ : chaque erreur en coûte une, à 0 la run s'arrête
+                (des reliques peuvent t'en redonner). La difficulté monte tous les 10 questions et
+                tu choisis <strong>1 relique parmi 3</strong> au départ puis à chaque palier
+                (60 reliques au total, effets cumulables).
               </li>
               <li>
                 <strong>Quizz du jour</strong> — 10 questions identiques pour tout le monde, une

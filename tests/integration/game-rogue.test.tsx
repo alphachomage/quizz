@@ -22,10 +22,15 @@ function avancer(): void {
     vi.advanceTimersByTime(2100);
   });
 }
-function choisirRelique(index = 0): void {
-  const cartes = document.querySelectorAll('.relique-carte');
+// Choisit une carte « sûre » : on évite les reliques qui changent le déroulement du test
+// (Recyclage/Spécialiste = sous-flux, 50/50 & Lunettes rouges & Domino = réponses retirées/barrées).
+function choisirRelique(): void {
+  const cartes = Array.from(document.querySelectorAll('.relique-carte'));
   expect(cartes.length).toBeGreaterThanOrEqual(3);
-  fireEvent.click(cartes[index]);
+  const safe = cartes.find(
+    (c) => !/Recyclage|Spécialiste|50\/50|Lunettes rouges|Domino/.test(c.textContent || '')
+  );
+  fireEvent.click(safe || cartes[0]);
 }
 function renderRogue(themes: ReturnType<typeof makeThemes>, onFinish: (r: GameResult) => void) {
   return render(
@@ -59,18 +64,18 @@ describe('partie rogue (flux complet)', () => {
     renderRogue(themes, onFinish);
     // Écran de choix de relique au départ (3 propositions)
     expect(document.querySelector('.relique-overlay')).toBeTruthy();
-    choisirRelique(0);
+    choisirRelique();
     expect(document.querySelector('.relique-overlay')).toBeNull();
-    answerCorrect(); // index 0 : 20 pts
+    answerCorrect(); // index 0
     avancer();
     expect(onFinish).not.toHaveBeenCalled();
-    answerWrong(); // index 1 : raté -> fin de run
+    answerWrong(); // index 1 : raté, plus de vie (1 vie de départ) -> fin de run
     avancer();
     expect(onFinish).toHaveBeenCalledTimes(1);
     const res = onFinish.mock.calls[0][0];
     expect(res.mode).toBe('rogue');
-    // la relique de départ (aléatoire) peut modifier le score : au moins les 20 pts de base
-    expect(res.scores[0]).toBeGreaterThanOrEqual(20);
+    // la relique de départ (aléatoire) peut modifier le score : au moins 10 pts de base
+    expect(res.scores[0]).toBeGreaterThanOrEqual(10);
     expect(res.bonnes).toEqual([1]);
     expect(res.total).toBe(2); // questions répondues avant la faute
     expect(res.details).toHaveLength(2);
@@ -81,14 +86,14 @@ describe('partie rogue (flux complet)', () => {
     const themes = makeThemes(3, 10);
     const onFinish = vi.fn<(result: GameResult) => void>();
     renderRogue(themes, onFinish);
-    choisirRelique(0); // relique de départ
+    choisirRelique(); // relique de départ
     for (let i = 0; i < 10; i++) {
       answerCorrect();
       avancer();
     }
     // Après la 10e bonne réponse : retour à l'écran de choix de relique
     expect(document.querySelector('.relique-overlay')).toBeTruthy();
-    choisirRelique(1);
+    choisirRelique();
     expect(document.querySelector('.relique-overlay')).toBeNull();
     expect(onFinish).not.toHaveBeenCalled();
   });
@@ -109,7 +114,7 @@ describe('partie rogue (flux complet)', () => {
   it('le chip « Palier 1/10 » est affiché', () => {
     const themes = makeThemes(3, 10);
     renderRogue(themes, () => {});
-    choisirRelique(0);
+    choisirRelique();
     expect(screen.getByText('Palier 1/10')).toBeTruthy();
   });
 });

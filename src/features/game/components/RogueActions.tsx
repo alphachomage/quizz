@@ -1,5 +1,6 @@
-// RogueActions.tsx — boutons d'action des reliques consommables (mode rogue, phase 'question') :
-// Skip (passer la question), Re-piocher (Mulligan), Révéler (Regard perçant).
+// RogueActions.tsx — boutons d'action des reliques actives (mode rogue) :
+// Arrêt sur image (geler le chrono), Pari (miser), Pioche (passer le thème),
+// Retour en arrière (annuler la dernière réponse, phase 'reponse').
 import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import type { GameState } from '../useGame.js';
@@ -9,42 +10,53 @@ interface RogueActionsProps {
 }
 
 export default function RogueActions({ p }: RogueActionsProps): ReactElement | null {
-  const { mode, phase, charges, bonneRevelee } = p;
-  if (mode !== 'rogue' || phase !== 'question') return null;
-  const nSkip = charges.skip;
-  const nRepioche = charges.repioche;
-  const nVoir = charges.voir;
-  if (nSkip <= 0 && nRepioche <= 0 && nVoir <= 0) return null;
+  const { mode, phase, palier, geleRestant, pariPlacee, rogueBonus } = p;
+  if (mode !== 'rogue') return null;
+  const peutGeler = phase === 'question' && palier.gele && geleRestant <= 0;
+  const peutMiser = phase === 'question' && rogueBonus.pari;
+  const peutPasser = phase === 'question' && palier.pioche > 0;
+  const peutAnnuler = phase === 'reponse' && palier.retourArriere;
+  if (!peutGeler && !peutMiser && !peutPasser && !peutAnnuler) return null;
   return (
     <div className="rogue-actions">
-      {nSkip > 0 && (
+      {peutGeler && (
         <button
           type="button"
           className="rogue-action"
-          onClick={p.passerQuestion}
-          title="Passer cette question sans pénalité (10 pts) — relique Skip"
+          onClick={p.gelerChrono}
+          title="Gèle le chrono 5 s, 1 fois par palier — relique Arrêt sur image"
         >
-          <Icon nom="forward" taille={15} /> Passer ×{nSkip}
+          <Icon nom="pause" taille={15} /> Geler 5 s
         </button>
       )}
-      {nRepioche > 0 && (
+      {peutMiser && (
         <button
           type="button"
-          className="rogue-action"
-          onClick={p.repiocherQuestion}
-          title="Re-piocher une autre question du même niveau — relique Mulligan"
+          className={pariPlacee ? 'rogue-action pari-actif' : 'rogue-action'}
+          onClick={p.miser}
+          title="Miser : ×2 pts si juste, sinon 0 pt et −1 vie de plus — relique Pari"
         >
-          <Icon nom="replay" taille={15} /> Re-piocher ×{nRepioche}
+          <Icon nom="chip" taille={15} /> {pariPlacee ? 'Pari placé ×2' : 'Miser ×2'}
         </button>
       )}
-      {nVoir > 0 && !bonneRevelee && (
+      {peutPasser && (
         <button
           type="button"
           className="rogue-action"
-          onClick={p.revelerBonne}
-          title="Révéler la bonne réponse (vaut 10 pts) — relique Regard perçant"
+          onClick={p.passerTheme}
+          title="Passer cette question (remplacée par une plus difficile) — relique Pioche"
         >
-          <Icon nom="eye" taille={15} /> Révéler ×{nVoir}
+          <Icon nom="map" taille={15} /> Passer le thème ×{palier.pioche}
+        </button>
+      )}
+      {peutAnnuler && (
+        <button
+          type="button"
+          className="rogue-action"
+          onClick={p.annulerReponse}
+          title="Annule ta dernière réponse (1 fois par palier, −1 s toute la partie) — relique Retour en arrière"
+        >
+          <Icon nom="chevron-left" taille={15} /> Annuler la réponse
         </button>
       )}
     </div>

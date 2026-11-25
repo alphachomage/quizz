@@ -15,11 +15,12 @@ import type { StoredReport } from '@lib/reports.js';
 import { seriesKey, saveSeries } from '@lib/series.js';
 import { currentDailyStreak } from '@lib/streak.js';
 import { playSound, soundForStreak, vibrate, startMusic, stopMusic } from '@lib/sounds.js';
-import type { GameDetail, GameMode, GameResult, LevelId, Prefs, Theme } from '@lib/types.js';
+import type { GameDetail, GameMode, GameResult, LevelId, Prefs, Question, Theme } from '@lib/types.js';
 import {
+  RELICS,
+  aRelic,
   computeRogueBonus,
   drawRelicChoices,
-  emptyRogueBonus,
   gainRogue,
   nbAPrendre,
   nbPropositions,
@@ -59,6 +60,43 @@ export interface UseGameParams {
   onQuit: (result: GameResult) => void;
 }
 
+/** Compteurs/état d'un palier de 10 questions en mode rogue (reset à chaque palier). */
+export interface PalierRogue {
+  gele: boolean; // Arrêt sur image disponible
+  secondSouffle: boolean; // Second souffle disponible
+  cinquante: number; // 50/50 restants sur ce palier
+  deuxiemeChance: boolean; // Deuxième chance disponible
+  filet: number; // erreurs qui ne cassent pas la série (Filet de sécurité)
+  bouclier: number; // erreurs sans perte de vie (Bouclier)
+  pioche: number; // passes « thème » restantes (Pioche)
+  retourArriere: boolean; // Annulation disponible (Retour en arrière)
+  erreurs: number; // erreurs du palier
+  points: number; // points marqués sur le palier (Tout ou rien)
+  parfait: boolean; // palier sans erreur (Tout ou rien / Infirmerie)
+  jackpot: number; // index absolu de la question jackpot du palier (−1 si aucune)
+  reserve: number; // réserve de temps restante du palier (Marathon)
+}
+
+/** Construit l'état d'un palier à partir des reliques possédées. */
+export function palierInitial(b: RogueBonus, relics: Relic[], indexDebut: number): PalierRogue {
+  const dansPalier = ROGUE_STEP;
+  return {
+    gele: aRelic(relics, 'arret-sur-image'),
+    secondSouffle: aRelic(relics, 'second-souffle'),
+    cinquante: b.cinquante ? b.cinquante.n : 0,
+    deuxiemeChance: b.deuxiemeChancePts > 0,
+    filet: b.filetSecurite ? 1 : 0,
+    bouclier: b.bouclier ? 1 : 0,
+    pioche: b.piocheParPalier,
+    retourArriere: b.retourArriereMalusS > 0,
+    erreurs: 0,
+    points: 0,
+    parfait: true,
+    jackpot: b.jackpotMult > 0 ? indexDebut + Math.floor(Math.random() * dansPalier) : -1,
+    reserve: b.marathon ? b.marathon.reserve : 0,
+  };
+}
+
 /** État complet d'une partie exposé aux composants d'affichage. */
 export interface GameState {
   config: GameLaunchConfig;
@@ -89,32 +127,55 @@ export interface GameState {
   abandonner: () => void;
   reportQuestion: () => void;
   // --- Rogue Quizz ---
-  /** Reliques choisies pendant la run (vide hors mode rogue). */
   relics: Relic[];
-  /** Propositions de reliques du choix en cours (phase 'relique'). */
   proposals: Relic[];
-  /** Bonus agrégés des reliques (hors mode rogue : bonus vides). */
   rogueBonus: RogueBonus;
-  /** Charges consommables restantes (50/50, skip, re-piocher, pardon…). */
-  charges: RogueBonus['charges'];
-  /** Index de la réponse masquée par un 50/50 (null = aucune). */
-  reponseMasquee: number | null;
-  /** La bonne réponse est révélée (relique « Regard perçant »). */
-  bonneRevelee: boolean;
-  /** Question affichée (avec la réponse masquée retirée en mode rogue). */
+  /** Question affichée (reliques 50/50, Domino, Miroir… appliquées). */
   questionAffichage: DrawnQuestion;
-  /** Timer figé sur la question courante (relique « Pause »). */
-  timerFige: boolean;
-  /** Durée du timer de la question courante (niveau + reliques timer). */
+  /** Durée du timer de la question courante (niveau + reliques). */
   dureeQuestion: number;
-  /** Secondes restantes pour le choix de relique (phase 'relique', auto-choix à 0). */
+  /** Secondes écoulées sur la question courante (pour Élimination / Brouillard). */
+  ecoulees: number;
+  /** Secondes restantes pour le choix de relique (auto-choix à 0). */
   tempsChoix: number;
-  /** Jackpot en attente (relique Jackpot) : points de la prochaine bonne réponse. */
-  jackpot: number;
+  /** Vies restantes / vies max (mode rogue). */
+  vies: number;
+  viesMax: number;
+  /** Compteurs du palier courant. */
+  palier: PalierRogue;
+  /** Mise placée sur la question courante (Pari). */
+  pariPlacee: boolean;
+  /** Gel du chrono en cours (Arrêt sur image), secondes restantes. */
+  geleRestant: number;
+  /** La bonne réponse est montrée (Rayon X). */
+  bonneRevelee: boolean;
+  /** Relique « Timer figé » (gel manuel) : le chrono est en pause. */
+  timerFige: boolean;
+  /** Indices de réponses surlignées (Loupe). */
+  surbrillance: number[];
+  /** Indice de la réponse barrée (Lunettes rouges). */
+  barree: number | null;
+  /** Pourcentages du Vote du public. */
+  votePcts: number[] | null;
+  /** La bonne réponse scintille (Intuition). */
+  scintille: boolean;
+  /** Choix de relique : étape recyclage ('sacrifice' = choisir une relique à retirer). */
+  recyclageEtape: 'sacrifice' | 'nouveau' | null;
+  /** Spécialiste : choisir le thème spécial (overlay de thèmes). */
+  themeAPicker: boolean;
+  /** Thème choisi par Spécialiste. */
+  themeSpecialiste: string | null;
   choisirRelique: (id: string) => void;
-  passerQuestion: () => void;
-  repiocherQuestion: () => void;
-  revelerBonne: () => void;
+  /** Refuser le choix de relique (Ascète : +150 pts). */
+  refuserChoix: () => void;
+  /** Retirer une relique possédée (Recyclage, étape sacrifice). */
+  sacrifierRelique: (id: string) => void;
+  /** Choisir le thème de Spécialiste. */
+  choisirThemeSpecialiste: (themeId: string) => void;
+  gelerChrono: () => void;
+  miser: () => void;
+  passerTheme: () => void;
+  annulerReponse: () => void;
 }
 
 /** Pastille de thème affichée dans la barre du haut (champs optionnels : thème courant variable). */
@@ -132,6 +193,16 @@ export interface GameViewState extends GameState {
   currentTheme: ThemeBadge;
 }
 
+/** Snapshot pour « Retour en arrière » : restaure l'état d'avant la dernière réponse. */
+interface Snapshot {
+  scores: number[];
+  bonnes: number[];
+  streaks: number[];
+  vies: number;
+  details: DetailPartie[];
+  index: number;
+}
+
 export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): GameState {
   const { mode, niveau, theme, players = [] } = config;
   const nbJoueurs = mode === 'duel' ? 2 : 1;
@@ -143,84 +214,276 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
   const [currentPlayer, setCurrentPlayer] = useState(0);
   const [phase, setPhase] = useState<GamePhase>(
     mode === 'duel' ? 'attente' : mode === 'rogue' ? 'relique' : 'question'
-  ); // 'attente' | 'question' | 'reponse' | 'relique'
+  );
   const [selection, setSelection] = useState<number | null>(null);
   const [scores, setScores] = useState<number[]>([0, 0]);
   const [bonnes, setBonnes] = useState<number[]>([0, 0]);
   const [lastGain, setLastGain] = useState(0);
-  const [lastBonus, setLastBonus] = useState(0); // bonus de série (streak)
-  const [streaks, setStreaks] = useState<number[]>([0, 0]); // bonnes réponses enchaînées, par joueur
+  const [lastBonus, setLastBonus] = useState(0);
+  const [streaks, setStreaks] = useState<number[]>([0, 0]);
   const [lastCorrect, setLastCorrect] = useState(true);
-  const [details, setDetails] = useState<DetailPartie[]>([]); // historique question par question (stats)
+  const [details, setDetails] = useState<DetailPartie[]>([]);
   const [confetti, setConfettis] = useState<ConfettiPiece[]>([]);
-  const [signales, setSignales] = useState<StoredReport[]>(() => loadReports()); // questions signalées (pouce rouge)
+  const [signales, setSignales] = useState<StoredReport[]>(() => loadReports());
 
-  // --- État Rogue Quizz (reliques) ---
+  // --- État Rogue Quizz (reliques, vies, paliers) ---
   const [relics, setRelics] = useState<Relic[]>([]);
   const [proposals, setProposals] = useState<Relic[]>([]);
-  const [aPrendre, setAPrendre] = useState(1); // nb de reliques à prendre au choix en cours
-  const [charges, setCharges] = useState<RogueBonus['charges']>(emptyRogueBonus().charges);
-  const [reponseMasquee, setReponseMasquee] = useState<number | null>(null);
-  const [bonneRevelee, setBonneRevelee] = useState(false);
-  const [timerFige, setTimerFige] = useState(false);
-  const [jackpot, setJackpot] = useState(0);
-  const [oneShotFaits, setOneShotFaits] = useState<number[]>([]);
-  const [themeCible, setThemeCible] = useState<string | null>(null);
+  const [aPrendre, setAPrendre] = useState(1);
+  const [questionAffichage, setQuestionAffichage] = useState<DrawnQuestion>(
+    () => questionsPerPlayer[0][0]
+  );
+  const [reponsesMasquees, setReponsesMasquees] = useState<number[]>([]); // 50/50
+  const [dominoActif, setDominoActif] = useState(false); // question à 2 réponses
+  const [bonneRevelee, setBonneRevelee] = useState(false); // Rayon X
+  const [timerFige, setTimerFige] = useState(false); // gel manuel en cours
+  const [vies, setVies] = useState(1);
+  const [viesMax, setViesMax] = useState(1);
+  const [palier, setPalier] = useState<PalierRogue>(() => ({
+    gele: false,
+    secondSouffle: false,
+    cinquante: 0,
+    deuxiemeChance: false,
+    filet: 0,
+    bouclier: 0,
+    pioche: 0,
+    retourArriere: false,
+    erreurs: 0,
+    points: 0,
+    parfait: true,
+    jackpot: -1,
+    reserve: 0,
+  }));
+  const [pariPlacee, setPariPlacee] = useState(false);
+  const [geleRestant, setGeleRestant] = useState(0);
+  const [dureeOverride, setDureeOverride] = useState<number | null>(null); // Second souffle
+  const [carryBonus, setCarryBonus] = useState(0); // temps reporté (Horloge partagée / Momentum / Encyclopédie)
+  const [fievreRestant, setFievreRestant] = useState(0);
+  const [rebondActif, setRebondActif] = useState(false);
+  const [revisionPool, setRevisionPool] = useState<DrawnQuestion[]>([]);
+  const [isRevisionQ, setIsRevisionQ] = useState(false);
+  const [zoneConfortQ, setZoneConfortQ] = useState(false);
+  const [surbrillance, setSurbrillance] = useState<number[]>([]);
+  const [barree, setBarree] = useState<number | null>(null);
+  const [votePcts, setVotePcts] = useState<number[] | null>(null);
+  const [scintille, setScintille] = useState(false);
+  const [miroirFait, setMiroirFait] = useState(false);
+  const [retryEnCours, setRetryEnCours] = useState(false);
+  const [themeSpecialiste, setThemeSpecialiste] = useState<string | null>(null);
+  const [themeAPicker, setThemeAPicker] = useState(false);
+  const [recyclageEtape, setRecyclageEtape] = useState<'sacrifice' | 'nouveau' | null>(null);
+  const [echoActif, setEchoActif] = useState(false);
+  const [dernierChoix, setDernierChoix] = useState<string | null>(null);
+  const [assuranceUtilise, setAssuranceUtilise] = useState(false);
+  const [palierEcole, setPalierEcole] = useState<number | null>(null); // Retour à l'école
   const rogueBonus = useMemo(() => computeRogueBonus(relics), [relics]);
 
-  // En rogue, les questions sont dans un état mutable (relique Mulligan = re-piocher).
+  // Refs miroirs (évite les closures périmées dans les callbacks du timer).
+  const phaseRef = useRef(phase);
+  phaseRef.current = phase;
+  const viesRef = useRef(1);
+  const palierRef = useRef(palier);
+  palierRef.current = palier;
+  const rogueBonusRef = useRef(rogueBonus);
+  rogueBonusRef.current = rogueBonus;
+  const relicsRef = useRef(relics);
+  relicsRef.current = relics;
+  const snapshotRef = useRef<Snapshot | null>(null);
+  const qAffRef = useRef(questionAffichage);
+  qAffRef.current = questionAffichage;
+  // Refs miroirs supplémentaires (déclarés tôt : le mémo dureeQuestion les lit au rendu).
+  const scoresRef = useRef(scores);
+  scoresRef.current = scores;
+  const bonnesRef = useRef(bonnes);
+  bonnesRef.current = bonnes;
+  const streaksRef = useRef(streaks);
+  streaksRef.current = streaks;
+  const detailsRef = useRef(details);
+  detailsRef.current = details;
+  const revisionPoolRef = useRef(revisionPool);
+  revisionPoolRef.current = revisionPool;
+  const palierEcoleRef = useRef(palierEcole);
+  palierEcoleRef.current = palierEcole;
+  const retourArriereMalusRef = useRef(0);
+  const answerRef = useRef<(i: number | null) => void>(() => {});
+  const pariPlaceeRef = useRef(pariPlacee);
+  pariPlaceeRef.current = pariPlacee;
+  const viesMaxRef = useRef(viesMax);
+  viesMaxRef.current = viesMax;
+  const fievreRestantRef = useRef(fievreRestant);
+  fievreRestantRef.current = fievreRestant;
+  const reponsesMasqueesRef = useRef(reponsesMasquees);
+  reponsesMasqueesRef.current = reponsesMasquees;
+  const assuranceUtiliseRef = useRef(assuranceUtilise);
+  assuranceUtiliseRef.current = assuranceUtilise;
+  const carryBonusRef = useRef(carryBonus);
+  carryBonusRef.current = carryBonus;
+
+  // En rogue, les questions sont dans un état mutable (Pioche, Révision, Zone de confort…).
   const [questionsRogue, setQuestionsRogue] = useState<DrawnQuestion[] | null>(() =>
     mode === 'rogue' ? questionsPerPlayer[currentPlayer] : null
   );
-  const questions = mode === 'rogue' && questionsRogue ? questionsRogue : questionsPerPlayer[currentPlayer]; // tirage du joueur courant
+  const questions = mode === 'rogue' && questionsRogue ? questionsRogue : questionsPerPlayer[currentPlayer];
   const question = questions[Math.min(index, questions.length - 1)];
 
-  // Question affichée : en rogue avec un 50/50 actif, la réponse masquée est retirée.
-  const questionAffichage = useMemo<DrawnQuestion>(() => {
-    if (mode !== 'rogue' || reponseMasquee === null) return question;
-    const rep = question.reponses.filter((_, i) => i !== reponseMasquee);
-    const bonne = question.bonne > reponseMasquee ? question.bonne - 1 : question.bonne;
-    return { ...question, reponses: rep, bonne };
-  }, [mode, reponseMasquee, question]);
-
-  // Au lancement d'une run rogue : première proposition de 3 reliques (choix de départ).
+  // Au lancement d'une run rogue : première proposition de reliques (choix de départ).
   useEffect(() => {
     if (mode === 'rogue' && proposals.length === 0 && relics.length === 0) {
-      setProposals(drawRelicChoices([], nbPropositions(emptyRogueBonus()), Math.random, 0));
+      setProposals(drawRelicChoices([], nbPropositions(computeRogueBonus([])), Math.random, 0));
       setAPrendre(1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode]);
 
-  // À chaque nouvelle question en rogue : appliquer 50/50 et timer figé si charges restantes.
+  // --- Mise en place de chaque question (mode rogue) ---
+  const modifieRef = useRef(new Set<number>());
   useEffect(() => {
     if (mode !== 'rogue') {
-      setReponseMasquee(null);
-      setTimerFige(false);
-      setBonneRevelee(false);
+      setQuestionAffichage(question);
       return;
     }
-    if (charges.fifty > 0 && question.reponses.length > 2) {
-      const mauvaises = question.reponses
-        .map((_, i) => i)
-        .filter((i) => i !== question.bonne);
-      setReponseMasquee(mauvaises[Math.floor(Math.random() * mauvaises.length)]);
-      setCharges((c) => ({ ...c, fifty: c.fifty - 1 }));
-    } else {
-      setReponseMasquee(null);
+    const b = rogueBonusRef.current;
+    const qDansPalier = (index % ROGUE_STEP) + 1;
+    let q = questions[Math.min(index, questions.length - 1)];
+    // Swaps de question (une fois par index) : Révision, Zone de confort, Chasseur, Retour à l'école.
+    if (!modifieRef.current.has(index)) {
+      modifieRef.current.add(index);
+      let zoneConfort = false;
+      let revision = false;
+      // Révision : les erreurs reviennent en fin de palier
+      if (b.revisionMult > 0 && revisionPoolRef.current.length > 0 && qDansPalier >= ROGUE_STEP - 1) {
+        const rev = revisionPoolRef.current[0];
+        revisionPoolRef.current = revisionPoolRef.current.slice(1);
+        q = rev;
+        revision = true;
+        setQuestionsRogue((qs) => (qs ? [...qs.slice(0, index), q, ...qs.slice(index + 1)] : qs));
+      }
+      // Zone de confort : 1 question sur 3 vient du meilleur thème
+      if (b.zoneConfortMalusPct > 0 && qDansPalier % 3 === 1) {
+        const bestId = meilleurTheme(detailsRef.current, config.allThemes || []);
+        const bestThemeObj = (config.allThemes || []).find((t) => t.id === bestId);
+        if (bestId && bestThemeObj && q.themeId !== bestId) {
+          const cand = bestThemeObj.questions
+            .filter((x) => x.niveau === q.niveau && !dejaJouee(x.q))
+            .map((x) => tag(x, bestThemeObj));
+          if (cand.length > 0) {
+            q = cand[Math.floor(Math.random() * cand.length)];
+            zoneConfort = true;
+            setQuestionsRogue((qs) => (qs ? [...qs.slice(0, index), q, ...qs.slice(index + 1)] : qs));
+          }
+        }
+      }
+      // Chasseur : les questions dur arrivent plus souvent (swap ~1/3 des non-dur)
+      if (b.chasseur && q.niveau !== 'dur' && Math.random() < 0.34) {
+        const cand = (config.allThemes || []).flatMap((t) =>
+          t.questions.filter((x) => x.niveau === 'dur' && !dejaJouee(x.q)).map((x) => tag(x, t))
+        );
+        if (cand.length > 0) {
+          q = cand[Math.floor(Math.random() * cand.length)];
+          setQuestionsRogue((qs) => (qs ? [...qs.slice(0, index), q, ...qs.slice(index + 1)] : qs));
+        }
+      }
+      // Retour à l'école : ce palier est un cran moins difficile
+      if (palierEcoleRef.current === Math.floor(index / ROGUE_STEP)) {
+        const nivInf = q.niveau === 'dur' ? 'moyen' : q.niveau === 'moyen' ? 'facile' : q.niveau;
+        const cand = (config.allThemes || []).flatMap((t) =>
+          t.questions
+            .filter((x) => x.niveau === nivInf && !dejaJouee(x.q))
+            .map((x) => tag(x, t))
+        );
+        if (cand.length > 0) {
+          q = cand[Math.floor(Math.random() * cand.length)];
+          setQuestionsRogue((qs) => (qs ? [...qs.slice(0, index), q, ...qs.slice(index + 1)] : qs));
+        }
+      }
+      setIsRevisionQ(revision);
+      setZoneConfortQ(zoneConfort);
     }
-    if (charges.fige > 0) {
-      setTimerFige(true);
-      setCharges((c) => ({ ...c, fige: c.fige - 1 }));
-    } else {
-      setTimerFige(false);
+    // Marathon : réserve à 0 -> toutes les questions restantes du palier sont ratées.
+    if (b.marathon && palierRef.current.reserve <= 0) {
+      setQuestionAffichage(q);
+      answerRef.current(null);
+      return;
     }
-    setBonneRevelee(false);
+    // Effets visuels / structurels de la question.
+    const masquees: number[] = [];
+    let domino = false;
+    if (palierRef.current.cinquante > 0 && q.reponses.length > 3) {
+      const mauvaises = q.reponses.map((_, i) => i).filter((i) => i !== q.bonne);
+      // retire 2 mauvaises réponses
+      const m1 = mauvaises[Math.floor(Math.random() * mauvaises.length)];
+      const reste = mauvaises.filter((i) => i !== m1);
+      const m2 = reste[Math.floor(Math.random() * reste.length)];
+      masquees.push(m1, m2);
+      setPalier((p) => ({ ...p, cinquante: p.cinquante - 1 }));
+    }
+    if (b.dominoVies > 0 && streaksRef.current[currentPlayer] >= 3 && q.reponses.length > 2) {
+      domino = true; // on ne garde que la bonne + 1 mauvaise
+      const mauvaise = q.reponses.map((_, i) => i).filter((i) => i !== q.bonne);
+      masquees.push(...mauvaise.slice(1));
+    }
+    setDominoActif(domino);
+    setReponsesMasquees(masquees);
+    // Loupe : surligne la bonne + 1 mauvaise
+    if (b.loupeMalusS > 0) {
+      const mauvaises = q.reponses.map((_, i) => i).filter((i) => i !== q.bonne);
+      setSurbrillance([q.bonne, mauvaises[Math.floor(Math.random() * mauvaises.length)]]);
+    } else setSurbrillance([]);
+    // Lunettes rouges : barre 1 mauvaise réponse
+    if (b.barreeFlat < 0) {
+      const mauvaises = q.reponses.map((_, i) => i).filter((i) => i !== q.bonne);
+      setBarree(mauvaises.length > 0 ? mauvaises[Math.floor(Math.random() * mauvaises.length)] : null);
+    } else setBarree(null);
+    // Vote du public : pourcentages (~75 % fiables)
+    if (b.votePublic) {
+      const pcts = q.reponses.map(() => 5 + Math.floor(Math.random() * 90));
+      const total = pcts.reduce((a, x) => a + x, 0);
+      const normalises = pcts.map((x) => Math.round((x / total) * 100));
+      if (Math.random() < 0.75) {
+        // la bonne réponse a le plus gros pourcentage
+        const maxAutre = Math.max(...normalises.filter((_, i) => i !== q.bonne));
+        normalises[q.bonne] = maxAutre + 1 + Math.floor(Math.random() * 20);
+      }
+      setVotePcts(normalises);
+    } else setVotePcts(null);
+    // Intuition : 1 question sur 3, la bonne scintille
+    setScintille(b.intuition && qDansPalier % 3 === 1);
+    // Rayon X : 1re question du palier, la bonne réponse est montrée
+    setBonneRevelee(b.rayonXMalusS > 0 && qDansPalier === 1);
+    setPariPlacee(false);
+    setMiroirFait(false);
+    setRetryEnCours(false);
+    setDureeOverride(null);
+    // Snapshot pour « Retour en arrière »
+    snapshotRef.current = {
+      scores: scoresRef.current,
+      bonnes: bonnesRef.current,
+      streaks: streaksRef.current,
+      vies: viesRef.current,
+      details: detailsRef.current,
+      index,
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, mode]);
 
-  // Guard pool vide (thème sans question du niveau choisi, données invalides) :
-  // on termine la partie proprement au lieu de planter sur question undefined.
+  // Application structurelle des réponses masquées (50/50, Domino) sur la question affichée.
+  useEffect(() => {
+    if (mode !== 'rogue') {
+      setQuestionAffichage(question);
+      return;
+    }
+    if (reponsesMasquees.length === 0) {
+      setQuestionAffichage(question);
+      return;
+    }
+    const masq = [...reponsesMasquees].sort((a, b) => a - b);
+    const reponses = question.reponses.filter((_, i) => !masq.includes(i));
+    let bonne = question.bonne;
+    for (const m of masq) if (m < bonne) bonne -= 1;
+    setQuestionAffichage({ ...question, reponses, bonne });
+  }, [mode, question, reponsesMasquees]);
+
+  // Guard pool vide.
   const finiVideRef = useRef(false);
   useEffect(() => {
     if (questions.length === 0 && !finiVideRef.current) {
@@ -229,22 +492,52 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questions.length]);
-  // Durée du timer de la question courante : 10 s de base + 3 s si la question est « dur »
-  // (dans TOUS les modes) ; en rogue, modifiée en plus par les reliques (+/- secondes,
-  // timer fixé « zen », 1re question de palier à X s).
+
+  // Durée du timer de la question courante.
   const dureeQuestion = useMemo(() => {
-    const base = dureePourNiveau(question.niveau, SECONDS_PER_QUESTION);
-    if (mode !== 'rogue') return base;
-    if (rogueBonus.timerFixe !== null) return rogueBonus.timerFixe;
-    let d = base + rogueBonus.timerBonus;
-    if (rogueBonus.premierePalier > 0 && index % ROGUE_STEP === 0)
-      d = Math.max(d, rogueBonus.premierePalier);
-    return Math.max(1, d);
-  }, [mode, rogueBonus, index, question.niveau]);
+    if (mode !== 'rogue') return dureePourNiveau(question.niveau, SECONDS_PER_QUESTION);
+    if (dureeOverride !== null) return dureeOverride;
+    const b = rogueBonus;
+    const qDansPalier = (index % ROGUE_STEP) + 1;
+    // Marathon : le timer = la réserve restante du palier.
+    if (b.marathon) return Math.max(1, palier.reserve);
+    let d = dureePourNiveau(question.niveau, SECONDS_PER_QUESTION);
+    d += b.timerBonus + carryBonus - (retourArriereMalusRef.current || 0);
+    if (b.loupeMalusS > 0) d -= b.loupeMalusS;
+    if (b.indiceMalusS > 0) d -= b.indiceMalusS;
+    if (b.rayonXMalusS > 0 && qDansPalier > 1) d -= b.rayonXMalusS;
+    if (b.combustionSeuil > 0 && streaks[currentPlayer] >= b.combustionSeuil)
+      d = Math.max(4, d - (streaks[currentPlayer] - b.combustionSeuil));
+    d *= b.timerMult;
+    if (b.fievre && fievreRestant > 0) d = b.fievre.s;
+    return Math.max(1, Math.round(d));
+  }, [mode, rogueBonus, index, question.niveau, carryBonus, dureeOverride, palier.reserve, fievreRestant, streaks, currentPlayer]);
+
+  // Gel manuel (Arrêt sur image) : décompte des secondes de gel.
+  useEffect(() => {
+    if (geleRestant <= 0) return undefined;
+    const t = setInterval(() => setGeleRestant((g) => Math.max(0, g - 0.2)), 200);
+    return () => clearInterval(t);
+  }, [geleRestant > 0]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const onExpire = () => {
+    // Second souffle : 1re fois par palier à 0 s, on rajoute du temps au lieu de rater.
+    if (
+      mode === 'rogue' &&
+      palierRef.current.secondSouffle &&
+      aRelic(relicsRef.current, 'second-souffle') &&
+      phaseRef.current === 'question'
+    ) {
+      setPalier((p) => ({ ...p, secondSouffle: false }));
+      setDureeOverride(5);
+      return;
+    }
+    answerRef.current(null);
+  };
   const { time, reset } = useTimer(
-    phase === 'question' && !timerFige,
+    phase === 'question' && !timerFige && geleRestant <= 0,
     dureeQuestion,
-    () => answer(null)
+    onExpire
   );
   // Timer du choix de relique (rogue) : 20 s, puis une relique est choisie automatiquement.
   const { time: tempsChoix } = useTimer(phase === 'relique', RELIC_CHOICE_SECONDS, () => {
@@ -252,7 +545,23 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
       choisirRelique(proposals[Math.floor(Math.random() * proposals.length)].id);
   });
 
-  // Ambiance sonore de la partie (nappe douce), selon le réglage « Musique de fond ».
+  // Miroir : les réponses se mélangent une fois à mi-chrono.
+  useEffect(() => {
+    if (mode !== 'rogue' || rogueBonus.miroirPct <= 0 || phase !== 'question' || miroirFait) return;
+    const ecoulees = dureeQuestion - time;
+    if (ecoulees >= dureeQuestion / 2) {
+      const q = qAffRef.current;
+      const ordre = q.reponses.map((_, i) => i).sort(() => Math.random() - 0.5);
+      setQuestionAffichage({
+        ...q,
+        reponses: ordre.map((i) => q.reponses[i]),
+        bonne: ordre.indexOf(q.bonne),
+      });
+      setMiroirFait(true);
+    }
+  }, [time, mode, phase, miroirFait, dureeQuestion, rogueBonus.miroirPct]);
+
+  // Ambiance sonore de la partie.
   const musicOn = !!(prefs && prefs.music !== false);
   useEffect(() => {
     if (musicOn) startMusic(prefs);
@@ -267,71 +576,146 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [second, phase]);
 
-  // Enchaînement AUTOMATIQUE : 2 s après la réponse (ou le temps écoulé),
-  // on passe à la suite sans clic. En duel, on passe d'abord par l'écran
-  // « passe l'appareil » (clic obligatoire pour garder le secret).
+  // Enchaînement AUTOMATIQUE : 2 s après la réponse, on passe à la suite.
   useEffect(() => {
     if (phase !== 'reponse') return undefined;
     const t = setTimeout(() => suivant(), 2000);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, index, currentPlayer]);
+
+  // --- Helpers internes ---
+  const dejaJouee = (q: string): boolean => detailsRef.current.some((d) => d.q === q);
+  const tag = (q: Question, t: Theme): DrawnQuestion => ({
+    ...q,
+    themeId: t.id,
+    themeName: t.nom,
+    themeColor: t.couleur,
+    themeIcon: t.icone,
+  });
+  const meilleurTheme = (dets: DetailPartie[], themes: Theme[]): string | null => {
+    const compte = new Map<string, number>();
+    for (const d of dets) if (d.correct) compte.set(d.themeId, (compte.get(d.themeId) || 0) + 1);
+    let best: string | null = null;
+    let max = 0;
+    for (const [t, n] of compte) if (n > max) {
+      max = n;
+      best = t;
+    }
+    if (!best && themes.length > 0) best = themes[0].id;
+    return best;
+  };
+
   function answer(i: number | null) {
-    if (phase !== 'question') return;
-    // En rogue avec 50/50, l'index cliqué porte sur la question affichée (réponse masquée retirée).
-    const qAff = questionAffichage;
+    if (phaseRef.current !== 'question') return;
+    const qAff = qAffRef.current;
     const correct = i !== null && i === qAff.bonne;
     const secondsElapsed = Math.max(0, dureeQuestion - time);
+    const b = rogueBonusRef.current;
     const withBonus = mode === 'solo' || mode === 'duel' || mode === 'rogue';
-    const { bonus: mancheBonus } = withBonus
-      ? roundInfo(index, questions.length)
-      : {
-          bonus: false,
-        };
-    // BONUS DE SÉRIE : 0 à la 1re bonne réponse, puis +1 pt à la 2e enchaînée, +2 à la 3e, etc.
-    // (bonus = n° de la série − 1, plafonné à +10)
-    const nouveauStreak = correct ? streaks[currentPlayer] + 1 : 0;
-    const bonusStreak = correct ? Math.min(10, nouveauStreak - 1) : 0;
+    const { bonus: mancheBonus } = withBonus ? roundInfo(index, questions.length) : { bonus: false };
+    const qDansPalier = (index % ROGUE_STEP) + 1;
+    // Streak (Élan : +2 par cran, Plafond brisé : pas de plafond, Filet de sécurité).
+    const step = mode === 'rogue' ? b.streakStep : 1;
+    const cap = mode === 'rogue' ? b.streakCap : 10;
+    let nouveauStreak = correct ? streaksRef.current[currentPlayer] + step : 0;
+    if (!correct && mode === 'rogue' && palierRef.current.filet > 0) {
+      nouveauStreak = streaksRef.current[currentPlayer]; // la série continue
+      setPalier((p) => ({ ...p, filet: p.filet - 1 }));
+    }
+    const bonusStreak = correct ? Math.min(cap, Math.max(0, nouveauStreak - 1)) : 0;
     let gain: number;
     if (mode === 'rogue') {
-      const themeIdQ = question.themeId || theme.id;
-      const precedent = details.length > 0 ? details[details.length - 1] : null;
-      const jackpotActif = jackpot;
-      if (jackpotActif > 0) setJackpot(0);
-      gain =
-        bonneRevelee && correct
-          ? 10 // relique « Regard perçant » : bonne réponse révélée, 10 pts fixes
-          : gainRogue(
-              rogueBonus,
-              {
-                correct,
-                secondesEcoulees: secondsElapsed,
-                dureeQuestion,
-                mancheBonus,
-                streak: nouveauStreak,
-                bonnesAvant: bonnes[currentPlayer],
-                index,
-                niveau: question.niveau || 'mix',
-                themeId: themeIdQ,
-                themePrecedent: precedent ? precedent.themeId : null,
-                themeDejaVu: details.some((d) => d.themeId === themeIdQ),
-                themeCibleId: themeCible,
-              },
-              jackpotActif
-            );
-      // Reliques one-shot sur streak (ex. « Combo doré » à 15 d'affilée)
-      for (const os of rogueBonus.streakOneShot) {
-        if (correct && nouveauStreak >= os.seuil && !oneShotFaits.includes(os.seuil)) {
-          gain += os.n;
-          setOneShotFaits((f) => [...f, os.seuil]);
-        }
-      }
+      const themeIdQ = qAff.themeId || theme.id;
+      const precedent = detailsRef.current.length > 0 ? detailsRef.current[detailsRef.current.length - 1] : null;
+      const retryGain = retryEnCours && b.deuxiemeChancePts > 0;
+      gain = correct
+        ? retryGain
+          ? b.deuxiemeChancePts // Deuxième chance : 5 pts fixes
+          : gainRogue(b, {
+              correct,
+              secondesEcoulees: secondsElapsed,
+              dureeQuestion,
+              mancheBonus,
+              streak: nouveauStreak,
+              bonnesAvant: bonnesRef.current[currentPlayer],
+              index,
+              questionDansPalier: qDansPalier,
+              niveau: qAff.niveau || 'mix',
+              themeId: themeIdQ,
+              themePrecedent: precedent ? precedent.themeId : null,
+              vies: viesRef.current,
+              viesMax: viesMaxRef.current,
+              pariPlace: pariPlaceeRef.current,
+              nbReliques: relicsRef.current.length,
+              themeSpecialiste,
+              zoneConfort: zoneConfortQ,
+              isRevision: isRevisionQ,
+              fievreActive: fievreRestantRef.current > 0,
+              rebondActif,
+              jackpotActif: palierRef.current.jackpot === index,
+              div2: reponsesMasqueesRef.current.length > 0 && b.cinquante !== null,
+            })
+        : 0;
       gain += bonusStreak;
+      // Fièvre : à 10 d'affilée, lance les 3 questions « fièvre »
+      if (correct && b.fievre && nouveauStreak >= 10 && fievreRestantRef.current === 0)
+        setFievreRestant(b.fievre.n);
+      if (correct && b.fievre && fievreRestantRef.current > 0)
+        setFievreRestant((f) => Math.max(0, f - 1));
+      // Vampire : toutes les N bonnes d'affilée rendent 1 vie
+      if (correct && b.vampireSeuil > 0 && nouveauStreak % b.vampireSeuil === 0)
+        setVies((v) => Math.min(viesMaxRef.current, v + 1));
+      // Rebond : après une erreur, la question suivante vaut ×2
+      setRebondActif(!correct && b.rebond);
+      // Révision : l'erreur reviendra plus tard
+      if (!correct && b.revisionMult > 0) {
+        setRevisionPool((r) => [...r, qAff]);
+      }
+      // Carry du temps pour la question suivante (Horloge partagée / Momentum / Encyclopédie)
+      let carry = carryBonusRef.current;
+      if (correct) {
+        if (b.carryMax > 0) carry = Math.min(b.carryMax, Math.max(0, dureeQuestion - secondsElapsed));
+        else if (b.momentumMax > 0) carry = secondsElapsed < 5 ? Math.min(b.momentumMax, carry + 1) : 0;
+        carry = Math.min(b.carryMax + b.momentumMax + b.encyclopedieS || 5, carry + (b.encyclopedieS > 0 ? b.encyclopedieS : 0));
+      } else carry = 0;
+      setCarryBonus(carry);
+      // Marathon : la réserve du palier diminue du temps écoulé
+      if (b.marathon) {
+        const reste = Math.max(0, palierRef.current.reserve - secondsElapsed);
+        setPalier((p) => ({ ...p, reserve: reste }));
+      }
+      // Perte de vie
+      if (!correct) {
+        let perte = 1;
+        if (dominoActif && b.dominoVies > 0) perte = b.dominoVies; // Domino : −2 vies
+        if (pariPlaceeRef.current && b.pari) perte += 1; // Pari perdu : −1 vie de plus
+        if (i === null && b.tempsMort) perte = 0; // Temps mort : le chrono ne coûte plus de vie
+        if (palierRef.current.bouclier > 0) {
+          perte = 0; // Bouclier : 1re erreur du palier sans perte de vie
+          setPalier((p) => ({ ...p, bouclier: p.bouclier - 1 }));
+        }
+        let nv = viesRef.current - perte;
+        if (nv <= 0 && b.assuranceVie && !assuranceUtiliseRef.current) {
+          // Assurance : on revient avec 1 vie, −50 % des points (une seule fois)
+          setAssuranceUtilise(true);
+          assuranceUtiliseRef.current = true;
+          nv = 1;
+          setScores((s) => {
+            const n = [...s];
+            n[currentPlayer] = Math.round(n[currentPlayer] * 0.5);
+            return n;
+          });
+        }
+        setVies(nv);
+        viesRef.current = nv;
+        setPalier((p) => ({ ...p, erreurs: p.erreurs + 1, parfait: false }));
+      } else {
+        setPalier((p) => ({ ...p, points: p.points + gain }));
+      }
     } else {
       gain = pointsFor(correct, secondsElapsed, mancheBonus, dureeQuestion) + bonusStreak;
-      // Quizz du jour boosté par la série de jours (>= 3 jours = points x1,5)
-      if (mode === 'quotidien' && currentDailyStreak().account >= 3)
-        gain = Math.round(gain * 1.5);
+      if (mode === 'quotidien' && currentDailyStreak().account >= 3) gain = Math.round(gain * 1.5);
     }
     setSelection(i);
     setLastGain(gain);
@@ -345,17 +729,15 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
     setDetails((d) => [
       ...d,
       {
-        themeId: question.themeId || theme.id,
-        themeName: question.themeName || theme.nom,
-        // question.niveau est toujours renseigné (schéma requis) : le || ne sert
-        // que pour le type, la valeur runtime est toujours question.niveau.
-        niveau: (question.niveau || niveau) as LevelId | string,
+        themeId: qAff.themeId || theme.id,
+        themeName: qAff.themeName || theme.nom,
+        niveau: (qAff.niveau || niveau) as LevelId | string,
         correct,
         gain,
         streak: nouveauStreak,
         bonusStreak,
-        secondes: secondsElapsed, // temps de réaction (stats avancées)
-        q: question.q, // texte de la question (stats de qualité : taux de réussite)
+        secondes: secondsElapsed,
+        q: qAff.q,
       },
     ]);
     setScores((s) => {
@@ -364,21 +746,14 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
       return n;
     });
     if (correct) {
-      setBonnes((b) => {
-        const n = [...b];
+      setBonnes((b2) => {
+        const n = [...b2];
         n[currentPlayer] += 1;
         return n;
       });
-      // Son de plus en plus satisfaisant selon la série en cours (3-5, 6-9, 10+)
       playSound(soundForStreak(nouveauStreak), prefs);
       vibrate(
-        nouveauStreak >= 10
-          ? [60, 50, 60, 50, 140]
-          : nouveauStreak >= 6
-            ? [50, 40, 90]
-            : nouveauStreak >= 3
-              ? [40, 40, 70]
-              : 40,
+        nouveauStreak >= 10 ? [60, 50, 60, 50, 140] : nouveauStreak >= 6 ? [50, 40, 90] : nouveauStreak >= 3 ? [40, 40, 70] : 40,
         prefs
       );
       if (prefs && prefs.animations !== false) lancerConfettis();
@@ -388,6 +763,8 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
     }
     setPhase('reponse');
   }
+  answerRef.current = answer;
+
   function lancerConfettis() {
     const pieces: ConfettiPiece[] = Array.from({ length: 26 }, (_, k) => ({
       id: `${Date.now()}-${k}`,
@@ -400,13 +777,58 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
     setConfettis(pieces);
     setTimeout(() => setConfettis([]), 1500);
   }
-  // Ouvrir le choix de relique (phase 'relique', timer en pause) : propositions sans remise.
+
+  // --- Fin de palier (tous les ROGUE_STEP questions) : effets puis nouveau palier ---
+  function finPalier() {
+    const b = rogueBonusRef.current;
+    const p = palierRef.current;
+    const idxFin = index; // dernière question du palier qui se termine
+    // Intérêts : +p % du score total
+    if (b.interetsPct > 0) {
+      setScores((s) => {
+        const n = [...s];
+        n[currentPlayer] += Math.round((n[currentPlayer] * b.interetsPct) / 100);
+        return n;
+      });
+    }
+    // Tout ou rien : palier parfait ×mult, sinon −p % sur les points du palier
+    if (b.toutOuRien) {
+      const delta = p.parfait
+        ? Math.round(p.points * (b.toutOuRien.mult - 1))
+        : -Math.round((p.points * b.toutOuRien.malusPct) / 100);
+      setScores((s) => {
+        const n = [...s];
+        n[currentPlayer] += delta;
+        return n;
+      });
+    }
+    // Infirmerie : palier sans erreur -> +1 vie
+    if (b.infirmerie && p.erreurs === 0) setVies((v) => Math.min(viesMaxRef.current, v + 1));
+    // Marathon : le temps restant de la réserve est converti en points
+    if (b.marathon && p.reserve > 0) {
+      const gain = Math.round(p.reserve * b.marathon.mult);
+      setScores((s) => {
+        const n = [...s];
+        n[currentPlayer] += gain;
+        return n;
+      });
+    }
+    // Main du destin : une relique au hasard est ajoutée à chaque palier
+    if (b.mainDuDestin) {
+      const prog = Math.min(1, idxFin / ROGUE_MAX);
+      const auto = drawRelicChoices(relicsRef.current.map((r) => r.id), 1, Math.random, prog)[0];
+      if (auto) setRelics((r) => [...r, auto]);
+    }
+    // Nouveau palier
+    const nouveau = palierInitial(b, relicsRef.current, idxFin + 1);
+    setPalier(nouveau);
+  }
+
+  // Ouvrir le choix de relique (phase 'relique') : propositions sans remise, pondérées.
   function ouvrirChoixRelique() {
-    const b = computeRogueBonus(relics);
-    // Pondération progressive : plus on avance dans la run, plus les reliques rares
-    // (puis épiques/légendaires) ont de poids dans les propositions.
+    const b = rogueBonusRef.current;
     const prog = Math.min(1, index / ROGUE_MAX);
-    setProposals(drawRelicChoices(relics.map((r) => r.id), nbPropositions(b), Math.random, prog));
+    setProposals(drawRelicChoices(relicsRef.current.map((r) => r.id), nbPropositions(b), Math.random, prog));
     setAPrendre(nbAPrendre(b));
     setPhase('relique');
   }
@@ -416,38 +838,31 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
     setSelection(null);
     if (mode === 'rogue') {
       if (!lastCorrect) {
-        // Relique « Esprit gardien » : l'erreur rejoue la même question (1 fois).
-        if (charges.rejouer > 0) {
-          setCharges((c) => ({ ...c, rejouer: c.rejouer - 1 }));
+        // Deuxième chance : on retente la même question (1 fois par palier)
+        if (rogueBonusRef.current.deuxiemeChancePts > 0 && palierRef.current.deuxiemeChance) {
+          setPalier((p) => ({ ...p, deuxiemeChance: false }));
+          setRetryEnCours(true);
           setPhase('question');
           return;
         }
-        // Relique « Ankh » / « Seconde chance » : la faute est pardonnée, la run continue.
-        if (charges.pardon > 0) {
-          setCharges((c) => ({ ...c, pardon: c.pardon - 1 }));
+        // La run continue s'il reste des vies (Bouclier, Cœur en plus, Pacte…)
+        if (viesRef.current > 0) {
           if (index + 1 >= questions.length) return finir();
+          if ((index + 1) % ROGUE_STEP === 0) {
+            finPalier();
+            setIndex((i) => i + 1);
+            ouvrirChoixRelique();
+            return;
+          }
           setIndex((i) => i + 1);
           setPhase('question');
           return;
         }
-        // Relique « Phénix » : la (dernière) erreur compte comme une bonne réponse.
-        if (rogueBonus.pardonAuto) {
-          setBonnes((b) => {
-            const n = [...b];
-            n[currentPlayer] += 1;
-            return n;
-          });
-          if (index + 1 >= questions.length) return finir();
-          setIndex((i) => i + 1);
-          setPhase('question');
-          return;
-        }
-        // Sinon : mort immédiate, fin de la run.
-        return finir();
+        return finir(); // plus de vie : fin de la run
       }
       if (index + 1 >= questions.length) return finir();
-      // Toutes les ROGUE_STEP questions réussies : choix d'une relique (sauf après la dernière).
       if ((index + 1) % ROGUE_STEP === 0) {
+        finPalier();
         setIndex((i) => i + 1);
         ouvrirChoixRelique();
         return;
@@ -462,12 +877,12 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
       setPhase('question');
     } else if (currentPlayer === 0) {
       setCurrentPlayer(1);
-      setPhase('attente'); // on passe l'appareil au joueur 2
+      setPhase('attente');
     } else {
       if (index + 1 >= questions.length) return finir();
       setIndex((i) => i + 1);
       setCurrentPlayer(0);
-      setPhase('attente'); // on repasse l'appareil au joueur 1
+      setPhase('attente');
     }
   }
   function pret() {
@@ -475,7 +890,6 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
     setPhase('question');
   }
 
-  // Pouce rouge : signaler la question courante (ajoute +1 au compteur admin).
   const isReported = signales.some((s) => s.q === question.q);
   function reportQuestion() {
     if (isReported) return;
@@ -490,15 +904,12 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
   }
   function finir() {
     playSound('fin', prefs);
-    // On mémorise la série jouée (union des tirages de tous les joueurs) pour
-    // garantir que le prochain « Rejouer » tire des questions différentes.
     if (mode !== 'quotidien') {
       saveSeries(seriesKey(mode, niveau, theme.id), questionsPerPlayer.flat());
     }
     let scoresFin = scores.slice(0, nbJoueurs);
     if (mode === 'rogue') {
-      // Score final de la run : multiplicateurs de fin + plancher (Assurance).
-      const win = lastCorrect && index + 1 >= questions.length; // run menée à 100 sans erreur
+      const win = lastCorrect && index + 1 >= questions.length;
       scoresFin = [scoreFinalRogue(rogueBonus, scores[currentPlayer], win, index)];
     }
     onFinish({
@@ -509,13 +920,10 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
       scores: scoresFin,
       bonnes: bonnes.slice(0, nbJoueurs),
       total: mode === 'rogue' ? index + 1 : questions.length,
-      // en rogue : questions répondues avant la faute
       details,
       relics: mode === 'rogue' ? relics.map((r) => r.id) : undefined,
     });
   }
-  // Abandon en cours de partie (croix dans la TopBar) : on enregistre les
-  // résultats partiels (les questions déjà répondues) puis on quitte vers l'accueil.
   function abandonner() {
     playSound('clic', prefs);
     if (mode !== 'quotidien') {
@@ -532,142 +940,194 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
       players,
       scores: scoresFin,
       bonnes: bonnes.slice(0, nbJoueurs),
-      total: index, // questions effectivement répondues avant l'abandon
+      total: index,
       details,
       relics: mode === 'rogue' ? relics.map((r) => r.id) : undefined,
     });
   }
 
-  // --- Actions Rogue Quizz (reliques) ---
+  // --- Actions Rogue Quizz ---
 
   /** Choisir une relique parmi les propositions (phase 'relique'). */
   function choisirRelique(id: string) {
     const r = proposals.find((p) => p.id === id);
     if (!r || phase !== 'relique') return;
     playSound('clic', prefs);
+    // Recyclage : on ne garde pas la relique, on passe à l'étape sacrifice.
+    if (r.effet.t === 'recyclage') {
+      setRecyclageEtape('sacrifice');
+      return;
+    }
     let nouvelles = [...relics, r];
-    const effet = r.effet;
-    if (effet.t === 'immediat') {
-      // points immédiats (Trésor enfoui, Trésor du roi)
-      setScores((s) => {
-        const n = [...s];
-        n[currentPlayer] += effet.n;
-        return n;
-      });
+    // Écho : la relique choisie compte en double
+    if (echoActif) {
+      nouvelles.push(r);
+      setEchoActif(false);
     }
-    if (effet.t === 'reliqueGratuite') {
-      // Fer à cheval : +1 relique aléatoire offerte tout de suite
-      const prog = Math.min(1, index / ROGUE_MAX);
-      const auto = drawRelicChoices(nouvelles.map((x) => x.id), 1, Math.random, prog)[0];
-      if (auto) nouvelles = [...nouvelles, auto];
+    // Joker : copie l'effet de la dernière relique choisie
+    if (aRelic(nouvelles, 'joker') && dernierChoix) {
+      const copie = RELICS.find((x) => x.id === dernierChoix);
+      if (copie) nouvelles = [...nouvelles, copie];
     }
-    if (effet.t === 'themeCible') {
-      // Cible : désigne un thème aléatoire de la run (ses questions rapportent ×2)
-      const themes = config.allThemes || [];
-      if (themes.length > 0) setThemeCible(themes[Math.floor(Math.random() * themes.length)].id);
+    setDernierChoix(r.id);
+    // Effets immédiats sur les vies (valeurs capturées hors des callbacks d'état)
+    const e = r.effet;
+    if (e.t === 'vie') {
+      const { n, soin } = e;
+      setViesMax((vm) => vm + n);
+      setVies((v) => Math.min(v + soin, viesMaxRef.current + n));
+      viesRef.current = Math.min(viesRef.current + soin, viesMaxRef.current + n);
     }
-    setRelics(nouvelles);
-    // Recharger les charges consommables apportées par cette relique.
-    setCharges((c) => ({
-      fifty: c.fifty + (effet.t === 'fifty' ? effet.n : 0),
-      skip: c.skip + (effet.t === 'skip' ? effet.n : 0),
-      repioche: c.repioche + (effet.t === 'repioche' ? effet.n : 0),
-      pardon: c.pardon + (effet.t === 'pardon' ? effet.n : 0),
-      rejouer: c.rejouer + (effet.t === 'rejouer' ? effet.n : 0),
-      fige: c.fige + (effet.t === 'fige' ? effet.n : 0),
-      voir: c.voir + (effet.t === 'voir' ? effet.n : 0),
+    if (e.t === 'verreCristal') {
+      setViesMax(1);
+      setVies((v) => Math.min(v, 1));
+      viesRef.current = Math.min(viesRef.current, 1);
+    }
+    if (e.t === 'pacteVies') {
+      const v2 = e.vies;
+      setViesMax((vm) => vm + v2);
+      setVies((v) => Math.min(v, viesMaxRef.current + v2));
+      viesRef.current = Math.min(viesRef.current, viesMaxRef.current + v2);
+    }
+    // Reliques qui débloquent des compteurs du palier courant
+    const dGele = e.t === 'gele';
+    const dSouffle = e.t === 'secondSouffle';
+    const dCinquante = e.t === 'cinquante' ? e.n : 0;
+    const dDeuxieme = e.t === 'deuxiemeChance';
+    const dFilet = e.t === 'filetSecurite' ? 1 : 0;
+    const dBouclier = e.t === 'bouclier' ? 1 : 0;
+    const dPioche = e.t === 'pioche' ? e.n : 0;
+    const dRetour = e.t === 'retourArriere';
+    const dJackpot = e.t === 'jackpotPalier';
+    const dReserve = e.t === 'marathon' ? e.reserve : null;
+    setPalier((p) => ({
+      ...p,
+      gele: p.gele || dGele,
+      secondSouffle: p.secondSouffle || dSouffle,
+      cinquante: p.cinquante + dCinquante,
+      deuxiemeChance: p.deuxiemeChance || dDeuxieme,
+      filet: p.filet + dFilet,
+      bouclier: p.bouclier + dBouclier,
+      pioche: p.pioche + dPioche,
+      retourArriere: p.retourArriere || dRetour,
+      jackpot: p.jackpot >= 0 ? p.jackpot : dJackpot ? index + 1 + Math.floor(Math.random() * (ROGUE_STEP - 1)) : -1,
+      reserve: dReserve !== null ? dReserve : p.reserve,
     }));
-    if (effet.t === 'jackpot') setJackpot(effet.n);
+    if (r.effet.t === 'echo') setEchoActif(true);
+    // Retour à l'école : le prochain palier est un cran moins difficile
+    if (r.effet.t === 'retourEcole') setPalierEcole(Math.floor(index / ROGUE_STEP) + 1);
+    setRelics(nouvelles);
     const restant = aPrendre - 1;
     setAPrendre(restant);
     if (restant > 0) {
-      // doubleChoix / choixMax : on re-propose encore des reliques
       const b = computeRogueBonus(nouvelles);
       const prog = Math.min(1, index / ROGUE_MAX);
       setProposals(drawRelicChoices(nouvelles.map((x) => x.id), nbPropositions(b), Math.random, prog));
+    } else if (r.effet.t === 'specialiste') {
+      // Spécialiste : choisir le thème qui vaut ×2
+      setThemeAPicker(true);
+      setProposals([]);
     } else {
       setProposals([]);
+      setRecyclageEtape(null);
       setPhase('question');
     }
   }
 
-  /** Passer la question courante sans pénalité (relique Skip) : compte comme bonne, 10 pts. */
-  function passerQuestion() {
-    if (mode !== 'rogue' || phase !== 'question' || charges.skip <= 0) return;
-    setCharges((c) => ({ ...c, skip: c.skip - 1 }));
+  /** Refuser le choix de relique (Ascète : +150 pts), puis continuer la run. */
+  function refuserChoix() {
+    if (mode !== 'rogue' || phase !== 'relique') return;
+    const b = rogueBonusRef.current;
+    if (b.ascete <= 0) return;
     playSound('clic', prefs);
-    const nouveauStreak = streaks[currentPlayer] + 1;
-    const bonusStreak = Math.min(10, nouveauStreak - 1);
-    const gain = 10 + bonusStreak;
-    setSelection(null);
-    setLastGain(gain);
-    setLastBonus(bonusStreak);
-    setStreaks((s) => {
-      const n = [...s];
-      n[currentPlayer] = nouveauStreak;
-      return n;
-    });
-    setLastCorrect(true);
-    setBonnes((b) => {
-      const n = [...b];
-      n[currentPlayer] += 1;
-      return n;
-    });
     setScores((s) => {
       const n = [...s];
-      n[currentPlayer] += gain;
+      n[currentPlayer] += b.ascete;
       return n;
     });
-    setDetails((d) => [
-      ...d,
-      {
-        themeId: question.themeId || theme.id,
-        themeName: question.themeName || theme.nom,
-        niveau: (question.niveau || niveau) as LevelId | string,
-        correct: true,
-        gain,
-        streak: nouveauStreak,
-        bonusStreak,
-        secondes: dureeQuestion - time,
-        q: question.q,
-      },
-    ]);
-    setPhase('reponse');
+    setProposals([]);
+    setRecyclageEtape(null);
+    setPhase('question');
   }
 
-  /** Re-piocher la question courante (relique Mulligan) : tire une autre question du même niveau. */
-  function repiocherQuestion() {
-    if (mode !== 'rogue' || phase !== 'question' || charges.repioche <= 0) return;
-    setCharges((c) => ({ ...c, repioche: c.repioche - 1 }));
-    playSound('clic', prefs);
-    const pool = (config.allThemes || []).flatMap((t) =>
-      t.questions
-        .filter((q) => q.niveau === question.niveau)
-        .map((q) => ({ ...q, themeId: t.id, themeName: t.nom, themeColor: t.couleur, themeIcon: t.icone }))
+  /** Recyclage, étape 1 : retirer une relique possédée, puis re-proposer 3 reliques rares+. */
+  function sacrifierRelique(id: string) {
+    if (recyclageEtape !== 'sacrifice') return;
+    const nouvelles = relics.filter((r) => r.id !== id);
+    setRelics(nouvelles);
+    const prog = Math.min(1, index / ROGUE_MAX);
+    setProposals(
+      drawRelicChoices(nouvelles.map((x) => x.id), 3, Math.random, prog, ['rare', 'legendaire'])
     );
-    const dispo = pool.filter((q) => !questions.some((deja) => deja.q === q.q));
-    if (dispo.length === 0) return;
-    const nouvelle = dispo[Math.floor(Math.random() * dispo.length)];
-    // Mélanger les réponses de la nouvelle question
+    setRecyclageEtape('nouveau');
+  }
+
+  /** Spécialiste : choisir le thème qui rapporte ×2. */
+  function choisirThemeSpecialiste(themeId: string) {
+    setThemeSpecialiste(themeId);
+    setThemeAPicker(false);
+    setPhase('question');
+  }
+
+  /** Arrêt sur image : gèle le chrono 5 s (1 fois par palier). */
+  function gelerChrono() {
+    if (mode !== 'rogue' || phase !== 'question' || !palier.gele || geleRestant > 0) return;
+    setPalier((p) => ({ ...p, gele: false }));
+    setGeleRestant(5);
+    setTimerFige(true);
+    setTimeout(() => setTimerFige(false), 5000);
+    playSound('clic', prefs);
+  }
+
+  /** Pari : miser sur la question courante (×2 si juste, −1 vie de plus si faux). */
+  function miser() {
+    if (mode !== 'rogue' || phase !== 'question' || !rogueBonus.pari) return;
+    setPariPlacee((p) => !p);
+    playSound('clic', prefs);
+  }
+
+  /** Pioche : passer le thème de la question (remplacée par une plus difficile). */
+  function passerTheme() {
+    if (mode !== 'rogue' || phase !== 'question' || palier.pioche <= 0) return;
+    setPalier((p) => ({ ...p, pioche: p.pioche - 1 }));
+    playSound('clic', prefs);
+    const nivSup = question.niveau === 'facile' ? 'moyen' : question.niveau === 'moyen' ? 'dur' : 'dur';
+    const pool = (config.allThemes || []).flatMap((t) =>
+      t.questions.filter((q) => q.niveau === nivSup && !dejaJouee(q.q)).map((q) => tag(q, t))
+    );
+    if (pool.length === 0) return;
+    const nouvelle = pool[Math.floor(Math.random() * pool.length)];
     const ordre = nouvelle.reponses.map((_, i) => i).sort(() => Math.random() - 0.5);
-    const q2 = {
-      ...nouvelle,
-      reponses: ordre.map((i) => nouvelle.reponses[i]),
-      bonne: ordre.indexOf(nouvelle.bonne),
-    };
+    const q2 = { ...nouvelle, reponses: ordre.map((i) => nouvelle.reponses[i]), bonne: ordre.indexOf(nouvelle.bonne) };
     setQuestionsRogue([...questions.slice(0, index), q2, ...questions.slice(index + 1)]);
-    setReponseMasquee(null);
+    setReponsesMasquees([]);
     reset();
     setPhase('question');
   }
 
-  /** Révéler la bonne réponse (relique « Regard perçant ») : la question vaut 10 pts. */
-  function revelerBonne() {
-    if (mode !== 'rogue' || phase !== 'question' || charges.voir <= 0 || bonneRevelee) return;
-    setCharges((c) => ({ ...c, voir: c.voir - 1 }));
-    setBonneRevelee(true);
+  /** Retour en arrière : annule la dernière réponse (1 fois par palier, −1 s toute la partie). */
+  function annulerReponse() {
+    if (mode !== 'rogue' || phase !== 'reponse' || !palier.retourArriere || !snapshotRef.current) return;
+    const snap = snapshotRef.current;
+    setPalier((p) => ({ ...p, retourArriere: false }));
+    retourArriereMalusRef.current += rogueBonus.retourArriereMalusS;
+    setScores(snap.scores);
+    setBonnes(snap.bonnes);
+    setStreaks(snap.streaks);
+    setVies(snap.vies);
+    viesRef.current = snap.vies;
+    setDetails(snap.details);
+    setIndex(snap.index);
+    setLastCorrect(true);
+    setLastGain(0);
+    setSelection(null);
+    reset();
+    setPhase('question');
     playSound('clic', prefs);
   }
+
+  const ecoulees = Math.max(0, dureeQuestion - time);
+
   return {
     config,
     mode,
@@ -699,17 +1159,31 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
     relics,
     proposals,
     rogueBonus,
-    charges,
-    reponseMasquee,
-    bonneRevelee,
     questionAffichage,
-    timerFige,
     dureeQuestion,
+    ecoulees,
     tempsChoix,
-    jackpot,
+    vies,
+    viesMax,
+    palier,
+    pariPlacee,
+    geleRestant,
+    bonneRevelee,
+    timerFige,
+    surbrillance,
+    barree,
+    votePcts,
+    scintille,
+    recyclageEtape,
+    themeAPicker,
+    themeSpecialiste,
     choisirRelique,
-    passerQuestion,
-    repiocherQuestion,
-    revelerBonne,
+    refuserChoix,
+    sacrifierRelique,
+    choisirThemeSpecialiste,
+    gelerChrono,
+    miser,
+    passerTheme,
+    annulerReponse,
   };
 }

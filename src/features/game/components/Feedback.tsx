@@ -10,7 +10,7 @@ interface FeedbackProps {
 }
 
 export default function Feedback({ p }: FeedbackProps): ReactElement | null {
-  const { phase, selection, question, mode, lastGain, lastBonus, streaks, currentPlayer } = p;
+  const { phase, selection, question, mode, lastGain, lastBonus, streaks, currentPlayer, vies } = p;
   if (phase !== 'reponse') return null;
   const bonne = selection !== null && selection === question.bonne;
   return (
@@ -23,7 +23,11 @@ export default function Feedback({ p }: FeedbackProps): ReactElement | null {
         ) : (
           <div className="rate">
             {mode === 'rogue' ? (
-              "Raté — la run s'arrête là !"
+              vies > 0 ? (
+                <>Raté — il te reste {vies} vie{vies > 1 ? 's' : ''} !</>
+              ) : (
+                "Raté — la run s'arrête là !"
+              )
             ) : (
               <>
                 Raté. La bonne réponse était : <strong>{question.reponses[question.bonne]}</strong>

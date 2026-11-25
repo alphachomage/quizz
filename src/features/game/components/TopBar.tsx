@@ -64,8 +64,11 @@ export default function TopBar({ p }: TopBarProps): ReactElement {
           </span>
         )}
         {mode === 'rogue' && (
-          <span className="chip manche rogue-chip">
-            <Icon nom="gem" taille={13} /> Rogue — 1 vie
+          <span
+            className="chip manche rogue-chip"
+            title={`Vies : ${p.vies} restante(s) sur ${p.viesMax} max (certaines reliques en ajoutent)`}
+          >
+            <Icon nom="heart" taille={13} /> {p.vies}/{p.viesMax} vie{p.viesMax > 1 ? 's' : ''}
           </span>
         )}
         {mode === 'quotidien' && (
@@ -113,7 +116,7 @@ export default function TopBar({ p }: TopBarProps): ReactElement {
                 key={r.id}
                 className="relique-puce"
                 style={{ borderColor: RARETE_COULEUR[def?.rarete || 'commun'] }}
-                title={`${def?.nom || r.id} — ${def?.desc || ''}`}
+                title={`${def?.nom || r.id} — ${def?.desc || ''}${def?.malus ? ` ⚠ ${def.malus}` : ''}`}
               >
                 <Icon nom={def?.icone || 'sparkles'} taille={14} />
               </span>

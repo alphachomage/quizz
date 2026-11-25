@@ -52,6 +52,8 @@ export default function Game({ config, prefs, onFinish, onQuit }: GameProps): Re
       if (daltonien) return v ? COLORBLIND_TF.vrai : COLORBLIND_TF.faux;
       return v ? '#5b8def' : '#ff5d73';
     }
+    // Relique Monochrome : toutes les réponses ont la même couleur.
+    if (mode === 'rogue' && p.rogueBonus.monochromePct > 0) return '#a78bfa';
     const palette = daltonien ? COLORBLIND_COLORS : ANSWER_COLORS;
     return palette[i % palette.length];
   };
@@ -101,9 +103,17 @@ export default function Game({ config, prefs, onFinish, onQuit }: GameProps): Re
     return (
       <RelicChoice
         proposals={p.proposals}
+        relics={p.relics}
+        recyclageEtape={p.recyclageEtape}
         numeroChoix={p.relics.length + 1}
         tempsRestant={p.tempsChoix}
+        peutRefuser={p.rogueBonus.ascete > 0}
+        themeAPicker={p.themeAPicker}
+        themes={config.allThemes || []}
         onChoisir={p.choisirRelique}
+        onRefuser={p.refuserChoix}
+        onSacrifier={p.sacrifierRelique}
+        onChoisirTheme={p.choisirThemeSpecialiste}
       />
     );
   }
@@ -130,6 +140,11 @@ export default function Game({ config, prefs, onFinish, onQuit }: GameProps): Re
         {question.q}
       </h1>
 
+      {/* Relique Indice : l'anecdote s'affiche AVANT de répondre */}
+      {mode === 'rogue' && phase === 'question' && p.rogueBonus.indiceMalusS > 0 && question.info && (
+        <p className="info indice-avant">{question.info}</p>
+      )}
+
       <Answers
         question={p.questionAffichage}
         phase={phase}
@@ -137,6 +152,13 @@ export default function Game({ config, prefs, onFinish, onQuit }: GameProps): Re
         answerColor={answerColor}
         onAnswer={p.answer}
         revelation={p.bonneRevelee ? p.questionAffichage.bonne : null}
+        surbrillance={p.surbrillance}
+        barree={p.barree}
+        votePcts={p.votePcts}
+        scintille={p.scintille}
+        ecoulees={p.ecoulees}
+        eliminationMax={p.rogueBonus.eliminationMaxPts}
+        brouillardS={p.rogueBonus.brouillard?.s || 0}
       />
 
       <RogueActions p={p} />

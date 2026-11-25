@@ -31,9 +31,10 @@ export default function ModeConfirmModal({ a, mode }: ModeConfirmModalProps): Re
       <h2 className="modal-badge-nom">{mode === 'rogue' ? 'Rogue Quizz' : 'Quizz du jour'}</h2>
       {mode === 'rogue' ? (
         <p className="modal-badge-desc">
-          Tous les thèmes mélangés, jusqu’à 100 questions, une seule vie : la première erreur
-          termine la run. La difficulté monte tous les 10 questions (facile → moyen → dur) et tu
-          choisis <strong>1 relique parmi 3</strong> au départ puis à chaque palier de 10 questions.
+          Tous les thèmes mélangés, jusqu’à 100 questions. Tu démarres avec <strong>1 vie</strong> :
+          chaque erreur en coûte une, et à 0 vie la run s’arrête (certaines reliques ajoutent des
+          vies). La difficulté monte tous les 10 questions (facile → moyen → dur) et tu choisis{' '}
+          <strong>1 relique parmi 3</strong> au départ puis à chaque palier de 10 questions.
           {rogueRecord > 0 && (
             <>
               <br />
