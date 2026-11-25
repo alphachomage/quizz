@@ -86,7 +86,8 @@
   display: flex;
   align-items: center;
   gap: var(--esp-12);
-  margin-bottom: var(--esp-24);
+  /* un peu plus d'air sous le timer : les réponses sont moins « collées » */
+  margin-bottom: calc(var(--esp-24) + var(--esp-8));
 }
 
 .minuteur {
@@ -145,13 +146,16 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--esp-12);
+  margin-top: var(--esp-6);
 }
 
 .reponse {
+  position: relative;
   display: flex;
   align-items: center;
+  justify-content: center; /* texte centré dans la case */
   gap: var(--esp-10);
-  padding: 16px 20px;
+  padding: 16px 52px; /* marges latérales pour la lettre (gauche) et les icônes (droite) */
   min-height: 62px;
   font-size: 1rem;
   font-weight: 600;
@@ -160,7 +164,7 @@
   border: none;
   border-radius: var(--radius-pilule);
   cursor: pointer;
-  text-align: left;
+  text-align: center;
   box-shadow: var(--ombre-3d);
   transition:
     transform 0.1s ease,
@@ -183,6 +187,10 @@
 }
 
 .reponse .lettre {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
   flex-shrink: 0;
   width: 28px;
   height: 28px;
@@ -211,7 +219,10 @@
 }
 
 .coche {
-  margin-left: auto;
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .feedback {

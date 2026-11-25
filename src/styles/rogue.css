@@ -267,7 +267,10 @@
   user-select: none;
 }
 .vote-pct {
-  margin-left: auto;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
   font-size: 0.72rem;
   font-weight: 700;
   color: var(--texte-2, #9ca3af);

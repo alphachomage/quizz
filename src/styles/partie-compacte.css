@@ -55,7 +55,7 @@
 
 .partie .reponse {
   min-height: 50px;
-  padding: 10px 16px;
+  padding: 10px 46px; /* garde la lettre (gauche) et les icônes (droite) hors du texte centré */
   font-size: 0.95rem;
 }
 
