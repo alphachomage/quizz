@@ -29,7 +29,8 @@ export default function Tutorial({ onClose, isGuest }: TutorialProps): ReactElem
           </span>
           <div>
             <strong>Le principe :</strong> réponds le plus vite possible. Tu as{' '}
-            <strong>10 secondes</strong> par question, et la suivante démarre toute seule.
+            <strong>10 secondes</strong> par question (<strong>13 s</strong> si la question est de
+            niveau <strong>dur</strong>), et la suivante démarre toute seule.
           </div>
         </li>
         <li>
@@ -53,6 +54,18 @@ export default function Tutorial({ onClose, isGuest }: TutorialProps): ReactElem
         </li>
         <li>
           <span className="tuto-icone">
+            <Icon nom="trophy" taille={20} />
+          </span>
+          <div>
+            <strong>Badges & titres :</strong> en jouant, tu débloques des <strong>badges</strong>{' '}
+            (parties jouées, records, séries de jours…) et des <strong>titres</strong> à afficher
+            sur ton profil. En Rogue Quizz, des badges à <strong>10 / 25 / 50 / 75</strong>{' '}
+            questions d'affilée, et le titre <strong>« Rogue accompli »</strong> à{' '}
+            <strong>100 questions</strong> (run parfaite).
+          </div>
+        </li>
+        <li>
+          <span className="tuto-icone">
             <Icon nom="swords" taille={20} />
           </span>
           <div>
@@ -66,7 +79,10 @@ export default function Tutorial({ onClose, isGuest }: TutorialProps): ReactElem
                 <em>À venir.</em>
               </li>
               <li>
-                <strong>Survie</strong> — une seule vie, la première erreur termine la partie.
+                <strong>Rogue Quizz</strong> — tous les thèmes, jusqu'à 100 questions, une seule
+                vie : la première erreur termine la run. La difficulté monte tous les 10
+                questions et tu choisis <strong>1 relique parmi 3</strong> au départ puis à chaque
+                palier (60 reliques au total, effets cumulables).
               </li>
               <li>
                 <strong>Quizz du jour</strong> — 10 questions identiques pour tout le monde, une

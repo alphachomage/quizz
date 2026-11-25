@@ -118,7 +118,7 @@
   font-size: 0.92rem;
 }
 
-.survie-chip {
+.rogue-chip {
   color: var(--erreur-texte);
   border: 1px solid var(--erreur-40);
   display: inline-flex;
