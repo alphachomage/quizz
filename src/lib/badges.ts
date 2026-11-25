@@ -268,7 +268,7 @@ export const BADGES: BadgeDef[] = [
   },
   {
     id: 'rogue-50',
-    nom: 'Tueur de donjon',
+    nom: 'Téméraire',
     desc: '50 questions d’affilée en Rogue Quizz',
     icone: 'swords',
     test: (s) => s.rogueBest >= 50,
