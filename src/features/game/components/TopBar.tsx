@@ -68,7 +68,10 @@ export default function TopBar({ p }: TopBarProps): ReactElement {
             className="chip manche rogue-chip"
             title={`Vies : ${p.vies} restante(s) sur ${p.viesMax} max (certaines reliques en ajoutent)`}
           >
-            <Icon nom="heart" taille={13} /> {p.vies}/{p.viesMax} vie{p.viesMax > 1 ? 's' : ''}
+            {Array.from({ length: Math.max(0, p.vies) }).map((_, i) => (
+              <Icon key={i} nom="bolt" taille={13} />
+            ))}
+            <span className="vies-max">/{p.viesMax}</span>
           </span>
         )}
         {mode === 'quotidien' && (

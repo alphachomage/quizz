@@ -278,3 +278,13 @@
   border-radius: 999px;
   padding: 2px 8px;
 }
+
+/* Vies du mode rogue : un éclair (bolt) par vie restante, /max à la fin */
+.rogue-chip {
+  gap: 2px;
+  color: #fbbf24;
+}
+.rogue-chip .vies-max {
+  opacity: 0.75;
+  margin-left: 2px;
+}

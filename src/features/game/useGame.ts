@@ -5,6 +5,7 @@ import {
   RELIC_CHOICE_SECONDS,
   ROGUE_MAX,
   ROGUE_STEP,
+  ROGUE_VIES_DEPART,
   dureePourNiveau,
   pointsFor,
   roundInfo,
@@ -237,8 +238,8 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
   const [dominoActif, setDominoActif] = useState(false); // question à 2 réponses
   const [bonneRevelee, setBonneRevelee] = useState(false); // Rayon X
   const [timerFige, setTimerFige] = useState(false); // gel manuel en cours
-  const [vies, setVies] = useState(1);
-  const [viesMax, setViesMax] = useState(1);
+  const [vies, setVies] = useState(ROGUE_VIES_DEPART);
+  const [viesMax, setViesMax] = useState(ROGUE_VIES_DEPART);
   const [palier, setPalier] = useState<PalierRogue>(() => ({
     gele: false,
     secondSouffle: false,
@@ -281,7 +282,7 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
   // Refs miroirs (évite les closures périmées dans les callbacks du timer).
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
-  const viesRef = useRef(1);
+  const viesRef = useRef(ROGUE_VIES_DEPART);
   const palierRef = useRef(palier);
   palierRef.current = palier;
   const rogueBonusRef = useRef(rogueBonus);

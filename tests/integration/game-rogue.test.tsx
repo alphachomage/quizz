@@ -1,6 +1,6 @@
 // tests/integration/game-rogue.test.tsx — mode Rogue Quizz : tous thèmes mélangés,
-// paliers de difficulté progressifs, 1 seule vie, choix de relique au départ puis
-// tous les 10 paliers. La première mauvaise réponse termine la run.
+// paliers de difficulté progressifs, 3 vies au départ, choix de relique au départ puis
+// tous les 10 paliers. La run s'arrête quand les 3 vies sont perdues.
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import Game from '@features/game/Game.jsx';
@@ -58,7 +58,7 @@ describe('partie rogue (flux complet)', () => {
     vi.useRealTimers();
     vi.restoreAllMocks();
   });
-  it('choix de relique au départ, puis la première mauvaise réponse termine la run (1 vie)', () => {
+  it('choix de relique au départ, puis la run s’arrête quand les 3 vies sont perdues', () => {
     const themes = makeThemes(3, 10); // 90 questions au total
     const onFinish = vi.fn<(result: GameResult) => void>();
     renderRogue(themes, onFinish);
@@ -69,7 +69,13 @@ describe('partie rogue (flux complet)', () => {
     answerCorrect(); // index 0
     avancer();
     expect(onFinish).not.toHaveBeenCalled();
-    answerWrong(); // index 1 : raté, plus de vie (1 vie de départ) -> fin de run
+    answerWrong(); // index 1 : vie 3 -> 2, la run continue
+    avancer();
+    expect(onFinish).not.toHaveBeenCalled();
+    answerWrong(); // index 2 : vie 2 -> 1
+    avancer();
+    expect(onFinish).not.toHaveBeenCalled();
+    answerWrong(); // index 3 : vie 1 -> 0, fin de run
     avancer();
     expect(onFinish).toHaveBeenCalledTimes(1);
     const res = onFinish.mock.calls[0][0];
@@ -77,9 +83,9 @@ describe('partie rogue (flux complet)', () => {
     // la relique de départ (aléatoire) peut modifier le score : au moins 10 pts de base
     expect(res.scores[0]).toBeGreaterThanOrEqual(10);
     expect(res.bonnes).toEqual([1]);
-    expect(res.total).toBe(2); // questions répondues avant la faute
-    expect(res.details).toHaveLength(2);
-    expect(res.details![1].correct).toBe(false);
+    expect(res.total).toBe(4); // questions répondues avant la mort
+    expect(res.details).toHaveLength(4);
+    expect(res.details![3].correct).toBe(false);
     expect(res.relics).toHaveLength(1); // la relique de départ
   });
   it('un nouveau choix de relique est proposé après 10 bonnes réponses (palier)', () => {

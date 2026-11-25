@@ -1,6 +1,6 @@
 // features/game/draw.ts — tirage des questions d'une partie (fonction PURE, testable hors React).
 // solo (niveau choisi), duel (6/joueur), rogue (tous thèmes, paliers de
-// difficulté progressifs, 1 vie), quizz du jour (tirage seedé par la date).
+// difficulté progressifs, 3 vies au départ), quizz du jour (tirage seedé par la date).
 import { todayDate } from '@lib/dates.js';
 import { filterByQuality } from '@lib/question-stats.js';
 import { DUEL_QUESTIONS, ROGUE_MAX, ROGUE_STEP, SOLO_QUESTIONS } from '@lib/scoring.js';

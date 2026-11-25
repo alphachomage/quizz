@@ -6,7 +6,8 @@ export const SECONDS_PER_QUESTION = 10; // secondes par question
 export const SOLO_QUESTIONS = 10; // plafond de questions en solo (le pool réel peut être plus court)
 export const DUEL_QUESTIONS = 6; // nombre de questions PAR JOUEUR en mode duel
 export const DAILY_QUESTIONS = 10; // questions du quizz du jour
-export const ROGUE_MAX = 100; // plafond de questions en mode Rogue Quizz (1re faute = fin)
+export const ROGUE_MAX = 100; // plafond de questions en mode Rogue Quizz
+export const ROGUE_VIES_DEPART = 3; // vies au départ d'une run Rogue Quizz (0 = fin de run)
 export const ROGUE_STEP = 10; // Rogue Quizz : un choix de relique tous les ROGUE_STEP questions
 export const RELIC_CHOICE_SECONDS = 20; // timer du choix de relique (auto-choix à 0)
 export const DUR_BONUS_DUR = 3; // une question « dur » a +3 s de réflexion dans TOUS les modes
