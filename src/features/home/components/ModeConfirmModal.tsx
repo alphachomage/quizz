@@ -30,18 +30,30 @@ export default function ModeConfirmModal({ a, mode }: ModeConfirmModalProps): Re
       </span>
       <h2 className="modal-badge-nom">{mode === 'rogue' ? 'Rogue Quizz' : 'Quizz du jour'}</h2>
       {mode === 'rogue' ? (
-        <p className="modal-badge-desc">
-          Tous les thèmes mélangés, jusqu’à 100 questions. Tu démarres avec <strong>3 vies</strong>{' '}
-          (⚡) : chaque erreur en coûte une, et à 0 vie la run s’arrête (certaines reliques ajoutent des
-          vies). La difficulté monte tous les 10 questions (facile → moyen → dur) et tu choisis{' '}
-          <strong>1 relique parmi 3</strong> au départ puis à chaque palier de 10 questions.
+        <>
+          <ul className="rogue-tuto-liste">
+            <li>
+              ⚡ <strong>3 vies</strong> au départ : chaque erreur t’en coûte une, à 0 la run
+              s’arrête.
+            </li>
+            <li>
+              Jusqu’à <strong>100 questions</strong>, tous thèmes mélangés, difficulté montante
+              tous les 10 questions.
+            </li>
+            <li>
+              <strong>1 relique parmi 3</strong> au départ, puis à chaque palier (60 reliques, effets
+              cumulables).
+            </li>
+          </ul>
           {rogueRecord > 0 && (
-            <>
-              <br />
+            <p className="modal-badge-desc">
               <strong>Ton record : {rogueRecord} pts</strong>
-            </>
+            </p>
           )}
-        </p>
+          <p className="modal-badge-desc tuto-une-fois">
+            Ce tutoriel ne s’affiche qu’une seule fois — ensuite tu lances directement.
+          </p>
+        </>
       ) : (
         <>
           <p className="modal-badge-desc">
@@ -69,8 +81,13 @@ export default function ModeConfirmModal({ a, mode }: ModeConfirmModalProps): Re
         className="btn-principal"
         disabled={blocked}
         onClick={() => {
-          close();
-          a.lancer();
+          if (mode === 'rogue') {
+            // tutoriel rogue : marqué comme vu (une seule fois) + lancement direct
+            a.confirmerRogueTuto();
+          } else {
+            close();
+            a.lancer();
+          }
         }}
       >
         {blocked ? 'Déjà joué aujourd’hui — reviens demain !' : "C'est parti !"}

@@ -70,6 +70,7 @@ export const STORAGE_KEYS = {
   series: 'voltquiz_dernieres_series',
   dailyStreak: 'voltquiz_streak_quotidien',
   tutorial: 'voltquiz_tuto_vu',
+  rogueTuto: 'voltquiz_rogue_tuto_vu',
   favoriteBadge: 'voltquiz_badge_favori',
   activeTitle: 'voltquiz_titre_actif',
   resetSubmissions: 'voltquiz_reset_soumissions',

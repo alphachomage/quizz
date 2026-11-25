@@ -12,7 +12,7 @@ import { todayDate } from '@lib/dates.js';
 import { themeLevel, xpForLevel } from '@lib/xp.js';
 import type { XpMap } from '@lib/xp.js';
 import { currentDailyStreak } from '@lib/streak.js';
-import { STORAGE_KEYS } from '@lib/storage.js';
+import { STORAGE_KEYS, write } from '@lib/storage.js';
 import { readUrlParam } from '@app/urlFlags.js';
 import { useStorage } from '@shared/hooks/useStorage.js';
 import type { GameMode, LevelId, Theme } from '@lib/types.js';
@@ -64,6 +64,10 @@ export interface HomeState {
   setPicker: Dispatch<SetStateAction<GameMode | null>>;
   /** Clic sur une tuile de mode : sélectionne le mode et ouvre sa popin. */
   openMode: (m: GameMode) => void;
+  /** Tutoriel Rogue Quizz déjà vu ? (affiché une seule fois avant la 1re partie). */
+  rogueTutoVu: boolean;
+  /** « C'est parti » du tutoriel rogue : marque le tuto comme vu et lance la partie. */
+  confirmerRogueTuto: () => void;
   nom1: string;
   setNom1: Dispatch<SetStateAction<string>>;
   nom2: string;
@@ -111,6 +115,8 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
   const recordsRaw = useStorage<RecordsMap>(STORAGE_KEYS.records, {});
   const xpRaw = useStorage<XpMap>(STORAGE_KEYS.xp, {});
   const gamesRaw = useStorage<StoredGame[]>(STORAGE_KEYS.games, []);
+  // Tutoriel Rogue Quizz vu ? (affiché une seule fois, avant la première partie rogue)
+  const rogueTutoVu = !!useStorage(STORAGE_KEYS.rogueTuto, false);
   const records = useMemo(() => (recordsRaw || {}) as RecordsMap, [recordsRaw]);
   const xp = useMemo(() => (xpRaw || {}) as XpMap, [xpRaw]);
   const games = useMemo(() => (gamesRaw || []) as StoredGame[], [gamesRaw]);
@@ -130,17 +136,17 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
       [...(themes ?? [])].sort((a, b) => (a.nom as string).localeCompare(b.nom as string, 'fr')),
     [themes]
   );
-  function lancer(): void {
-    if (mode === 'solo' || mode === 'duel') {
+  function lancerMode(m: GameMode): void {
+    if (m === 'solo' || m === 'duel') {
       if (!theme) return;
       onStart({
-        mode,
-        niveau: mode === 'solo' ? niveau : null,
+        mode: m,
+        niveau: m === 'solo' ? niveau : null,
         theme,
-        players: mode === 'solo' ? [pseudo || 'Toi'] : players,
+        players: m === 'solo' ? [pseudo || 'Toi'] : players,
         allThemes: themes ?? undefined,
       });
-    } else if (mode === 'rogue') {
+    } else if (m === 'rogue') {
       // rogue quizz : tous les thèmes mélangés, paliers de difficulté progressifs
       onStart({
         mode: 'rogue',
@@ -160,11 +166,27 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
       });
     }
   }
+  function lancer(): void {
+    lancerMode(mode);
+  }
 
   // Record du quizz du jour (clé = date du jour) pour afficher « déjà joué » sur la carte.
   function openMode(m: GameMode): void {
     setMode(m);
+    // Rogue Quizz : le tutoriel simplifié n'est montré qu'une seule fois ;
+    // ensuite, la tuile lance directement la partie.
+    if (m === 'rogue' && rogueTutoVu) {
+      lancerMode('rogue');
+      return;
+    }
     setPicker(m);
+  }
+
+  /** « C'est parti » du tutoriel rogue : le marque comme vu (une seule fois) et lance. */
+  function confirmerRogueTuto(): void {
+    write(STORAGE_KEYS.rogueTuto, true);
+    setPicker(null);
+    lancerMode('rogue');
   }
 
   function lancerTheme(t: Theme): void {
@@ -223,6 +245,8 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
     picker,
     setPicker,
     openMode,
+    rogueTutoVu,
+    confirmerRogueTuto,
     nom1,
     setNom1,
     nom2,
