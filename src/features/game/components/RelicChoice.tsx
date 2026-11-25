@@ -10,12 +10,15 @@ interface RelicChoiceProps {
   proposals: Relic[];
   /** Numéro du choix dans la run (1 = départ, 2 = après le 1er palier…). */
   numeroChoix: number;
+  /** Secondes restantes avant l'auto-choix (timer de 20 s). */
+  tempsRestant: number;
   onChoisir: (id: string) => void;
 }
 
 export default function RelicChoice({
   proposals,
   numeroChoix,
+  tempsRestant,
   onChoisir,
 }: RelicChoiceProps): ReactElement {
   return (
@@ -28,6 +31,9 @@ export default function RelicChoice({
         <p className="modal-badge-desc">
           Choix n°{numeroChoix} — les reliques se cumulent pendant toute la run.
         </p>
+        <span className="relique-timer" title="Une relique sera choisie automatiquement à 0">
+          <Icon nom="timer" taille={16} /> {Math.ceil(tempsRestant)} s
+        </span>
         <div className="relique-cartes">
           {proposals.map((r) => (
             <button

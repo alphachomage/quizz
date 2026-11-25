@@ -92,6 +92,20 @@ describe('partie rogue (flux complet)', () => {
     expect(document.querySelector('.relique-overlay')).toBeNull();
     expect(onFinish).not.toHaveBeenCalled();
   });
+  it('sans clic, le timer de 20 s choisit automatiquement une relique', () => {
+    const themes = makeThemes(3, 10);
+    const onFinish = vi.fn<(result: GameResult) => void>();
+    renderRogue(themes, onFinish);
+    expect(document.querySelector('.relique-overlay')).toBeTruthy();
+    // le compte à rebours de 20 s est affiché
+    expect(document.querySelector('.relique-timer')?.textContent).toMatch(/20 s/);
+    // après 20 s sans clic : une relique est choisie automatiquement, on passe à la question
+    act(() => {
+      vi.advanceTimersByTime(20100);
+    });
+    expect(document.querySelector('.relique-overlay')).toBeNull();
+    expect(document.querySelector('.question')).toBeTruthy();
+  });
   it('le chip « Palier 1/10 » est affiché', () => {
     const themes = makeThemes(3, 10);
     renderRogue(themes, () => {});

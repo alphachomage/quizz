@@ -180,3 +180,16 @@
   gap: 6px;
   justify-content: center;
 }
+
+/* Compte à rebours du choix de relique (20 s, auto-choix à 0) */
+.relique-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--accent1, #8b5cf6);
+  border: 1px solid var(--accent1, #8b5cf6);
+  border-radius: 999px;
+  padding: 4px 14px;
+}

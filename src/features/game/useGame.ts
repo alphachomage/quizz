@@ -1,7 +1,15 @@
 // features/game/useGame.ts — TOUTE la logique d'une partie (états, actions, effets).
 // extraite de l'ancien god composant Partie.jsx. Testable hors React.
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { roundInfo, pointsFor, ROGUE_STEP, SECONDS_PER_QUESTION } from '@lib/scoring.js';
+import {
+  RELIC_CHOICE_SECONDS,
+  ROGUE_MAX,
+  ROGUE_STEP,
+  dureePourNiveau,
+  pointsFor,
+  roundInfo,
+  SECONDS_PER_QUESTION,
+} from '@lib/scoring.js';
 import { addReport, loadReports } from '@lib/reports.js';
 import type { StoredReport } from '@lib/reports.js';
 import { seriesKey, saveSeries } from '@lib/series.js';
@@ -97,8 +105,10 @@ export interface GameState {
   questionAffichage: DrawnQuestion;
   /** Timer figé sur la question courante (relique « Pause »). */
   timerFige: boolean;
-  /** Durée du timer de la question courante (reliques timer). */
+  /** Durée du timer de la question courante (niveau + reliques timer). */
   dureeQuestion: number;
+  /** Secondes restantes pour le choix de relique (phase 'relique', auto-choix à 0). */
+  tempsChoix: number;
   /** Jackpot en attente (relique Jackpot) : points de la prochaine bonne réponse. */
   jackpot: number;
   choisirRelique: (id: string) => void;
@@ -176,7 +186,7 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
   // Au lancement d'une run rogue : première proposition de 3 reliques (choix de départ).
   useEffect(() => {
     if (mode === 'rogue' && proposals.length === 0 && relics.length === 0) {
-      setProposals(drawRelicChoices([], nbPropositions(emptyRogueBonus())));
+      setProposals(drawRelicChoices([], nbPropositions(emptyRogueBonus()), Math.random, 0));
       setAPrendre(1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -219,20 +229,28 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questions.length]);
-  // Durée du timer de la question courante : 10 s de base ; en rogue, modifiée par les
-  // reliques (+/- secondes, timer fixé « zen », 1re question de palier à X s).
+  // Durée du timer de la question courante : 10 s de base + 3 s si la question est « dur »
+  // (dans TOUS les modes) ; en rogue, modifiée en plus par les reliques (+/- secondes,
+  // timer fixé « zen », 1re question de palier à X s).
   const dureeQuestion = useMemo(() => {
-    if (mode !== 'rogue') return SECONDS_PER_QUESTION;
+    const base = dureePourNiveau(question.niveau, SECONDS_PER_QUESTION);
+    if (mode !== 'rogue') return base;
     if (rogueBonus.timerFixe !== null) return rogueBonus.timerFixe;
-    let d = SECONDS_PER_QUESTION + rogueBonus.timerBonus;
-    if (rogueBonus.premierePalier > 0 && index % ROGUE_STEP === 0) d = rogueBonus.premierePalier;
+    let d = base + rogueBonus.timerBonus;
+    if (rogueBonus.premierePalier > 0 && index % ROGUE_STEP === 0)
+      d = Math.max(d, rogueBonus.premierePalier);
     return Math.max(1, d);
-  }, [mode, rogueBonus, index]);
+  }, [mode, rogueBonus, index, question.niveau]);
   const { time, reset } = useTimer(
     phase === 'question' && !timerFige,
     dureeQuestion,
     () => answer(null)
   );
+  // Timer du choix de relique (rogue) : 20 s, puis une relique est choisie automatiquement.
+  const { time: tempsChoix } = useTimer(phase === 'relique', RELIC_CHOICE_SECONDS, () => {
+    if (proposals.length > 0)
+      choisirRelique(proposals[Math.floor(Math.random() * proposals.length)].id);
+  });
 
   // Ambiance sonore de la partie (nappe douce), selon le réglage « Musique de fond ».
   const musicOn = !!(prefs && prefs.music !== false);
@@ -288,6 +306,7 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
               {
                 correct,
                 secondesEcoulees: secondsElapsed,
+                dureeQuestion,
                 mancheBonus,
                 streak: nouveauStreak,
                 bonnesAvant: bonnes[currentPlayer],
@@ -309,7 +328,7 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
       }
       gain += bonusStreak;
     } else {
-      gain = pointsFor(correct, secondsElapsed, mancheBonus) + bonusStreak;
+      gain = pointsFor(correct, secondsElapsed, mancheBonus, dureeQuestion) + bonusStreak;
       // Quizz du jour boosté par la série de jours (>= 3 jours = points x1,5)
       if (mode === 'quotidien' && currentDailyStreak().account >= 3)
         gain = Math.round(gain * 1.5);
@@ -384,7 +403,10 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
   // Ouvrir le choix de relique (phase 'relique', timer en pause) : propositions sans remise.
   function ouvrirChoixRelique() {
     const b = computeRogueBonus(relics);
-    setProposals(drawRelicChoices(relics.map((r) => r.id), nbPropositions(b)));
+    // Pondération progressive : plus on avance dans la run, plus les reliques rares
+    // (puis épiques/légendaires) ont de poids dans les propositions.
+    const prog = Math.min(1, index / ROGUE_MAX);
+    setProposals(drawRelicChoices(relics.map((r) => r.id), nbPropositions(b), Math.random, prog));
     setAPrendre(nbAPrendre(b));
     setPhase('relique');
   }
@@ -535,7 +557,8 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
     }
     if (effet.t === 'reliqueGratuite') {
       // Fer à cheval : +1 relique aléatoire offerte tout de suite
-      const auto = drawRelicChoices(nouvelles.map((x) => x.id), 1)[0];
+      const prog = Math.min(1, index / ROGUE_MAX);
+      const auto = drawRelicChoices(nouvelles.map((x) => x.id), 1, Math.random, prog)[0];
       if (auto) nouvelles = [...nouvelles, auto];
     }
     if (effet.t === 'themeCible') {
@@ -560,7 +583,8 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
     if (restant > 0) {
       // doubleChoix / choixMax : on re-propose encore des reliques
       const b = computeRogueBonus(nouvelles);
-      setProposals(drawRelicChoices(nouvelles.map((x) => x.id), nbPropositions(b)));
+      const prog = Math.min(1, index / ROGUE_MAX);
+      setProposals(drawRelicChoices(nouvelles.map((x) => x.id), nbPropositions(b), Math.random, prog));
     } else {
       setProposals([]);
       setPhase('question');
@@ -681,6 +705,7 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
     questionAffichage,
     timerFige,
     dureeQuestion,
+    tempsChoix,
     jackpot,
     choisirRelique,
     passerQuestion,

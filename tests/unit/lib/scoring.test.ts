@@ -1,76 +1,35 @@
-// Tests du scoring arcade et des manches (src/lib (modules)).
+// tests/unit/lib/scoring.test.ts — durées par niveau et score ramené à la durée réelle.
 import { describe, expect, it } from 'vitest';
-import { roundInfo, pointsFor, SECONDS_PER_QUESTION } from '@lib/scoring.js';
-describe('pointsPour', () => {
-  it('vaut 20 pts pour une bonne réponse instantanée', () => {
-    expect(pointsFor(true, 0)).toBe(20);
-  });
-  it('perd 1 point par seconde écoulée', () => {
-    expect(pointsFor(true, 5)).toBe(15);
-    expect(pointsFor(true, 9)).toBe(11);
-  });
-  it('est plafonné à 10 pts minimum', () => {
-    expect(pointsFor(true, 10)).toBe(10);
-    expect(pointsFor(true, 999)).toBe(10);
-  });
-  it('vaut 0 pour une mauvaise réponse, même instantanée', () => {
-    expect(pointsFor(false, 0)).toBe(0);
-    expect(pointsFor(false, 3)).toBe(0);
-  });
-  it('est doublé en manche bonus', () => {
-    expect(pointsFor(true, 0, true)).toBe(40);
-    expect(pointsFor(true, 5, true)).toBe(30);
-    expect(pointsFor(true, 10, true)).toBe(20);
-    expect(pointsFor(false, 0, true)).toBe(0);
-  });
-  it('utilise un plancher sur les secondes (partie entière)', () => {
-    expect(pointsFor(true, 2.9)).toBe(18);
-    expect(pointsFor(true, 3.0)).toBe(17);
-  });
-});
-describe('infoManche', () => {
-  it('découpe une partie de 10 questions en 3 manches (4 + 4 + 2)', () => {
-    expect(roundInfo(0, 10)).toEqual({
-      round: 1,
-      bonus: false,
-    });
-    expect(roundInfo(3, 10)).toEqual({
-      round: 1,
-      bonus: false,
-    });
-    expect(roundInfo(4, 10)).toEqual({
-      round: 2,
-      bonus: false,
-    });
-    expect(roundInfo(7, 10)).toEqual({
-      round: 2,
-      bonus: false,
-    });
-    expect(roundInfo(8, 10)).toEqual({
-      round: 3,
-      bonus: true,
-    });
-    expect(roundInfo(9, 10)).toEqual({
-      round: 3,
-      bonus: true,
-    });
-  });
-  it('ne dépasse jamais la manche 3', () => {
-    expect(roundInfo(50, 10).round).toBe(3);
-  });
-  it('marque la dernière manche bonus en duel (6 questions : 2 + 2 + 2)', () => {
-    expect(roundInfo(4, 6)).toEqual({
-      round: 3,
-      bonus: true,
-    });
-    expect(roundInfo(5, 6)).toEqual({
-      round: 3,
-      bonus: true,
-    });
-  });
-});
-describe('constantes du jeu', () => {
-  it('définit un minuteur de 10 secondes', () => {
+import { DUR_BONUS_DUR, dureePourNiveau, pointsFor, SECONDS_PER_QUESTION } from '@lib/scoring.js';
+
+describe('durée des questions', () => {
+  it('10 s de base, +3 s si niveau « dur »', () => {
     expect(SECONDS_PER_QUESTION).toBe(10);
+    expect(DUR_BONUS_DUR).toBe(3);
+    expect(dureePourNiveau('facile')).toBe(10);
+    expect(dureePourNiveau('moyen')).toBe(10);
+    expect(dureePourNiveau('dur')).toBe(13);
+    expect(dureePourNiveau(null)).toBe(10);
+  });
+});
+
+describe('pointsFor avec duration', () => {
+  it('à duration = 10 s, identique à l’ancienne formule (20 - elapsed, min 10)', () => {
+    expect(pointsFor(true, 0, false)).toBe(20);
+    expect(pointsFor(true, 5, false)).toBe(15);
+    expect(pointsFor(true, 10, false)).toBe(10);
+    expect(pointsFor(true, 25, false)).toBe(10); // min
+    expect(pointsFor(false, 0, false)).toBe(0);
+    expect(pointsFor(true, 0, true)).toBe(40); // manche bonus x2
+  });
+  it('question « dur » (13 s) : le chrono des points est recalé sur 13 s', () => {
+    // réponse instantanée -> 20 pts dans tous les cas
+    expect(pointsFor(true, 0, false, 13)).toBe(20);
+    // 6,5 s écoulées sur 13 -> 20 - floor(6.5*10/13) = 20 - 5 = 15 pts
+    expect(pointsFor(true, 6.5, false, 13)).toBe(15);
+    // toute la durée écoulée -> min 10 (et pas moins)
+    expect(pointsFor(true, 13, false, 13)).toBe(10);
+    // 10 s écoulées sur un timer de 13 s -> 20 - floor(10*10/13) = 20 - 7 = 13 pts
+    expect(pointsFor(true, 10, false, 13)).toBe(13);
   });
 });

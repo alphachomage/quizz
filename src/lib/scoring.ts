@@ -8,6 +8,13 @@ export const DUEL_QUESTIONS = 6; // nombre de questions PAR JOUEUR en mode duel
 export const DAILY_QUESTIONS = 10; // questions du quizz du jour
 export const ROGUE_MAX = 100; // plafond de questions en mode Rogue Quizz (1re faute = fin)
 export const ROGUE_STEP = 10; // Rogue Quizz : un choix de relique tous les ROGUE_STEP questions
+export const RELIC_CHOICE_SECONDS = 20; // timer du choix de relique (auto-choix à 0)
+export const DUR_BONUS_DUR = 3; // une question « dur » a +3 s de réflexion dans TOUS les modes
+
+/** Durée d'une question selon son niveau : 10 s de base, +3 s si niveau « dur ». */
+export function dureePourNiveau(niveau: string | null | undefined, base = SECONDS_PER_QUESTION): number {
+  return base + (niveau === 'dur' ? DUR_BONUS_DUR : 0);
+}
 
 /** Un niveau de difficulté (utilisé en mode solo). */
 export interface Level {
@@ -45,12 +52,20 @@ function levelColor(id: string | null | undefined): string {
 
 // --- Score façon arcade ---
 // Bonne réponse : 20 pts de base, -1 pt par seconde écoulée (minimum 10 pts).
+// Le chrono des points est ramené à l'échelle de la durée réelle de la question :
+// `duration` = durée du timer de la question (10 s de base, 13 s si niveau « dur »,
+// modifié par les reliques en rogue) -> à duration = 10 s, la formule est identique à avant.
 // Faux ou temps écoulé : 0 pt. En manche bonus, les points sont doublés.
 // (max solo : 8x20 + 2x40 = 240 pts, hors bonus de série)
 export { levelColor };
-export function pointsFor(correct: boolean, secondsElapsed: number, bonus = false): number {
+export function pointsFor(
+  correct: boolean,
+  secondsElapsed: number,
+  bonus = false,
+  duration = SECONDS_PER_QUESTION
+): number {
   if (!correct) return 0;
-  const base = Math.max(10, 20 - Math.floor(secondsElapsed));
+  const base = Math.max(10, 20 - Math.floor((secondsElapsed * SECONDS_PER_QUESTION) / duration));
   return bonus ? base * 2 : base;
 }
 

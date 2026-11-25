@@ -102,6 +102,7 @@ export default function Game({ config, prefs, onFinish, onQuit }: GameProps): Re
       <RelicChoice
         proposals={p.proposals}
         numeroChoix={p.relics.length + 1}
+        tempsRestant={p.tempsChoix}
         onChoisir={p.choisirRelique}
       />
     );

@@ -5,12 +5,28 @@ import type { LevelId } from './types.js';
 /** Rareté d'une relique (couleur + poids de tirage). */
 export type RelicRarity = 'commun' | 'rare' | 'epique' | 'legendaire';
 
-export const RARETE_POIDS: Record<RelicRarity, number> = {
-  commun: 50,
-  rare: 30,
-  epique: 15,
-  legendaire: 5,
+// Poids de tirage SELON LA PROGRESSION dans la run (0 = départ, 1 = fin) :
+// au début surtout du commun, à la fin de plus en plus de rare/épique/légendaire.
+export const RARETE_POIDS_DEBUT: Record<RelicRarity, number> = {
+  commun: 60,
+  rare: 28,
+  epique: 10,
+  legendaire: 2,
 };
+export const RARETE_POIDS_FIN: Record<RelicRarity, number> = {
+  commun: 15,
+  rare: 35,
+  epique: 32,
+  legendaire: 18,
+};
+
+/** Poids de tirage d'une rareté à une progression donnée (interpolation linéaire 0..1). */
+export function poidsRarete(prog: number, rarete: RelicRarity): number {
+  const p = Math.max(0, Math.min(1, prog));
+  const a = RARETE_POIDS_DEBUT[rarete];
+  const b = RARETE_POIDS_FIN[rarete];
+  return a + (b - a) * p;
+}
 
 export const RARETE_COULEUR: Record<RelicRarity, string> = {
   commun: '#9ca3af',
@@ -378,12 +394,12 @@ export function computeRogueBonus(relics: Relic[]): RogueBonus {
   return b;
 }
 
-/** Tirage pondéré par rareté d'une relique dans le pool (sans remise). */
-function pickWeighted(pool: Relic[], rand: () => number): Relic {
-  const total = pool.reduce((a, r) => a + RARETE_POIDS[r.rarete], 0);
+/** Tirage pondéré par rareté (poids selon la progression) d'une relique dans le pool. */
+function pickWeighted(pool: Relic[], prog: number, rand: () => number): Relic {
+  const total = pool.reduce((a, r) => a + poidsRarete(prog, r.rarete), 0);
   let x = rand() * total;
   for (const r of pool) {
-    x -= RARETE_POIDS[r.rarete];
+    x -= poidsRarete(prog, r.rarete);
     if (x <= 0) return r;
   }
   return pool[pool.length - 1];
@@ -391,18 +407,21 @@ function pickWeighted(pool: Relic[], rand: () => number): Relic {
 
 /**
  * Propose `nb` reliques parmi celles dont les ids ne sont pas dans `dejaPrises`.
- * Tirage pondéré par rareté, sans remise. `rand` permet des tests déterministes.
+ * Tirage pondéré par rareté, sans remise. `prog` (0..1) = avancement dans la run :
+ * il fait évoluer les poids (début = plutôt commun, fin = plutôt rare/épique/légendaire).
+ * `rand` permet des tests déterministes.
  */
 export function drawRelicChoices(
   dejaPrises: string[],
   nb = 3,
-  rand: () => number = Math.random
+  rand: () => number = Math.random,
+  prog = 0
 ): Relic[] {
   const pool = RELICS.filter((r) => !dejaPrises.includes(r.id));
   const out: Relic[] = [];
   const restant = [...pool];
   while (out.length < nb && restant.length > 0) {
-    const r = pickWeighted(restant, rand);
+    const r = pickWeighted(restant, prog, rand);
     out.push(r);
     restant.splice(restant.indexOf(r), 1);
   }
@@ -426,6 +445,8 @@ export function nbAPrendre(bonus: RogueBonus): number {
 export interface GainContext {
   correct: boolean;
   secondesEcoulees: number;
+  /** Durée réelle du timer de la question (10 s de base, 13 s si « dur », reliques rogue…). */
+  dureeQuestion: number;
   mancheBonus: boolean;
   /** Nouveau streak si la réponse est bonne. */
   streak: number;
@@ -452,7 +473,9 @@ export function gainRogue(b: RogueBonus, ctx: GainContext, jackpot: number): num
   if (!ctx.correct) return 0;
   const sec = b.tempsFixe ? 0 : ctx.secondesEcoulees;
   const min = Math.max(10, b.min);
-  let g = Math.max(min, 20 - Math.floor(sec));
+  // Chrono des points ramené à l'échelle de la durée réelle (20 - 1 pt/s sur 10 s de base).
+  const duree = Math.max(1, ctx.dureeQuestion);
+  let g = Math.max(min, 20 - Math.floor((sec * 10) / duree));
   if (ctx.mancheBonus) g *= b.mancheMult; // mancheMult vaut 2 par défaut
   if (jackpot > 0) g = jackpot;
   const multNiv = b.niveauMult[ctx.niveau as LevelId] || 1;
