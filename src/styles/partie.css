@@ -86,8 +86,11 @@
   display: flex;
   align-items: center;
   gap: var(--esp-12);
-  /* bien plus d'air sous le timer : la question n'est plus « collée » à la barre de temps */
-  margin-bottom: calc(var(--esp-24) + var(--esp-20));
+  /* colonne de jeu centrée (640 px) et encore plus d'air sous le timer */
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: calc(var(--esp-24) + 32px);
 }
 
 .minuteur {
@@ -138,7 +141,8 @@
   letter-spacing: 0.01em;
   line-height: 1.4;
   text-align: center;
-  margin-bottom: 26px;
+  max-width: 640px;
+  margin: 0 auto 26px;
   animation: pop var(--dur-pop) ease;
 }
 
@@ -146,7 +150,8 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--esp-14);
-  margin-top: var(--esp-6);
+  max-width: 640px;
+  margin: var(--esp-6) auto 0;
 }
 
 .reponse {
