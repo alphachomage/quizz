@@ -18,7 +18,7 @@ import { useStorage } from '@shared/hooks/useStorage.js';
 import type { GameMode, LevelId, Theme } from '@lib/types.js';
 import type { StoredGame } from '@lib/game-history.js';
 
-// Thème fictif utilisé pour les modes « tous thèmes mélangés » (survie, quizz du jour).
+// Thème fictif utilisé pour les modes « tous thèmes mélangés » (rogue, quizz du jour).
 // Sans `questions` : le pool vient de `allThemes`, jamais de ce pseudo-thème.
 const ALL_THEMES = {
   id: 'tous',
@@ -140,10 +140,10 @@ export function useHome({ themes, pseudo, onStart }: UseHomeParams): HomeState {
         players: mode === 'solo' ? [pseudo || 'Toi'] : players,
         allThemes: themes ?? undefined,
       });
-    } else if (mode === 'survie') {
-      // survie : plus de niveau choisi, toutes les questions (tous niveaux) mélangées
+    } else if (mode === 'rogue') {
+      // rogue quizz : tous les thèmes mélangés, paliers de difficulté progressifs
       onStart({
-        mode: 'survie',
+        mode: 'rogue',
         niveau: 'mix',
         theme: ALL_THEMES,
         players: [pseudo || 'Toi'],

@@ -1,10 +1,11 @@
 // tests/data/corpus-draw.test.ts — diversité du tirage vérifiée sur le VRAI corpus
 // (chargé via loadThemes(), comme questions-schema.test.ts). Porté depuis l'ancienne
-// suite legacy : max 2 questions du même sujet en solo, plafond par thème en survie,
-// quizz du jour déterministe et max 2 questions du même thème.
+// suite legacy : max 2 questions du même sujet en solo, plafond par thème en rogue
+// (via drawRogueSeries + paliers de difficulté), quizz du jour déterministe.
 import { describe, expect, it } from 'vitest';
 
 import { dailyQuestions, drawSeries, subjectOf } from '@lib/draw.js';
+import { drawRogueSeries } from '@/features/game/draw.js';
 import { loadThemes } from '@/data/questions.js';
 
 const THEMES = await loadThemes();
@@ -30,19 +31,27 @@ describe('tirage sur le vrai corpus', () => {
     expect(series3plus).toBe(0);
   });
 
-  it('survie (tous thèmes) : 200 séries de 30, plafond par thème respecté, 8+ thèmes touchés', () => {
+  it('rogue (tous thèmes) : 50 runs de 100 questions, paliers de niveaux + plafond par thème respectés', () => {
     const pool = THEMES.flatMap((t) => t.questions.map((q) => ({ ...q, themeId: t.id })));
-    const N = 30;
+    const N = 100;
     const maxPerTheme = Math.max(2, Math.ceil(N / THEMES.length) + 1);
     let over = 0;
     let minThemesHit = 99;
-    for (let i = 0; i < 200; i++) {
-      const serie = drawSeries(pool, N, 2, maxPerTheme);
+    for (let i = 0; i < 50; i++) {
+      const serie = drawRogueSeries(pool, N, maxPerTheme);
+      expect(serie).toHaveLength(100);
       const count = new Map<string, number>();
-      for (const q of serie) count.set(q.themeId, (count.get(q.themeId) || 0) + 1);
+      for (const q of serie) {
+        const th = q.themeId || '?';
+        count.set(th, (count.get(th) || 0) + 1);
+      }
       const mx = Math.max(...count.values());
       if (mx > maxPerTheme) over++;
       minThemesHit = Math.min(minThemesHit, count.size);
+      // Paliers : Q1-10 faciles, Q41-50 moyens, Q81-100 durs (poids 100 %)
+      for (let k = 0; k < 10; k++) expect(serie[k].niveau).toBe('facile');
+      for (let k = 40; k < 50; k++) expect(serie[k].niveau).toBe('moyen');
+      for (let k = 80; k < 100; k++) expect(serie[k].niveau).toBe('dur');
     }
     expect(over).toBe(0);
     expect(minThemesHit).toBeGreaterThanOrEqual(8);

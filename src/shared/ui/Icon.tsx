@@ -140,6 +140,203 @@ const CHEMINS: Record<string, ReactNode> = {
       />
     </>
   ),
+  // reliques Rogue Quizz (style lucide, traits 2px)
+  gem: (
+    <>
+      <path d="M6 3h12l4 6-10 12L2 9l4-6z" />
+      <path d="M2 9h20" />
+      <path d="M12 21 8 9l4-6 4 6-4 12z" />
+    </>
+  ),
+  hourglass: (
+    <>
+      <path d="M5 2h14" />
+      <path d="M5 22h14" />
+      <path d="M7 2v4a5 5 0 0 0 5 5 5 5 0 0 0 5-5V2" />
+      <path d="M7 22v-4a5 5 0 0 1 5-5 5 5 0 0 1 5 5v4" />
+    </>
+  ),
+  clover: (
+    <>
+      <circle cx="12" cy="7.2" r="3.4" />
+      <circle cx="7.4" cy="13.8" r="3.4" />
+      <circle cx="16.6" cy="13.8" r="3.4" />
+      <path d="M12 12v9" />
+    </>
+  ),
+  map: (
+    <>
+      <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z" />
+      <path d="M9 4v14" />
+      <path d="M15 6v14" />
+    </>
+  ),
+  compass: (
+    <>
+      <circle cx="12" cy="12" r="9.5" />
+      <path d="m15.5 8.5-2 5-5 2 2-5 5-2z" />
+    </>
+  ),
+  target: (
+    <>
+      <circle cx="12" cy="12" r="9.5" />
+      <circle cx="12" cy="12" r="5.5" />
+      <circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none" />
+    </>
+  ),
+  scissors: (
+    <>
+      <circle cx="6" cy="6" r="2.6" />
+      <circle cx="6" cy="18" r="2.6" />
+      <path d="M8.2 7.6 20 19" />
+      <path d="M8.2 16.4 20 5" />
+      <path d="m12.5 12 2-2" />
+    </>
+  ),
+  refresh: (
+    <>
+      <path d="M20 11a8 8 0 1 0-2.3 6.3" />
+      <path d="M20 5v6h-6" />
+    </>
+  ),
+  glasses: (
+    <>
+      <circle cx="6.5" cy="15" r="3.5" />
+      <circle cx="17.5" cy="15" r="3.5" />
+      <path d="M10 15h4" />
+      <path d="M3 13l2-6c.5-1.2 1.5-2 3-2" />
+      <path d="M21 13l-2-6c-.5-1.2-1.5-2-3-2" />
+    </>
+  ),
+  watch: (
+    <>
+      <circle cx="12" cy="12" r="5.5" />
+      <path d="M12 9.5V12l1.8 1.8" />
+      <path d="M9.5 6.8 10 2.5h4l.5 4.3" />
+      <path d="M9.5 17.2 10 21.5h4l.5-4.3" />
+    </>
+  ),
+  'alarm-clock': (
+    <>
+      <circle cx="12" cy="13" r="7.5" />
+      <path d="M12 9.5V13l2.2 2.2" />
+      <path d="m5 3-2.5 2.5" />
+      <path d="m19 3 2.5 2.5" />
+    </>
+  ),
+  'trending-up': (
+    <>
+      <path d="m3 17 6-6 4 4 8-8" />
+      <path d="M15 7h6v6" />
+    </>
+  ),
+  'trending-down': (
+    <>
+      <path d="m3 7 6 6 4-4 8 8" />
+      <path d="M15 17h6v-6" />
+    </>
+  ),
+  scale: (
+    <>
+      <path d="M12 3v18" />
+      <path d="M7 21h10" />
+      <path d="M4 7h16" />
+      <path d="m6 7-3 6a3.2 3.2 0 0 0 6 0L6 7z" />
+      <path d="m18 7-3 6a3.2 3.2 0 0 0 6 0l-3-6z" />
+    </>
+  ),
+  umbrella: (
+    <>
+      <path d="M12 3a9 9 0 0 1 9 9H3a9 9 0 0 1 9-9z" />
+      <path d="M12 12v6.5a2 2 0 0 0 4 0" />
+      <path d="M12 3V2" />
+    </>
+  ),
+  crosshair: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 1.5v4" />
+      <path d="M12 18.5v4" />
+      <path d="M1.5 12h4" />
+      <path d="M18.5 12h4" />
+    </>
+  ),
+  orbit: (
+    <>
+      <circle cx="12" cy="12" r="2.4" />
+      <ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(-24 12 12)" />
+      <circle cx="20.2" cy="7.6" r="1.4" fill="currentColor" stroke="none" />
+    </>
+  ),
+  shield: (
+    <path d="M12 2.5 20 6v6c0 5-3.4 8-8 9.5C7.4 20 4 17 4 12V6l8-3.5z" />
+  ),
+  ankh: (
+    <>
+      <circle cx="12" cy="5.5" r="2.8" />
+      <path d="M12 8.3V22" />
+      <path d="M4.5 12.5h15" />
+      <path d="M4.5 12.5a7.5 7.5 0 0 0 15 0" />
+    </>
+  ),
+  ticket: (
+    <>
+      <path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2.5 2.5 0 0 0 0 5v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2.5 2.5 0 0 0 0-5V8z" />
+      <path d="M14 6v2" />
+      <path d="M14 11v2" />
+      <path d="M14 16v2" />
+    </>
+  ),
+  copy: (
+    <>
+      <rect x="9" y="9" width="12" height="12" rx="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </>
+  ),
+  rocket: (
+    <>
+      <path d="M12 15c5-2 8-6.5 8.5-11.5C15.5 4 11 7 9 12l3 3z" />
+      <path d="M9 12c-2 0-4 1-5 4 3-1 4-1 5 0" />
+      <path d="M12 15c0 2-1 4-4 5 1-3 1-4 0-5" />
+      <circle cx="14.5" cy="9.5" r="1.6" />
+    </>
+  ),
+  pause: (
+    <>
+      <rect x="6" y="4" width="4" height="16" rx="1.2" />
+      <rect x="14" y="4" width="4" height="16" rx="1.2" />
+    </>
+  ),
+  infinity: (
+    <path d="M8 15a3.5 3.5 0 1 1 0-7c3.5 0 4.5 7 8 7a3.5 3.5 0 1 0 0-7c-3.5 0-4.5 7-8 7z" />
+  ),
+  heart: (
+    <path d="M12 20.5 4.7 13a5 5 0 0 1 7-7l.3.3.3-.3a5 5 0 0 1 7 7L12 20.5z" />
+  ),
+  'heart-pulse': (
+    <>
+      <path d="M12 20.5 4.7 13a5 5 0 0 1 7-7l.3.3.3-.3a5 5 0 0 1 7 7L12 20.5z" />
+      <path d="M4 12h4l1.5-3 3 6 1.5-3h4" fill="none" />
+    </>
+  ),
+  crown: (
+    <>
+      <path d="m3 8 4.5 4L12 5l4.5 7L21 8l-1.8 11H4.8L3 8z" />
+      <path d="M5 21.5h14" />
+    </>
+  ),
+  forward: (
+    <>
+      <path d="M13 5v14l9-7-9-7z" />
+      <path d="M4 5v14l7-7-7-7z" />
+    </>
+  ),
+  lock: (
+    <>
+      <rect x="4" y="10.5" width="16" height="10" rx="2" />
+      <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5" />
+    </>
+  ),
   question: (
     // disque plein, point d'interrogation découpé dans la couleur du badge
     <>

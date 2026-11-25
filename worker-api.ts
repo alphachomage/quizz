@@ -358,7 +358,7 @@ async function routeClassement(request: Request, env: Env, url: URL): Promise<Re
   if (s instanceof Response) return s;
   if (request.method !== 'GET') return jsonError('Méthode non supportée.', 405);
   const mode = url.searchParams.get('mode') || 'solo';
-  if (!['solo', 'duel', 'survie', 'quotidien'].includes(mode)) return jsonError('Mode inconnu.', 400);
+  if (!['solo', 'duel', 'rogue', 'quotidien'].includes(mode)) return jsonError('Mode inconnu.', 400);
   const niveau = url.searchParams.get('niveau');
   const periode = url.searchParams.get('periode');
   // lundi 00:00 UTC de la semaine en cours (même logique que isThisWeek côté client)

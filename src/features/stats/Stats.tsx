@@ -33,9 +33,9 @@ const MODES: ModeTab[] = [
     icone: 'swords',
   },
   {
-    id: 'survie',
-    nom: 'Survie',
-    icone: 'skull',
+    id: 'rogue',
+    nom: 'Rogue Quizz',
+    icone: 'gem',
   },
   {
     id: 'quotidien',

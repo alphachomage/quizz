@@ -55,9 +55,9 @@ const TABS: TabDef[] = [
     icone: 'swords',
   },
   {
-    id: 'survie',
-    nom: 'Survie',
-    icone: 'skull',
+    id: 'rogue',
+    nom: 'Rogue Quizz',
+    icone: 'gem',
   },
   {
     id: 'quotidien',
@@ -150,7 +150,7 @@ export default function Leaderboard({ themes, onHome: onHome, onStats }: Leaderb
   function labelMode(mode: string, niveau: string | null): string {
     if (mode === 'solo') return `solo · ${levelName(niveau)}`;
     if (mode === 'duel') return 'duel 1v1';
-    if (mode === 'survie') return `survie · ${levelName(niveau)}`;
+    if (mode === 'rogue') return `rogue · ${levelName(niveau)}`;
     if (mode === 'quotidien') return `quizz du ${niveau}`;
     return mode;
   }
@@ -158,11 +158,11 @@ export default function Leaderboard({ themes, onHome: onHome, onStats }: Leaderb
     if (tab === 'solo' || tab === 'duel') {
       return `${labelMode(tab, l.niveau)} · ${l.bonnes}/${l.total} bonnes`;
     }
-    if (tab === 'survie') return `survie · ${levelName(l.niveau)} · série de ${l.bonnes}`;
+    if (tab === 'rogue') return `rogue · run de ${l.bonnes} question${l.bonnes > 1 ? 's' : ''}`;
     if (tab === 'quotidien') return `quizz du ${l.niveau} · ${l.bonnes}/${l.total} bonnes`;
     return '';
   }
-  const isGameMode = ['solo', 'duel', 'survie', 'quotidien'].includes(tab);
+  const isGameMode = ['solo', 'duel', 'rogue', 'quotidien'].includes(tab);
   return (
     <div className="classement">
       <header className="hero">

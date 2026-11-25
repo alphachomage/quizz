@@ -24,7 +24,7 @@ export interface Theme {
   questions: Question[];
 }
 
-/** Question enrichie de son thème d'origine (modes multi-thèmes : survie, quotidien). */
+/** Question enrichie de son thème d'origine (modes multi-thèmes : rogue, quotidien). */
 export interface TaggedQuestion extends Question {
   themeId: string;
   themeName?: string;
@@ -33,7 +33,7 @@ export interface TaggedQuestion extends Question {
 }
 
 /** Modes de jeu. */
-export type GameMode = 'solo' | 'duel' | 'survie' | 'quotidien';
+export type GameMode = 'solo' | 'duel' | 'rogue' | 'quotidien';
 
 /** Config de lancement d'une partie (depuis l'accueil). */
 export interface GameConfig {
@@ -65,6 +65,8 @@ export interface GameResult {
   bonnes: number[];
   total: number;
   details?: GameDetail[];
+  /** Rogue Quizz : ids des reliques choisies pendant la run (affichage résultats). */
+  relics?: string[];
 }
 
 /** Préférences d'affichage + accessibilité (clés persistées en français, voir prefs.ts). */

@@ -7,6 +7,7 @@ import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import type { GameResult, Theme } from '@lib/types.js';
 import { computeGameStats } from './gameStats.js';
+import { RELICS, RARETE_COULEUR } from '@lib/relics.js';
 import type { Persistance } from './persist.js';
 import { useShare } from './useShare.js';
 import ShareModal from './components/ShareModal.jsx';
@@ -29,7 +30,7 @@ export default function Results({
   onReplay,
   onHome,
 }: ResultsProps): ReactElement {
-  const { mode, niveau, theme, players, scores, bonnes, total, details } = result;
+  const { mode, niveau, theme, players, scores, bonnes, total, details, relics } = result;
   // persistance est toujours posée par App.terminer ; les défauts restent défensifs
   const persistance: Partial<Persistance> = result.persistance || {};
   const {
@@ -58,8 +59,8 @@ export default function Results({
       ? gagnant === null
         ? 'Égalité parfaite !'
         : `${players[gagnant]} remporte le duel !`
-      : mode === 'survie'
-        ? 'Game over !'
+      : mode === 'rogue'
+        ? 'Run terminée !'
         : mode === 'quotidien'
           ? `Quizz du jour du ${niveau} terminé !`
           : 'Partie terminée';
@@ -125,6 +126,30 @@ export default function Results({
             avgTime={gameStats.avgTime}
             meilleureSerie={gameStats.meilleureSerie}
           />
+        )}
+
+        {mode === 'rogue' && relics && relics.length > 0 && (
+          <div className="resultat-reliques">
+            <div className="resultat-reliques-titre">
+              <Icon nom="gem" taille={18} /> Tes reliques ({relics.length})
+            </div>
+            <div className="resultat-reliques-liste">
+              {relics.map((id) => {
+                const r = RELICS.find((x) => x.id === id);
+                if (!r) return null;
+                return (
+                  <span
+                    key={id}
+                    className="relique-puce grosse"
+                    style={{ borderColor: RARETE_COULEUR[r.rarete] }}
+                    title={`${r.nom} — ${r.desc} (${r.rarete})`}
+                  >
+                    <Icon nom={r.icone} taille={18} />
+                  </span>
+                );
+              })}
+            </div>
+          </div>
         )}
 
         <div className="resultat-record">

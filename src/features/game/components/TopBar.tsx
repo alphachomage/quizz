@@ -5,6 +5,7 @@ import type { CSSProperties } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import { levelColor, levelName } from '@lib/scoring.js';
 import { currentDailyStreak } from '@lib/streak.js';
+import { RELICS, RARETE_COULEUR } from '@lib/relics.js';
 import type { GameViewState } from '../useGame.js';
 
 /** Props : état de la partie enrichi (manche, bonus, thème courant) construit dans Game.tsx. */
@@ -27,6 +28,7 @@ export default function TopBar({ p }: TopBarProps): ReactElement {
     round,
     bonus,
     currentTheme,
+    relics,
   } = p;
   // '--couleur' est une propriété CSS custom : csstype ne la connaît pas, d'où le cast.
   const themeChipStyle = {
@@ -51,19 +53,19 @@ export default function TopBar({ p }: TopBarProps): ReactElement {
             {levelName(niveau)}
           </span>
         )}
-        {mode === 'survie' && (
+        {mode === 'rogue' && (
           <span className="chip niveau-chip">
             <i
               style={{
                 background: '#a78bfa',
               }}
             />{' '}
-            Tous niveaux
+            Palier {Math.min(10, Math.floor(index / 10) + 1)}/10
           </span>
         )}
-        {mode === 'survie' && (
-          <span className="chip manche survie-chip">
-            <Icon nom="skull" taille={13} /> Survie — 1 vie
+        {mode === 'rogue' && (
+          <span className="chip manche rogue-chip">
+            <Icon nom="gem" taille={13} /> Rogue — 1 vie
           </span>
         )}
         {mode === 'quotidien' && (
@@ -83,7 +85,7 @@ export default function TopBar({ p }: TopBarProps): ReactElement {
         )}
         <span className="chip">
           Question {Math.min(index + 1, questions.length)}
-          {mode === 'survie' ? '' : `/${questions.length}`}
+          {mode === 'rogue' ? '' : `/${questions.length}`}
         </span>
         {mode === 'duel' ? (
           players.slice(0, nbJoueurs).map((j, i) => (
@@ -102,6 +104,23 @@ export default function TopBar({ p }: TopBarProps): ReactElement {
             {Math.min(10, streaks[currentPlayer] - 1)}
           </span>
         )}
+      {mode === 'rogue' && relics.length > 0 && (
+        <div className="reliques-actives" title={relics.map((r) => r.nom).join(', ')}>
+          {relics.map((r) => {
+            const def = RELICS.find((x) => x.id === r.id);
+            return (
+              <span
+                key={r.id}
+                className="relique-puce"
+                style={{ borderColor: RARETE_COULEUR[def?.rarete || 'commun'] }}
+                title={`${def?.nom || r.id} — ${def?.desc || ''}`}
+              >
+                <Icon nom={def?.icone || 'sparkles'} taille={14} />
+              </span>
+            );
+          })}
+        </div>
+      )}
       <button
         type="button"
         className="bouton-quitter"

@@ -1,6 +1,6 @@
 // Titres de profil : ~50 titres déblocables.
 // - 3 par thème (12 thèmes), débloqués au niveau 3 / 5 / 10 du thème = 36 titres
-// - 14 titres généraux (parties, streak du jour, records, survie, duel, etc.)
+// - 14 titres généraux (parties, streak du jour, records, rogue, duel, etc.)
 // Le joueur choisit SON titre affiché sous la barre d'XP du profil (persisté en localStorage).
 // Titre verrouillé = affiché « ??? » dans l'onglet (nom caché).
 
@@ -75,9 +75,9 @@ const GENERAL_TITLES: GeneralTitleDef[] = [
     test: (s) => s.recordSolo >= 240,
   },
   {
-    id: 'gen-survie-15',
-    nom: 'Légende vivante',
-    test: (s) => s.recordSurvie >= 15,
+    id: 'gen-rogue-100',
+    nom: 'Rogue accompli',
+    test: (s) => s.rogueBest >= 100,
   },
   {
     id: 'gen-duel-3',

@@ -125,7 +125,7 @@ export default function Home({
           animated={prefs.animations !== false && !prefersReducedMotion()}
         />
       )}
-      {(a.picker === 'survie' || a.picker === 'quotidien') && (
+      {(a.picker === 'rogue' || a.picker === 'quotidien') && (
         <ModeConfirmModal a={a} mode={a.picker} />
       )}
 

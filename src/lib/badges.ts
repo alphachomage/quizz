@@ -51,7 +51,9 @@ export interface BadgeStats {
   dailyGames: number;
   playedThemes: number;
   recordSolo: number;
-  recordSurvie: number;
+  recordRogue: number;
+  /** Meilleure longueur de run Rogue Quizz (questions réussies d'affilée). */
+  rogueBest: number;
   recordDuel: number;
   maxNiveauTheme: number;
   nbThemesNiv3: number;
@@ -84,6 +86,7 @@ export function badgeStats(data?: BadgeStatsInput): BadgeStats {
   let points = 0;
   let perfectSolo = false;
   let duelsWon = 0;
+  let rogueBest = 0;
   let dailyGames = 0;
   const playedThemes = new Set<string>();
   for (const p of games) {
@@ -104,6 +107,8 @@ export function badgeStats(data?: BadgeStatsInput): BadgeStats {
     )
       duelsWon += 1;
     if (p.mode === 'quotidien') dailyGames += 1;
+    if (p.mode === 'rogue')
+      rogueBest = Math.max(rogueBest, ...players.map((j) => j.bonnes || 0), 0);
   }
   const successPct = repondues ? Math.round((bonnes / repondues) * 100) : 0;
   const maxRecord = (prefix: string): number =>
@@ -128,7 +133,8 @@ export function badgeStats(data?: BadgeStatsInput): BadgeStats {
     dailyGames,
     playedThemes: playedThemes.size,
     recordSolo: maxRecord('solo:'),
-    recordSurvie: maxRecord('survie:'),
+    recordRogue: maxRecord('rogue:'),
+    rogueBest,
     recordDuel: maxRecord('duel:'),
     maxNiveauTheme: levels.length ? Math.max(...levels) : 0,
     nbThemesNiv3: levels.filter((n) => n >= 3).length,
@@ -247,25 +253,39 @@ export const BADGES: BadgeDef[] = [
     test: (s) => s.recordSolo >= 240,
   },
   {
-    id: 'survie-5',
-    nom: 'Survivant',
-    desc: '5 bonnes réponses d’affilée en survie',
-    icone: 'skull',
-    test: (s) => s.recordSurvie >= 5,
+    id: 'rogue-10',
+    nom: 'Rogue naissant',
+    desc: '10 questions d’affilée en Rogue Quizz',
+    icone: 'gem',
+    test: (s) => s.rogueBest >= 10,
   },
   {
-    id: 'survie-10',
-    nom: 'Increvable',
-    desc: '10 bonnes réponses d’affilée en survie',
-    icone: 'check',
-    test: (s) => s.recordSurvie >= 10,
+    id: 'rogue-25',
+    nom: 'Aventurier',
+    desc: '25 questions d’affilée en Rogue Quizz',
+    icone: 'compass',
+    test: (s) => s.rogueBest >= 25,
   },
   {
-    id: 'survie-15',
-    nom: 'Légende vivante',
-    desc: '15 bonnes réponses d’affilée en survie',
+    id: 'rogue-50',
+    nom: 'Tueur de donjon',
+    desc: '50 questions d’affilée en Rogue Quizz',
+    icone: 'swords',
+    test: (s) => s.rogueBest >= 50,
+  },
+  {
+    id: 'rogue-75',
+    nom: 'Chasseur de reliques',
+    desc: '75 questions d’affilée en Rogue Quizz',
     icone: 'trophy',
-    test: (s) => s.recordSurvie >= 15,
+    test: (s) => s.rogueBest >= 75,
+  },
+  {
+    id: 'rogue-100',
+    nom: 'Rogue accompli',
+    desc: '100 questions d’affilée en Rogue Quizz (run parfaite)',
+    icone: 'crown',
+    test: (s) => s.rogueBest >= 100,
   },
   {
     id: 'duel-1',
@@ -459,9 +479,11 @@ const PROGRES_BADGES: Record<string, (s: BadgeStats) => [number, number]> = {
   'solo-100': (s) => [s.recordSolo, 100],
   'solo-200': (s) => [s.recordSolo, 200],
   'solo-240': (s) => [s.recordSolo, 240],
-  'survie-5': (s) => [s.recordSurvie, 5],
-  'survie-10': (s) => [s.recordSurvie, 10],
-  'survie-15': (s) => [s.recordSurvie, 15],
+  'rogue-10': (s) => [s.rogueBest, 10],
+  'rogue-25': (s) => [s.rogueBest, 25],
+  'rogue-50': (s) => [s.rogueBest, 50],
+  'rogue-75': (s) => [s.rogueBest, 75],
+  'rogue-100': (s) => [s.rogueBest, 100],
   'duel-1': (s) => [s.duelsWon, 1],
   'duel-3': (s) => [s.duelsWon, 3],
   'points-1000': (s) => [s.points, 1000],

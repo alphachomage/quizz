@@ -122,7 +122,7 @@ export function computeStats(games: StatsGame[]): Stats {
         });
       t.jouées += (p.total || 0) * nbJ;
       t.correctes += (p.players || []).reduce((a, j) => a + (j.bonnes || 0), 0);
-      // niveauPartie vaut null hors solo (survie = "mix", quotidien = date) : jamais un niveau connu
+      // niveauPartie vaut null hors solo (rogue = "mix", quotidien = date) : jamais un niveau connu
       const niveauPartie = p.niveau;
       if (niveauPartie && LEVELS.some((n) => n.id === niveauPartie)) {
         const nv =

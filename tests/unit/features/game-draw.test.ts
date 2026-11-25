@@ -40,16 +40,20 @@ describe('tirerQuestionsPartie', () => {
     expect(series[0]).toHaveLength(6);
     expect(series[1]).toHaveLength(6);
   });
-  it('survie : questions taguées avec leur thème, plafond 30', () => {
-    const themes = makeThemes(3, 10); // 90 questions
+  it('rogue : questions taguées avec leur thème, plafond 100, paliers de niveaux', () => {
+    const themes = makeThemes(3, 40); // 360 questions (120 par niveau) : assez pour 100 slots
     const [seriesN] = drawGameQuestions({
-      mode: 'survie',
+      mode: 'rogue',
       theme: themes[0],
       allThemes: themes,
       players: ['a'],
     } as unknown as GameLaunchConfig);
-    expect(seriesN).toHaveLength(30);
+    expect(seriesN).toHaveLength(100); // ROGUE_MAX
     expect(seriesN.every((q) => q.themeId && q.themeName)).toBe(true);
+    // Paliers de difficulté : Q1-10 = 100 % facile, Q41-50 = 100 % moyen, Q81-100 = 100 % dur
+    for (let i = 0; i < 10; i++) expect(seriesN[i].niveau).toBe('facile');
+    for (let i = 40; i < 50; i++) expect(seriesN[i].niveau).toBe('moyen');
+    for (let i = 80; i < 100; i++) expect(seriesN[i].niveau).toBe('dur');
   });
   it('quotidien : même ensemble de questions pour la même date (ordre re-mélangé ensuite)', () => {
     const themes = makeThemes(6, 10);

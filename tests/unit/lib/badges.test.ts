@@ -6,7 +6,7 @@ import { BADGES, computeBadges, nextBadge } from '@/lib/badges.js';
 describe('calculerBadges', () => {
   it('aucune partie = tous les badges verrouillés', () => {
     const badges = computeBadges();
-    expect(badges).toHaveLength(39); // 30 historiques + 9 liés aux 4 nouveaux thèmes
+    expect(badges).toHaveLength(41); // 30 historiques + 9 liés aux 4 nouveaux thèmes
     expect(badges).toHaveLength(BADGES.length);
     expect(badges.every((b) => !b.debloque)).toBe(true);
   });

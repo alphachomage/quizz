@@ -24,9 +24,9 @@ const MODE_LABELS: Record<string, ModeInfo> = {
     nom: 'Duel 1v1',
     icone: 'swords',
   },
-  survie: {
-    nom: 'Survie',
-    icone: 'skull',
+  rogue: {
+    nom: 'Rogue Quizz',
+    icone: 'gem',
   },
   quotidien: {
     nom: 'Quizz du jour',

@@ -4,7 +4,7 @@
 import type { Prefs, Question, TaggedQuestion, Theme } from '@lib/types.js';
 
 // Une question factice, avec des réponses uniques et traçables.
-// `over` peut aussi poser un themeId (modes multi-thèmes : survie, quotidien).
+// `over` peut aussi poser un themeId (modes multi-thèmes : rogue, quotidien).
 export function makeQuestion(
   over: Partial<Question> & Partial<TaggedQuestion> = {}
 ): Question & Partial<TaggedQuestion> {
@@ -55,7 +55,7 @@ export function makeTheme({
   };
 }
 
-// Plusieurs thèmes pour les modes multi-thèmes (survie, quizz du jour).
+// Plusieurs thèmes pour les modes multi-thèmes (rogue, quizz du jour).
 export function makeThemes(countN = 3, perLevel = 10): Theme[] {
   return Array.from(
     {

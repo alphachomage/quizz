@@ -13,6 +13,8 @@ interface AnswersProps {
   selection: number | null;
   answerColor: (r: string, i: number) => string;
   onAnswer: (i: number) => void;
+  /** Index de la bonne réponse révélée (relique « Regard perçant »), null sinon. */
+  revelation?: number | null;
 }
 
 /** Au-delà de ce nombre de caractères, une réponse passe en texte réduit. */
@@ -24,6 +26,7 @@ export default function Answers({
   selection,
   answerColor,
   onAnswer,
+  revelation = null,
 }: AnswersProps) {
   return (
     <div className="reponses">
@@ -34,6 +37,8 @@ export default function Answers({
           if (i === question.bonne) classe += ' bonne';
           else if (i === selection) classe += ' mauvaise';
           else classe += ' estompee';
+        } else if (revelation !== null && i === revelation) {
+          classe += ' revelee';
         }
         // '--couleur' est une propriété CSS custom : csstype ne la connaît pas, d'où le cast.
         const style = { '--couleur': answerColor(r, i) } as CSSProperties;

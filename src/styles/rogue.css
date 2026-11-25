@@ -1,0 +1,182 @@
+/* ===== Rogue Quizz — reliques, choix de relique, actions ===== */
+
+/* Chip « Rogue — 1 vie » (même style que l'ancien chip survie) */
+.rogue-chip {
+  color: var(--erreur-texte);
+  border: 1px solid var(--erreur-40);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-5);
+}
+
+/* Barre des reliques actives dans la TopBar */
+.reliques-actives {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  width: 100%;
+  margin-top: 2px;
+}
+
+.relique-puce {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--desactive-35, #9ca3af);
+  background: var(--fond-2, #1f2937);
+  color: var(--texte);
+}
+
+.relique-puce.grosse {
+  width: 34px;
+  height: 34px;
+}
+
+/* Écran de choix de relique (overlay plein écran, pas de fermeture) */
+.relique-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 8, 20, 0.82);
+  backdrop-filter: blur(4px);
+  padding: 16px;
+}
+
+.relique-modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--esp-8, 8px);
+  max-width: 720px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: var(--fond, #14121f);
+  border: 1px solid var(--bord, #2c2840);
+  border-radius: 18px;
+  padding: 22px;
+  text-align: center;
+}
+
+.relique-cartes {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.relique-carte {
+  position: relative;
+  flex: 1 1 150px;
+  max-width: 210px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 12px 14px;
+  border-radius: 14px;
+  border: 2px solid var(--desactive-35, #9ca3af);
+  background: var(--fond-2, #1f2937);
+  color: var(--texte);
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.relique-carte:hover,
+.relique-carte:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  outline: none;
+}
+
+.relique-rarete {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #111;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.relique-nom {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.relique-desc {
+  font-size: 0.82rem;
+  color: var(--texte-doux, #b6b3c7);
+  line-height: 1.35;
+}
+
+/* Boutons d'action des reliques consommables (skip, re-piocher, révéler) */
+.rogue-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.rogue-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  border: 1px solid var(--accent1, #8b5cf6);
+  background: transparent;
+  color: var(--texte);
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.rogue-action:hover {
+  background: var(--accent1-12, rgba(139, 92, 246, 0.12));
+}
+
+/* Réponse révélée (relique « Regard perçant ») */
+.reponse.revelee {
+  outline: 2px dashed var(--accent1, #8b5cf6);
+  outline-offset: 2px;
+}
+
+/* Section reliques sur l'écran de résultats */
+.resultat-reliques {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.resultat-reliques-titre {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--texte-doux, #b6b3c7);
+  font-size: 0.9rem;
+}
+
+.resultat-reliques-liste {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}

@@ -46,7 +46,7 @@ export function persistResult(
   isGuest: boolean,
   prefs?: Prefs | null
 ): Persistance {
-  const { mode, niveau, theme, players, scores, bonnes, total, details } = result;
+  const { mode, niveau, theme, players, scores, bonnes, total, details, relics } = result;
   const key = recordKey(mode, niveau, theme.id);
 
   // --- Record du mode x niveau x thème ---
@@ -77,6 +77,7 @@ export function persistResult(
         score: scores[i],
         bonnes: bonnes[i],
       })),
+      relics: relics && relics.length > 0 ? relics : undefined,
     });
   }
 
@@ -125,7 +126,7 @@ export function persistResult(
     const leaderboardRows: number[] = [];
     for (const p of loadGames()) {
       if (p.mode !== mode) continue;
-      if (mode === 'solo' && p.niveau !== niveau) continue; // survie : tous niveaux mélangés
+      if (mode === 'solo' && p.niveau !== niveau) continue; // rogue : tous niveaux par paliers
       for (const j of p.players || []) leaderboardRows.push(j.score);
     }
     leaderboardRows.sort((a, b) => b - a);

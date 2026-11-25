@@ -6,7 +6,8 @@ export const SECONDS_PER_QUESTION = 10; // secondes par question
 export const SOLO_QUESTIONS = 10; // plafond de questions en solo (le pool réel peut être plus court)
 export const DUEL_QUESTIONS = 6; // nombre de questions PAR JOUEUR en mode duel
 export const DAILY_QUESTIONS = 10; // questions du quizz du jour
-export const SURVIVAL_MAX = 30; // plafond de questions en mode survie (1re faute = fin)
+export const ROGUE_MAX = 100; // plafond de questions en mode Rogue Quizz (1re faute = fin)
+export const ROGUE_STEP = 10; // Rogue Quizz : un choix de relique tous les ROGUE_STEP questions
 
 /** Un niveau de difficulté (utilisé en mode solo). */
 export interface Level {
@@ -35,7 +36,7 @@ export const LEVELS: Level[] = [
 ];
 export function levelName(id: string | null | undefined): string {
   const n = LEVELS.find((x) => x.id === id);
-  return n ? n.nom : 'Tous niveaux'; // survie = tous niveaux mélangés (clé "mix")
+  return n ? n.nom : 'Tous niveaux'; // rogue = paliers de niveaux progressifs (clé "mix")
 }
 function levelColor(id: string | null | undefined): string {
   const n = LEVELS.find((x) => x.id === id);

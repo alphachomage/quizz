@@ -32,6 +32,8 @@ export interface StoredGame {
   total: number;
   details?: GameDetail[];
   players: { nom: string; score: number; bonnes: number }[];
+  /** Rogue Quizz : ids des reliques choisies pendant la run. */
+  relics?: string[];
   id?: string;
   date?: string;
 }

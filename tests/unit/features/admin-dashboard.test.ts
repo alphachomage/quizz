@@ -69,7 +69,7 @@ describe('computeCorpus', () => {
 });
 describe('computeGamesMetrics', () => {
   it('10 parties -> total, % de réussite global et détail par mode', () => {
-    // 8 solo (8/10 bonnes chacune) + 2 survie (5/5) = 90 répondues, 74 bonnes -> 82 %
+    // 8 solo (8/10 bonnes chacune) + 2 rogue (5/5) = 90 répondues, 74 bonnes -> 82 %
     const games = [
       ...Array.from(
         {
@@ -83,7 +83,7 @@ describe('computeGamesMetrics', () => {
         },
         () =>
           game({
-            mode: 'survie',
+            mode: 'rogue',
             niveau: 'mix',
             total: 5,
             players: [
@@ -108,7 +108,7 @@ describe('computeGamesMetrics', () => {
       pct: 80,
     });
     expect(m.perMode[1]).toMatchObject({
-      mode: 'survie',
+      mode: 'rogue',
       games: 2,
       pct: 100,
     });
@@ -149,7 +149,7 @@ describe('computeGamesMetrics', () => {
 describe('computeRecordsTop + parseRecordKey', () => {
   const records = {
     'solo:moyen:histoire': 150,
-    'survie:mix:__all__': 30,
+    'rogue:mix:__all__': 30,
     'quotidien:mix:2026-11-20': 245,
     'solo:facile:sport': 200,
   };
@@ -162,8 +162,8 @@ describe('computeRecordsTop + parseRecordKey', () => {
     ]);
   });
   it('décompose la clé mode:niveau:themeId', () => {
-    expect(parseRecordKey('survie:mix:__all__')).toEqual({
-      mode: 'survie',
+    expect(parseRecordKey('rogue:mix:__all__')).toEqual({
+      mode: 'rogue',
       niveau: 'mix',
       themeId: '__all__',
     });
@@ -183,11 +183,11 @@ describe('computeRecordsTop + parseRecordKey', () => {
     ).toBe('Solo · Moyen · histoire');
     expect(
       recordLabel({
-        mode: 'survie',
+        mode: 'rogue',
         niveau: 'mix',
         themeId: '__all__',
       })
-    ).toBe('Survie · __all__');
+    ).toBe('Rogue Quizz · __all__');
     expect(modeLabel('quotidien')).toBe('Quizz du jour');
     expect(modeLabel('inconnu')).toBe('inconnu');
   });

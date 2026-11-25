@@ -22,8 +22,8 @@ export default function Feedback({ p }: FeedbackProps): ReactElement | null {
           </div>
         ) : (
           <div className="rate">
-            {mode === 'survie' ? (
-              "Raté — la survie s'arrête là !"
+            {mode === 'rogue' ? (
+              "Raté — la run s'arrête là !"
             ) : (
               <>
                 Raté. La bonne réponse était : <strong>{question.reponses[question.bonne]}</strong>

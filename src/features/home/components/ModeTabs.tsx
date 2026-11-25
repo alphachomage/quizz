@@ -1,5 +1,5 @@
 // ModesTabs.tsx — les 4 grandes tuiles de mode de l'accueil (gros picto, nom dessous).
-// Un clic ouvre la popin du mode : choix du thème (Solo) ou confirmation (Survie, Quizz du jour).
+// Un clic ouvre la popin du mode : choix du thème (Solo) ou confirmation (Rogue Quizz, Quizz du jour).
 import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import type { GameMode } from '@lib/types.js';
@@ -17,7 +17,7 @@ interface ModeTile {
 const MODES: ModeTile[] = [
   { id: 'solo', icone: 'timer', nom: 'Solo' },
   { id: 'duel', icone: 'swords', nom: 'Duel en ligne', badge: 'à venir' },
-  { id: 'survie', icone: 'skull', nom: 'Survie' },
+  { id: 'rogue', icone: 'gem', nom: 'Rogue Quizz' },
   { id: 'quotidien', icone: 'calendar', nom: 'Quizz du jour', streak: true },
 ];
 

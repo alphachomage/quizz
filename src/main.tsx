@@ -10,6 +10,7 @@ import './styles.css';
 import { registerSW } from 'virtual:pwa-register';
 
 import { preloadFromServer, flushPendingWrites } from '@lib/storage.js';
+import { migrateRogue } from '@lib/migrate.js';
 
 // registerSW = enregistre le "service worker" : c'est le morceau de code
 // qui permet à l'appli de s'installer (WPA) et de fonctionner hors-ligne.
@@ -28,6 +29,8 @@ registerSW({
 // dans le cache local AVANT le rendu (en 'local', c'est un no-op). Les écritures locales
 // en attente d'envoi serveur (file pending) sont poussées juste après, et à chaque
 // reconnexion ('online').
+// Migration one-shot (purge de l'ancien mode Survie, remplacé par Rogue Quizz).
+migrateRogue();
 preloadFromServer();
 window.addEventListener('online', () => {
   void flushPendingWrites();

@@ -154,7 +154,7 @@ describe('GET /api/classement (classement global D1)', () => {
       date: '2026-11-21T11:00:00.000Z',
     });
     await posterPartie(env, 'tok-admin', {
-      mode: 'survie', niveau: 'mix', themeId: 'tous', total: 12,
+      mode: 'rogue', niveau: 'mix', themeId: 'tous', total: 12,
       players: [{ nom: 'Boss', score: 90, bonnes: 7 }], scores: [90], bonnes: [7],
       date: '2026-11-21T12:00:00.000Z',
     });
@@ -164,8 +164,8 @@ describe('GET /api/classement (classement global D1)', () => {
     expect(rows.map((r) => r.nom)).toEqual(['boss', 'testeur']); // tri score desc (pseudo normalise)
     expect(rows[0].score).toBe(200);
     expect(rows[1].score).toBe(180); // meilleur score de Testeur, pas la 1re partie
-    const survie = await appel(env, '/api/classement?mode=survie', { token: 'tok-user' });
-    expect((survie.data.rows as unknown[]).length).toBe(1);
+    const rogue = await appel(env, '/api/classement?mode=rogue', { token: 'tok-user' });
+    expect((rogue.data.rows as unknown[]).length).toBe(1);
   });
 
   it('filtre par niveau (solo) et par periode=semaine', async () => {

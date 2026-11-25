@@ -100,7 +100,7 @@ export interface DrawableQuestion {
 // Tire nb questions au hasard dans le pool en diversifiant :
 // - au maximum maxParSujet questions du même SUJET détecté (ex. pas 3x One Piece),
 // - au maximum maxPerTheme questions du même THEME (si les questions ont un themeId,
-//   ex. survie / quizz du jour : pas 5 questions de Géographie dans la même série).
+//   ex. rogue / quizz du jour : pas 5 questions de Géographie dans la même série).
 // Tant qu'il reste assez de questions différentes ; sinon on complète avec le reste.
 // `rand` permet un tirage déterministe (quizz du jour : même tirage pour tous le même jour).
 export { subjectOf };

@@ -67,7 +67,7 @@ describe('calculerStats', () => {
     const s = computeStats([
       game(),
       game({
-        mode: 'survie',
+        mode: 'rogue',
         niveau: 'mix',
         players: [
           {
@@ -82,7 +82,7 @@ describe('calculerStats', () => {
       games: 1,
       best: 150,
     });
-    expect(s.perMode.survie).toEqual({
+    expect(s.perMode.rogue).toEqual({
       games: 1,
       best: 40,
     });

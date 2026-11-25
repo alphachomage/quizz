@@ -22,7 +22,7 @@ export default function ResultTiles({
   const tiles = [
     {
       icone: 'check',
-      valeur: mode === 'survie' ? String(bonnes) : `${bonnes}/${total}`,
+      valeur: mode === 'rogue' ? String(bonnes) : `${bonnes}/${total}`,
       label: 'bonnes réponses',
     },
     {
