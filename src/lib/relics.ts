@@ -47,6 +47,18 @@ export const RARETE_COULEUR: Record<RelicRarity, string> = {
   legendaire: '#fbbf24',
 };
 
+// --- Verrouillage par niveau (question 1-based dans la run) ---
+// Pas de relique épique dans les 20 premiers niveaux, pas de légendaire dans les 30 premiers.
+export const NIVEAU_MIN_EPIQUE = 21; // épique autorisé à partir de la question 21
+export const NIVEAU_MIN_LEGENDAIRE = 31; // légendaire autorisé à partir de la question 31
+
+/** Une rareté peut-elle sortir à ce niveau de la run ? (les communs/rares sortent dès le début). */
+export function rareteAutorisee(rarete: string, niveau: number): boolean {
+  if (rarete === 'legendaire') return niveau >= NIVEAU_MIN_LEGENDAIRE;
+  if (rarete === 'epique') return niveau >= NIVEAU_MIN_EPIQUE;
+  return true;
+}
+
 /** Effet machine d'une relique (les descriptions sont en français pour le joueur). */
 export type RelicEffet =
   // --- Temps ---
@@ -606,21 +618,28 @@ function pickWeighted(pool: Relic[], prog: number, rand: () => number): Relic {
 
 /**
  * Propose `nb` reliques : ni déjà prises (sauf cumulables), ni en conflit avec une
- * relique déjà prise. Tirage pondéré par rareté, sans remise. `prog` (0..1) =
+ * relique déjà prise, ni d'une rareté verrouillée à ce niveau (épique < 21,
+ * légendaire < 31). Tirage pondéré par rareté, sans remise. `prog` (0..1) =
  * avancement dans la run : il fait évoluer les poids (début = plutôt commun,
- * fin = plutôt rare/légendaire). `rand` permet des tests déterministes.
+ * fin = plutôt rare/légendaire). `niveau` = numéro de la question à venir (1-based).
+ * `rand` permet des tests déterministes.
  */
 export function drawRelicChoices(
   dejaPrises: string[],
   nb = 3,
   rand: () => number = Math.random,
   prog = 0,
-  raretesMin: RelicRarity[] | null = null
+  raretesMin: RelicRarity[] | null = null,
+  niveau = 1
 ): Relic[] {
   const exclus = new Set(dejaPrises.filter((id) => !RELICS.find((r) => r.id === id)?.cumulable));
   const conf = conflitsDe(dejaPrises);
   let pool = RELICS.filter(
-    (r) => !exclus.has(r.id) && !conf.has(r.num) && (!raretesMin || raretesMin.includes(r.rarete))
+    (r) =>
+      !exclus.has(r.id) &&
+      !conf.has(r.num) &&
+      (!raretesMin || raretesMin.includes(r.rarete)) &&
+      rareteAutorisee(r.rarete, niveau)
   );
   const out: Relic[] = [];
   while (out.length < nb && pool.length > 0) {

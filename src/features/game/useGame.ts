@@ -330,7 +330,7 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
   // Au lancement d'une run rogue : première proposition de reliques (choix de départ).
   useEffect(() => {
     if (mode === 'rogue' && proposals.length === 0 && relics.length === 0) {
-      setProposals(drawRelicChoices([], nbPropositions(computeRogueBonus([])), Math.random, 0));
+      setProposals(drawRelicChoices([], nbPropositions(computeRogueBonus([])), Math.random, 0, null, 1));
       setAPrendre(1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -817,7 +817,8 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
     // Main du destin : une relique au hasard est ajoutée à chaque palier
     if (b.mainDuDestin) {
       const prog = Math.min(1, idxFin / ROGUE_MAX);
-      const auto = drawRelicChoices(relicsRef.current.map((r) => r.id), 1, Math.random, prog)[0];
+      const auto =
+        drawRelicChoices(relicsRef.current.map((r) => r.id), 1, Math.random, prog, null, Math.min(ROGUE_MAX, idxFin + 1))[0];
       if (auto) setRelics((r) => [...r, auto]);
     }
     // Nouveau palier
@@ -829,7 +830,9 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
   function ouvrirChoixRelique() {
     const b = rogueBonusRef.current;
     const prog = Math.min(1, index / ROGUE_MAX);
-    setProposals(drawRelicChoices(relicsRef.current.map((r) => r.id), nbPropositions(b), Math.random, prog));
+    setProposals(
+      drawRelicChoices(relicsRef.current.map((r) => r.id), nbPropositions(b), Math.random, prog, null, Math.min(ROGUE_MAX, index + 1))
+    );
     setAPrendre(nbAPrendre(b));
     setPhase('relique');
   }
@@ -1023,7 +1026,9 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
     if (restant > 0) {
       const b = computeRogueBonus(nouvelles);
       const prog = Math.min(1, index / ROGUE_MAX);
-      setProposals(drawRelicChoices(nouvelles.map((x) => x.id), nbPropositions(b), Math.random, prog));
+      setProposals(
+        drawRelicChoices(nouvelles.map((x) => x.id), nbPropositions(b), Math.random, prog, null, Math.min(ROGUE_MAX, index + 1))
+      );
     } else if (r.effet.t === 'specialiste') {
       // Spécialiste : choisir le thème qui vaut ×2
       setThemeAPicker(true);
@@ -1058,7 +1063,7 @@ export function useGame({ config, prefs, onFinish, onQuit }: UseGameParams): Gam
     setRelics(nouvelles);
     const prog = Math.min(1, index / ROGUE_MAX);
     setProposals(
-      drawRelicChoices(nouvelles.map((x) => x.id), 3, Math.random, prog, ['rare', 'legendaire'])
+      drawRelicChoices(nouvelles.map((x) => x.id), 3, Math.random, prog, ['rare', 'legendaire'], Math.min(ROGUE_MAX, index + 1))
     );
     setRecyclageEtape('nouveau');
   }

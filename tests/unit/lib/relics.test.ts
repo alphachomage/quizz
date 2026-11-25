@@ -15,6 +15,7 @@ import {
   nbAPrendre,
   nbPropositions,
   poidsRarete,
+  rareteAutorisee,
   scoreFinalRogue,
 } from '@lib/relics.js';
 import type { GainContext } from '@lib/relics.js';
@@ -121,6 +122,31 @@ describe('tirage des propositions', () => {
     const choix = drawRelicChoices([], 60, mulberry32(5), 1, ['rare', 'legendaire']);
     expect(choix.length).toBeGreaterThan(0);
     for (const r of choix) expect(['rare', 'legendaire']).toContain(r.rarete);
+  });
+  it('verrouillage par niveau : pas d’épique avant le 21, pas de légendaire avant le 31', () => {
+    expect(rareteAutorisee('commun', 1)).toBe(true);
+    expect(rareteAutorisee('rare', 1)).toBe(true);
+    expect(rareteAutorisee('epique', 20)).toBe(false);
+    expect(rareteAutorisee('epique', 21)).toBe(true);
+    expect(rareteAutorisee('legendaire', 30)).toBe(false);
+    expect(rareteAutorisee('legendaire', 31)).toBe(true);
+    // statistiquement : aucun légendaire proposé pendant les 30 premiers niveaux
+    for (let i = 0; i < 300; i++) {
+      const [r] = drawRelicChoices([], 1, mulberry32(i), 1, null, 1 + (i % 30));
+      expect(r.rarete).not.toBe('legendaire');
+    }
+    // à partir du niveau 31, les légendaires redeviennent possibles (poids de fin élevés)
+    let vu = 0;
+    for (let i = 0; i < 300; i++) {
+      const [r] = drawRelicChoices([], 1, mulberry32(5000 + i), 1, null, 31 + (i % 70));
+      if (r.rarete === 'legendaire') vu++;
+    }
+    expect(vu).toBeGreaterThan(0);
+    // le verrou s'applique aussi au Recyclage (rares ou mieux)
+    for (let i = 0; i < 100; i++) {
+      const [r] = drawRelicChoices([], 1, mulberry32(9000 + i), 0, ['rare', 'legendaire'], 5);
+      expect(r.rarete).toBe('rare');
+    }
   });
   it('pondération progressive : du commun au début, du légendaire à la fin', () => {
     expect(poidsRarete(0, 'commun')).toBe(RARETE_POIDS_DEBUT.commun);
