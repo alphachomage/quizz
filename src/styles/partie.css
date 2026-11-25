@@ -1,12 +1,19 @@
 /* VQuizz — partie (extrait de l'ancien styles.css, ordre conservé) */
 /* ===== Partie ===== */
 
+/* Conteneur de référence pour le positionnement absolu du bouton quitter (haut droite). */
+.partie {
+  position: relative;
+}
+
 .barre-haut {
   display: flex;
   flex-wrap: wrap;
   gap: var(--esp-8);
   align-items: center;
   margin-bottom: var(--esp-10);
+  /* laisse la place à la croix en haut à droite */
+  padding-right: 44px;
 }
 
 .chip {
@@ -42,15 +49,19 @@
   outline: 2px solid var(--or);
 }
 
-/* Bouton croix "quitter la partie" (TopBar) : rond discret, rouge au survol. */
+/* Bouton croix "quitter la partie" : fixé en HAUT À DROITE de l'écran de jeu
+   (hors de la barre d'infos, au-dessus du timer), rond discret, rouge au survol. */
 .bouton-quitter {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   padding: 0;
-  margin-left: var(--esp-6);
   background: var(--carte);
   border: 1px solid var(--bordure);
   border-radius: var(--radius-rond);
