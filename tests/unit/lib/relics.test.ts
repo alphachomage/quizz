@@ -156,8 +156,10 @@ describe('tirage des propositions', () => {
     expect(poidsRarete(0.5, 'rare')).toBeCloseTo((RARETE_POIDS_DEBUT.rare + RARETE_POIDS_FIN.rare) / 2);
     const compte = (prog: number) => {
       const c: Record<string, number> = { commun: 0, rare: 0, legendaire: 0 };
+      // niveau 100 en « fin » pour déverrouiller les légendaires (sinon niveau 1 = verrouillés)
+      const niveau = prog >= 1 ? 100 : 1;
       for (let i = 0; i < 2000; i++) {
-        const [r] = drawRelicChoices([], 1, mulberry32(1000 + i), prog);
+        const [r] = drawRelicChoices([], 1, mulberry32(1000 + i), prog, null, niveau);
         c[r.rarete]++;
       }
       return c;
