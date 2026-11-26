@@ -31,8 +31,8 @@ export default defineConfig({
       // Seuils appliqués en CI (npm run test:coverage) : plancher actuel, à relever
       // (ratchet) quand la couverture monte. Ne jamais les baisser.
       thresholds: {
-        global: { statements: 45, branches: 40, functions: 48, lines: 50 },
-        'src/lib/**': { statements: 50, branches: 35, functions: 55, lines: 50 },
+        global: { statements: 55, branches: 48, functions: 52, lines: 58 },
+        'src/lib/**': { statements: 62, branches: 62, functions: 74, lines: 63 },
       },
     },
   },

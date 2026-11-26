@@ -2,17 +2,11 @@
 // sont similaires (détection floue locale, index pré-calculé).
 import Icon from '@shared/ui/Icon.jsx';
 import { THRESHOLD_IDENTICAL } from '@lib/similarity.js';
+import type { SimilarHit } from '@lib/similarity.js';
 import type { TaggedQuestion } from '@lib/types.js';
 
-// Une question similaire trouvée : la question d'origine + son score (0..1).
-// Défini localement car similarity.ts ne l'exporte pas (type interne de l'index).
-interface SimilarHit {
-  question: TaggedQuestion;
-  score: number;
-}
-
 interface SimilarityAlertProps {
-  avertissement: SimilarHit[];
+  avertissement: SimilarHit<TaggedQuestion>[];
   onAdd: () => void;
   onCancel: () => void;
 }

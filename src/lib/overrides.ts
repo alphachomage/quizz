@@ -29,16 +29,6 @@ export function setOverride(qOriginale: string, entry: OverrideEntry): void {
   saveOverrides(map);
 }
 
-// Retire l'override posé sur une question (elle redevient telle quelle dans le pool).
-export function removeOverride(qOriginale: string): void {
-  const map = loadOverrides();
-  const k = normalizeQuestionText(qOriginale);
-  if (k in map) {
-    delete map[k];
-    saveOverrides(map);
-  }
-}
-
 // Applique les overrides à un catalogue de thèmes : supprime ou remplace les questions
 // concernées. Ne modifie pas le tableau d'entrée (copie défensive).
 export function applyOverrides(themes: Theme[]): Theme[] {

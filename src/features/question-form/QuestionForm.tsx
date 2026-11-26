@@ -5,16 +5,10 @@ import { LEVELS } from '@lib/scoring.js';
 import { loadXp, themeLevel } from '@lib/xp.js';
 import { SUBMISSION_LEVEL_THRESHOLD } from '@lib/submissions.js';
 import { buildIndex, trouverSimilairesIndex, THRESHOLD_SIMILAR } from '@lib/similarity.js';
+import type { SimilarHit } from '@lib/similarity.js';
 import type { LevelId, Submission, TaggedQuestion, Theme } from '@lib/types.js';
 import SimilarityAlert from './components/SimilarityAlert.jsx';
 import AnswersField from './components/AnswersField.jsx';
-
-// Une question similaire trouvée dans l'index (question d'origine + score 0..1).
-// Défini localement car similarity.ts ne l'exporte pas (type interne).
-interface SimilarHit {
-  question: TaggedQuestion;
-  score: number;
-}
 
 interface QuestionFormProps {
   themes: Theme[] | null;
@@ -45,7 +39,7 @@ export default function QuestionForm({
   const [bonne, setBonne] = useState<number | null>(null); // index dans le tableau `reponses`
   const [info, setInfo] = useState('');
   const [error, setError] = useState('');
-  const [avertissement, setAvertissement] = useState<SimilarHit[] | null>(null); // [{ question, score }]
+  const [avertissement, setAvertissement] = useState<SimilarHit<TaggedQuestion>[] | null>(null); // [{ question, score }]
 
   // Index de similarité pré-calculé UNE FOIS pour les 13 000+ questions connues :
   // recalculer la normalisation de tout le corpus à chaque frappe serait trop lent.

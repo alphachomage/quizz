@@ -17,8 +17,8 @@ npm run typecheck        # tsc --noEmit (strict TS) — avant chaque merge
 `vitest.config.ts` (séparé de `vite.config.ts`) définit les seuils appliqués par
 `npm run test:coverage` avant chaque merge :
 
-- global : statements 45 %, branches 40 %, functions 48 %, lignes 50 % ;
-- `src/lib/**` : statements 50 %, branches 35 %, functions 55 %, lignes 50 % ;
+- global : statements 55 %, branches 48 %, functions 52 %, lignes 58 % ;
+- `src/lib/**` : statements 62 %, branches 62 %, functions 74 %, lignes 63 % ;
 - exclus : `src/data/**` (validé par `test:data`) et `src/main.tsx` (bootstrap PWA).
 
 C'est un **plancher, à relever (ratchet)** quand la couverture monte — ne jamais le

@@ -8,7 +8,6 @@ import type { Theme } from '@lib/types.js';
 import {
   loadOverrides,
   setOverride,
-  removeOverride,
   applyOverrides,
 } from '@lib/overrides.js';
 
@@ -64,13 +63,6 @@ describe('overrides admin', () => {
     setOverride('  CAPITALE de la france ! ', { action: 'supprimer' });
     const out = applyOverrides(THEMES);
     expect(out[0].questions).toHaveLength(1);
-  });
-
-  it("removeOverride restaure la question d'origine dans le pool", () => {
-    setOverride('Combien font 2+2 ?', { action: 'supprimer' });
-    expect(applyOverrides(THEMES)[0].questions).toHaveLength(1);
-    removeOverride('Combien font 2+2 ?');
-    expect(applyOverrides(THEMES)[0].questions).toHaveLength(2);
   });
 
   it('loadOverrides reflète setOverride (persisté via le repo)', () => {

@@ -41,24 +41,6 @@ export function recordResults(details: GameDetail[]): void {
   if (dirty) QuestionStatsRepo.save(map);
 }
 
-// Taux de réussite d'une question (0..1), ou null si pas assez de données.
-export function successRate(qText: string, minEvals = 1): number | null {
-  const s = loadQuestionStats()[normalizeQuestionText(qText)];
-  if (!s || s.total < minEvals) return null;
-  return s.correct / s.total;
-}
-
-// Indique si une question est « suspecte » : probablement fausse (taux < 5 % après
-// MIN_EVALS évaluations), ou trop facile pour un niveau « dur » (taux > 98 %).
-export function isSuspecte(qText: string, niveau: string | null | undefined): boolean {
-  const s = loadQuestionStats()[normalizeQuestionText(qText)];
-  if (!s || s.total < MIN_EVALS) return false;
-  const taux = s.correct / s.total;
-  if (taux < TAUX_SUSPECT_FAUX) return true;
-  if (niveau === 'dur' && taux > TAUX_SUSPECT_TROP_FACILE) return true;
-  return false;
-}
-
 // Retire du pool les questions suspectes (si ça laisse assez de questions).
 export function filterByQuality<T extends Question>(
   pool: T[],

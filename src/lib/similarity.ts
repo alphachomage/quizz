@@ -70,19 +70,12 @@ function prevScore(pa: Prep, pb: Prep): number {
   return 0.65 * sMots + 0.35 * sBigrammes;
 }
 
-// Score de similarité entre deux textes, entre 0 et 1.
-export function similarityScore(
-  a: string | null | undefined,
-  b: string | null | undefined
-): number {
-  return prevScore(prep(a), prep(b));
-}
 export const THRESHOLD_SIMILAR = 0.4; // à partir de là, on avertit l'utilisateur
 export const THRESHOLD_IDENTICAL = 0.85; // à partir de là, on dit « quasi identique »
 
 // Entrée d'index pré-calculé : la question d'origine + son texte pré-calculé.
 // Générique sur Q pour conserver le type exact des questions indexées.
-interface IndexEntry<Q extends { q: string }> {
+export interface IndexEntry<Q extends { q: string }> {
   question: Q;
   prep: Prep;
 }
@@ -99,7 +92,7 @@ export function buildIndex<Q extends { q: string }>(questions: Q[]): IndexEntry<
 }
 
 // Résultat d'une recherche de similarité.
-interface SimilarHit<Q> {
+export interface SimilarHit<Q> {
   question: Q;
   score: number;
 }
@@ -121,16 +114,4 @@ export function trouverSimilairesIndex<Q extends { q: string }>(
     .filter((x) => x.score >= threshold)
     .sort((a, b) => b.score - a.score)
     .slice(0, max);
-}
-
-// Cherche les questions les plus proches d'un texte donné (construit l'index à
-// la volée : pour un usage ponctuel, ex. la validation du formulaire).
-// `questions` : liste d'objets contenant au moins { q, themeNom, themeCouleur }
-export function trouverSimilaires<Q extends { q: string }>(
-  text: string,
-  questions: Q[],
-  threshold: number = THRESHOLD_SIMILAR,
-  max: number = 5
-): SimilarHit<Q>[] {
-  return trouverSimilairesIndex(text, buildIndex(questions), threshold, max);
 }
