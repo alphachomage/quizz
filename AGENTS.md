@@ -13,7 +13,7 @@
 
 Quiz web rapide façon QuizUp, en **React 18 + Vite 6 + WPA (vite-plugin-pwa)**, déployé
 sur Cloudflare Workers (`https://voltquiz.joris-leo81.workers.dev`). 4 modes : Solo
-(3 niveaux), Duel 1v1 local, Survie (1 vie), Quizz du jour (tirage seedé + série de jours).
+(3 niveaux), Duel 1v1 local, Rogue Quizz (3 vies, reliques), Quizz du jour (tirage seedé + série de jours).
 Comptage réel des questions : `npm run count:questions`. Persistance : cache localStorage + base serveur **Cloudflare D1 par défaut**
 (mode `d1` par défaut, `?stockage=local` pour forcer le hors-ligne — voir `docs/stockage-d1.md`).
 Admin : `?admin=1` + flag `admin=1` sur le compte en D1 (`comptes.admin`, vérifié via `/api/admin/check` — `docs/features/admin.md`).
@@ -26,7 +26,7 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
 2. **Code en anglais, commentaires en français** (uniquement quand une décision n'est pas
    limpide — ne pas commenter l'évident). **TypeScript partout** : `src/`, `tests/`, `worker*.ts`, `durable-objects/`, `vite.config.ts`,
    `vitest.config.ts` sont en `.ts`/`.tsx` strict (`npm run typecheck` = `tsc --noEmit`, vert requis).
-   Restent en JS pur : les 263 fichiers `src/data/questions-*.js` + `theme-manifest.js` généré
+   Restent en JS pur : les fichiers `src/data/questions-*.js` + `theme-manifest.js` généré
    (règle 7 ; type déclaré dans `src/data/questions.d.ts`), `eslint.config.ts` et `scripts/*.mjs`. Exception documentée : les **clés du schéma de
    données** (`q`, `reponses`, `bonne`, `niveau`, `info`, `nom`, `icone`, `couleur`) restent
    en français car c'est le format JSON documenté pour le client
@@ -50,7 +50,7 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
    avec justification en commentaire), `react-refresh/only-export-components` warn,
    `no-console` error, `no-unused-vars` warn (préfixe `_` pour ignorer).
 7. **Ne JAMAIS toucher** à `node_modules/`, `dist/`, `backups/`, `.wrangler/`, et ne jamais
-   modifier les 263 fichiers `src/data/questions-*.js` (ajout uniquement).
+   modifier les fichiers `src/data/questions-*.js` (ajout uniquement).
 8. **Pas de nouvelle librairie externe** sans justification écrite (pour + contre) dans
    la PR/commit — dépendances : react, react-dom, zod (runtime) + tooling (vite, vitest,
    eslint, typescript, wrangler...). Décision TS documentée dans `docs/methodologie.md`.

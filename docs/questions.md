@@ -8,17 +8,17 @@ Le compteur de référence est la commande (ne jamais citer de chiffre en dur) :
 npm run count:questions   # node scripts/count-questions.mjs
 ```
 
-Résultat actuel : **14 thèmes en fichiers, 13 561 questions** (263 fichiers
-`src/data/questions-*.js`), 73 doublons exacts, 0 question invalide. Parmi ces 14
-thèmes, **2 sont retirés du jeu** (`RETIRED_THEMES = ['insolite', 'pop-culture']` dans
+Résultat actuel : chiffres à jour via `npm run count:questions` (thèmes, questions,
+doublons, invalides ; ne jamais les écrire en dur ici), fichiers `src/data/questions-*.js`.
+Parmi les thèmes en fichiers, **2 sont retirés du jeu** (`RETIRED_THEMES = ['insolite', 'pop-culture']` dans
 `src/data/questions.ts` : leurs 150 questions chacune ont été reclassées dans les
-autres thèmes via `questions-redistribution.js`) -> **12 thèmes actifs**.
+autres thèmes via `questions-redistribution.js`) -> les autres thèmes sont actifs.
 
 ```bash
 npm run test:data         # test de schéma (zod) sur tout le corpus
 ```
 
-Ne JAMAIS modifier les 263 fichiers existants (ajout uniquement) — voir le guide pas à
+Ne JAMAIS modifier les fichiers existants (ajout uniquement) — voir le guide pas à
 pas **`docs/ajouter-questions.md`**. `scripts/gen-manifest.mjs` régénère
 `src/data/theme-manifest.js` + `CORPUS_VERSION` (auto via `predev`/`prebuild`, ou à la
 main : `npm run gen:manifest`).
@@ -32,7 +32,7 @@ PWA précache tous les chunks (hors-ligne OK).
 **Premier lancement** (ou après un changement de version du corpus) : `loadThemes()`
 fetch d'abord **`public/corpus.json`** (généré au build par `scripts/gen-corpus-json.mjs`,
 tout le corpus fusionné en un seul JSON minifié de ~2,4 Mo avec `version`, précaché par
-la PWA car dans `public/` — 1 requête au lieu de 263 chunks), fallback sur les chunks
+la PWA car dans `public/` — 1 requête au lieu d’un chunk par fichier), fallback sur les chunks
 `import.meta.glob` si le fetch échoue ou si la version ne correspond. Puis le corpus est
 indexé dans **IndexedDB** (`src/lib/question-db.ts`, base `voltquiz-questions`, store
 `questions` avec index `by_theme` et `by_theme_niveau`) avec la version du corpus
@@ -41,7 +41,7 @@ indexé dans **IndexedDB** (`src/lib/question-db.ts`, base `voltquiz-questions`,
 
 **Démarrages suivants** : si la version stockée dans IndexedDB === `CORPUS_VERSION`,
 `loadThemes()` lit le corpus directement depuis IndexedDB (`loadCorpus`) — beaucoup plus
-rapide que 263 requêtes de chunks + parsing JS. Sinon (ou si IndexedDB est indisponible :
+rapide qu’une requête par chunk + parsing JS. Sinon (ou si IndexedDB est indisponible :
 navigation privée, vieux navigateur), repli sur les chunks + réindexation.
 
 Seules les métadonnées (`THEMES_META`, depuis `theme-manifest.js`, ~2 Ko) restent

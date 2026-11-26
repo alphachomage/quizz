@@ -6,7 +6,7 @@
   (fetch d'abord) ; les sous-agents travaillent chacun dans leur **worktree** dédié.
 - Un seul sujet par branche. Commit conventionnel (`feat:`/`fix:`/`perf:`/`refactor:`/`docs:`/`chore:`),
   push de la branche, **review** puis merge `--no-ff` sur `main`, push.
-- Ne jamais toucher `node_modules/`, `dist/`, `backups/`, `.wrangler/`, ni les 263
+- Ne jamais toucher `node_modules/`, `dist/`, `backups/`, `.wrangler/`, ni les
   fichiers `src/data/questions-*.js` (ajout uniquement).
 
 ## Checklist avant chaque merge (code ET docs)
@@ -36,7 +36,7 @@
 
 **Décision** : tout `src/` passe en `.ts`/`.tsx` (migration incrémentale : `lib/` d'abord,
 puis `shared/`, `app/`, puis `features/`), `tsc --noEmit` strict, vérifié avant chaque merge (`npm run typecheck`, règle 11).
-Les 263 fichiers `src/data/questions-*.js` restent en JS (règle 7) avec le type déclaré dans
+Les fichiers `src/data/questions-*.js` restent en JS (règle 7) avec le type déclaré dans
 `src/data/questions.d.ts` ; le schéma zod (`src/lib/schema.ts`) reste la source de vérité
 runtime (`z.infer` donne les types).
 

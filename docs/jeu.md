@@ -9,11 +9,38 @@ Toutes les constantes vivent dans `src/lib/scoring.ts`, `src/lib/draw.ts`,
   questions tirées dans le niveau du thème (`SOLO_QUESTIONS = 10`).
 - **Duel 1v1** : 2 joueurs sur le même appareil, 6 questions chacun (`DUEL_QUESTIONS = 6`),
   mêmes questions, écran « passe l'appareil » (`PassDevice`) entre chaque tour.
-- **Survie** : tous thèmes + tous niveaux mélangés, 1 vie, plafond 30 questions
-  (`SURVIVAL_MAX = 30`) ; la première faute (ou le temps écoulé) termine la partie.
+- **Rogue Quizz** : voir la section dédiée ci-dessous (remplace l'ancien mode Survie).
 - **Quizz du jour** : 10 questions parmi tous les thèmes/niveaux (`DAILY_QUESTIONS`),
   tirage seedé par la date (`dailyQuestions` dans `src/lib/draw.ts`) -> identiques
   pour tout le monde le même jour.
+
+## Rogue Quizz (remplace l'ancien mode Survie)
+
+Constantes dans `src/lib/scoring.ts` (`ROGUE_MAX`, `ROGUE_VIES_DEPART`, `ROGUE_STEP`,
+`RELIC_CHOICE_SECONDS`), reliques dans `src/lib/relics.ts`, tirage dans
+`src/features/game/draw.ts` (`drawRogueSeries`), état de run dans `useGame.ts`.
+
+- **Run** : tous thèmes mélangés, `ROGUE_MAX = 100` questions maximum, **3 vies** au départ
+  (`ROGUE_VIES_DEPART`). Une erreur (ou le temps écoulé) coûte une vie ; à 0 vie la run
+  s'arrête (certaines reliques modifient ces règles : vies max, bouclier, etc.).
+- **Paliers** : un palier = `ROGUE_STEP = 10` questions, soit 10 paliers pour 100 questions.
+  La difficulté monte par palier (poids facile/moyen/dur dans `ROGUE_PALIER_POIDS`) :
+  palier 1 tout facile, palier 5 tout moyen, paliers 9 et 10 tout dur, avec des paliers
+  mixtes entre les deux. Max 2 questions du même sujet, plafond par thème sur la run.
+- **Reliques** : 60 reliques (30 communes, 23 rares, 7 légendaires, effets cumulables
+  selon la relique, certaines ont un malus, synergies et conflits). **1 relique parmi 3** est
+  proposée au départ, puis à chaque palier terminé.
+- **Timer du choix** : `RELIC_CHOICE_SECONDS = 20` s ; à 0, une relique est choisie
+  automatiquement. Refuser le choix n'est possible qu'avec la relique Ascète (+150 pts).
+- **Pondération et verrouillage des raretés** : les poids de tirage évoluent avec la
+  progression (surtout du commun au début, plus de rare/légendaire vers la fin,
+  `poidsRarete`). Verrouillage par niveau : pas de légendaire avant la question 31
+  (`NIVEAU_MIN_LEGENDAIRE`) ; le seuil épique (`NIVEAU_MIN_EPIQUE = 21`) est prévu mais
+  aucune relique épique n'existe pour l'instant.
+- **Temps** : 10 s par question, **+3 s pour les questions « dur »** (`DUR_BONUS_DUR`,
+  `dureePourNiveau`) ; ce bonus vaut pour TOUS les modes, pas seulement Rogue.
+- **Tutoriel** : affiché une seule fois (popin `ModeConfirmModal`), ensuite la tuile
+  lance directement la run. Le tutoriel général est dans `src/features/tutorial/`.
 
 ## Minuteur, score, manches
 
@@ -32,7 +59,7 @@ Toutes les constantes vivent dans `src/lib/scoring.ts`, `src/lib/draw.ts`,
 
 - `drawSeries(pool, nb, maxParSujet=2, maxParTheme, rand)` dans `src/lib/draw.ts` :
   max 2 questions du même « sujet » (nom propre détecté par `subjectOf`, ex. « One
-  Piece »), et en multi-thèmes (survie) un plafond par thème. Construction de la
+  Piece »), et en multi-thèmes (Rogue Quizz) un plafond par thème. Construction de la
   partie : `drawGameQuestions(config)` dans `src/features/game/draw.ts`, ordre des
   réponses mélangé par `withShuffledAnswers`, thème tagué par `tagTheme`.
 - Anti-répétition : la dernière série jouée est mémorisée (`src/lib/series.ts`,

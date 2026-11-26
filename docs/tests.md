@@ -5,7 +5,7 @@
 ```bash
 npm test                 # toute la suite Vitest (tests/unit + tests/integration + tests/data)
 npm run test:game      # UNIQUEMENT le flux solo (tests/integration/game-solo.test.tsx)
-npm run test:game:duel / :survival / :daily   # game-duel / game-survival / game-daily
+npm run test:game:duel / :daily   # game-duel / game-daily
 npm run test:unit        # tests/unit/**  ·  npm run test:integration  ·  npm run test:data
 npm run test:scoring / :draw / :similarity / :accounts
 npm run test:coverage    # couverture avec seuils appliqués (échoue si en dessous)
@@ -35,7 +35,7 @@ tests/
 ├── unit/shared/                  # useStorage : snapshots stables (régression React #185)
 ├── unit/worker/                  # api-kv : route /api/kv (D1 factice) — POST/GET/DELETE, plafonds body
 ├── unit/features/                # game-draw, result-persist, stats-compute
-├── integration/                  # game-solo, game-duel, game-survival, game-daily,
+├── integration/                  # game-solo, game-duel, game-rogue, game-daily,
 │                                 # app-shell (parcours complet invité -> partie)
 └── data/                         # questions-schema.test.ts + corpus-draw.test.ts :
                                   #   seuls tests sur le vrai corpus (schéma zod, doublons,

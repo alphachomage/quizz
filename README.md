@@ -56,8 +56,8 @@ Puis ouvre **http://localhost:5173** dans Chrome ou Edge.
 Pour **arrêter** : `Ctrl + C` dans le terminal.
 
 **Comment jouer** : choisis un mode — **Solo** (puis un niveau : Facile / Moyen / Dur),
-**Duel 1v1** (deux joueurs sur le même PC, pseudos suggérés si déjà vus), **Survie**
-(1 vie, jusqu'à 30 questions) ou **Quizz du jour** (le même pour tout le monde) —
+**Duel 1v1** (deux joueurs sur le même PC, pseudos suggérés si déjà vus), **Rogue Quizz**
+(100 questions max, 3 vies, reliques à choisir tous les 10 questions) ou **Quizz du jour** (le même pour tout le monde) —
 puis un thème, et c'est parti !
 
 **Règles** : 10 s par question, 10 questions en solo (6 par joueur en duel), en
