@@ -11,13 +11,27 @@
 
 ## C'est quoi ?
 
-Quiz web rapide façon QuizUp, en **React 18 + Vite 6 + WPA (vite-plugin-pwa)**, déployé
+Quiz web rapide façon QuizUp, en **React 18 + Vite 6 + PWA (vite-plugin-pwa)**, déployé
 sur Cloudflare Workers (`https://voltquiz.joris-leo81.workers.dev`). 4 modes : Solo
 (3 niveaux), Duel 1v1 local, Rogue Quizz (3 vies, reliques), Quizz du jour (tirage seedé + série de jours).
 Comptage réel des questions : `npm run count:questions`. Persistance : cache localStorage + base serveur **Cloudflare D1 par défaut**
 (mode `d1` par défaut, `?stockage=local` pour forcer le hors-ligne — voir `docs/stockage-d1.md`).
 Admin : `?admin=1` + flag `admin=1` sur le compte en D1 (`comptes.admin`, vérifié via `/api/admin/check` — `docs/features/admin.md`).
 Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Capacitor.
+
+## Avant de commencer (obligatoire, à chaque session)
+
+Plusieurs agents (et humains) poussent sur `main` en parallèle : un `main` local en retard
+a déjà fait travailler un agent sur un état du projet vieux de 66 commits.
+
+```bash
+git fetch && git status -sb          # "behind N" ? -> git merge --ff-only origin/main
+npm ci                               # si package-lock.json a bougé
+npm run lint && npm test             # partir d'un état vert, sinon le signaler d'abord
+```
+
+Toute branche part de `origin/main` à jour. Si une consigne de ce fichier contredit le code,
+**le code fait foi** : corrige la doc dans la même branche au lieu de suivre la consigne périmée.
 
 ## Règles absolues (non négociables)
 
@@ -27,7 +41,7 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
    limpide — ne pas commenter l'évident). **TypeScript partout** : `src/`, `tests/`, `worker*.ts`, `api/`, `durable-objects/`, `vite.config.ts`,
    `vitest.config.ts` sont en `.ts`/`.tsx` strict (`npm run typecheck` = `tsc --noEmit`, vert requis).
    Restent en JS pur : les fichiers `src/data/questions-*.js` + `theme-manifest.js` généré
-   (règle 7 ; type déclaré dans `src/data/questions.d.ts`), `eslint.config.ts` et `scripts/*.mjs`. Exception documentée : les **clés du schéma de
+   (règle 7 ; type déclaré dans `src/data/questions.d.ts`), `eslint.config.js` et `scripts/*.mjs`. Exception documentée : les **clés du schéma de
    données** (`q`, `reponses`, `bonne`, `niveau`, `info`, `nom`, `icone`, `couleur`) restent
    en français car c'est le format JSON documenté pour le client
    (`docs/questions.md`) et les clés localStorage existantes.
@@ -45,7 +59,9 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
    `src/lib/nav.ts` (origine/params URL/reload) et `src/app/urlFlags.ts` (flags URL).
    Règle R5 appliquée en ERREUR par ESLint (exemption UNIQUEMENT pour `storage.ts`,
    `nav.ts`, `urlFlags.ts`).
-6. **ESLint : 0 erreur ET 0 warning tolérés** (`npm run lint`). Règles revues pour React :
+6. **ESLint : 0 erreur ET 0 warning tolérés** (`npm run lint`, qui lance aussi
+   `scripts/check-repo.mjs` : emojis, chemins cités dans la doc, scripts npm, termes périmés —
+   ne jamais contourner ce contrôle, corriger la cause ; s'il se trompe, corriger le script et dire pourquoi). Règles revues pour React :
    `react-hooks/rules-of-hooks` error, `exhaustive-deps` warn (désactivable au cas par cas
    avec justification en commentaire), `react-refresh/only-export-components` warn,
    `no-console` error, `no-unused-vars` warn (préfixe `_` pour ignorer).
@@ -56,7 +72,9 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
    eslint, typescript, wrangler...). Décision TS documentée dans `docs/methodologie.md`.
 9. **Tests : couverture appliquée**. `npm run test:coverage` échoue si les seuils de
    `vitest.config.ts` ne sont pas atteints (plancher actuel, à relever — ratchet).
-   Tester UNE feature seule : `npm run test:game`, `test:game:duel`, `test:scoring`…
+   Tester UNE feature seule : `npm run test:game`, `test:game:duel`, `test:game:rogue`,
+   `test:game:daily`, `test:scoring`… Un script npm qui cite un fichier inexistant casse
+   `npm run lint` (`scripts/check-repo.mjs`) : en renommant/supprimant un test, mettre à jour `package.json`.
 10. **Environnements explicites** : `npm run dev` = local (5173) ; `npm run preview` = build
     local servi (4173) ; `npm run deploy:preview` = Cloudflare **preview** (D1 active) ;
     `npm run deploy` = Cloudflare **prod**. Ne jamais déployer la prod depuis une branche
@@ -78,7 +96,15 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
     Pas de CI GitHub (supprimée) : Cloudflare déploie automatiquement chaque push sur
     `main` (Workers Builds, aucun secret dans GitHub) ; les vérifications de la règle 11
     se font en local avant chaque push.
-14. Pas de `console.log` dans `src/` (scripts/ exceptés), pas de code mort.
+14. Pas de `console.log` dans `src/` (scripts/ exceptés), pas de code mort : une fonction
+    exportée **utilisée seulement par les tests** est du code mort (la supprimer avec ses tests).
+15. **Renommer, remplacer ou supprimer une feature** (mode, écran, fichier, commande) :
+    dans la même branche, `grep -rn "<ancien nom>" AGENTS.md README.md docs/ package.json tests/`
+    et tout mettre à jour (l’ancien mode Survie, remplacé par Rogue Quizz, était resté cité partout).
+    Ajouter l'ancien nom à la liste `STALE` de `scripts/check-repo.mjs` pour qu'il ne revienne pas.
+16. **Ce fichier n'est pas un journal** : pas d'historique daté ni de chiffres (nombre de
+    questions, de badges, de fichiers) qui se périment. L'historique va dans `CHANGELOG.md`,
+    les procédures durables dans le `docs/` concerné.
 
 ## Commandes
 
@@ -88,7 +114,7 @@ npm run build            # build prod (dist/) + génère le manifeste des thème
 npm run preview          # PROD buildée servie en local -> http://localhost:4173
 npm run deploy:preview   # déploiement Cloudflare PREVIEW (env preview, D1 active)
 npm run deploy           # déploiement Cloudflare PROD
-npm run lint             # eslint (0 erreur, 0 warning) ; lint:arch = pas de cycle
+npm run lint             # eslint (0 erreur, 0 warning) + check-repo ; lint:arch = pas de cycle
 npm run typecheck        # tsc --noEmit (strict sur les .ts/.tsx)
 npm test                 # tous les tests Vitest ; test:game = flux solo seul (~2 s)
 npm run test:coverage    # couverture avec seuils appliqués (échoue si en dessous)
@@ -110,7 +136,7 @@ npx wrangler deploy --dry-run   # valide worker.ts + wrangler.toml sans déploye
 | XP, badges, titres, classement, stats                           | `docs/progression.md`    |
 | Sécurité (headers, CSP, zod, hash, gate admin `comptes.admin`)  | `docs/securite.md`       |
 | localStorage (cache) + D1 (base par défaut), décision mobile    | `docs/stockage-d1.md`    |
-| Déploiement Cloudflare + CI + envs dev/prod                     | `docs/deploiement.md`    |
+| Déploiement Cloudflare (auto depuis `main`) + envs dev/prod     | `docs/deploiement.md`    |
 | Tests (quoi, où, commandes, couverture)                         | `docs/tests.md`          |
 | Méthodologie (branches, worktrees, review code+docs, décisions) | `docs/methodologie.md`   |
 | Mobile (Capacitor)                                              | `docs/mobile.md`         |
@@ -119,25 +145,3 @@ npx wrangler deploy --dry-run   # valide worker.ts + wrangler.toml sans déploye
 | Écrans détaillés                                                | `docs/features/`         |
 
 Le client n'est pas développeur : `README.md` (racine) reste le guide pas à pas.
-
-## Dédoublonnage du corpus (fait le 2026-11-22)
-
-- `node scripts/dedupe-questions.mjs` : supprime les doublons exacts (même question normalisée
-  dans le même thème, comme `npm run count:questions`), garde la 1ère occurrence, réécrit
-  uniquement les fichiers concernés (en-tête et nom d'export conservés).
-  Résultat : 73 doublons supprimés, `doublons exacts : 0`, 13 488 questions, 12 thèmes actifs ≥ 1079.
-  Sauvegarde des données avant run : `backups/data-avant-dedup-*`.
-
-## 4 nouveaux thèmes (ajoutés le 2026-11-22, objectif 1000 questions chacun ATTEINT)
-
-- `technologie` (Technologie & Internet, icône `chip`, `#38bdf8`) : 1000 questions
-- `nature` (Nature & Animaux, icône `paw`, `#4ade80`) : 1000 questions
-- `economie` (Économie & Marques, icône `coins`, `#fbbf24`) : 1000 questions
-- `auto` (Voitures & Auto-moto, icône `car`, `#fb7185`) : 1001 questions
-- Packs de départ écrits à la main (`questions-<theme>.js`, 40 q) puis vagues de sous-agents
-  (`questions-vague<N>-<theme>-*.js`, 300 q par vague = 6 fichiers de 50, complément final
-  `questions-vague5-<theme>-a1.js` de 60). Anti-doublons normalisé à chaque lot -> corpus à 0 doublon.
-- 12 titres dédiés (3 par thème dans `TITLES_PER_THEME`, `src/lib/titles.ts`) -> 62 titres au total.
-- 9 badges dédiés (`src/lib/badges.ts` : niveau 3 + 5 sur chacun des 4 thèmes via `themeLevels`,
-  - `themes-16`) -> 39 badges au total. Icônes `chip`/`paw`/`coins`/`car` ajoutées dans `src/shared/ui/Icon.tsx`.
-- Couleurs reprises de la palette fixe de `docs/design.md` (jamais de couleur inventée).

@@ -18,7 +18,7 @@ Chiffres du corpus : toujours `npm run count:questions`, jamais un nombre en dur
 | Stockage D1 | `docs/stockage-d1.md` | persistance, base serveur par défaut | `lib/storage.ts` (STORAGE_KEYS + mode d1), `lib/repositories.ts`, `lib/api.ts`, tables (sync_client, comptes, parties, records, xp, soumissions), migrations, `/api/*`, décision mobile |
 | Déploiement | `docs/deploiement.md` | publier | 4 environnements (dev 5173 / preview 4173 / deploy:preview / deploy), déploiement auto Cloudflare depuis `main` (Workers Builds, sans GitHub Action) |
 | Tests | `docs/tests.md` | ajouter un test | arborescence tests/, commandes par feature, couverture à seuils (ratchet) |
-| Méthodologie | `docs/methodologie.md` | git, review, subagents | branches + worktrees, review code+docs, décisions techniques documentées |
+| Méthodologie | `docs/methodologie.md` | git, review, subagents | branches + worktrees, brief type des sous-agents, format des commits, checklist de merge, leçons de l'audit (`scripts/check-repo.mjs`) |
 | Mobile | `docs/mobile.md` | roadmap appli | Capacitor, PWA -> Android/iOS, stockage natif |
 | Écran accueil | `docs/features/accueil.md` | modifier l'accueil | `features/home/` : modes, thèmes, modale niveau, CTA fixe |
 | Écran partie | `docs/features/game.md` | modifier le jeu | `features/game/` : useGame, useTimer, draw, sous-composants |

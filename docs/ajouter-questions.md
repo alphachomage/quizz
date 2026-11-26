@@ -143,9 +143,9 @@ mode Solo ait un pool suffisant par difficulté.
 |---|---|
 | `theme-manifest.js` régénéré (métadonnées + `CORPUS_VERSION`) | auto avant `npm run dev` / `npm run build` (`predev`/`prebuild`), ou à la main `npm run gen:manifest` |
 | Invalidation du cache IndexedDB des joueurs | auto : `CORPUS_VERSION` change dès qu'un fichier `questions-*.js` est ajouté/modifié/supprimé |
-| Chunk lazy + précache PWA (hors-ligne) | auto au build (un chunk par fichier `questions-*.js`) |
+| `public/corpus.json` (tout le corpus, précaché PWA = hors-ligne) | auto au build (`scripts/gen-corpus-json.mjs`) ; les chunks `questions-*.js` restent servis en ligne pour le repli mais ne sont pas précachés |
 | Validation du schéma (zod) | `npm run test:data` + test auto dans `npm test` |
-| Détection de doublons exacts | `npm run count:questions` (73 doublons actuels, à surveiller) |
+| Détection de doublons exacts | `npm run count:questions` (le nombre ne doit jamais augmenter) |
 | Modération in-app (propositions des joueurs) | bouton « Proposer une question » (niveau 3 requis), validation dans `?admin=1` |
 
 ---
@@ -173,3 +173,25 @@ Deux façons **sans toucher aux fichiers source** :
    zod au chargement). Pratique pour tester ses questions avant de les proposer.
 
 Voir `docs/questions.md` pour le détail.
+
+---
+
+## 6. Ajouts en masse (vagues de sous-agents) et dédoublonnage
+
+Méthode utilisée pour monter chaque thème vers son objectif :
+
+- un pack de départ écrit à la main (`questions-<theme>.js`), puis des **vagues** de
+  sous-agents : `questions-vague<N>-<theme>-<lot>.js`, environ 50 questions par fichier ;
+- avant chaque lot, donner au sous-agent la liste normalisée des questions existantes
+  du thème (anti-doublon) et lui imposer le format de la section 1 ;
+- après chaque vague : `npm run count:questions` (doublons pas en hausse, 0 invalide).
+
+Dédoublonnage exact : `node scripts/dedupe-questions.mjs` supprime les doublons (même
+question normalisée dans le même thème, même règle que `count:questions`), garde la
+première occurrence et réécrit uniquement les fichiers concernés. C'est la **seule**
+exception tolérée à la règle 7 (fichiers existants modifiés) : faire une sauvegarde dans
+`backups/` avant, et le noter dans `CHANGELOG.md`.
+
+Un nouveau thème s'accompagne de titres (`TITLES_PER_THEME`, `src/lib/titles.ts`) et de
+badges (`themeLevels`, `src/lib/badges.ts`) dédiés, et d'une icône dans `src/shared/ui/Icon.tsx`.
+
