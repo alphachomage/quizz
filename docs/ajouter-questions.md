@@ -65,8 +65,8 @@ git add src/data/questions-histoire-z.js
 git commit -m "feat(questions): +10 questions histoire"
 ```
 
-C'est tout. Au prochain `npm run dev` / `npm run build` (les `predev`/`prebuild`
-lancent automatiquement les deux scripts) :
+C'est tout. Au prochain `npm run dev` / `npm run build` (Vite lance automatiquement
+les deux scripts au démarrage) :
 - `scripts/gen-manifest.mjs` régénère `theme-manifest.js` **avec un nouveau
   `CORPUS_VERSION`** (hash des fichiers) → le cache IndexedDB des joueurs est
   invalidé automatiquement, ils reçoivent les nouvelles questions au prochain
@@ -141,7 +141,7 @@ mode Solo ait un pool suffisant par difficulté.
 
 | Mécanisme | Quand |
 |---|---|
-| `theme-manifest.js` régénéré (métadonnées + `CORPUS_VERSION`) | auto avant `npm run dev` / `npm run build` (`predev`/`prebuild`), ou à la main `npm run gen:manifest` |
+| `theme-manifest.js` régénéré (métadonnées + `CORPUS_VERSION`) | auto au démarrage de Vite (`npm run dev`, `npm run build`, `npm run deploy` : plugin `generateCorpus` de `vite.config.ts`), ou à la main `npm run gen:manifest` |
 | Invalidation du cache IndexedDB des joueurs | auto : `CORPUS_VERSION` change dès qu'un fichier `questions-*.js` est ajouté/modifié/supprimé |
 | `public/corpus.json` (tout le corpus, précaché PWA = hors-ligne) | auto au build (`scripts/gen-corpus-json.mjs`) ; les chunks `questions-*.js` restent servis en ligne pour le repli mais ne sont pas précachés |
 | Validation du schéma (zod) | `npm run test:data` + test auto dans `npm test` |

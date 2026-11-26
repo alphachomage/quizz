@@ -20,7 +20,7 @@ npm run test:data         # test de schéma (zod) sur tout le corpus
 
 Ne JAMAIS modifier les fichiers existants (ajout uniquement) — voir le guide pas à
 pas **`docs/ajouter-questions.md`**. `scripts/gen-manifest.mjs` régénère
-`src/data/theme-manifest.js` + `CORPUS_VERSION` (auto via `predev`/`prebuild`, ou à la
+`src/data/theme-manifest.js` + `CORPUS_VERSION` (auto au démarrage de Vite, plugin `generateCorpus` de `vite.config.ts`, ou à la
 main : `npm run gen:manifest`).
 
 ## Chargement : IndexedDB (cache persistant) + chunks lazy en fallback
@@ -32,7 +32,7 @@ et ne servent qu'en repli en ligne (chargés à la demande, sans cache dédié).
 repose sur `corpus.json` précaché puis sur IndexedDB. Précache : ~13 Mo avant, ~7 Mo après.
 
 **Premier lancement** (ou après un changement de version du corpus) : `loadThemes()`
-fetch d'abord **`public/corpus.json`** (généré au build par `scripts/gen-corpus-json.mjs`,
+fetch d'abord **`public/corpus.json`** (généré à chaque démarrage de Vite par `scripts/gen-corpus-json.mjs`, **non versionné dans git**,
 tout le corpus fusionné en un seul JSON minifié de ~5,9 Mo avec `version`, précaché par
 la PWA car dans `public/` — 1 requête au lieu d’un chunk par fichier), fallback sur les chunks
 `import.meta.glob` si le fetch échoue ou si la version ne correspond. Puis le corpus est

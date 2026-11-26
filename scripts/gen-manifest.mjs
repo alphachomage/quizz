@@ -1,7 +1,7 @@
 // scripts/gen-manifest.mjs — génère src/data/theme-manifest.js :
 // la liste des thèmes (id, nom, icône, couleur) SANS les questions, pour que
 // l'appli démarre avec un petit chunk initial et charge les questions à la demande.
-// Lancé automatiquement avant `npm run dev` et `npm run build` (predev/prebuild),
+// Lancé automatiquement au démarrage de Vite (plugin generateCorpus de vite.config.ts),
 // et à la main avec `npm run gen:manifest` après ajout de fichiers questions-*.
 import fs from 'node:fs';
 import path from 'node:path';
