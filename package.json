@@ -23,6 +23,7 @@
     "test:scoring": "vitest run tests/unit/lib/scoring.test.ts",
     "count:questions": "node scripts/count-questions.mjs",
     "audit:questions": "node scripts/audit-questions.mjs",
+    "questions:ids": "node scripts/assign-question-ids.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "tail": "wrangler tail --format pretty",

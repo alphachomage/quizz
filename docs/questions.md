@@ -8,43 +8,68 @@ Le compteur de référence est la commande (ne jamais citer de chiffre en dur) :
 npm run count:questions   # node scripts/count-questions.mjs
 ```
 
-Résultat actuel : chiffres à jour via `npm run count:questions` (thèmes, questions,
-doublons, invalides ; ne jamais les écrire en dur ici), fichiers `src/data/questions-*.js`.
-Parmi les thèmes en fichiers, **2 sont retirés du jeu** (`RETIRED_THEMES = ['insolite', 'pop-culture']` dans
-`src/data/questions.ts` : leurs 150 questions chacune ont été reclassées dans les
-autres thèmes via `questions-redistribution.js`) -> les autres thèmes sont actifs.
+Le corpus vit dans **`content/`** (JSON, source de vérité, versionné) :
 
-```bash
-npm run test:data         # test de schéma (zod) sur tout le corpus
+```
+content/
+  themes.json                # [{ id, nom, icone, couleur, actif }] — ORDRE significatif
+  questions/<themeId>.json   # { "theme": "<id>", "questions": [ { id, q, reponses, bonne, niveau, info? } ] }
 ```
 
-Ne JAMAIS modifier les fichiers existants (ajout uniquement) — voir le guide pas à
-pas **`docs/ajouter-questions.md`**. `scripts/gen-manifest.mjs` régénère
-`src/data/theme-manifest.js` + `CORPUS_VERSION` (auto au démarrage de Vite, plugin `generateCorpus` de `vite.config.ts`, ou à la
-main : `npm run gen:manifest`).
+Une question par ligne (diffs git lisibles). `actif: false` = thème retiré du jeu : ses
+questions restent dans `content/` mais ne figurent ni dans `corpus.json` ni dans le manifeste.
+Chiffres à jour via `npm run count:questions` (thèmes, questions, doublons, invalides ; ne
+jamais les écrire en dur ici).
+
+```bash
+npm run test:data         # structure de content/ + schéma zod de tout le corpus
+npm run questions:ids     # attribue un id aux questions ajoutées sans id (n'en change aucun autre)
+```
+
+### Identifiants et ordre (à ne jamais casser)
+
+- Chaque question a un **id stable** `<theme>-<hex>` (6 premiers hex de sha1 du texte
+  normalisé au moment de la création, allongé si collision). L'id est écrit UNE fois dans
+  le JSON, puis **jamais recalculé ni réattribué** (corriger le texte d'une question garde
+  son id). Les scripts ne régénèrent jamais les ids existants.
+- L'**ordre** des thèmes et des questions est significatif : le Quizz du jour est un tirage
+  seedé sur le corpus ordonné, réordonner changerait les questions du jour pour tous.
+  Ajouter en fin de fichier ; supprimer une question est possible, pas la déplacer.
+- Les statistiques, overrides, signalements et exclusions sont encore indexés par le texte
+  normalisé de la question (migration vers les ids prévue plus tard).
+
+Procédure d'ajout : voir **`docs/ajouter-questions.md`** (l'import par lots via `inbox/`
+viendra dans une étape ultérieure). `scripts/gen-manifest.mjs` régénère
+`src/data/theme-manifest.js` + `CORPUS_VERSION` (hash de `content/`) et
+`scripts/gen-corpus-json.mjs` régénère `public/corpus.json` (auto au démarrage de Vite,
+plugin `generateCorpus` de `vite.config.ts`, ou à la main : `npm run gen:manifest`,
+`npm run gen:corpus`). Ces deux scripts et les outils (`count`, `audit`, `dedupe`, `ids`)
+partagent `scripts/lib/content.mjs`.
 
 ## Chargement : IndexedDB (cache persistant) + chunks lazy en fallback
 
-`src/data/questions.ts` utilise `import.meta.glob('./questions-*.js')` **non eager** :
-chaque fichier `questions-*.js` est découpé en un chunk (~10 Ko) par le bundler. Ces chunks sont **exclus du précache PWA**
-(`globIgnores: ['**/questions-*.js']` dans `vite.config.ts`) : ils dupliquent `corpus.json`
-et ne servent qu'en repli en ligne (chargés à la demande, sans cache dédié). Le hors-ligne
-repose sur `corpus.json` précaché puis sur IndexedDB. Précache : ~13 Mo avant, ~7 Mo après.
+`src/data/questions.ts` utilise `import.meta.glob('../../content/questions/*.json')`
+**non eager** : chaque fichier de thème devient un chunk `theme-questions-*.js`. Ces chunks
+sont **exclus du précache PWA** (`globIgnores: ['**/theme-questions-*.js']` dans
+`vite.config.ts`, noms posés par `chunkFileNames`) : ils dupliquent `corpus.json` et ne
+servent qu'en repli en ligne (chargés à la demande, sans cache dédié). Le hors-ligne
+repose sur `corpus.json` précaché puis sur IndexedDB.
 
 **Premier lancement** (ou après un changement de version du corpus) : `loadThemes()`
-fetch d'abord **`public/corpus.json`** (généré à chaque démarrage de Vite par `scripts/gen-corpus-json.mjs`, **non versionné dans git**,
-tout le corpus fusionné en un seul JSON minifié de ~5,9 Mo avec `version`, précaché par
-la PWA car dans `public/` — 1 requête au lieu d’un chunk par fichier), fallback sur les chunks
-`import.meta.glob` si le fetch échoue ou si la version ne correspond. Puis le corpus est
+fetch d'abord **`public/corpus.json`** (généré depuis `content/`, **non versionné dans git**,
+tout le corpus servi en un seul JSON minifié avec `version` et l'`id` de chaque question,
+précaché par la PWA car dans `public/`), fallback sur les chunks `import.meta.glob` si le
+fetch échoue ou si la version ne correspond. Puis le corpus est
 indexé dans **IndexedDB** (`src/lib/question-db.ts`, base `voltquiz-questions`, store
-`questions` avec index `by_theme` et `by_theme_niveau`) avec la version du corpus
-(`CORPUS_VERSION`, hash des fichiers généré par `scripts/gen-manifest.mjs` dans
+`questions` avec index `by_theme` et `by_theme_niveau` ; l'id stable y est stocké dans
+`qid`, le champ `id` du store restant la clé auto-incrémentée) avec la version du corpus
+(`CORPUS_VERSION`, hash de `content/` généré par `scripts/gen-manifest.mjs` dans
 `theme-manifest.js`).
 
 **Démarrages suivants** : si la version stockée dans IndexedDB === `CORPUS_VERSION`,
 `loadThemes()` lit le corpus directement depuis IndexedDB (`loadCorpus`) — beaucoup plus
-rapide qu’une requête par chunk + parsing JS. Sinon (ou si IndexedDB est indisponible :
-navigation privée, vieux navigateur), repli sur les chunks + réindexation.
+rapide. Sinon (ou si IndexedDB est indisponible : navigation privée, vieux navigateur),
+repli sur `corpus.json` puis les chunks + réindexation.
 
 Seules les métadonnées (`THEMES_META`, depuis `theme-manifest.js`, ~2 Ko) restent
 disponibles immédiatement, sans attendre IndexedDB.
@@ -60,7 +85,7 @@ disponibles immédiatement, sans attendre IndexedDB.
       "icone": "sparkles",
       "couleur": "#ff6600",
       "questions": [
-        { "q": "Texte ?", "reponses": ["A", "B", "C", "D"], "bonne": 2, "niveau": "moyen", "info": "Anecdote optionnelle." }
+        { "id": "mon-theme-1a2b3c", "q": "Texte ?", "reponses": ["A", "B", "C", "D"], "bonne": 2, "niveau": "moyen", "info": "Anecdote optionnelle." }
       ]
     }
   ]
@@ -69,8 +94,9 @@ disponibles immédiatement, sans attendre IndexedDB.
 
 `bonne` = index (0-based) dans `reponses` ; 2 à 4 réponses ; `niveau` obligatoire
 (`facile` | `moyen` | `dur`) ; `icone` = nom d'une icône de `src/shared/ui/Icon.tsx`.
-Même `id` qu'un thème existant = questions ajoutées à ce thème (fusion par
-`mergeThemes` dans `src/shared/utils/mergeThemes.ts`).
+`id` (question) = identifiant stable, optionnel côté schéma zod (les questions communautaires
+et du fichier perso n'en ont pas forcément). Même `id` de thème qu'un thème existant =
+questions ajoutées à ce thème (fusion par `mergeThemes` dans `src/shared/utils/mergeThemes.ts`).
 
 ## Thèmes et couleurs (ne jamais inventer de couleur)
 

@@ -8,6 +8,8 @@ export type LevelId = 'facile' | 'moyen' | 'dur';
 
 /** Une question (format JSON documenté — clés en français). */
 export interface Question {
+  /** Id stable (content/questions/*.json) ; absent des questions communautaires/utilisateur. */
+  id?: string;
   q: string;
   reponses: string[];
   bonne: number;

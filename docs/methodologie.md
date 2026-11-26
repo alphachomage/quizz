@@ -6,8 +6,8 @@
   (fetch d'abord) ; les sous-agents travaillent chacun dans leur **worktree** dédié.
 - Un seul sujet par branche. Commit conventionnel (`feat:`/`fix:`/`perf:`/`refactor:`/`docs:`/`chore:`),
   push de la branche, **review** puis merge `--no-ff` sur `main`, push.
-- Ne jamais toucher `node_modules/`, `dist/`, `backups/`, `.wrangler/`, ni les
-  fichiers `src/data/questions-*.js` (ajout uniquement).
+- Ne jamais toucher `node_modules/`, `dist/`, `backups/`, `.wrangler/`. Corpus (`content/`) :
+  ajouts en fin de fichier de thème, corrections autorisées en conservant l'id et l'ordre (règle 7).
 - **Format des commits** : titre conventionnel sur la 1re ligne, ligne vide, corps
   éventuel, puis les trailers (`Co-Authored-By: ...`) **sur leur propre ligne**. Un
   `git commit -m "titre Co-Authored-By: ..."` colle le trailer au titre (déjà arrivé) :
@@ -42,7 +42,7 @@
       - [ ] chaque chemin de fichier cité existe sur le disque (spot-check `ls`) ;
       - [ ] chiffres du corpus jamais écrits en dur -> `npm run count:questions` ;
       - [ ] commandes citées testées telles quelles (`npm run test:game`, `db:migrate:local`…) ;
-      - [ ] extensions à jour (`.ts`/`.tsx` ; seuls `questions-*.js` et `theme-manifest.js` restent en JS) ;
+      - [ ] extensions à jour (`.ts`/`.tsx` ; seul `theme-manifest.js` (généré) reste en JS) ;
       - [ ] cohérence avec le code : flags URL (`?stockage=local`), flag admin `comptes.admin`, ports, clés localStorage ;
       - [ ] `CHANGELOG.md` à jour (entrée « Non publié »), `docs/INDEX.md` cohérent ;
       - [ ] grep de salissures : `worker.js`, `storage.js`, `ci.yml`, `test:legacy`, `?stockage=d1`
@@ -56,8 +56,8 @@
 
 **Décision** : tout `src/` passe en `.ts`/`.tsx` (migration incrémentale : `lib/` d'abord,
 puis `shared/`, `app/`, puis `features/`), `tsc --noEmit` strict, vérifié avant chaque merge (`npm run typecheck`, règle 11).
-Les fichiers `src/data/questions-*.js` restent en JS (règle 7) avec le type déclaré dans
-`src/data/questions.d.ts` ; le schéma zod (`src/lib/schema.ts`) reste la source de vérité
+Le manifeste généré `src/data/theme-manifest.js` reste en JS avec le type déclaré dans
+`src/data/questions.d.ts` (le corpus lui-même est en JSON dans `content/`) ; le schéma zod (`src/lib/schema.ts`) reste la source de vérité
 runtime (`z.infer` donne les types).
 
 | Pour | Contre |

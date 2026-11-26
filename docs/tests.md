@@ -39,7 +39,8 @@ tests/
 ├── unit/features/                # game-draw, result-persist, stats-compute
 ├── integration/                  # game-solo, game-duel, game-rogue, game-daily, game-quit,
 │                                 # app-shell (parcours complet invité -> partie)
-└── data/                         # questions-schema.test.ts + corpus-draw.test.ts :
+└── data/                         # content.test.ts (structure de content/, ids) +
+                                  #   questions-schema.test.ts + corpus-draw.test.ts :
                                   #   seuls tests sur le vrai corpus (schéma zod, doublons,
                                   #   diversité du tirage : sujets / thèmes)
 ```

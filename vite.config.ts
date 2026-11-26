@@ -81,10 +81,11 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,json,woff2}'],
-        // Les chunks questions-*.js dupliquent corpus.json (précaché) : ils ne servent
-        // qu'en repli en ligne si corpus.json est indisponible ou d'une autre version.
+        // Les chunks theme-questions-*.js (content/questions/*.json, voir chunkFileNames) dupliquent
+        // corpus.json (précaché) : ils ne servent qu'en repli en ligne si corpus.json est
+        // indisponible ou d'une autre version.
         // Pas de runtimeCaching : le corpus est ensuite persisté en IndexedDB, donc inutile.
-        globIgnores: ['**/questions-*.js'],
+        globIgnores: ['**/theme-questions-*.js'],
         // Repli SPA propre : toute URL sans extension renvoie index.html,
         // sauf l'API (qui doit renvoyer sa vraie réponse, y compris les 404).
         navigateFallback: '/index.html',
@@ -101,6 +102,11 @@ export default defineConfig({
     chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {
+        // Préfixe dédié aux chunks de questions lazy : permet de les exclure du précache PWA.
+        chunkFileNames: (chunk) =>
+          chunk.moduleIds.some((id) => id.includes('/content/questions/'))
+            ? 'assets/theme-questions-[name]-[hash].js'
+            : 'assets/[name]-[hash].js',
         manualChunks: {
           vendor: ['react', 'react-dom'],
         },

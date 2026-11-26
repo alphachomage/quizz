@@ -104,5 +104,5 @@ export const THEME_MANIFEST = [
     "couleur": "#e879f9"
   }
 ];
-// Version du corpus (hash des fichiers questions-*.js) : invalidation du cache IndexedDB.
-export const CORPUS_VERSION = "ff65d1aa1c0a1871";
+// Version du corpus (hash de content/) : invalidation du cache IndexedDB.
+export const CORPUS_VERSION = "cff2a57c0f6a9588";

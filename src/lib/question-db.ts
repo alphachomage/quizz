@@ -13,7 +13,9 @@
 //   - store "questions" (keyPath "id", autoIncrement)
 //       index "by_theme"         sur "themeId"
 //       index "by_theme_niveau"  sur ["themeId", "niveau"]
-//     question stockée : { themeId, q, reponses, bonne, niveau, info? }
+//     question stockée : { themeId, qid?, q, reponses, bonne, niveau, info? }
+//     (qid = id stable de la question ; "id" reste la clé auto-incrémentée du store, ce qui
+//     préserve l'ordre d'insertion du corpus, dont dépend le Quizz du jour)
 
 import type { Question, Theme } from './types.js';
 
@@ -23,7 +25,8 @@ const STORE_META = 'meta';
 const STORE_QUESTIONS = 'questions';
 
 // Question telle que stockée dans IndexedDB (aplatie, avec son themeId).
-export interface StoredQuestion extends Question {
+export interface StoredQuestion extends Omit<Question, 'id'> {
+  qid?: string;
   themeId: string;
 }
 
@@ -85,6 +88,7 @@ export async function saveCorpus(themes: Theme[], version: string): Promise<void
         niveau: q.niveau,
       };
       if (q.info) sq.info = q.info;
+      if (q.id) sq.qid = q.id;
       store.add(sq);
     }
   }
@@ -117,6 +121,7 @@ export async function loadCorpus(themesMeta: Array<Omit<Theme, 'questions'>>): P
       map.set(r.themeId, t);
     }
     const q: Question = { q: r.q, reponses: r.reponses, bonne: r.bonne, niveau: r.niveau };
+    if (r.qid) q.id = r.qid;
     if (r.info) q.info = r.info;
     t.questions.push(q);
   }
