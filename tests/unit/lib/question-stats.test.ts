@@ -6,8 +6,6 @@ import {
   MIN_EVALS,
   loadQuestionStats,
   recordResults,
-  successRate,
-  isSuspecte,
   filterByQuality,
 } from '@lib/question-stats.js';
 
@@ -27,14 +25,6 @@ describe('question-stats — enregistrement et taux de réussite', () => {
     const k = Object.keys(stats)[0];
     expect(stats[k].total).toBe(3);
     expect(stats[k].correct).toBe(2);
-    expect(successRate('Capitale de la France ?')).toBeCloseTo(2 / 3);
-  });
-
-  it('successRate renvoie null sans assez de données', () => {
-    expect(successRate('Question inconnue ?')).toBeNull();
-    recordResults([detail('Une question ?', true)]);
-    expect(successRate('Une question ?', MIN_EVALS)).toBeNull();
-    expect(successRate('Une question ?', 1)).toBe(1);
   });
 
   it('les détails sans q sont ignorés', () => {
@@ -84,11 +74,5 @@ describe('question-stats — filtre qualité du pool', () => {
     // nbMin = 4 > pool.length -> on garde tout plutôt que de vider
     const out = filterByQuality(pool, 'moyen', 4);
     expect(out).toHaveLength(3);
-  });
-
-  it('isSuspecte reflète le taux après MIN_EVALS', () => {
-    remplir('Question fausse ?', false, MIN_EVALS);
-    expect(isSuspecte('Question fausse ?', 'moyen')).toBe(true);
-    expect(isSuspecte('Question normale ?', 'moyen')).toBe(false);
   });
 });

@@ -3,10 +3,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   normalize,
-  similarityScore,
   THRESHOLD_IDENTICAL,
   THRESHOLD_SIMILAR,
-  trouverSimilaires,
   buildIndex,
   trouverSimilairesIndex,
 } from '@/lib/similarity.js';
@@ -19,10 +17,15 @@ describe('normaliser', () => {
     expect(normalize(null)).toBe('');
   });
 });
+// Score entre deux textes via l'index (seule API publique de l'appli).
+function score(a: string, b: string): number {
+  const res = trouverSimilairesIndex(a, buildIndex([{ q: b }]), 0, 1);
+  return res.length ? res[0].score : 0;
+}
 describe('scoreSimilarite', () => {
   it('vaut 1 pour deux textes identiques', () => {
     expect(
-      similarityScore(
+      score(
         'Quelle est la capitale de la France ?',
         'Quelle est la capitale de la France ?'
       )
@@ -30,7 +33,7 @@ describe('scoreSimilarite', () => {
   });
   it('vaut 1 même avec accents/ponctuation/casse différents', () => {
     expect(
-      similarityScore(
+      score(
         'Quelle est la capitale de la France ?',
         'quelle est la capitale de la france'
       )
@@ -39,18 +42,18 @@ describe('scoreSimilarite', () => {
   it('dépasse le seuil de similarité pour une reformulation proche', () => {
     const a = 'En quelle année a eu lieu la Révolution française ?';
     const b = 'En quelle année la Révolution française a-t-elle eu lieu ?';
-    expect(similarityScore(a, b)).toBeGreaterThan(THRESHOLD_SIMILAR);
+    expect(score(a, b)).toBeGreaterThan(THRESHOLD_SIMILAR);
   });
   it('reste sous le seuil pour deux sujets sans rapport', () => {
     const a = 'Quelle est la capitale du Japon ?';
     const b = 'Qui a peint la Joconde ?';
-    expect(similarityScore(a, b)).toBeLessThan(THRESHOLD_SIMILAR);
+    expect(score(a, b)).toBeLessThan(THRESHOLD_SIMILAR);
   });
   it('vaut 0 si un texte est vide', () => {
-    expect(similarityScore('', 'quelque chose')).toBe(0);
+    expect(score('', 'quelque chose')).toBe(0);
   });
 });
-describe('trouverSimilaires', () => {
+describe('trouverSimilairesIndex', () => {
   const pool = [
     {
       q: 'Quelle est la capitale de la France ?',
@@ -69,7 +72,7 @@ describe('trouverSimilaires', () => {
     },
   ];
   it('trouve les questions proches triées par score décroissant', () => {
-    const res = trouverSimilaires('Quelle est la capitale de la France ?', pool);
+    const res = trouverSimilairesIndex('Quelle est la capitale de la France ?', buildIndex(pool));
     expect(res.length).toBeGreaterThan(0);
     expect(res[0].question.q).toContain('capitale de la France');
     expect(res[0].score).toBeGreaterThanOrEqual(res[res.length - 1].score);
@@ -97,21 +100,6 @@ describe('index pré-calculé (construireIndex + trouverSimilairesIndex)', () =>
       themeName: 'Histoire',
     },
   ];
-  it('donne exactement les mêmes résultats que trouverSimilaires', () => {
-    const texts = [
-      'Quelle est la capitale de la France ?',
-      'capitale de la france',
-      'Qui a peint la Joconde',
-      'révolution française 1789',
-      'une question sans aucun rapport xyz',
-    ];
-    const index = buildIndex(pool);
-    for (const t of texts) {
-      const a = trouverSimilaires(t, pool, 0, 10);
-      const b = trouverSimilairesIndex(t, index, 0, 10);
-      expect(b.map((x) => [x.question.q, x.score])).toEqual(a.map((x) => [x.question.q, x.score]));
-    }
-  });
   it('respecte le seuil et la limite max', () => {
     const index = buildIndex(pool);
     const res = trouverSimilairesIndex('capitale de la France', index, 0.4, 1);

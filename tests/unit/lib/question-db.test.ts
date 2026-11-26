@@ -187,14 +187,4 @@ describe('question-db — persistance IndexedDB du corpus', () => {
     expect(relu).toHaveLength(1);
     expect(relu[0].id).toBe('sport');
   });
-
-  it('loadThemeQuestions ne renvoie que les questions du thème demandé', async () => {
-    const db = await import('@lib/question-db.js');
-    await db.saveCorpus(THEMES, 'v1');
-    const sport = await db.loadThemeQuestions('sport');
-    expect(sport).toHaveLength(1);
-    expect(sport[0].q).toBe('Joueurs au foot ?');
-    const cg = await db.loadThemeQuestions('culture-generale');
-    expect(cg).toHaveLength(2);
-  });
 });

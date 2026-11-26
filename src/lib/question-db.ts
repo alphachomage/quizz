@@ -122,20 +122,3 @@ export async function loadCorpus(themesMeta: Array<Omit<Theme, 'questions'>>): P
   }
   return [...map.values()];
 }
-
-// Charge uniquement les questions d'un thème (pour un futur chargement paresseux par
-// thème au lancement d'une partie — index "by_theme").
-export async function loadThemeQuestions(themeId: string): Promise<Question[]> {
-  const db = await openDb();
-  const rows = await new Promise<StoredQuestion[]>((resolve, reject) => {
-    const tx = db.transaction(STORE_QUESTIONS, 'readonly');
-    const req = tx.objectStore(STORE_QUESTIONS).index('by_theme').getAll(themeId);
-    req.onsuccess = () => resolve(req.result as StoredQuestion[]);
-    req.onerror = () => reject(req.error);
-  });
-  return rows.map((r) => {
-    const q: Question = { q: r.q, reponses: r.reponses, bonne: r.bonne, niveau: r.niveau };
-    if (r.info) q.info = r.info;
-    return q;
-  });
-}
