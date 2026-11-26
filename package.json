@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
   "scripts": {
     "gen:manifest": "node scripts/gen-manifest.mjs",
     "gen:corpus": "node scripts/gen-corpus-json.mjs",

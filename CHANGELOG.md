@@ -5,6 +5,11 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 
 ## Non publié
 
+### Ajouté (corpus, étape 2/3 : import et qualité)
+- **Dépôt des nouvelles questions dans `content/inbox/`** + `npm run questions:import` (`--dry-run` possible) : vérifie le thème, les règles qualité, les doublons exacts et les quasi-doublons (même similarité que l'appli), ajoute les acceptées **en fin** de fichier de thème avec un id, et réécrit le fichier inbox avec les seules refusées annotées (`rejet`). Un fichier inbox par sous-agent = aucun conflit git.
+- **Lint qualité du corpus** (`npm run questions:lint`, lancé aussi par `npm run lint`, `scripts/lib/quality.mjs`) : réponse présente dans la question, question > 150 caractères, réponse > 60, réponses en double, nombre de réponses différent de 4, bonne réponse trahie par sa longueur, doublon exact, format invalide. Les défauts existants sont listés dans `content/qualite-dette.json` (ratchet) : toute nouvelle violation fait échouer le lint, et la dette ne peut que diminuer (`--update-dette` ne fait que retirer).
+- `engines.node >= 22.18` dans `package.json` : les scripts du corpus importent directement `src/lib/schema.ts` et `similarity.ts` (retrait natif des types par Node).
+
 ### Modifié (format du corpus, étape 1/3)
 - **Le corpus quitte les 484 fichiers `src/data/questions-*.js` pour du JSON** : `content/themes.json` (métadonnées des thèmes une seule fois, `actif: false` pour les thèmes retirés, remplace la liste `RETIRED` codée en dur) + un fichier par thème `content/questions/<theme>.json` (une question par ligne, diffs lisibles). Aucun changement pour le joueur : `corpus.json` est **strictement identique** hors identifiants (vérifié en deep-equal, même ordre), `count:questions` identique, tirage du Quizz du jour identique (l'ordre des questions est conservé).
 - **Identifiant stable par question** (`<theme>-<hash>`, attribué une fois, jamais recalculé), transporté jusqu'au runtime (`Question.id`, stocké en `qid` dans IndexedDB pour garder la clé auto-incrémentée qui préserve l'ordre). Les stats, overrides et signalements restent indexés par texte pour l'instant (étape 3).
