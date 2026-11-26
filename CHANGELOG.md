@@ -5,6 +5,11 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 
 ## Non publié
 
+### Corrigé (corpus, étape 3a : questions qui gâchaient le jeu)
+- **668 questions corrigées en place** (id et position conservés, Quizz du jour stable hors questions touchées) dans les 17 thèmes servis : 367 « réponse dans la question » réécrites, 58 doublons exacts remplacés par des questions nouvelles, 20 « réponses en double » et 246 questions à 2 ou 3 réponses complétées à 4 (dont les « Vrai ou faux » reformulés). Plus aucun de ces défauts dans le corpus servi (seuls restent ceux des thèmes retirés insolite et pop-culture).
+- Une vingtaine d'erreurs factuelles corrigées au passage (ex. Eurovia appartient à Vinci et non à Bouygues, Lexus LFA 4,8 L, Jake Paul frère de Logan Paul, Le Rire Jaune = Kevin et Henry Tran, Kiyoharu Toda dans Real).
+- Nouvel outil `npm run questions:apply` (`scripts/questions-apply.mjs`) : corrections en place depuis un fichier, id et position conservés, aucune correction ne peut ajouter de défaut, tout ou rien (doc : `docs/ajouter-questions.md`, section 7).
+
 ### Ajouté (corpus, étape 2/3 : import et qualité)
 - **Dépôt des nouvelles questions dans `content/inbox/`** + `npm run questions:import` (`--dry-run` possible) : vérifie le thème, les règles qualité, les doublons exacts et les quasi-doublons (même similarité que l'appli), ajoute les acceptées **en fin** de fichier de thème avec un id, et réécrit le fichier inbox avec les seules refusées annotées (`rejet`). Un fichier inbox par sous-agent = aucun conflit git.
 - **Lint qualité du corpus** (`npm run questions:lint`, lancé aussi par `npm run lint`, `scripts/lib/quality.mjs`) : réponse présente dans la question, question > 150 caractères, réponse > 60, réponses en double, nombre de réponses différent de 4, bonne réponse trahie par sa longueur, doublon exact, format invalide. Les défauts existants sont listés dans `content/qualite-dette.json` (ratchet) : toute nouvelle violation fait échouer le lint, et la dette ne peut que diminuer (`--update-dette` ne fait que retirer).
