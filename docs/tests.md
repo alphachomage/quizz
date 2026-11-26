@@ -8,6 +8,8 @@ npm run test:game      # UNIQUEMENT le flux solo (tests/integration/game-solo.te
 npm run test:game:duel / :rogue / :daily   # game-duel / game-rogue / game-daily
 npm run test:unit        # tests/unit/**  ·  npm run test:integration  ·  npm run test:data
 npm run test:scoring / :draw / :similarity / :accounts
+npx vitest run tests/scripts   # scripts du corpus : règles qualité, lint avec dette, import inbox
+npm run questions:lint   # qualité du corpus (aussi lancé par npm run lint)
 npm run test:coverage    # couverture avec seuils appliqués (échoue si en dessous)
 npm run typecheck        # tsc --noEmit (strict TS) — avant chaque merge
 npm run check:repo       # garde-fous repo (aussi lancé par npm run lint) : emojis,
@@ -39,6 +41,8 @@ tests/
 ├── unit/features/                # game-draw, result-persist, stats-compute
 ├── integration/                  # game-solo, game-duel, game-rogue, game-daily, game-quit,
 │                                 # app-shell (parcours complet invité -> partie)
+├── scripts/                      # quality (règles), questions-import, questions-lint : racine de
+│                                 #   contenu temporaire (tmp-content.ts), jamais le vrai corpus
 └── data/                         # content.test.ts (structure de content/, ids) +
                                   #   questions-schema.test.ts + corpus-draw.test.ts :
                                   #   seuls tests sur le vrai corpus (schéma zod, doublons,

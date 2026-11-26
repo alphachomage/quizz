@@ -66,8 +66,9 @@ Toute branche part de `origin/main` à jour. Si une consigne de ce fichier contr
    avec justification en commentaire), `react-refresh/only-export-components` warn,
    `no-console` error, `no-unused-vars` warn (préfixe `_` pour ignorer).
 7. **Ne JAMAIS toucher** à `node_modules/`, `dist/`, `backups/`, `.wrangler/`. Le corpus vit
-   dans `content/` : les ajouts se font en fin de fichier de thème ou via les scripts ;
-   corriger/supprimer une question existante est autorisé dans une branche relue, en
+   dans `content/` : les nouveaux lots passent par `content/inbox/` + `npm run questions:import`
+   (fin de fichier de thème, ids attribués) ; aucune nouvelle entrée dans
+   `content/qualite-dette.json` (elle ne peut que rétrécir) ; corriger/supprimer une question existante est autorisé dans une branche relue, en
    CONSERVANT son id (jamais réattribué ni recalculé) et sans réordonner (le Quizz du jour
    en dépend).
 8. **Pas de nouvelle librairie externe** sans justification écrite (pour + contre) dans
@@ -122,6 +123,8 @@ npm run typecheck        # tsc --noEmit (strict sur les .ts/.tsx)
 npm test                 # tous les tests Vitest ; test:game = flux solo seul (~2 s)
 npm run test:coverage    # couverture avec seuils appliqués (échoue si en dessous)
 npm run count:questions  # comptage réel du corpus (thèmes, questions, doublons)
+npm run questions:import # importe les lots de content/inbox/ (--dry-run pour simuler)
+npm run questions:lint   # règles qualité du corpus + dette (aussi dans npm run lint)
 npm run db:migrate:local # applique les migrations D1 en LOCAL (dev workerd, .wrangler/state)
 npm run db:migrate       # applique les migrations D1 en PROD (wrangler login ou CLOUDFLARE_API_TOKEN)
 npx wrangler deploy --dry-run   # valide worker.ts + wrangler.toml sans déployer

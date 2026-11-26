@@ -95,6 +95,8 @@ chacun sur SA branche et SES fichiers uniquement ; le parent relit (code + docs)
   garanti entre branches parallèles) et lister dans le brief les fichiers réservés à une
   autre branche ;
 - si le build modifie `src/data/theme-manifest.js` sans raison, `git checkout --` le fichier ;
+- lots de questions : un fichier `content/inbox/<nom>.json` PAR sous-agent (jamais les fichiers
+  de thème directement) puis `npm run questions:import` : zéro conflit git, qualité contrôlée ;
 - lancer la règle 11 complète, commiter, **ne pas merger ni pousser** ;
 - rapporter : branche, SHA, fichiers, vérifs, et tout problème vu hors périmètre.
 
