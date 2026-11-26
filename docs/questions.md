@@ -26,12 +26,14 @@ main : `npm run gen:manifest`).
 ## Chargement : IndexedDB (cache persistant) + chunks lazy en fallback
 
 `src/data/questions.ts` utilise `import.meta.glob('./questions-*.js')` **non eager** :
-chaque fichier `questions-*.js` est découpé en un chunk (~10 Ko) par le bundler, et la
-PWA précache tous les chunks (hors-ligne OK).
+chaque fichier `questions-*.js` est découpé en un chunk (~10 Ko) par le bundler. Ces chunks sont **exclus du précache PWA**
+(`globIgnores: ['**/questions-*.js']` dans `vite.config.ts`) : ils dupliquent `corpus.json`
+et ne servent qu'en repli en ligne (chargés à la demande, sans cache dédié). Le hors-ligne
+repose sur `corpus.json` précaché puis sur IndexedDB. Précache : ~13 Mo avant, ~7 Mo après.
 
 **Premier lancement** (ou après un changement de version du corpus) : `loadThemes()`
 fetch d'abord **`public/corpus.json`** (généré au build par `scripts/gen-corpus-json.mjs`,
-tout le corpus fusionné en un seul JSON minifié de ~2,4 Mo avec `version`, précaché par
+tout le corpus fusionné en un seul JSON minifié de ~5,9 Mo avec `version`, précaché par
 la PWA car dans `public/` — 1 requête au lieu de 263 chunks), fallback sur les chunks
 `import.meta.glob` si le fetch échoue ou si la version ne correspond. Puis le corpus est
 indexé dans **IndexedDB** (`src/lib/question-db.ts`, base `voltquiz-questions`, store
