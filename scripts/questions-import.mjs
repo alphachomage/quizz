@@ -10,9 +10,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { CONTENT_DIR, normalizeQuestionText, readThemes, readThemeQuestions, serializeQuestions, writeThemeQuestions } from './lib/content.mjs';
 import { attribuerId } from './lib/ids.mjs';
-import { checkQuestion } from './lib/quality.mjs';
-// Node 24 retire les types TS : on réutilise l'algorithme de l'appli tel quel (aucune copie).
-import { THRESHOLD_SIMILAR, buildIndex, trouverSimilairesIndex } from '../src/lib/similarity.ts';
+import { checkQuestion, creerIndexSimilarite } from './lib/quality.mjs';
 
 const CLES = ['q', 'reponses', 'bonne', 'niveau', 'info'];
 
@@ -20,16 +18,9 @@ const CLES = ['q', 'reponses', 'bonne', 'niveau', 'info'];
 const rejet = (code, message) => `${code}: ${message}`;
 
 // Examine une question du lot ; renvoie la liste des motifs de rejet ("code: message").
+// Toutes les règles (dont quasi-doublon et reponse-annotee) viennent de checkQuestion : une seule logique.
 function examiner(q, etat) {
-  const motifs = checkQuestion(q, { seen: etat.seen }).map((v) => rejet(v.code, v.message));
-  if (q && typeof q.q === 'string') {
-    const proches = trouverSimilairesIndex(q.q, etat.index, THRESHOLD_SIMILAR, 1);
-    // Un doublon exact est déjà signalé par `doublon-exact` : pas de second motif.
-    if (proches.length && normalizeQuestionText(proches[0].question.q) !== normalizeQuestionText(q.q)) {
-      motifs.push(rejet('quasi-doublon', `ressemble à « ${proches[0].question.q.slice(0, 80)} » (score ${proches[0].score.toFixed(2)})`));
-    }
-  }
-  return motifs;
+  return checkQuestion(q, { seen: etat.seen, similar: etat.similar }).map((v) => rejet(v.code, v.message));
 }
 
 // Retourne { code, resume, fichiers } ; `dir` = racine de contenu (tests), `dryRun` = aucune écriture.
@@ -52,7 +43,7 @@ export function run({ dir = CONTENT_DIR, dryRun = false, log = console.log } = {
         existantes,
         ajoutees: [],
         seen: new Set(existantes.map((q) => normalizeQuestionText(q.q))),
-        index: buildIndex(existantes),
+        similar: creerIndexSimilarite(existantes),
       });
     }
     return etats.get(themeId);
@@ -98,7 +89,7 @@ export function run({ dir = CONTENT_DIR, dryRun = false, log = console.log } = {
       const complete = { id: attribuerId(lot.theme, norm, ids), ...q };
       e.ajoutees.push(complete);
       e.seen.add(norm);
-      e.index.push(...buildIndex([complete]));
+      e.similar.ajouter(complete);
       acceptees.push(complete);
     }
 

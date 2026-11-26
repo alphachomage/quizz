@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { normalizeQuestionText as normalizeApp } from '../../src/lib/text';
 import { normalizeQuestionText as normalizeScript } from '../../scripts/lib/content.mjs';
-import { checkQuestion, checkQuestions } from '../../scripts/lib/quality.mjs';
+import { checkQuestion, checkQuestions, estAnnotee } from '../../scripts/lib/quality.mjs';
 
 type Q = { q: string; reponses: string[]; bonne: number; niveau: string; info?: string };
 const bonne = (): Q => ({
@@ -84,6 +84,34 @@ describe('checkQuestion', () => {
     expect(codes(bonne(), seen)).not.toContain('doublon-exact');
     seen.add(normalizeApp(bonne().q));
     expect(codes({ ...bonne(), q: 'QUELLE est la capitale de la France' }, seen)).toContain('doublon-exact');
+  });
+
+  it('reponse-annotee : parenthèses ou crochets signalés, symboles et sigles exemptés', () => {
+    const avec = (r: string) => codes({ ...bonne(), reponses: ['Lyon', r, 'Nice', 'Lille'] });
+    expect(avec('Paris (capitale)')).toContain('reponse-annotee');
+    expect(avec('Paris [capitale]')).toContain('reponse-annotee');
+    expect(avec('Boros (Lord Boros)')).toContain('reponse-annotee');
+    expect(avec('Paris')).not.toContain('reponse-annotee');
+    expect(estAnnotee('Fer (Fe)')).toBe(false);
+    expect(estAnnotee('OTAN (NATO)')).toBe(false);
+    expect(estAnnotee('Le dihydrogène (H2)')).toBe(false);
+    expect(estAnnotee('Safari (WebKit)')).toBe(true);
+    expect(estAnnotee('Fer (Fe, métal)')).toBe(true);
+  });
+
+  it('quasi-doublon : seul le 2e exemplaire est en faute, pas de double signalement avec doublon-exact', () => {
+    const a = { ...bonne(), q: 'Quelle marque de luxe britannique appartient au groupe BMW depuis 1998 ?' };
+    const b = { ...bonne(), q: 'Quelle marque de luxe britannique appartient au groupe Volkswagen ?' };
+    const autre = { ...bonne(), q: 'Quel fleuve traverse la ville de Budapest ?' };
+    const res = checkQuestions([a, autre, b]);
+    expect(res).toHaveLength(1);
+    expect(res[0].index).toBe(2);
+    expect(res[0].violations.map((v: { code: string }) => v.code)).toEqual(['quasi-doublon']);
+    // exact : uniquement doublon-exact
+    const exact = checkQuestions([a, { ...a }]);
+    expect(exact[0].violations.map((v: { code: string }) => v.code)).toEqual(['doublon-exact']);
+    // sans index, la règle n'est pas évaluée
+    expect(codes(b)).not.toContain('quasi-doublon');
   });
 
   it('format : schéma invalide', () => {

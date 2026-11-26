@@ -130,4 +130,12 @@ describe('questions-import', () => {
     expect(fs.readFileSync(`${dir}/questions/geo.json`, 'utf8')).toBe(avant);
     expect(fs.readFileSync(inboxPath(dir, 'a.json'), 'utf8')).toBe(brut);
   });
+
+  it('reponse-annotee : refusée à l’import', () => {
+    const dir = makeContent([existante()]);
+    writeInbox(dir, 'a.json', { theme: 'geo', questions: [{ ...nouvelle(), reponses: ['La Seine', 'Le Danube (fleuve)', 'Le Rhin', 'Le Tage'] }] });
+    expect(importer(dir).code).toBe(1);
+    expect(readTheme(dir)).toHaveLength(1);
+    expect(JSON.parse(fs.readFileSync(inboxPath(dir, 'a.json'), 'utf8')).questions[0].rejet.join(' ')).toMatch(/reponse-annotee: /);
+  });
 });

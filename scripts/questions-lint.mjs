@@ -5,6 +5,8 @@
 // Usage : npm run questions:lint [-- --init-dette | --update-dette]
 //   --init-dette   crée la dette depuis l'état actuel (refuse d'écraser un fichier existant)
 //   --update-dette retire les entrées périmées (ne rajoute JAMAIS rien)
+//   --init-code <code>  ajoute à la dette les violations d'UN code absent de la dette (règle nouvellement
+//                  introduite) ; refuse si ce code y figure déjà : la dette ne grossit jamais pour un code existant
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -96,6 +98,24 @@ export function run({ args = [], dir = CONTENT_DIR, detteFile = path.join(dir, '
     const { violations } = analyser(themes, {});
     fs.writeFileSync(detteFile, serializeDette(detteDepuis(violations)));
     log(`Dette initiale écrite (${violations.length} entrées) : ${detteFile}`);
+    return 0;
+  }
+
+  const iCode = args.indexOf('--init-code');
+  if (iCode !== -1) {
+    const code = args[iCode + 1];
+    if (!code || !CODES.includes(code)) {
+      log(`--init-code attend un code connu parmi : ${CODES.join(', ')}.`);
+      return 1;
+    }
+    const existante = readDette(detteFile);
+    if (code in existante) {
+      log(`Le code ${code} figure déjà dans la dette : --init-code ne l'étend pas (la dette ne doit jamais grossir).`);
+      return 1;
+    }
+    const ajout = analyser(themes, {}).violations.filter((v) => v.code === code);
+    fs.writeFileSync(detteFile, serializeDette({ ...existante, ...detteDepuis(ajout) }));
+    log(`${ajout.length} entrée(s) ajoutée(s) à la dette pour ${code} : ${detteFile}`);
     return 0;
   }
 

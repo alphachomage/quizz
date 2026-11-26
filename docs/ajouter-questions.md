@@ -94,11 +94,14 @@ Toutes bloquantes pour du nouveau contenu :
 | `nombre-reponses` | différent de 4 réponses | norme QuizUp, grille de boutons 2x2 |
 | `reponse-trahie-par-longueur` | bonne réponse >= 3 fois plus longue que la plus longue des mauvaises ET >= 20 caractères de plus | on devine sans connaître (seuils choisis pour limiter le bruit sur le corpus existant) |
 | `doublon-exact` | même texte normalisé qu'une question précédente du thème | le 1er exemplaire n'est pas en faute |
+| `quasi-doublon` | question très proche d'une question PRÉCÉDENTE du thème (même algorithme et même seuil que l'appli : `buildIndex` / `trouverSimilairesIndex` / `THRESHOLD_SIMILAR` de `src/lib/similarity.ts`) ; un doublon exact reste sous `doublon-exact` | le 1er exemplaire n'est pas en faute ; redondance pour le joueur (une même logique pour lint, import et apply) |
+| `reponse-annotee` | une réponse contient un commentaire entre parenthèses ou crochets (« Squeezie (plus gros aujourd'hui) », « Paris (capitale) ») | le commentaire trahit la bonne réponse ou disqualifie un leurre. Exemption : un contenu qui est un symbole ou une formule (`Fer (Fe)`, `H2`, `G2V`) ou un sigle en majuscules de 2 à 6 caractères (`OTAN (NATO)`) ; toute autre parenthèse est signalée |
 | `format` | schéma invalide (champ manquant, chaîne vide, `bonne` hors bornes, niveau inconnu, tailles zod) | la question planterait au chargement |
 
-À l'import s'ajoutent `quasi-doublon` (même algorithme que l'appli, `src/lib/similarity.ts`,
-seuil `THRESHOLD_SIMILAR`, contre le thème ET le lot) et la vérification du thème. La
-normalisation est celle de `normalizeQuestionText` (`src/lib/text.ts`).
+Le lint compare chaque question aux seules précédentes du thème ; l'import les compare au
+thème ET au lot ; `questions:apply` à toutes les autres questions du thème (plus strict, une
+correction ne doit pas créer ces défauts). La normalisation est celle de
+`normalizeQuestionText` (`src/lib/text.ts`).
 
 ### La dette qualité (`content/qualite-dette.json`) et le lint
 
@@ -114,7 +117,10 @@ Le corpus historique viole certaines règles. `npm run questions:lint` (lancé a
    ajoute jamais.
 
 Le fichier initial a été produit une seule fois par `npm run questions:lint -- --init-dette`
-(la commande refuse d'écraser un fichier existant). Corriger une question de la dette est
+(la commande refuse d'écraser un fichier existant). Quand une NOUVELLE règle est introduite,
+`npm run questions:lint -- --init-code <code>` ajoute à la dette les seules violations de ce code,
+à condition qu'il soit absent de la dette (la commande refuse sinon : la dette ne grossit jamais
+pour un code existant). Corriger une question de la dette est
 encouragé (en gardant son id), puis `--update-dette` pour la sortir de la liste.
 
 ---

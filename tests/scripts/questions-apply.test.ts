@@ -70,4 +70,14 @@ describe('questions-apply', () => {
     expect(appliquer(dir, [{ id: 'geo-bbbbbb', q: 'Quelle ville est surnommée la Ville Lumière ?' }], true).code).toBe(0);
     expect(fs.readFileSync(path.join(dir, 'questions', 'geo.json'), 'utf8')).toBe(avant);
   });
+
+  it('refuse une correction ou un remplacement qui ajoute une annotation ou un quasi-doublon', () => {
+    const dir = makeContent(base());
+    const reponses = ['Lyon', 'Paris (capitale)', 'Nice', 'Lille'];
+    expect(appliquer(dir, [{ id: 'geo-bbbbbb', reponses }]).code).toBe(1);
+    expect(appliquer(dir, [{ id: 'geo-bbbbbb', q: 'Quelle est la capitale de la France actuelle ?' }]).code).toBe(1);
+    const nouvelle = { q: 'Quel fleuve traverse Budapest ?', reponses, bonne: 1, niveau: 'moyen' };
+    expect(appliquer(dir, [{ id: 'geo-cccccc', remplacer: true, ...nouvelle }]).code).toBe(1);
+    expect(readTheme(dir).map((q) => q.q)).toEqual(base().map((q) => q.q));
+  });
 });
