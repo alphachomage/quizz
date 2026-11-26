@@ -74,4 +74,23 @@ describe('questions-lint', () => {
     expect(lint(dir)).toBe(0);
     expect(lint(dir, ['--init-dette'])).toBe(1);
   });
+
+  it('--init-code ajoute les violations d’un code absent de la dette, sans toucher aux autres', () => {
+    const annotee: Q = { id: 'geo-dddddd', ...question('Quelle ville est la capitale ?', 1, { reponses: ['Lyon', 'Paris (capitale)', 'Nice', 'Lille'] }) };
+    const dir = makeContent([propre(), longue(), annotee]);
+    ecrireDette(dir, { 'question-trop-longue': ['geo-bbbbbb'] });
+    expect(lint(dir)).toBe(1);
+    expect(lint(dir, ['--init-code', 'reponse-annotee'])).toBe(0);
+    expect(lireDette(dir)).toEqual({ 'question-trop-longue': ['geo-bbbbbb'], 'reponse-annotee': ['geo-dddddd'] });
+    expect(lint(dir)).toBe(0);
+  });
+
+  it('--init-code refuse un code déjà présent dans la dette, ou inconnu, ou manquant', () => {
+    const dir = makeContent([propre(), longue()]);
+    ecrireDette(dir, { 'question-trop-longue': ['geo-bbbbbb'] });
+    expect(lint(dir, ['--init-code', 'question-trop-longue'])).toBe(1);
+    expect(lint(dir, ['--init-code', 'inconnu'])).toBe(1);
+    expect(lint(dir, ['--init-code'])).toBe(1);
+    expect(lireDette(dir)).toEqual({ 'question-trop-longue': ['geo-bbbbbb'] });
+  });
 });

@@ -10,16 +10,15 @@ import fs from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { CONTENT_DIR, normalizeQuestionText, readAll, writeThemeQuestions } from './lib/content.mjs';
 import { attribuerId } from './lib/ids.mjs';
-import { checkQuestion } from './lib/quality.mjs';
-// Node >= 22.18 retire les types TS : même algorithme de similarité que l'appli.
-import { THRESHOLD_SIMILAR, buildIndex, trouverSimilairesIndex } from '../src/lib/similarity.ts';
+import { checkQuestion, creerIndexSimilarite } from './lib/quality.mjs';
 
 const CHAMPS = ['q', 'reponses', 'bonne', 'niveau', 'info'];
 
-// Défauts qualité d'une question à sa position (doublon-exact calculé contre les autres questions du thème).
+// Défauts qualité d'une question (doublon-exact et quasi-doublon calculés contre TOUTES les autres
+// questions du thème : plus strict que le lint, qui ne regarde que les précédentes).
 function defauts(question, autres) {
   const seen = new Set(autres.map((o) => normalizeQuestionText(o.q)));
-  return new Set(checkQuestion(question, { seen }).map((v) => v.code));
+  return new Set(checkQuestion(question, { seen, similar: creerIndexSimilarite(autres) }).map((v) => v.code));
 }
 
 /** @param {{ file: string, dir?: string, dryRun?: boolean, log?: (m: string) => void }} options */
@@ -69,9 +68,7 @@ export function run({ file, dir = CONTENT_DIR, dryRun = false, log = console.log
     const nouveaux = defauts(apres, autres);
     if (c.remplacer) {
       if (nouveaux.size) refus.push(`${c.id} : la question de remplacement a des défauts (${[...nouveaux].join(', ')})`);
-      const proches = trouverSimilairesIndex(apres.q || '', buildIndex(autres), THRESHOLD_SIMILAR, 1);
-      if (proches.length) refus.push(`${c.id} : ressemble à « ${proches[0].question.q.slice(0, 80)} »`);
-      if (nouveaux.size || proches.length) continue;
+      if (nouveaux.size) continue;
       ids.delete(avant.id);
       const occurrence = 1 + autres.filter((o) => normalizeQuestionText(o.q) === normalizeQuestionText(apres.q)).length;
       apres.id = attribuerId(theme.id, normalizeQuestionText(apres.q), ids, occurrence);
