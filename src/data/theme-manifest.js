@@ -99,4 +99,4 @@ export const THEME_MANIFEST = [
   }
 ];
 // Version du corpus (hash de content/) : invalidation du cache IndexedDB.
-export const CORPUS_VERSION = "b6b198a189e3dd94";
+export const CORPUS_VERSION = "8f92e12d9deebda3";

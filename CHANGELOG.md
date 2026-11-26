@@ -5,6 +5,11 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 
 ## Non publié
 
+### Corrigé (corpus, étape 3c : youtube-streaming retiré, réponses annotées nettoyées, relecture partielle)
+- **youtube-streaming retiré du jeu** (`actif:false`) : 42 % de questions fausses ou ambiguës à l'audit, le thème est absent du manifeste et du corpus servi (16 thèmes actifs, 23 032 questions jouables). Ses questions restent dans `content/` pour une future relecture.
+- **2 280 réponses annotées nettoyées** (commentaires entre parenthèses retirés par script, type « Squeezie (plus gros aujourd'hui) ») : dette `reponse-annotee` ramenée de ~4 100 à 1 457. 2 003 corrections écartées car le nettoyage révélait un défaut masqué (surtout `reponse-dans-question` : la bonne réponse figure dans l'énoncé) ; ces questions restent en dette.
+- **637 questions relues et corrigées par sous-agents** dans 4 des 5 thèmes au-delà de 20 % d'erreurs (technologie 211 + 1 remplacement, auto 267 + 16, cuisine 96 + 25, nature 22) : énoncés qui nommaient la bonne réponse reformulés, erreurs factuelles corrigées, ambiguïtés levées, annotations retirées. La relecture de musique (5e thème) est à reprendre.
+
 ### Corrigé (corpus, étape 3b : audit factuel et défauts systématiques)
 - **Audit factuel par échantillon** (50 questions tirées au hasard par thème, 850 au total, vérifiées par des sous-agents avec recherche web) : 17,5 % de questions fausses, périmées ou ambiguës (8,6 % franchement fausses ou périmées). Taux par thème : youtube-streaming 42 %, nature 30 %, musique 26 %, cuisine et auto 24 %, technologie 22 %, economie, jeux-videos et mythologie 14 %, sport 12 %, histoire, sciences et mangas-animes 10 %, geographie, culture-generale et espace 8 %, cinema-series 4 %. Les 166 corrections proposées (dont 8 remplacements) ont été relues puis appliquées.
 - **Bloc de cuisine à index décalés** : un générateur avait fait tourner l'index de la bonne réponse (0, 1, 2, 3...) sans déplacer les réponses sur 100 questions ; 50 désignaient un leurre comme bonne réponse (konjac, bromélaïne, 9 bars...). Toutes vérifiées et corrigées. Les autres séquences d'index tournants du corpus ont été contrôlées : correctes.
