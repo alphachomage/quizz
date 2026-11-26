@@ -15,7 +15,7 @@
   {"id":"nature","nom":"Nature & Animaux","icone":"paw","couleur":"#4ade80","actif":true},
   {"id":"sciences","nom":"Sciences","icone":"flask","couleur":"#2dd4bf","actif":true},
   {"id":"technologie","nom":"Technologie & Internet","icone":"chip","couleur":"#38bdf8","actif":true},
-  {"id":"youtube-streaming","nom":"YouTube & Streaming","icone":"play","couleur":"#e879f9","actif":true},
+  {"id":"youtube-streaming","nom":"YouTube & Streaming","icone":"play","couleur":"#e879f9","actif":false},
   {"id":"pop-culture","nom":"Pop culture","icone":"sparkles","couleur":"#e879f9","actif":false},
   {"id":"insolite","nom":"Insolite","icone":"question","couleur":"#fb923c","actif":false}
 ]

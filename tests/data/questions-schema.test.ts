@@ -11,11 +11,11 @@ const THEMES = await loadThemes();
 
 const NIVEAUX_VALIDES = LEVELS.map((n) => n.id);
 
-// 17 thèmes actifs, chacun >= 1000 questions (objectif 1400 par thème en cours).
-// Le thème youtube-streaming a été ajouté en 2026-11 (pack de départ de 100 questions).
+// 16 thèmes actifs, chacun >= 1000 questions (objectif 1400 par thème en cours).
+// youtube-streaming est retiré du jeu (actif:false, qualité insuffisante) : absent du corpus servi.
 describe('corpus de questions intégré', () => {
-  it('contient 17 thèmes actifs', () => {
-    expect(THEMES.length).toBe(17);
+  it('contient 16 thèmes actifs', () => {
+    expect(THEMES.length).toBe(16);
   });
 
   it('chaque thème a un id, un nom, une icône et une couleur', () => {
@@ -28,10 +28,9 @@ describe('corpus de questions intégré', () => {
     }
   });
 
-  it('chaque thème compte au moins 1000 questions (youtube-streaming en cours de remplissage : >= 100)', () => {
+  it('chaque thème compte au moins 1000 questions', () => {
     for (const t of THEMES) {
-      const seuil = t.id === 'youtube-streaming' ? 100 : 1000; // objectif final : 1400 partout
-      expect(t.questions.length, `thème ${t.id}`).toBeGreaterThanOrEqual(seuil);
+      expect(t.questions.length, `thème ${t.id}`).toBeGreaterThanOrEqual(1000); // objectif final : 1400 partout
     }
   });
 

@@ -79,7 +79,7 @@ voir `docs/questions.md`). Source de vérité : `npm run count:questions` + `src
 | nature | `#4ade80` | oui (ajout 2026-11) |
 | economie | `#fbbf24` | oui (ajout 2026-11) |
 | auto | `#fb7185` | oui (ajout 2026-11) |
-| youtube-streaming | `#e879f9` | oui (ajout 2026-11, icône `play`) |
+| youtube-streaming | `#e879f9` | non (retiré 2026-11, qualité, icône `play`) |
 
 ## Mise en page actuelle (« épuré »)
 
