@@ -1,6 +1,7 @@
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 
 import react from '@vitejs/plugin-react';
 
@@ -12,7 +13,30 @@ import { VitePWA } from 'vite-plugin-pwa';
 // @cloudflare/vite-plugin = adaptateur officiel Cloudflare : en développement,
 //   l'appli tourne dans le vrai runtime Workers (workerd) ; au build, il produit
 //   le Worker + les assets prêts pour `npx wrangler deploy` (config : wrangler.toml).
-// vite-plugin-pwa = ce qui transforme le site en "WPA" (appli installable, hors-ligne).
+// vite-plugin-pwa = ce qui transforme le site en "PWA" (appli installable, hors-ligne).
+
+// Génère src/data/theme-manifest.js et public/corpus.json au démarrage de CHAQUE
+// `vite` / `vite build`, quelle que soit la commande qui lance Vite (npm run build,
+// npm run deploy, ou la commande de build configurée chez Cloudflare). Avant, c'était
+// des hooks npm predev/prebuild, sautés par `vite build` direct : corpus.json devait
+// alors être versionné dans git (~6 Mo par lot de questions). Coût : ~0,5 s.
+function generateCorpus(): Plugin {
+  return {
+    name: 'voltquiz-generate-corpus',
+    enforce: 'pre',
+    config() {
+      // Vite recharge cette config plusieurs fois par build (environnements client et
+      // worker) : un drapeau de processus évite de régénérer 4 fois les mêmes fichiers.
+      if (process.env.VQUIZZ_CORPUS_GENERATED) return;
+      process.env.VQUIZZ_CORPUS_GENERATED = '1';
+      for (const script of ['scripts/gen-manifest.mjs', 'scripts/gen-corpus-json.mjs']) {
+        execFileSync(process.execPath, [fileURLToPath(new URL(`./${script}`, import.meta.url))], {
+          stdio: 'inherit',
+        });
+      }
+    },
+  };
+}
 
 export default defineConfig({
   resolve: {
@@ -26,6 +50,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    generateCorpus(),
     cloudflare(),
     react(),
     VitePWA({

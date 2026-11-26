@@ -2,7 +2,7 @@
 
 | Environnement | Commande | URL / vars | Base D1 |
 |---|---|---|---|
-| dev local | `npm run dev` | http://localhost:5173 (predev = gen-manifest), D1 locale sqlite | locale (workerd) |
+| dev local | `npm run dev` | http://localhost:5173 (Vite génère manifeste + corpus.json au démarrage), D1 locale sqlite | locale (workerd) |
 | preview local | `npm run preview` | http://localhost:4173 (build prod servie, sans worker) | aucune (retombe sur le cache local) |
 | preview Cloudflare | `npm run deploy:preview` | `wrangler deploy --env preview` (`ENVIRONMENT=preview`) | distante (preview) |
 | prod | `npm run deploy` (ou auto par Cloudflare) | https://voltquiz.joris-leo81.workers.dev (`ENVIRONMENT=production`) | distante (prod) |

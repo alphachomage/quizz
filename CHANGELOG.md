@@ -18,6 +18,9 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 - **`AGENTS.md`** : section « Avant de commencer » (fetch + fast-forward, état vert, le code fait foi), règles 15 (renommer/supprimer une feature = grep et mise à jour de toute la doc) et 16 (pas d'historique ni de chiffres périssables) ; erreurs corrigées (PWA, `eslint.config.js`, plus de CI). Sections d'historique déplacées : procédure d'ajout en masse et de dédoublonnage dans `docs/ajouter-questions.md` (section 6).
 - **`docs/methodologie.md`** : brief type des sous-agents (CHANGELOG réservé au parent, lien `node_modules`, fichiers réservés), format des commits (trailer sur sa propre ligne), checklist de merge complétée (typecheck, dry-run toujours, partie jouée à la main après un refactor de jeu, code mort, feature renommée) et tableau « leçons de l'audit ».
 
+### Modifié (corpus)
+- **`public/corpus.json` n'est plus versionné dans git** (il l'était par erreur depuis le 24/11 malgré `.gitignore`, ~6 Mo ajoutés à l'historique à chaque lot de questions). Il est désormais généré, avec `theme-manifest.js`, par un plugin Vite (`generateCorpus` dans `vite.config.ts`) au démarrage de **chaque** `vite`/`vite build` : `npm run build`, `npm run deploy`/`deploy:preview` (qui lançaient `vite build` direct et sautaient les anciens hooks `predev`/`prebuild`, supprimés) et le build Cloudflare, quelle que soit sa commande.
+
 ### Performance
 - **Précache PWA divisé par ~2 (12,4 -> 6,9 Mio)** : les chunks `questions-*.js`, qui dupliquent `corpus.json`, sont exclus du précache (`globIgnores` dans `vite.config.ts`) ; ils restent servis en ligne pour le repli.
 

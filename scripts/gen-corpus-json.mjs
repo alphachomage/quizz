@@ -4,7 +4,7 @@
 //
 // Au premier lancement, le client fetch /corpus.json (1 requête, précaché par la PWA
 // car dans public/) au lieu de charger 263 chunks JS. Fallback sur les chunks si le
-// fetch échoue. Lancé automatiquement avant dev/build (predev/prebuild).
+// fetch échoue. Lancé automatiquement au démarrage de Vite (plugin generateCorpus de vite.config.ts).
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';

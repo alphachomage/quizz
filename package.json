@@ -4,8 +4,6 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "predev": "node scripts/gen-manifest.mjs && node scripts/gen-corpus-json.mjs",
-    "prebuild": "node scripts/gen-manifest.mjs && node scripts/gen-corpus-json.mjs",
     "gen:manifest": "node scripts/gen-manifest.mjs",
     "gen:corpus": "node scripts/gen-corpus-json.mjs",
     "dev": "vite",
