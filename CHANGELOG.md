@@ -5,6 +5,13 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 
 ## Non publié
 
+### Corrigé (corpus, étape 3b : audit factuel et défauts systématiques)
+- **Audit factuel par échantillon** (50 questions tirées au hasard par thème, 850 au total, vérifiées par des sous-agents avec recherche web) : 17,5 % de questions fausses, périmées ou ambiguës (8,6 % franchement fausses ou périmées). Taux par thème : youtube-streaming 42 %, nature 30 %, musique 26 %, cuisine et auto 24 %, technologie 22 %, economie, jeux-videos et mythologie 14 %, sport 12 %, histoire, sciences et mangas-animes 10 %, geographie, culture-generale et espace 8 %, cinema-series 4 %. Les 166 corrections proposées (dont 8 remplacements) ont été relues puis appliquées.
+- **Bloc de cuisine à index décalés** : un générateur avait fait tourner l'index de la bonne réponse (0, 1, 2, 3...) sans déplacer les réponses sur 100 questions ; 50 désignaient un leurre comme bonne réponse (konjac, bromélaïne, 9 bars...). Toutes vérifiées et corrigées. Les autres séquences d'index tournants du corpus ont été contrôlées : correctes.
+- **49 questions de mythologie mal encodées** (« dÃ©esse ») réencodées ; 4 se révélaient des doublons et ont été remplacées.
+- Nouvelles règles qualité : **`encodage`** (aucun cas restant), **`reponse-annotee`** (commentaire entre parenthèses dans une réponse, en dette) et **`quasi-doublon`** resserrée : même bonne réponse ET similarité >= 0,6 (le seuil 0,4 de l'appli signalait surtout des questions de même forme sur des sujets différents : 4 348 entrées ramenées à 468 vrais quasi-doublons). 9 vrais doublons révélés par les corrections ont été remplacés par des questions nouvelles.
+- `check-repo` vérifie que `src/data/theme-manifest.js` (versionné) correspond au contenu (`CORPUS_VERSION`), sinon `npm run gen:manifest`.
+
 ### Corrigé (corpus, étape 3a : questions qui gâchaient le jeu)
 - **668 questions corrigées en place** (id et position conservés, Quizz du jour stable hors questions touchées) dans les 17 thèmes servis : 367 « réponse dans la question » réécrites, 58 doublons exacts remplacés par des questions nouvelles, 20 « réponses en double » et 246 questions à 2 ou 3 réponses complétées à 4 (dont les « Vrai ou faux » reformulés). Plus aucun de ces défauts dans le corpus servi (seuls restent ceux des thèmes retirés insolite et pop-culture).
 - Une vingtaine d'erreurs factuelles corrigées au passage (ex. Eurovia appartient à Vinci et non à Bouygues, Lexus LFA 4,8 L, Jake Paul frère de Logan Paul, Le Rire Jaune = Kevin et Henry Tran, Kiyoharu Toda dans Real).

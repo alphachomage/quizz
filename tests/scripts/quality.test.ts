@@ -100,10 +100,12 @@ describe('checkQuestion', () => {
   });
 
   it('quasi-doublon : seul le 2e exemplaire est en faute, pas de double signalement avec doublon-exact', () => {
-    const a = { ...bonne(), q: 'Quelle marque de luxe britannique appartient au groupe BMW depuis 1998 ?' };
-    const b = { ...bonne(), q: 'Quelle marque de luxe britannique appartient au groupe Volkswagen ?' };
+    const a = { ...bonne(), q: 'Combien de joueurs d’une équipe de handball évoluent sur le terrain ?' };
+    const b = { ...bonne(), q: 'Combien de joueurs d’une équipe de handball sont sur le terrain ?' };
     const autre = { ...bonne(), q: 'Quel fleuve traverse la ville de Budapest ?' };
-    const res = checkQuestions([a, autre, b]);
+    // Même gabarit mais autre bonne réponse : question légitime, pas un doublon.
+    const gabarit = { ...bonne(), q: 'Combien de joueurs d’une équipe de handball sont sur le banc ?', bonne: 0 };
+    const res = checkQuestions([a, autre, b, gabarit]);
     expect(res).toHaveLength(1);
     expect(res[0].index).toBe(2);
     expect(res[0].violations.map((v: { code: string }) => v.code)).toEqual(['quasi-doublon']);
@@ -112,6 +114,11 @@ describe('checkQuestion', () => {
     expect(exact[0].violations.map((v: { code: string }) => v.code)).toEqual(['doublon-exact']);
     // sans index, la règle n'est pas évaluée
     expect(codes(b)).not.toContain('quasi-doublon');
+  });
+
+  it('encodage : texte mal encodé signalé, accents corrects acceptés', () => {
+    expect(codes({ ...bonne(), q: 'Comment s’appelle la dÃ©esse du foyer ?' })).toContain('encodage');
+    expect(codes({ ...bonne(), q: 'Quelle déesse, sœur de Zeus, veille sur le foyer ?' })).not.toContain('encodage');
   });
 
   it('format : schéma invalide', () => {

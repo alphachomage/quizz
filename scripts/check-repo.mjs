@@ -81,6 +81,17 @@ for (const f of docs) {
   });
 }
 
+// 5. Le manifeste versionné (src/data/theme-manifest.js) doit correspondre au contenu : sinon les
+//    tests et le typecheck tournent sur une CORPUS_VERSION périmée (oubli constaté après une correction).
+{
+  const { contentHash } = await import('./lib/content.mjs');
+  const manifeste = fs.readFileSync(path.join(root, 'src/data/theme-manifest.js'), 'utf8');
+  const version = manifeste.match(/CORPUS_VERSION = "([0-9a-f]+)"/)?.[1];
+  if (version !== contentHash()) {
+    errors.push('src/data/theme-manifest.js : CORPUS_VERSION périmée, lancez npm run gen:manifest et commitez le fichier');
+  }
+}
+
 if (errors.length) {
   for (const e of errors) console.error(`check-repo : ${e}`);
   console.error(`check-repo : ${errors.length} problème(s). Voir scripts/check-repo.mjs pour le pourquoi.`);
