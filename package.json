@@ -29,6 +29,7 @@
     "questions:ids": "node scripts/assign-question-ids.mjs",
     "questions:lint": "node scripts/questions-lint.mjs",
     "questions:import": "node scripts/questions-import.mjs",
+    "questions:apply": "node scripts/questions-apply.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "tail": "wrangler tail --format pretty",

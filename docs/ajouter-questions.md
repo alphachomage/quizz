@@ -235,3 +235,30 @@ Relire le diff git et le noter dans `CHANGELOG.md`.
 Un nouveau thème s'accompagne de titres (`TITLES_PER_THEME`, `src/lib/titles.ts`) et de
 badges (`themeLevels`, `src/lib/badges.ts`) dédiés, et d'une icône dans `src/shared/ui/Icon.tsx`.
 
+
+---
+
+## 7. Corriger des questions existantes (`npm run questions:apply`)
+
+Pour corriger une erreur, raccourcir une question ou remplacer un doublon, sans jamais
+déplacer une question (le Quizz du jour dépend de l'ordre) :
+
+1. Écrire un fichier de corrections, hors de `content/` (par ex. dans un dossier temporaire) :
+
+   ```json
+   { "corrections": [
+     { "id": "auto-1a2b3c", "q": "Quelle marque italienne de supercars porte le nom de son fondateur argentin ?" },
+     { "id": "sport-4d5e6f", "reponses": ["2", "3", "4", "5"] },
+     { "id": "cuisine-7a8b9c", "remplacer": true, "q": "...", "reponses": ["...", "...", "...", "..."], "bonne": 0, "niveau": "moyen" }
+   ] }
+   ```
+
+   - **correction** (par défaut) : seuls les champs donnés changent, l'id est conservé ;
+   - **`"remplacer": true`** : une question entièrement nouvelle prend la place (cas d'un
+     doublon) et reçoit un nouvel id.
+2. `npm run questions:apply -- <fichier.json> --dry-run`, puis sans `--dry-run`.
+   Tout ou rien : si une seule correction est refusée, rien n'est écrit. Refusé si la
+   correction ajoute un défaut qualité, si un remplacement ne respecte pas toutes les règles
+   ou ressemble à une question du thème, ou si l'id n'existe pas.
+3. `npm run questions:lint -- --update-dette` retire de la dette les défauts corrigés, puis
+   `npm run lint` doit être vert.
