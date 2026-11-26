@@ -1,5 +1,5 @@
 // overrides.ts — couche d'"overrides" admin : modifier ou supprimer une question du
-// corpus SANS toucher aux fichiers source (règle 7 : jamais éditer questions-*.js).
+// corpus SANS toucher aux fichiers source (le corpus vit dans content/, voir règle 7).
 // Stocké via OverridesRepo (clé voltquiz_overrides, synchronisée D1 en mode 'd1'),
 // indexé par le texte normalisé de la question (normalizeQuestionText).
 //

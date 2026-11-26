@@ -26,17 +26,28 @@ for (const [name, cmd] of Object.entries(pkg.scripts)) {
 }
 
 // 2. Aucun emoji ni pictogramme (règle 1) dans le code, les styles et la doc.
-//    Les fichiers questions-*.js sont exclus : on ne les modifie jamais (règle 7).
+//    content/questions/*.json est exclu : le corpus contient des emojis dans ses textes.
 const EMOJI = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{2300}-\u{23FF}\u{FE0F}]/u;
 // corpus.json est généré depuis les questions ; veille-quizup.md est une archive figée.
 const SKIP_EMOJI = new Set(['package-lock.json', 'public/corpus.json', 'docs/veille-quizup.md']);
 const textFile = /\.(ts|tsx|js|mjs|css|html|md|json|toml)$/;
 for (const f of tracked) {
-  if (!textFile.test(f) || /^src\/data\/questions-/.test(f) || SKIP_EMOJI.has(f)) continue;
+  if (!textFile.test(f) || /^content\/questions\//.test(f) || SKIP_EMOJI.has(f)) continue;
   const lines = fs.readFileSync(path.join(root, f), 'utf8').split('\n');
   lines.forEach((line, i) => {
     if (EMOJI.test(line)) errors.push(`${f}:${i + 1} : emoji ou pictogramme interdit (règle 1, utiliser Icon.tsx)`);
   });
+}
+
+// 2b. Ancien format de questions (src/data/questions-*.js) : ces fichiers seraient ignorés
+//     silencieusement par la génération du corpus (qui lit content/).
+const ancien = fs.existsSync(path.join(root, 'src/data'))
+  ? fs.readdirSync(path.join(root, 'src/data')).filter((f) => /^questions-.*\.js$/.test(f))
+  : [];
+for (const f of ancien) {
+  errors.push(
+    `src/data/${f} : ancien format interdit, ajouter les questions dans content/questions/<theme>.json (voir docs/ajouter-questions.md)`,
+  );
 }
 
 // 3. Les chemins cités entre backticks dans la doc agents existent sur le disque
@@ -60,6 +71,7 @@ for (const f of docs) {
 const STALE = [
   [/(?<!ancien mode |l’ancien mode |l'ancien mode )\bSurvie\b|test:game:survival/, 'le mode Survie a été remplacé par Rogue Quizz'],
   [/\b\d{3} fichiers\b.*questions-/, 'nombre de fichiers de questions en dur (utiliser npm run count:questions)'],
+  [/src\/data\/questions-/, 'les questions vivent dans content/ (themes.json + questions/<theme>.json)'],
   [/\.test\.jsx?\b/, 'les tests sont en .ts/.tsx'],
 ];
 for (const f of docs) {

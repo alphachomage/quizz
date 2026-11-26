@@ -1,46 +1,41 @@
 # Ajouter des questions ou un thème — guide pas à pas
 
-Ce guide explique comment enrichir le corpus **proprement** : un nouveau fichier à
-chaque fois, jamais de modification d'un fichier existant, et les vérifications à
-lancer avant de commit. Tout est automatique ensuite (manifest, IndexedDB, PWA).
+Ce guide explique comment enrichir le corpus **proprement**. Le corpus est du JSON dans
+`content/` (voir `docs/questions.md`) ; tout est automatique ensuite (manifeste, IndexedDB, PWA).
 
-> Règle d'or (règle 7 de `AGENTS.md`) : **on n'édite JAMAIS un fichier
-> `src/data/questions-*.js` existant** — on crée un NOUVEAU fichier. Le corpus est
-> fusionné par id de thème : même `id` = questions ajoutées, rien n'est supprimé.
+> Règle d'or (règle 7 de `AGENTS.md`) : les **ids** des questions existantes ne sont
+> jamais modifiés ni réattribués, et l'**ordre** des questions ne change jamais (le Quizz
+> du jour en dépend) : on AJOUTE en fin de fichier de thème. Corriger ou supprimer une
+> question existante est permis dans une branche relue, en conservant l'id des autres.
+> L'ancien format (fichiers `questions-*.js` dans `src/data/`) est refusé par `npm run lint`.
+> (L'import par lots via `inbox/` viendra dans une étape ultérieure.)
 
 ---
 
 ## 1. Ajouter des questions à un thème existant
 
-### Étape 1 — créer un nouveau fichier
+### Étape 1 — ajouter les objets en fin de `content/questions/<theme-id>.json`
 
-Nom : `src/data/questions-<theme-id>-<suffixe>.js` (suffixe libre, ex. `-z`, `-v6`).
+Une question par ligne, juste avant la fin du tableau `questions` (sans `id`) :
 
-Exemple pour ajouter 10 questions à `histoire` :
-
-```bash
-cat > src/data/questions-histoire-z.js << 'EOF'
-// Lot de questions — thème histoire (ajout uniquement, ne jamais éditer un fichier existant).
-export const QUESTIONS_HISTOIRE_Z = [
-  {
-    id: "histoire",
-    nom: "Histoire",
-    icone: "scroll",
-    couleur: "#a3e635",
-    questions: [
-      { q: "En quelle année a eu lieu la Révolution française ?", reponses: ["1789", "1815", "1848", "1914"], bonne: 0, niveau: "facile", info: "Le 14 juillet 1789, prise de la Bastille." },
-      { q: "Qui était le premier empereur romain ?", reponses: ["Jules César", "Auguste", "Néron", "Caligula"], bonne: 1, niveau: "moyen" },
-      // ... jusqu'à 10 questions
-    ],
-  },
-];
-EOF
+```json
+    {"q":"En quelle année a eu lieu la Révolution française ?","reponses":["1789","1815","1848","1914"],"bonne":0,"niveau":"facile","info":"Le 14 juillet 1789, prise de la Bastille."},
+    {"q":"Qui était le premier empereur romain ?","reponses":["Jules César","Auguste","Néron","Caligula"],"bonne":1,"niveau":"moyen"}
 ```
 
-### Étape 2 — respecter le format (validé par zod, `src/lib/schema.ts`)
+(Penser à la virgule après l'objet qui était le dernier ; le dernier objet n'a pas de virgule.)
+
+### Étape 2 — attribuer les ids
+
+```bash
+npm run questions:ids     # donne un id aux questions qui n'en ont pas, sans toucher aux autres
+```
+
+### Étape 3 — respecter le format (validé par zod, `src/lib/schema.ts`)
 
 | Champ | Règle |
 |---|---|
+| `id` | attribué par `npm run questions:ids` (`<theme>-<hex>`), unique, **jamais modifié** |
 | `q` | texte de la question, 4 à 500 caractères |
 | `reponses` | 2 à 4 réponses, chacune 1 à 200 caractères |
 | `bonne` | index de la bonne réponse, **0-based** (`0` = première réponse) et `< reponses.length` |
@@ -50,32 +45,32 @@ EOF
 Clés en français (`q`, `reponses`, `bonne`, `niveau`, `info`, `nom`, `icone`, `couleur`) :
 c'est le format JSON documenté du client, ne pas les traduire.
 
-### Étape 3 — vérifier
+### Étape 4 — vérifier
 
 ```bash
 npm run count:questions   # compte le nouveau total + détecte les doublons exacts
-npm run test:data         # valide le schéma zod de TOUT le corpus (0 invalide attendu)
+npm run test:data         # structure de content/ + schéma zod de TOUT le corpus (0 invalide attendu)
 npm run lint && npm run typecheck && npm test
 ```
 
-### Étape 4 — commit
+### Étape 5 — commit
 
 ```bash
-git add src/data/questions-histoire-z.js
+git add content/
 git commit -m "feat(questions): +10 questions histoire"
 ```
 
 C'est tout. Au prochain `npm run dev` / `npm run build` (Vite lance automatiquement
 les deux scripts au démarrage) :
 - `scripts/gen-manifest.mjs` régénère `theme-manifest.js` **avec un nouveau
-  `CORPUS_VERSION`** (hash des fichiers) → le cache IndexedDB des joueurs est
+  `CORPUS_VERSION`** (hash de `content/`) -> le cache IndexedDB des joueurs est
   invalidé automatiquement, ils reçoivent les nouvelles questions au prochain
   lancement ;
-- `scripts/gen-corpus-json.mjs` régénère `public/corpus.json` (tout le corpus
-  fusionné en un seul JSON minifié, avec la même version) → servi en 1 requête
+- `scripts/gen-corpus-json.mjs` régénère `public/corpus.json` (tout le corpus servi
+  en un seul JSON minifié, avec la même version) -> servi en 1 requête
   et **précaché par la PWA** (hors-ligne OK) ;
-- le nouveau fichier `questions-*.js` reste découpé en chunk par le bundler
-  (fallback si `corpus.json` est indisponible).
+- les fichiers `content/questions/*.json` restent découpés en chunks par le bundler
+  (repli si `corpus.json` est indisponible).
 
 ---
 
@@ -109,27 +104,28 @@ les deux scripts au démarrage) :
   | `#e879f9` | (pop-culture, retiré) |
   | `#4ade80` | sport |
 
-### Étape 2 — créer le fichier
+### Étape 2 — créer le thème
 
-```bash
-cat > src/data/questions-astronomie-a.js << 'EOF'
-// Premier lot du thème astronomie (nouveau thème).
-export const QUESTIONS_ASTRONOMIE_A = [
-  {
-    id: "astronomie",
-    nom: "Astronomie",
-    icone: "planet",
-    couleur: "#818cf8",
-    questions: [
-      { q: "Combien de planètes dans le système solaire ?", reponses: ["7", "8", "9", "10"], bonne: 1, niveau: "facile" },
-      // ... au moins 1 question par niveau recommandé (facile/moyen/dur)
-    ],
-  },
-];
-EOF
+1. Ajouter une ligne en fin de `content/themes.json` (l'ordre des thèmes est significatif) :
+
+```json
+  {"id":"astronomie","nom":"Astronomie","icone":"planet","couleur":"#818cf8","actif":true}
 ```
 
-### Étape 3 — vérifier + commit (idem §1 étape 3-4)
+2. Créer `content/questions/astronomie.json` :
+
+```json
+{
+  "theme": "astronomie",
+  "questions": [
+    {"q":"Combien de planètes dans le système solaire ?","reponses":["7","8","9","10"],"bonne":1,"niveau":"facile"}
+  ]
+}
+```
+
+3. `npm run questions:ids` pour attribuer les ids (au moins 1 question par niveau recommandé).
+
+### Étape 3 — vérifier + commit (idem §1 étapes 4-5)
 
 Le thème apparaîtra automatiquement dans la grille d'accueil (via `theme-manifest.js`)
 et sera jouable dans tous les modes. Pense à remplir **les 3 niveaux** pour que le
@@ -142,9 +138,9 @@ mode Solo ait un pool suffisant par difficulté.
 | Mécanisme | Quand |
 |---|---|
 | `theme-manifest.js` régénéré (métadonnées + `CORPUS_VERSION`) | auto au démarrage de Vite (`npm run dev`, `npm run build`, `npm run deploy` : plugin `generateCorpus` de `vite.config.ts`), ou à la main `npm run gen:manifest` |
-| Invalidation du cache IndexedDB des joueurs | auto : `CORPUS_VERSION` change dès qu'un fichier `questions-*.js` est ajouté/modifié/supprimé |
-| `public/corpus.json` (tout le corpus, précaché PWA = hors-ligne) | auto au build (`scripts/gen-corpus-json.mjs`) ; les chunks `questions-*.js` restent servis en ligne pour le repli mais ne sont pas précachés |
-| Validation du schéma (zod) | `npm run test:data` + test auto dans `npm test` |
+| Invalidation du cache IndexedDB des joueurs | auto : `CORPUS_VERSION` (hash de `content/`) change dès qu'un fichier de `content/` change |
+| `public/corpus.json` (tout le corpus servi, précaché PWA = hors-ligne) | auto au build (`scripts/gen-corpus-json.mjs`) ; les chunks `content/questions/*.json` restent servis en ligne pour le repli mais ne sont pas précachés |
+| Validation du schéma (zod) + ids uniques | `npm run test:data` + test auto dans `npm test` |
 | Détection de doublons exacts | `npm run count:questions` (le nombre ne doit jamais augmenter) |
 | Modération in-app (propositions des joueurs) | bouton « Proposer une question » (niveau 3 requis), validation dans `?admin=1` |
 
@@ -152,7 +148,8 @@ mode Solo ait un pool suffisant par difficulté.
 
 ## 4. Checklist avant commit
 
-- [ ] Nouveau fichier uniquement (aucun `questions-*.js` existant édité) — `git status` ne montre que des `A` (added) dans `src/data/`
+- [ ] Ajouts en fin de fichier de thème uniquement : `git diff content/` ne montre que des lignes ajoutées (ou des corrections voulues), aucun id existant modifié, aucune question déplacée
+- [ ] `npm run questions:ids` lancé (aucune question sans id)
 - [ ] Format respecté : 2-4 réponses, `bonne` < `reponses.length`, `niveau` renseigné
 - [ ] Couleur reprise d'un thème existant, icône existante dans `Icon.tsx`
 - [ ] `npm run count:questions` : total augmenté, 0 invalide, doublons pas en hausse
@@ -180,17 +177,16 @@ Voir `docs/questions.md` pour le détail.
 
 Méthode utilisée pour monter chaque thème vers son objectif :
 
-- un pack de départ écrit à la main (`questions-<theme>.js`), puis des **vagues** de
-  sous-agents : `questions-vague<N>-<theme>-<lot>.js`, environ 50 questions par fichier ;
+- un pack de départ écrit à la main, puis des **vagues** de sous-agents qui ajoutent
+  environ 50 questions par lot en fin de `content/questions/<theme>.json` ;
 - avant chaque lot, donner au sous-agent la liste normalisée des questions existantes
   du thème (anti-doublon) et lui imposer le format de la section 1 ;
-- après chaque vague : `npm run count:questions` (doublons pas en hausse, 0 invalide).
+- après chaque vague : `npm run questions:ids` puis `npm run count:questions` (doublons pas en hausse, 0 invalide).
 
 Dédoublonnage exact : `node scripts/dedupe-questions.mjs` supprime les doublons (même
 question normalisée dans le même thème, même règle que `count:questions`), garde la
-première occurrence et réécrit uniquement les fichiers concernés. C'est la **seule**
-exception tolérée à la règle 7 (fichiers existants modifiés) : faire une sauvegarde dans
-`backups/` avant, et le noter dans `CHANGELOG.md`.
+première occurrence (avec son id) et réécrit uniquement les fichiers de thème concernés.
+Relire le diff git et le noter dans `CHANGELOG.md`.
 
 Un nouveau thème s'accompagne de titres (`TITLES_PER_THEME`, `src/lib/titles.ts`) et de
 badges (`themeLevels`, `src/lib/badges.ts`) dédiés, et d'une icône dans `src/shared/ui/Icon.tsx`.

@@ -26,7 +26,7 @@ tables dédiées, requêtables et indexables — et sont poussées côté client
 ## Pourquoi les questions restent côté client
 
 Le corpus (thèmes + questions) est du **contenu statique versionné avec l'app** : servi
-en chunks lazy par le worker via les assets (`src/data/questions-*.js`), cacheable par
+via `public/corpus.json` (généré depuis `content/`) et les assets du worker, cacheable par
 le navigateur et le service worker, zéro requête D1 par question. Lire des milliers de
 questions en base à chaque partie serait inutile et coûteux. Côté serveur ne vivent que
 les **soumissions des joueurs** (table `soumissions`) et le fichier statique

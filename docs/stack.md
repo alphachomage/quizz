@@ -68,8 +68,9 @@ src/
 │       fetch V2), accounts, moderation, badges, titles, similarity, avatar, share, sounds
 ├── styles/                 # ~35 modules CSS (tokens.css, palette.css, boutons, accueil,
 │                           #   partie, ..., accessibilite.css)
-└── data/                   # fichiers questions-*.js INCHANGÉS + questions.ts (glob lazy
-                            #   + loadThemes) + theme-manifest.js (généré par scripts/gen-manifest.mjs)
+└── data/                   # questions.ts (loadThemes, repli glob lazy sur content/questions/*.json)
+                            #   + theme-manifest.js (généré par scripts/gen-manifest.mjs)
+content/                    # CORPUS : themes.json + questions/<theme>.json (source de vérité)
 ```
 
 Alias Vite/Vitest : `@app` `@lib` `@shared` `@features` `@data` `@` -> `src/...`.
@@ -78,11 +79,11 @@ Alias Vite/Vitest : `@app` `@lib` `@shared` `@features` `@data` `@` -> `src/...`
 
 Tout le code applicatif est en **TypeScript** (`src/**/*.{ts,tsx}`, `strict: true` via
 `tsconfig.json`, vérifié par `npm run typecheck`, règle 11). Vite/esbuild compile le TS
-nativement : aucun changement de build. Les fichiers `src/data/questions-*.js`
-restent en **JS pur** (règle 7) : leur forme est déclarée dans `src/data/questions.d.ts`
-et validée au runtime par zod (`src/lib/schema.ts`, `z.infer` pour les types).
+nativement : aucun changement de build. Le corpus est en **JSON**
+(`content/`, règle 7) : validé au runtime par zod (`src/lib/schema.ts`, `z.infer` pour les types) ;
+sa forme est testée par `tests/data/content.test.ts`.
 Migration **terminée** (2026-11) : tout `src/` + `tests/` + worker sont en `.ts`/`.tsx`
-strict. Restent en JS : les chunks `questions-*.js` + `theme-manifest.js` (généré),
+strict. Restent en JS : `theme-manifest.js` (généré),
 `eslint.config.ts`, `scripts/*.mjs`.
 
 ## Règles de dépendance (en ERREUR via ESLint, testées négativement)
@@ -108,10 +109,9 @@ strict. Restent en JS : les chunks `questions-*.js` + `theme-manifest.js` (gén�
 - **Écrans** : `routes.ts` = `React.lazy` par écran + `<Suspense>` global dans `App.tsx`
   (fallback « Chargement… ») ; `useNavigation` en `startTransition` garde l'écran
   précédent visible pendant le chargement.
-- **Questions** : `src/data/questions.ts` découpe les fichiers `questions-*.js` en
-  chunks (~10 Ko chacun) via `import.meta.glob` non eager, MAIS `loadThemes()` charge
-  TOUS les chunks au démarrage (voir `docs/questions.md`). La PWA précache tous les
-  chunks -> hors-ligne OK.
+- **Questions** : `public/corpus.json` (généré depuis `content/`, précaché PWA -> hors-ligne OK)
+  puis IndexedDB ; `src/data/questions.ts` ne retombe sur les fichiers `content/questions/*.json`
+  (`import.meta.glob` non eager, exclus du précache) qu'en repli (voir `docs/questions.md`).
 
 ## Accessibilité
 

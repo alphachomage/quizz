@@ -1,0 +1,21 @@
+[
+  {"id":"auto","nom":"Voitures & Auto-moto","icone":"car","couleur":"#fb7185","actif":true},
+  {"id":"culture-generale","nom":"Culture générale","icone":"globe","couleur":"#818cf8","actif":true},
+  {"id":"cinema-series","nom":"Cinéma & Séries","icone":"film","couleur":"#fb7185","actif":true},
+  {"id":"musique","nom":"Musique","icone":"music","couleur":"#a78bfa","actif":true},
+  {"id":"sport","nom":"Sport","icone":"ball","couleur":"#4ade80","actif":true},
+  {"id":"jeux-videos","nom":"Jeux vidéos","icone":"gamepad","couleur":"#38bdf8","actif":true},
+  {"id":"geographie","nom":"Géographie","icone":"pin","couleur":"#2dd4bf","actif":true},
+  {"id":"cuisine","nom":"Cuisine","icone":"utensils","couleur":"#fb923c","actif":true},
+  {"id":"economie","nom":"Économie & Marques","icone":"coins","couleur":"#fbbf24","actif":true},
+  {"id":"espace","nom":"Espace","icone":"planet","couleur":"#818cf8","actif":true},
+  {"id":"histoire","nom":"Histoire","icone":"scroll","couleur":"#a3e635","actif":true},
+  {"id":"mangas-animes","nom":"Mangas & Animés","icone":"book","couleur":"#f472b6","actif":true},
+  {"id":"mythologie","nom":"Mythologie","icone":"temple","couleur":"#fbbf24","actif":true},
+  {"id":"nature","nom":"Nature & Animaux","icone":"paw","couleur":"#4ade80","actif":true},
+  {"id":"sciences","nom":"Sciences","icone":"flask","couleur":"#2dd4bf","actif":true},
+  {"id":"technologie","nom":"Technologie & Internet","icone":"chip","couleur":"#38bdf8","actif":true},
+  {"id":"youtube-streaming","nom":"YouTube & Streaming","icone":"play","couleur":"#e879f9","actif":true},
+  {"id":"pop-culture","nom":"Pop culture","icone":"sparkles","couleur":"#e879f9","actif":false},
+  {"id":"insolite","nom":"Insolite","icone":"question","couleur":"#fb923c","actif":false}
+]

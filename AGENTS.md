@@ -40,8 +40,8 @@ Toute branche part de `origin/main` à jour. Si une consigne de ce fichier contr
 2. **Code en anglais, commentaires en français** (uniquement quand une décision n'est pas
    limpide — ne pas commenter l'évident). **TypeScript partout** : `src/`, `tests/`, `worker*.ts`, `api/`, `durable-objects/`, `vite.config.ts`,
    `vitest.config.ts` sont en `.ts`/`.tsx` strict (`npm run typecheck` = `tsc --noEmit`, vert requis).
-   Restent en JS pur : les fichiers `src/data/questions-*.js` + `theme-manifest.js` généré
-   (règle 7 ; type déclaré dans `src/data/questions.d.ts`), `eslint.config.js` et `scripts/*.mjs`. Exception documentée : les **clés du schéma de
+   Restent en JS pur : `theme-manifest.js` généré (type déclaré dans `src/data/questions.d.ts`),
+   `eslint.config.js` et `scripts/*.mjs`. Le corpus est du JSON : `content/themes.json` + `content/questions/<theme>.json`. Exception documentée : les **clés du schéma de
    données** (`q`, `reponses`, `bonne`, `niveau`, `info`, `nom`, `icone`, `couleur`) restent
    en français car c'est le format JSON documenté pour le client
    (`docs/questions.md`) et les clés localStorage existantes.
@@ -65,8 +65,11 @@ Toute branche part de `origin/main` à jour. Si une consigne de ce fichier contr
    `react-hooks/rules-of-hooks` error, `exhaustive-deps` warn (désactivable au cas par cas
    avec justification en commentaire), `react-refresh/only-export-components` warn,
    `no-console` error, `no-unused-vars` warn (préfixe `_` pour ignorer).
-7. **Ne JAMAIS toucher** à `node_modules/`, `dist/`, `backups/`, `.wrangler/`, et ne jamais
-   modifier les fichiers `src/data/questions-*.js` (ajout uniquement).
+7. **Ne JAMAIS toucher** à `node_modules/`, `dist/`, `backups/`, `.wrangler/`. Le corpus vit
+   dans `content/` : les ajouts se font en fin de fichier de thème ou via les scripts ;
+   corriger/supprimer une question existante est autorisé dans une branche relue, en
+   CONSERVANT son id (jamais réattribué ni recalculé) et sans réordonner (le Quizz du jour
+   en dépend).
 8. **Pas de nouvelle librairie externe** sans justification écrite (pour + contre) dans
    la PR/commit — dépendances : react, react-dom, zod (runtime) + tooling (vite, vitest,
    eslint, typescript, wrangler...). Décision TS documentée dans `docs/methodologie.md`.
@@ -87,7 +90,7 @@ Toute branche part de `origin/main` à jour. Si une consigne de ce fichier contr
     - chemins de fichiers cités **existent sur le disque** (spot-check `ls`) ;
     - chiffres du corpus **jamais en dur** : régénérés via `npm run count:questions` ;
     - commandes citées **testées** (`npm run test:game`, `db:migrate:local`...) ;
-    - extensions à jour (`.ts`/`.tsx`, sauf `questions-*.js`/`theme-manifest.js`) ;
+    - extensions à jour (`.ts`/`.tsx`, sauf `theme-manifest.js`) ;
     - cohérence avec le code (ex. flag `comptes.admin`, modes de stockage, flags URL) ;
     - `CHANGELOG.md` a une entrée, `docs/INDEX.md` reflète les docs courantes.
 13. Git : une branche `feature/<phase>-<slug>` par étape depuis `origin/main`, worktree

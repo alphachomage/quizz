@@ -9,8 +9,8 @@ Chiffres du corpus : toujours `npm run count:questions`, jamais un nombre en dur
 | Stack & archi | `docs/stack.md` | toucher à la structure src/ | arborescence réelle, règles R1-R10, alias `@*` |
 | Règles du jeu | `docs/jeu.md` | modifier scoring/modes/tirage | `lib/scoring.ts`, `lib/draw.ts`, `features/game/` |
 | Design | `docs/design.md` | toucher au CSS/UI | palette 60-30-10 sobre (`styles/tokens.css`), 14 couleurs de thèmes, a11y |
-| Questions | `docs/questions.md` | ajouter/modifier des questions | format JSON (clés FR), IndexedDB + chunks lazy, similarité, admin, `npm run count:questions` |
-| Ajouter questions/thèmes | `docs/ajouter-questions.md` | enrichir le corpus | guide pas à pas : nouveau fichier `questions-*.js` uniquement, format, couleurs/icônes autorisées, commandes de vérif, checklist |
+| Questions | `docs/questions.md` | ajouter/modifier des questions | format JSON (clés FR), `content/` (JSON, ids stables), IndexedDB + repli chunks lazy, similarité, admin, `npm run count:questions` |
+| Ajouter questions/thèmes | `docs/ajouter-questions.md` | enrichir le corpus | guide pas à pas : ajout en fin de `content/questions/<theme>.json`, `npm run questions:ids`, format, couleurs/icônes autorisées, commandes de vérif, checklist |
 | Comptes | `docs/comptes.md` | connexion, invité, modération | `lib/accounts.ts`, hash SHA-256 salé, reset URL |
 | Progression | `docs/progression.md` | XP/badges/titres/classement/stats | `lib/xp.ts`, 30 badges, 50 titres, historique 500 parties |
 | Sons & partage | `docs/sons-partage.md` | audio, vibrations, partage | `lib/sounds.ts`, `lib/share.ts`, `results/useShare.ts` |
