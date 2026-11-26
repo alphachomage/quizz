@@ -119,7 +119,7 @@ puis `curl localhost:5173/api/kv/test` -> `{"ok":true,"key":"test","value":42}`.
   `migrations/0004_sessions.sql` : table `sessions` (tokens Bearer).
   Appliquées en local ET en remote :
   `npx wrangler d1 migrations apply voltquiz --local` puis `--remote`.
-- `worker-api.ts` : **toutes les routes de données exigent `Authorization: Bearer <token>`**
+- `worker-api.ts` (routeur) + `api/` (sessions : `api/session.ts`) : **toutes les routes de données exigent `Authorization: Bearer <token>`**
   (table `sessions`, 401 sinon, 503 sans DB) ; le pseudo est forcé = celui du token sur
   parties/records/xp/soumissions, et `/api/kv/:cle` est namespacé `<pseudo>:<cle>` en
   `sync_client`. Routes : `/api/kv/:cle` (GET/POST/DELETE), `/api/auth/*` (PBKDF2 210k,

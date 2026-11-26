@@ -17,7 +17,7 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 const SRC_ANY = 'src/**/*.{js,jsx,ts,tsx}';
-const WORKER_ANY = ['worker.{js,ts}', 'worker-api.{js,ts}', 'durable-objects/**/*.{js,ts}'];
+const WORKER_ANY = ['worker.{js,ts}', 'worker-api.{js,ts}', 'api/**/*.{js,ts}', 'durable-objects/**/*.{js,ts}'];
 const CONFIG_ANY = ['vite.config.{js,ts}', 'vitest.config.{js,ts}', 'eslint.config.{js,ts}'];
 
 const baseRules = {
@@ -59,7 +59,7 @@ export default [
   },
   {
     // Bloc TypeScript : parser dédié, mêmes règles (no-unused-vars version TS).
-    files: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}', 'worker.ts', 'worker-api.ts', 'durable-objects/**/*.ts', 'vite.config.ts', 'vitest.config.ts', 'eslint.config.ts'],
+    files: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}', 'worker.ts', 'worker-api.ts', 'api/**/*.ts', 'durable-objects/**/*.ts', 'vite.config.ts', 'vitest.config.ts', 'eslint.config.ts'],
     languageOptions: {
       parser: tseslint.parser,
       ecmaVersion: 2022,
