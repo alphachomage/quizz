@@ -5,6 +5,12 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 
 ## Non publié
 
+### Modifié (format du corpus, étape 1/3)
+- **Le corpus quitte les 484 fichiers `src/data/questions-*.js` pour du JSON** : `content/themes.json` (métadonnées des thèmes une seule fois, `actif: false` pour les thèmes retirés, remplace la liste `RETIRED` codée en dur) + un fichier par thème `content/questions/<theme>.json` (une question par ligne, diffs lisibles). Aucun changement pour le joueur : `corpus.json` est **strictement identique** hors identifiants (vérifié en deep-equal, même ordre), `count:questions` identique, tirage du Quizz du jour identique (l'ordre des questions est conservé).
+- **Identifiant stable par question** (`<theme>-<hash>`, attribué une fois, jamais recalculé), transporté jusqu'au runtime (`Question.id`, stocké en `qid` dans IndexedDB pour garder la clé auto-incrémentée qui préserve l'ordre). Les stats, overrides et signalements restent indexés par texte pour l'instant (étape 3).
+- **Règle 7 réécrite** (validée par le client) : corriger ou supprimer une question existante est autorisé dans une branche relue, en conservant son id et sans réordonner. Nouveau `npm run questions:ids` (`scripts/assign-question-ids.mjs`) pour les questions ajoutées sans id ; scripts `count`/`audit`/`dedupe`/`gen-*` adaptés (`scripts/lib/content.mjs`) ; script one-shot `scripts/migrate-questions-to-json.mjs` conservé pour traçabilité.
+- Repli si `corpus.json` est indisponible : 17 chunks JSON (`theme-questions-*`, exclus du précache) au lieu de 484 chunks JS. `check-repo` échoue si un ancien fichier `src/data/questions-*.js` réapparaît. Test permanent `tests/data/content.test.ts`.
+
 ### Corrigé (audit du 2026-11-26)
 - **Scripts de test ciblés cassés** : `test:game`, `test:game:duel`, `test:game:daily`, `test:scoring`, `test:draw`, `test:similarity`, `test:accounts` pointaient vers des `.js`/`.jsx` disparus depuis la migration TS (aucun test lancé) ; `test:game:survival` remplacé par `test:game:rogue`.
 - **`lint:arch` aveugle** : madge ignorait 57 fichiers faute de résoudre les alias `@lib/...` ; il lit désormais `tsconfig.json` (162 fichiers analysés, 0 cycle).

@@ -55,7 +55,7 @@ for (const f of ancien) {
 const docs = ['AGENTS.md', 'README.md', ...tracked.filter((f) => /^docs\/.*\.md$/.test(f))].filter(
   (f) => f !== 'docs/veille-quizup.md', // archive volontairement figée
 );
-const PATH_RE = /`((?:src|tests|scripts|api|durable-objects|migrations|public|docs)\/[\w./@-]+\.\w+)`/g;
+const PATH_RE = /`((?:src|tests|scripts|api|durable-objects|migrations|public|docs|content)\/[\w./@-]+\.\w+)`/g;
 for (const f of docs) {
   const lines = fs.readFileSync(path.join(root, f), 'utf8').split('\n');
   lines.forEach((line, i) => {

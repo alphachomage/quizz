@@ -112,7 +112,7 @@ les deux scripts au démarrage) :
   {"id":"astronomie","nom":"Astronomie","icone":"planet","couleur":"#818cf8","actif":true}
 ```
 
-2. Créer `content/questions/astronomie.json` :
+2. Créer le fichier `content/questions/<id>.json` (ici `astronomie.json`) :
 
 ```json
 {
