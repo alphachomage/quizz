@@ -3,7 +3,7 @@
 import { normalizeQuestionText } from './content.mjs';
 import { schemaQuestion } from '../../src/lib/schema.ts';
 // Node retire les types TS : même algorithme (et même seuil) que l'appli et que l'import.
-import { THRESHOLD_SIMILAR, buildIndex, trouverSimilairesIndex } from '../../src/lib/similarity.ts';
+import { buildIndex, trouverSimilairesIndex } from '../../src/lib/similarity.ts';
 
 export const LIMITS = {
   questionMax: 150,
@@ -24,6 +24,7 @@ export const CODES = [
   'doublon-exact',
   'quasi-doublon',
   'reponse-annotee',
+  'encodage',
   'format',
 ];
 
@@ -46,8 +47,12 @@ export function estAnnotee(reponse) {
 }
 
 // Index de similarité incrémental (même algorithme que l'import : buildIndex / trouverSimilairesIndex).
-// Un index inversé par mot significatif écarte les candidats : un score >= THRESHOLD_SIMILAR exige au
+// Un index inversé par mot significatif écarte les candidats : un score >= 0.4 (et a fortiori >= QUASI_SEUIL) exige au
 // moins un mot en commun (0.35 de bigrammes seuls < 0.4), donc le résultat est identique au scan complet.
+const MOJIBAKE = /Ã[\u0080-\u00BF]|Å[\u0080-\u00BF\u0152\u0153\u201C\u201D]|â€/;
+
+export const QUASI_SEUIL = 0.6;
+
 export function creerIndexSimilarite(questions = []) {
   const parMot = new Map(); // mot -> entrées d'index
   const ajouterEntree = (e) => {
@@ -64,15 +69,19 @@ export function creerIndexSimilarite(questions = []) {
     }
   };
   questions.forEach(ajouter);
-  // Meilleure question proche de `texte` : { question, score } ou null.
-  const chercher = (texte) => {
+  // Question proche de `texte` ayant la MÊME bonne réponse : { question, score } ou null.
+  // Seuil corpus QUASI_SEUIL (et non THRESHOLD_SIMILAR = 0.4 de l'appli) + même bonne réponse :
+  // mesuré sur le corpus, 0.4 seul signalait surtout des questions de même gabarit sur des sujets
+  // différents (« PS3 / PS4 sortie au Japon », « Wimbledon messieurs / dames »), pas des doublons.
+  const chercher = (texte, bonneReponse) => {
     const [cible] = buildIndex([{ q: String(texte || '') }]);
     const candidats = new Set();
     for (const mot of cible.prep.setMots) for (const e of parMot.get(mot) || []) candidats.add(e);
     // Texte strictement identique sans mot significatif : score 1 sans mot commun.
     if (!cible.prep.setMots.size && cible.prep.n) for (const liste of parMot.values()) for (const e of liste) if (e.prep.n === cible.prep.n) candidats.add(e);
-    const [meilleur] = trouverSimilairesIndex(String(texte || ''), [...candidats], THRESHOLD_SIMILAR, 1);
-    return meilleur || null;
+    const cibleRep = normalizeQuestionText(bonneReponse);
+    const proches = trouverSimilairesIndex(String(texte || ''), [...candidats], QUASI_SEUIL, 10);
+    return proches.find((p) => normalizeQuestionText(p.question.reponses?.[p.question.bonne]) === cibleRep) || null;
   };
   return { ajouter, chercher };
 }
@@ -124,12 +133,16 @@ export function checkQuestion(q, ctx = {}) {
   if (ctx.seen && ctx.seen.has(normQ)) {
     add('doublon-exact', "même question (texte normalisé) qu'une question précédente du thème");
   }
+  // Texte UTF-8 relu en Windows-1252 (« dÃ©esse », « sÅ“ur ») : 49 questions d'un lot l'étaient.
+  if ([texte, ...reponses, q.info || ''].some((t) => MOJIBAKE.test(t))) {
+    add('encodage', 'texte mal encodé (UTF-8 relu en Windows-1252, ex. « Ã© » au lieu de « é »)');
+  }
   if (reponses.some(estAnnotee)) {
     add('reponse-annotee', 'une réponse contient un commentaire entre parenthèses ou crochets');
   }
 
   if (ctx.similar) {
-    const proche = ctx.similar.chercher(texte);
+    const proche = ctx.similar.chercher(texte, reponses[q.bonne]);
     // Un doublon exact (score 1) est déjà signalé par `doublon-exact` : pas de second signalement.
     if (proche && normalizeQuestionText(proche.question.q) !== normQ) {
       add('quasi-doublon', `ressemble à « ${String(proche.question.q).slice(0, 80)} » (score ${proche.score.toFixed(2)})`);
