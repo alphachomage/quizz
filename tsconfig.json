@@ -25,5 +25,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "tests", "worker.ts", "worker-api.ts", "durable-objects", "scripts", "vite.config.ts", "vitest.config.ts", "eslint.config.js"]
+  "include": ["src", "tests", "worker.ts", "worker-api.ts", "api", "durable-objects", "scripts", "vite.config.ts", "vitest.config.ts", "eslint.config.js"]
 }

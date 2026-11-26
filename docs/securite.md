@@ -28,11 +28,11 @@ propriété `webSocket` copiée, sinon le socket est perdu côté workerd).
 manifest, JSON ; `public, max-age=31536000, immutable` sur `/assets/*` (hashés) ;
 `no-store` sur `/api/*` ; `public, max-age=3600` pour le reste.
 
-## API (`worker.ts` -> `worker-api.ts`)
+## API (`worker.ts` -> `worker-api.ts` = routeur fin -> `api/*.ts`, un fichier par groupe de routes)
 
 - **Rate limiting** en mémoire -> **429** (`rateLimite` dans `worker.ts`) : **30 req/min/IP**
   sur `/api/*`, **5 req/min/IP sur `/api/auth/*`** (anti brute-force de mots de passe).
-- **Body cap 64 Ko** (`MAX_BODY` dans `worker-api.ts`) -> 400 au-delà (1 Mo pour
+- **Body cap 64 Ko** (`MAX_BODY` dans `api/http.ts`) -> 400 au-delà (1 Mo pour
   `/api/kv/*`, voir `docs/stockage-d1.md`).
 - **CORS** : `ALLOWED_ORIGINS` (wrangler.toml) + origine de la requête ; preflight
   `OPTIONS` -> 204 ; toute écriture cross-origin non autorisée -> **403**.
@@ -70,7 +70,7 @@ manifest, JSON ; `public, max-age=31536000, immutable` sur `/assets/*` (hashés)
 - Validation des entrées sur chaque route. WebSocket `/api/duel/:room` : token en
   `?token=` (un WebSocket navigateur ne pose pas de header custom), vérifié **avant**
   l'upgrade 101, puis délégué au Durable Object `DuelRoom` (101 préservé). Le **pseudo
-  du joueur est forcé = celui du token** : `worker-api.ts` le pose en header
+  du joueur est forcé = celui du token** : `api/room.ts` (`routeDuel`) le pose en header
   `x-voltquiz-pseudo` sur la requête forwardée au DO ; `DuelRoom` ne lit jamais la
   query string (`?pseudo=` est ignoré) et les messages WebSocket sont attribués au
   pseudo de la connexion, pas à un champ du message — pas d'usurpation d'identité.
@@ -90,7 +90,7 @@ manifest, JSON ; `public, max-age=31536000, immutable` sur `/assets/*` (hashés)
   React échappe par défaut.
 - **Mots de passe** : jamais en clair. Mode `d1` (défaut) : le mot de passe transite
   uniquement vers `/api/auth/*` (PBKDF2 100 000 itérations côté serveur — plafond
-  WebCrypto de Workers —, `worker-api.ts`) et le cache local `voltquiz_comptes` ne
+  WebCrypto de Workers —, `api/crypto.ts`) et le cache local `voltquiz_comptes` ne
   contient **aucun** hash.
   Mode `?stockage=local` : SHA-256 salé local (`crypto.randomUUID` +
   `crypto.subtle`, guard `secureContext()` dans `src/lib/accounts.ts` -> erreur

@@ -24,7 +24,7 @@ Roadmap : V2 = duel en ligne (D1 + Durable Objects, préparés), V3 = mobile Cap
 1. **UI et contenus en français. AUCUN emoji** (ni UI ni doc, y compris README) : icônes
    SVG uniquement dans `src/shared/ui/Icon.tsx`.
 2. **Code en anglais, commentaires en français** (uniquement quand une décision n'est pas
-   limpide — ne pas commenter l'évident). **TypeScript partout** : `src/`, `tests/`, `worker*.ts`, `durable-objects/`, `vite.config.ts`,
+   limpide — ne pas commenter l'évident). **TypeScript partout** : `src/`, `tests/`, `worker*.ts`, `api/`, `durable-objects/`, `vite.config.ts`,
    `vitest.config.ts` sont en `.ts`/`.tsx` strict (`npm run typecheck` = `tsc --noEmit`, vert requis).
    Restent en JS pur : les 263 fichiers `src/data/questions-*.js` + `theme-manifest.js` généré
    (règle 7 ; type déclaré dans `src/data/questions.d.ts`), `eslint.config.ts` et `scripts/*.mjs`. Exception documentée : les **clés du schéma de

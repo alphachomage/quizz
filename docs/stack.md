@@ -8,6 +8,7 @@
 | Vite 6 | dev server + build |
 | vite-plugin-pwa | PWA installable + hors-ligne (workbox, precache des chunks) |
 | @cloudflare/vite-plugin + wrangler | déploiement Workers (`worker.ts`, `wrangler.toml`) |
+| worker-api.ts + api/ | routeur `/api/*` fin + une route par fichier (`http`, `session`, `crypto`, `kv`, `auth`, `games`, `classement`, `progression`, `soumissions`, `admin`, `room`, `stats`) |
 | Vitest + Testing Library + jsdom | tests (`vitest.config.ts` séparé de `vite.config.ts`) |
 | ESLint flat + Prettier + madge | lint (règles R1-R5 en erreur, 0 erreur 0 warning toléré), format, imports circulaires (`npm run lint:arch`) |
 | zod | validation des données externes (`src/lib/schema.ts`) |
