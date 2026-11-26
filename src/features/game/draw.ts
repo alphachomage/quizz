@@ -16,7 +16,7 @@ export interface GameLaunchConfig {
   niveau: LevelId | string | null;
   theme: Theme;
   players?: string[];
-  /** Survie / quizz du jour : tous les thèmes mélangés. */
+  /** Rogue / quizz du jour : tous les thèmes mélangés. */
   allThemes?: Theme[];
 }
 

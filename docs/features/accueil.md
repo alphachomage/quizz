@@ -11,14 +11,14 @@ passe dans une popin — aucun défilement sur l'accueil.**
 - Logo VQuizz (image fournie par le client, `public/logo-vquizz.png` ; variante lettres
   bleu nuit `public/logo-vquizz-clair.png` affichée en mode clair).
 - 4 grandes tuiles de mode (`ModeTabs`) : Solo, Duel en ligne (désactivé, « à venir »),
-  Survie, Quizz du jour (pastille série). Un clic appelle `openMode` (mode + popin).
+  Rogue Quizz, Quizz du jour (pastille série). Un clic appelle `openMode` (mode + popin).
 - Popin **Solo** (`ThemePickerModal`) : carrousel des thèmes en boucle infinie
   (`ThemeCarousel` + `useCarousel`, 5 copies de la liste, recalage invisible), **la carte
   au centre est le thème choisi** ; bouton « Thème aléatoire » qui fait tourner le
   carrousel façon roulette (`spinTo`, au moins un tour, décélération, jamais deux fois le
   même thème ; saut direct si animations coupées ou « mouvement réduit ») ; choix de la
   difficulté ; « C'est parti ! » lance la partie (`lancerTheme`).
-- Popin **Survie / Quizz du jour** (`ModeConfirmModal`) : règles du mode, record ou score
+- Popin **Rogue Quizz / Quizz du jour** (`ModeConfirmModal`) : règles du mode (tutoriel Rogue affiché une seule fois), record ou score
   du jour + série, « C'est parti ! » (bloqué si le quizz du jour est déjà joué).
 - « Prochain badge » (`BadgeBanner` + `Crest`) : petit blason, nom, progression ; clic =
   détail (`BadgeDetailModal`).

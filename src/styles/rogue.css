@@ -1,6 +1,6 @@
 /* ===== Rogue Quizz — reliques, choix de relique, actions ===== */
 
-/* Chip « Rogue — 1 vie » (même style que l'ancien chip survie) */
+/* Chip « Rogue — 1 vie » (même style que l'ancien chip du mode Survie) */
 .rogue-chip {
   color: var(--erreur-texte);
   border: 1px solid var(--erreur-40);
@@ -208,6 +208,9 @@
   color: var(--texte-2, #9ca3af);
 }
 .relique-malus {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 0.72rem;
   color: #ff9d5d;
   line-height: 1.25;

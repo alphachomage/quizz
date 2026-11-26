@@ -119,7 +119,7 @@ export default function TopBar({ p }: TopBarProps): ReactElement {
                 key={r.id}
                 className="relique-puce"
                 style={{ borderColor: RARETE_COULEUR[def?.rarete || 'commun'] }}
-                title={`${def?.nom || r.id} — ${def?.desc || ''}${def?.malus ? ` ⚠ ${def.malus}` : ''}`}
+                title={`${def?.nom || r.id} — ${def?.desc || ''}${def?.malus ? ` Malus : ${def.malus}` : ''}`}
               >
                 <Icon nom={def?.icone || 'sparkles'} taille={14} />
               </span>

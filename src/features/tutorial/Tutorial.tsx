@@ -80,7 +80,7 @@ export default function Tutorial({ onClose, isGuest }: TutorialProps): ReactElem
               </li>
               <li>
                 <strong>Rogue Quizz</strong> — 100 questions max, tous thèmes mélangés,{' '}
-                <strong>3 vies</strong> (⚡) au départ, difficulté montante tous les 10 questions,
+                <strong>3 vies</strong> (<Icon nom="bolt" taille={13} />) au départ, difficulté montante tous les 10 questions,
                 et <strong>1 relique parmi 3</strong> à chaque palier.
               </li>
               <li>
