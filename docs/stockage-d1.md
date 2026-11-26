@@ -8,13 +8,13 @@ aucun composant ne touche au stockage directement.
 
 | Table | Rôle | Structure | Branchée côté client |
 |---|---|---|---|
-| `sync_client` | **Miroir serveur des 17 clés localStorage**, namespacé par compte : la clé réelle est `<pseudo>:<cle>` (un client ne touche que son espace) | `cle TEXT PRIMARY KEY, valeur TEXT` (JSON) — blob store **volontaire** : ces données n'ont pas de schéma relationnel | ✅ auto via `storage.ts` (`/api/kv/*` + Bearer) |
-| `sessions` | Tokens de session Bearer (TTL 30 j, 1 par compte) | `token TEXT PK, pseudo, cree_le, expire_le` | ✅ émise par `/api/auth/*`, envoyée en header
-| `comptes` | Comptes serveur (auth PBKDF2 100 000 itérations — plafond WebCrypto Workers, hash `hash_version = 2`) | relationnelle, `pseudo_normalise UNIQUE` | ✅ `accounts.ts` → `/api/auth/*` |
-| `parties` | Historique serveur des parties (multi-appareils, futur classement global) | relationnelle + **colonne `pseudo` indexée** | ✅ `game-history.ts` → `/api/parties` |
-| `records` | Records serveur par mode × niveau × thème | `cle TEXT PRIMARY KEY` | ✅ `records.ts` → `/api/records` |
-| `xp` | XP serveur par compte × thème | `pseudo_theme TEXT PRIMARY KEY` | ✅ `xp.ts` → `/api/xp` |
-| `soumissions` | Questions proposées par les joueurs (modération admin cross-device) | relationnelle + index `etat`, `theme_id` | ✅ `submissions.ts` → `/api/soumissions` |
+| `sync_client` | **Miroir serveur des 17 clés localStorage**, namespacé par compte : la clé réelle est `<pseudo>:<cle>` (un client ne touche que son espace) | `cle TEXT PRIMARY KEY, valeur TEXT` (JSON) — blob store **volontaire** : ces données n'ont pas de schéma relationnel | Oui : auto via `storage.ts` (`/api/kv/*` + Bearer) |
+| `sessions` | Tokens de session Bearer (TTL 30 j, 1 par compte) | `token TEXT PK, pseudo, cree_le, expire_le` | Oui : émise par `/api/auth/*`, envoyée en header
+| `comptes` | Comptes serveur (auth PBKDF2 100 000 itérations — plafond WebCrypto Workers, hash `hash_version = 2`) | relationnelle, `pseudo_normalise UNIQUE` | Oui : `accounts.ts` → `/api/auth/*` |
+| `parties` | Historique serveur des parties (multi-appareils, futur classement global) | relationnelle + **colonne `pseudo` indexée** | Oui : `game-history.ts` → `/api/parties` |
+| `records` | Records serveur par mode × niveau × thème | `cle TEXT PRIMARY KEY` | Oui : `records.ts` → `/api/records` |
+| `xp` | XP serveur par compte × thème | `pseudo_theme TEXT PRIMARY KEY` | Oui : `xp.ts` → `/api/xp` |
+| `soumissions` | Questions proposées par les joueurs (modération admin cross-device) | relationnelle + index `etat`, `theme_id` | Oui : `submissions.ts` → `/api/soumissions` |
 
 La table `sync_client` s'appelait `kv` (nom opaque) : renommée par la migration
 `0002_sync_client.sql`. Ce n'est **pas** une base métier : c'est le sync brut du client.

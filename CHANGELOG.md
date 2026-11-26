@@ -5,6 +5,27 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 
 ## Non publié
 
+### Corrigé (audit du 2026-11-26)
+- **Scripts de test ciblés cassés** : `test:game`, `test:game:duel`, `test:game:daily`, `test:scoring`, `test:draw`, `test:similarity`, `test:accounts` pointaient vers des `.js`/`.jsx` disparus depuis la migration TS (aucun test lancé) ; `test:game:survival` remplacé par `test:game:rogue`.
+- **`lint:arch` aveugle** : madge ignorait 57 fichiers faute de résoudre les alias `@lib/...` ; il lit désormais `tsconfig.json` (162 fichiers analysés, 0 cycle).
+- **Source maps publiées en prod** (code source complet téléchargeable) : `*.map` ajouté à `public/.assetsignore`.
+- **Rogue : bonne réponse décalée après un 50/50 ou un Domino** quand deux réponses masquées la précédaient (index recalculé sur une valeur déjà décrémentée) — `appliquerMasquees` dans `src/lib/rogueRun.ts`, testé.
+- **Emojis retirés de l'UI et de la doc** (règle 1) : `⚡`/`⚠` remplacés par les icônes `bolt`/`alert` (`ModeConfirmModal`, `Tutorial`, `RelicChoice`), texte « Malus : » dans l'infobulle de `TopBar` ; coches de `docs/stockage-d1.md` remplacées par du texte.
+- **Doc périmée** : mode Survie remplacé par Rogue Quizz dans `AGENTS.md`, `README.md`, `docs/jeu.md` (nouvelle section Rogue), `docs/features/accueil.md`, `docs/tests.md` ; plus de « 263 fichiers » ni de comptage du corpus en dur ; taille réelle de `corpus.json` (~5,9 Mo).
+
+### Performance
+- **Précache PWA divisé par ~2 (12,4 -> 6,9 Mio)** : les chunks `questions-*.js`, qui dupliquent `corpus.json`, sont exclus du précache (`globIgnores` dans `vite.config.ts`) ; ils restent servis en ligne pour le repli.
+
+### Modifié
+- **`useGame.ts` refactoré (1195 -> 364 lignes, 0 `eslint-disable` au lieu de 7)** : logique Rogue extraite dans `src/features/game/useRogue.ts`, fonctions pures dans `src/lib/rogueRun.ts` (16 tests), types dans `gameTypes.ts`, helper `useLatest.ts`. API de `useGame` inchangée.
+- **`worker-api.ts` découpé** (807 -> 101 lignes, routeur seul) : routes et helpers dans le nouveau dossier `api/` (http, session, crypto, kv, auth, games, classement, progression, soumissions, admin, room, stats), sans changement de comportement ; `api/` ajouté à `tsconfig.json`, ESLint et au script `lint`.
+- **`src/lib/relics.ts` découpé** : catalogue des reliques dans `src/lib/relics-catalog.ts` (ré-exporté, imports inchangés).
+- **Seuils de couverture relevés** (ratchet) : global 55/48/52/58, `src/lib/**` 62/62/74/63 (statements/branches/functions/lines).
+- Dépendances mineures : wrangler 4.168, vitest 5.1, typescript-eslint 8.74, `@cloudflare/vite-plugin` 1.70.2 (lockfile seul).
+
+### Supprimé
+- Code mort utilisé seulement par les tests : `removeOverride`, `loadThemeQuestions`, `isSuspecte`, `successRate`, `similarityScore`, `trouverSimilaires` (et leurs tests). Type `SimilarHit` désormais exporté par `similarity.ts` au lieu d'être recopié dans le formulaire de question.
+
 ### Modifié
 - **Icône d'appli pour l'écran d'accueil (iPhone, Android)** : icônes régénérées avec le logo VQuizz plus grand (recadré sur le logo réel), favicon 48 px, balises iOS (`apple-mobile-web-app-title` « VQuizz », lancement plein écran, barre d'état fondue dans le bleu nuit) ; marges `safe-area-inset-top` pour que le contenu ne passe pas sous l'heure / l'encoche en plein écran.
 - **Fin de partie allégée et lisible (atelier)** : 4 blocs seulement — titre + gros score + « Nouveau record ! » ; 3 tuiles à gros picto (bonnes réponses, temps moyen par question, meilleure série — `ResultTiles.tsx`) à la place des lignes de texte ; une ligne « Record » + pastille « Top 10 · #rang » ; XP gagnée en une ligne avec barre de niveau (`ResultXp.tsx`, détail par thème seulement s'il y en a plusieurs). Bouton « Rejouer » raccourci. Tient sur un écran sans défilement (vérifié en 360×640).
