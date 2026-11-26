@@ -4,8 +4,17 @@
 
 - `Game.tsx` (~88 L, render seul) + `components/` : TopBar, TimerLine, Answers,
   Feedback, PassDevice, Confetti, ReportButton.
-- `useGame.ts` : toute la logique (états, `answer`/`suivant`/`pret`/`finir`/
-  `abandonner`/`signalerQuestion`, effets musique/tick/auto-advance, guard pool vide).
+- `useGame.ts` : noyau de la partie commun à tous les modes (états, `answer`/`suivant`/`pret`/
+  `finir`/`abandonner`/`reportQuestion`, effets musique/tick/auto-advance, guard pool vide).
+- `useRogue.ts` : tout ce qui est propre au Rogue Quizz (reliques et choix avec timer, vies,
+  paliers, effets par question, Pari/Gel/Pioche/Retour en arrière). Branché sur le noyau via des
+  refs et setters passés en paramètres ; fournit aussi `questions`/`question`/`dureeQuestion`.
+- `gameTypes.ts` : types partagés (`GameState`, `GameViewState`, `GamePhase`, `ConfettiPiece`...),
+  réexportés par `useGame.ts`. `useLatest.ts` : ref « dernière valeur » (évite les closures
+  périmées sans désactiver `exhaustive-deps`).
+- `src/lib/rogueRun.ts` (pur, testé dans `tests/unit/lib/rogueRun.test.ts`) : `PalierRogue`,
+  `palierInitial`, durée du timer, masquage 50/50 / Domino, Miroir, Vote du public, carry de
+  temps, pertes de vie, effets immédiats des reliques.
 - `useTimer.ts` : 1 setState/s, `onExpire` à 0.
 - `draw.ts` (pur) : `drawGameQuestions(config)` + `withShuffledAnswers` + `tagTheme`.
 - `constants.ts` : palettes de réponses (`ANSWER_COLORS`, Okabe-Ito `COLORBLIND_COLORS`)
