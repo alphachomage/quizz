@@ -96,13 +96,7 @@ export const THEME_MANIFEST = [
     "nom": "Technologie & Internet",
     "icone": "chip",
     "couleur": "#38bdf8"
-  },
-  {
-    "id": "youtube-streaming",
-    "nom": "YouTube & Streaming",
-    "icone": "play",
-    "couleur": "#e879f9"
   }
 ];
 // Version du corpus (hash de content/) : invalidation du cache IndexedDB.
-export const CORPUS_VERSION = "25791dd97c3b3205";
+export const CORPUS_VERSION = "8f92e12d9deebda3";

@@ -29,7 +29,7 @@
     {"id":"insolite-a41421","q":"Quel est le record de longévité humaine confirmé ?","reponses":["110 ans","117 ans","122 ans","130 ans"],"bonne":2,"niveau":"dur","info":"Jeanne Calment, 122 ans et 164 jours."},
     {"id":"insolite-874b74","q":"Combien de cellules dans le corps humain (ordre de grandeur) ?","reponses":["1 milliard","100 milliards","37 000 milliards","1 000 000 milliards"],"bonne":2,"niveau":"dur"},
     {"id":"insolite-d1f3cc","q":"Température la plus basse jamais enregistrée sur Terre ?","reponses":["-50 °C","-73 °C","-89,2 °C","-100 °C"],"bonne":2,"niveau":"dur","info":"En Antarctique, station Vostok, 1983."},
-    {"id":"insolite-3cc040","q":"Quel animal détient le record de chromosomes ?","reponses":["L'humain","Le chien","Une fougère (Ophioglossum)","Le papillon"],"bonne":2,"niveau":"dur","info":"Plus de 1 200 paires de chromosomes !"},
+    {"id":"insolite-3cc040","q":"Quel animal détient le record de chromosomes ?","reponses":["L'humain","Le chien","Une fougère","Le papillon"],"bonne":2,"niveau":"dur","info":"Plus de 1 200 paires de chromosomes !"},
     {"id":"insolite-fe8591","q":"Combien de fois le cœur bat-il par jour en moyenne ?","reponses":["10 000","50 000","Environ 100 000","500 000"],"bonne":2,"niveau":"dur"},
     {"id":"insolite-088c16","q":"Combien de pattes a un chien ?","reponses":["2","4","6","8"],"bonne":1,"niveau":"facile"},
     {"id":"insolite-aa3391","q":"Vrai ou faux : les girafes ont un cou très court.","reponses":["Vrai","Faux"],"bonne":1,"niveau":"facile"},
