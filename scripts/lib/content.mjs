@@ -22,23 +22,25 @@ export function normalizeQuestionText(s) {
     .trim();
 }
 
-export function readThemes() {
-  return JSON.parse(fs.readFileSync(THEMES_FILE, 'utf8'));
+// Lecture/écriture : `dir` = racine de contenu (défaut content/), pour que les tests
+// travaillent sur un répertoire temporaire avec exactement la même logique.
+export function readThemes(dir = CONTENT_DIR) {
+  return JSON.parse(fs.readFileSync(path.join(dir, 'themes.json'), 'utf8'));
 }
 
-export function questionsFile(themeId) {
-  return path.join(QUESTIONS_DIR, `${themeId}.json`);
+export function questionsFile(themeId, dir = CONTENT_DIR) {
+  return path.join(dir, 'questions', `${themeId}.json`);
 }
 
-export function readThemeQuestions(themeId) {
-  return JSON.parse(fs.readFileSync(questionsFile(themeId), 'utf8')).questions;
+export function readThemeQuestions(themeId, dir = CONTENT_DIR) {
+  return JSON.parse(fs.readFileSync(questionsFile(themeId, dir), 'utf8')).questions;
 }
 
 // Thèmes (actifs ou non) avec leurs questions, dans l'ordre de themes.json.
-export function readAll({ actifsSeulement = false } = {}) {
-  return readThemes()
+export function readAll({ actifsSeulement = false, dir = CONTENT_DIR } = {}) {
+  return readThemes(dir)
     .filter((t) => !actifsSeulement || t.actif)
-    .map((t) => ({ ...t, questions: readThemeQuestions(t.id) }));
+    .map((t) => ({ ...t, questions: readThemeQuestions(t.id, dir) }));
 }
 
 // Hash du contenu (themes.json + questions/*.json triés) : version du corpus servi.
@@ -60,6 +62,6 @@ export function serializeQuestions(themeId, questions) {
   const lignes = questions.map((q) => '    ' + JSON.stringify(q)).join(',\n');
   return `{\n  "theme": ${JSON.stringify(themeId)},\n  "questions": [\n${lignes}\n  ]\n}\n`;
 }
-export function writeThemeQuestions(themeId, questions) {
-  fs.writeFileSync(questionsFile(themeId), serializeQuestions(themeId, questions));
+export function writeThemeQuestions(themeId, questions, dir = CONTENT_DIR) {
+  fs.writeFileSync(questionsFile(themeId, dir),serializeQuestions(themeId, questions));
 }

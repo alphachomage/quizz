@@ -38,13 +38,14 @@ npm run questions:ids     # attribue un id aux questions ajoutées sans id (n'en
 - Les statistiques, overrides, signalements et exclusions sont encore indexés par le texte
   normalisé de la question (migration vers les ids prévue plus tard).
 
-Procédure d'ajout : voir **`docs/ajouter-questions.md`** (l'import par lots via `inbox/`
-viendra dans une étape ultérieure). `scripts/gen-manifest.mjs` régénère
+Procédure d'ajout : voir **`docs/ajouter-questions.md`** (lots déposés dans `content/inbox/`,
+importés par `npm run questions:import` ; règles qualité et dette dans
+`content/qualite-dette.json`, contrôlées par `npm run questions:lint`). `scripts/gen-manifest.mjs` régénère
 `src/data/theme-manifest.js` + `CORPUS_VERSION` (hash de `content/`) et
 `scripts/gen-corpus-json.mjs` régénère `public/corpus.json` (auto au démarrage de Vite,
 plugin `generateCorpus` de `vite.config.ts`, ou à la main : `npm run gen:manifest`,
-`npm run gen:corpus`). Ces deux scripts et les outils (`count`, `audit`, `dedupe`, `ids`)
-partagent `scripts/lib/content.mjs`.
+`npm run gen:corpus`). Ces deux scripts et les outils (`count`, `audit`, `dedupe`, `ids`, `lint`, `import`)
+partagent `scripts/lib/content.mjs` ; règles qualité : `scripts/lib/quality.mjs`, ids : `scripts/lib/ids.mjs`.
 
 ## Chargement : IndexedDB (cache persistant) + chunks lazy en fallback
 
