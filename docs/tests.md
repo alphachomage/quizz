@@ -10,6 +10,8 @@ npm run test:unit        # tests/unit/**  ·  npm run test:integration  ·  npm 
 npm run test:scoring / :draw / :similarity / :accounts
 npm run test:coverage    # couverture avec seuils appliqués (échoue si en dessous)
 npm run typecheck        # tsc --noEmit (strict TS) — avant chaque merge
+npm run check:repo       # garde-fous repo (aussi lancé par npm run lint) : emojis,
+                         # chemins cités dans la doc, fichiers des scripts npm, termes périmés
 ```
 
 ## Couverture (seuils + ratchet)

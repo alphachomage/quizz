@@ -10,8 +10,13 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 - **`lint:arch` aveugle** : madge ignorait 57 fichiers faute de résoudre les alias `@lib/...` ; il lit désormais `tsconfig.json` (162 fichiers analysés, 0 cycle).
 - **Source maps publiées en prod** (code source complet téléchargeable) : `*.map` ajouté à `public/.assetsignore`.
 - **Rogue : bonne réponse décalée après un 50/50 ou un Domino** quand deux réponses masquées la précédaient (index recalculé sur une valeur déjà décrémentée) — `appliquerMasquees` dans `src/lib/rogueRun.ts`, testé.
-- **Emojis retirés de l'UI et de la doc** (règle 1) : `⚡`/`⚠` remplacés par les icônes `bolt`/`alert` (`ModeConfirmModal`, `Tutorial`, `RelicChoice`), texte « Malus : » dans l'infobulle de `TopBar` ; coches de `docs/stockage-d1.md` remplacées par du texte.
+- **Emojis retirés de l'UI et de la doc** (règle 1) : symboles éclair et attention remplacés par les icônes `bolt`/`alert` (`ModeConfirmModal`, `Tutorial`, `RelicChoice`), texte « Malus : » dans l'infobulle de `TopBar` ; coches de `docs/stockage-d1.md` remplacées par du texte.
 - **Doc périmée** : mode Survie remplacé par Rogue Quizz dans `AGENTS.md`, `README.md`, `docs/jeu.md` (nouvelle section Rogue), `docs/features/accueil.md`, `docs/tests.md` ; plus de « 263 fichiers » ni de comptage du corpus en dur ; taille réelle de `corpus.json` (~5,9 Mo).
+
+### Ajouté
+- **Garde-fous automatiques pour les agents** : `scripts/check-repo.mjs` (`npm run check:repo`, lancé aussi par `npm run lint`) fait échouer le lint si un emoji apparaît dans le code ou la doc, si un chemin cité dans `AGENTS.md`/`README.md`/`docs/` n'existe pas, si un script npm cite un fichier absent, ou si un terme périmé revient (mode Survie, nombre de fichiers de questions en dur, tests `.jsx`).
+- **`AGENTS.md`** : section « Avant de commencer » (fetch + fast-forward, état vert, le code fait foi), règles 15 (renommer/supprimer une feature = grep et mise à jour de toute la doc) et 16 (pas d'historique ni de chiffres périssables) ; erreurs corrigées (PWA, `eslint.config.js`, plus de CI). Sections d'historique déplacées : procédure d'ajout en masse et de dédoublonnage dans `docs/ajouter-questions.md` (section 6).
+- **`docs/methodologie.md`** : brief type des sous-agents (CHANGELOG réservé au parent, lien `node_modules`, fichiers réservés), format des commits (trailer sur sa propre ligne), checklist de merge complétée (typecheck, dry-run toujours, partie jouée à la main après un refactor de jeu, code mort, feature renommée) et tableau « leçons de l'audit ».
 
 ### Performance
 - **Précache PWA divisé par ~2 (12,4 -> 6,9 Mio)** : les chunks `questions-*.js`, qui dupliquent `corpus.json`, sont exclus du précache (`globIgnores` dans `vite.config.ts`) ; ils restent servis en ligne pour le repli.
