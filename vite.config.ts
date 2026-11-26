@@ -56,6 +56,10 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,json,woff2}'],
+        // Les chunks questions-*.js dupliquent corpus.json (précaché) : ils ne servent
+        // qu'en repli en ligne si corpus.json est indisponible ou d'une autre version.
+        // Pas de runtimeCaching : le corpus est ensuite persisté en IndexedDB, donc inutile.
+        globIgnores: ['**/questions-*.js'],
         // Repli SPA propre : toute URL sans extension renvoie index.html,
         // sauf l'API (qui doit renvoyer sa vraie réponse, y compris les 404).
         navigateFallback: '/index.html',
