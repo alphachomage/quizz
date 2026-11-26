@@ -40,7 +40,7 @@ export interface GameConfig {
   mode: GameMode;
   niveau: LevelId | null;
   theme: Theme;
-  /** Survie / quizz du jour : tous les thèmes mélangés. */
+  /** Rogue / quizz du jour : tous les thèmes mélangés. */
   allThemes?: Theme[];
 }
 

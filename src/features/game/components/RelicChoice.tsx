@@ -141,7 +141,7 @@ export default function RelicChoice({
               <Icon nom={r.icone} taille={36} />
               <span className="relique-nom">{r.nom}</span>
               <span className="relique-desc">{r.desc}</span>
-              {r.malus && <span className="relique-malus">⚠ {r.malus}</span>}
+              {r.malus && <span className="relique-malus"><Icon nom="alert" taille={12} /> {r.malus}</span>}
             </button>
           ))}
         </div>

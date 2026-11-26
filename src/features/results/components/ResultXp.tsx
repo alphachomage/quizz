@@ -1,5 +1,5 @@
 // ResultXp.tsx — fin de partie : XP gagnée en une ligne lisible (+N XP, niveau, barre).
-// Le détail par thème ne s'affiche que s'il y a plusieurs thèmes (Survie, Quizz du jour).
+// Le détail par thème ne s'affiche que s'il y a plusieurs thèmes (Rogue Quizz, Quizz du jour).
 import type { ReactElement } from 'react';
 import Icon from '@shared/ui/Icon.jsx';
 import { themeLevel } from '@lib/xp.js';

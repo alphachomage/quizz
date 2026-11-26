@@ -33,8 +33,8 @@ export default function ModeConfirmModal({ a, mode }: ModeConfirmModalProps): Re
         <>
           <ul className="rogue-tuto-liste">
             <li>
-              ⚡ <strong>3 vies</strong> au départ : chaque erreur t’en coûte une, à 0 la run
-              s’arrête.
+              <Icon nom="bolt" taille={14} /> <strong>3 vies</strong> au départ : chaque erreur t’en coûte une, à 0 la
+              run s’arrête.
             </li>
             <li>
               Jusqu’à <strong>100 questions</strong>, tous thèmes mélangés, difficulté montante

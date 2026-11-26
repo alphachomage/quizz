@@ -12,7 +12,7 @@ import type { Theme } from '@lib/types.js';
 // Leaderboard local : UNIQUEMENT les classements par mode de jeu, avec pour chaque
 // ligne le thème, la difficulté et le nombre de points.
 //  - Solo : filtre par niveau (Tous / Facile / Moyen / Difficile)
-//  - Duel 1v1, Survie, Quizz du jour : top scores de l'historique des parties
+//  - Duel 1v1, Rogue Quizz, Quizz du jour : top scores de l'historique des parties
 // (les stats personal détaillées sont dans l'écran « Mes statistiques »)
 
 // Onglet de classement (un par mode de jeu).
