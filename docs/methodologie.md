@@ -30,6 +30,8 @@
       `npm run build` + `npx wrangler deploy --dry-run` verts (toujours, règle 11)
 - [ ] refactor d'un écran ou d'un hook de jeu : les tests ne suffisent pas, faire une
       partie à la main (`npm run dev`) dans le mode touché avant de pousser
+- [ ] écran ou interaction ajouté/modifié : chaque action a son retour visuel et tout se coupe
+      avec `.sans-animations` / `prefers-reduced-motion` (`docs/design.md`, « Animations et feedback »)
 - [ ] code mort : `grep` chaque export nouveau ou modifié — utilisé seulement par
       `tests/` = à supprimer (règle 14)
 - [ ] feature renommée/supprimée : ancien nom grepé dans docs, `package.json`, tests

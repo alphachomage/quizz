@@ -92,6 +92,21 @@ for (const f of docs) {
   }
 }
 
+// 6. Un nom de @keyframes est global : deux définitions du même nom, la dernière importée écrase
+//    l'autre sans erreur (`pop` d'apparition remplacé par un simple battement dans tout le jeu).
+{
+  const vus = new Map();
+  for (const f of tracked.filter((t) => /^src\/.*\.css$/.test(t))) {
+    const lines = fs.readFileSync(path.join(root, f), 'utf8').split('\n');
+    lines.forEach((line, i) => {
+      const nom = line.match(/@keyframes\s+([\w-]+)/)?.[1];
+      if (!nom) return;
+      if (vus.has(nom)) errors.push(`${f}:${i + 1} : @keyframes ${nom} déjà défini dans ${vus.get(nom)} (renommer l'un des deux)`);
+      else vus.set(nom, `${f}:${i + 1}`);
+    });
+  }
+}
+
 if (errors.length) {
   for (const e of errors) console.error(`check-repo : ${e}`);
   console.error(`check-repo : ${errors.length} problème(s). Voir scripts/check-repo.mjs pour le pourquoi.`);
