@@ -1,0 +1,110 @@
+/* VQuizz — animations de feedback (jeu, résultats, transitions d'écran).
+   Toutes coupées par `.sans-animations` (modes.css) et prefers-reduced-motion
+   (accessibilite.css), qui utilisent !important. */
+
+/* --- Transition d'écran : chaque écran entre en fondu + léger glissement --- */
+.ecran-transition {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  animation: ecran-entree var(--dur-pop) ease both;
+}
+
+@keyframes ecran-entree {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --- Arrivée des réponses à chaque nouvelle question (conteneur re-monté par index) --- */
+.reponses.entree {
+  animation: ecran-entree var(--dur-standard) 0.06s ease backwards;
+}
+
+/* --- Bonne réponse ratée (erreur ou temps écoulé) : elle clignote pour attirer l'oeil --- */
+.reponse.bonne.manquee {
+  animation: manquee 0.45s ease-in-out 0.25s 2;
+}
+
+@keyframes manquee {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+    outline-width: 6px;
+  }
+}
+
+/* --- Erreur : contour rouge bref autour de l'écran --- */
+.flash-erreur {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-fixe);
+  box-shadow: inset 0 0 0 6px var(--erreur-50);
+  animation: flash-erreur var(--dur-lent) ease-out forwards;
+}
+
+@keyframes flash-erreur {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* --- Temps écoulé : la barre du minuteur tremble --- */
+.minuteur-ligne.expire .minuteur {
+  border-color: var(--erreur);
+  animation: shake var(--dur-standard) ease 2;
+}
+
+/* --- Score, série, vies : la puce rebondit quand la valeur change (re-montée par clé) --- */
+.chip.score,
+.chip.streak-chip {
+  animation: bump var(--dur-standard) cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+
+@keyframes bump {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.rogue-chip.perte {
+  outline: 2px solid var(--erreur);
+  color: var(--erreur);
+  animation: shake var(--dur-standard) ease 2;
+}
+
+/* --- Retour tactile : les boutons s'enfoncent sous le doigt --- */
+.btn-principal:active:not(:disabled),
+.btn-secondaire:active:not(:disabled) {
+  transform: scale(0.97);
+  transition-duration: 0.06s;
+}
+
+/* --- Résultats : la barre d'XP se remplit --- */
+.resultat .xp-barre i {
+  animation: remplir-barre 0.9s 0.3s ease-out backwards;
+}
+
+@keyframes remplir-barre {
+  from {
+    width: 0;
+  }
+}

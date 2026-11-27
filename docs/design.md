@@ -99,11 +99,41 @@ roulette « Thème aléatoire ») — voir `docs/features/accueil.md`. Coins tr�
 
 Préférences `animations: false` -> classe `.sans-animations` sur `.app` (tout coupé).
 
+## Animations et feedback (à respecter pour toute nouvelle interaction)
+
+Le jeu doit « répondre » à chaque action : une action du joueur ou un événement de partie sans
+retour visuel est un manque, au même titre qu'un bug. En ajoutant ou modifiant un écran, une
+interaction ou un événement de jeu, vérifier :
+
+- **chaque action a un retour visible** : appui (bouton qui s'enfonce), succès (pop, rebond,
+  confettis), échec (tremblement, contour rouge, bonne réponse mise en avant), fin du temps,
+  gain ou perte (score, série, vies, XP) ; un chiffre qui change doit se voir changer ;
+- **ce qui existe déjà** : animations de base (`pop` = apparition, `shake`) dans
+  `src/styles/animations.css` ; feedbacks du jeu, transitions d'écran et barre d'XP dans
+  `src/styles/feedback.css` ; score qui défile via `src/shared/hooks/useCountUp.ts` ;
+  réutiliser avant d'inventer ;
+- **CSS d'abord, pas de librairie d'animation** : keyframes + transitions, durées via les
+  tokens `--dur-*` ; seul le défilement de chiffres passe par un hook (`requestAnimationFrame`) ;
+- **noms de `@keyframes` uniques** : un nom est global, le dernier `@import` écrase l'autre
+  sans erreur (bug `pop` corrigé, contrôlé désormais par `scripts/check-repo.mjs`) ;
+- **rejouer une animation** (nouvelle question, nouvel écran, nouveau score) : re-monter
+  l'élément avec une `key` liée à la valeur (`Game.tsx`, `TopBar.tsx`, `app/Screens.tsx`),
+  sans JS d'animation. Attention : deux frères ne doivent jamais partager la même `key`
+  (préfixer : `q-${index}`, `r-${index}`) ;
+- **tout doit pouvoir se couper** : `.sans-animations` et `prefers-reduced-motion` utilisent
+  `!important` et gagnent sur tout ; une animation pilotée en JS reçoit un booléen calculé
+  depuis `prefs.animations` et `prefersReducedMotion()` (`src/lib/nav.ts`), éteint par défaut
+  pour que les tests voient la valeur finale ;
+- **courtes et sobres** : 0,1 à 0,6 s pour un feedback, pas d'animation infinie hors état
+  d'alerte (minuteur en danger, halo de gain), palette 60-30-10 et aucun dégradé ;
+- **attention au `transform`** sur un conteneur : pendant l'animation, il devient le repère
+  des enfants en `position: fixed` (modales, confettis) ; finir sur `transform: none`.
+
 ## Refonte design en profondeur
 
 ### Architecture CSS
 
-- `src/styles.css` ne fait que des `@import` vers les 30 modules de `src/styles/`, **dans un
+- `src/styles.css` ne fait que des `@import` vers les modules de `src/styles/`, **dans un
   ordre précis qui est la cascade** : ne jamais le réordonner (voir liste ci-dessous).
 - `src/styles/tokens.css` (importé en premier) : **seul endroit où vivent les valeurs brutes**
   (couleurs, rayons, ombres, durées, z-index, espacements, flous). C'est le levier principal
@@ -113,7 +143,8 @@ Préférences `animations: false` -> classe `.sans-animations` sur `.app` (tout 
   `modes.css`, `parametres.css`, `tuto.css`, `propositions.css`, `signaler.css`,
   `deblocage.css`, `streak.css`, `suggestions.css`, `epure.css`, `mobile.css`,
   `animations.css`, `modale-niveau.css`, `partie-points.css`, `classement-filtres.css`,
-  `accueil-extras.css`, `stats-avancees.css`, `boutons.css`).
+  `accueil-extras.css`, `stats-avancees.css`, `boutons.css`, `feedback.css` = animations de
+  feedback du jeu, transitions d'écran, barre d'XP des résultats).
 - `src/styles/palette.css` : surcharges du **thème clair** (`body.theme-clair`) + règles
   transverses de contraste (texte foncé sur fond accent).
 - `src/styles/accessibilite.css` (importé parmi les derniers) : mode **daltonien** (palette
@@ -168,13 +199,16 @@ indicatif 200 lignes par fichier (souple, voir AGENTS.md).
 
 ### Ordre des `@import` de `src/styles.css` à préserver (cascade)
 
-`tokens, boutons, accueil, partie, animations, mobile, formulaire, propositions,
-classement, modes, parametres, tuto, resultat, stats, partie-points, classement-filtres,
-signaler, accessibilite, palette, streak, badges, profil, partage, epure, suggestions,
-deblocage, stats-avancees, modale-niveau, accueil-extras`
+`tokens, boutons, accueil, partie, animations, mobile, formulaire, propositions, classement,
+modes, parametres, tuto, resultat, stats, partie-points, classement-filtres, signaler, rogue,
+accessibilite, palette, streak, badges, profil, partage, epure, suggestions, deblocage,
+stats-avancees, modale-niveau, accueil-extras, admin-dashboard, carrousel-themes, ecusson,
+partie-compacte, contraste, feedback`
 
 Pourquoi : des modules se surchargent volontairement (`modes.css` après `accueil.css` pour
-`.mode-tab`, `palette.css` et `accessibilite.css` en dernier pour l'emporter sur tout).
+`.mode-tab`, `palette.css` et `accessibilite.css` après les écrans d'origine). Les coupures
+d'animation (`.sans-animations`, `prefers-reduced-motion`) passent par `!important` : elles
+gagnent même sur `feedback.css`, importé en dernier.
 Vérifié avant/après chaque commit par `npm run lint && npm test && npm run build`.
 
 ### Valeurs en dur restantes admises (audit)

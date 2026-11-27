@@ -30,6 +30,9 @@ export default function TopBar({ p }: TopBarProps): ReactElement {
     currentTheme,
     relics,
   } = p;
+  // Rogue : la puce des vies tremble en rouge tant que la réponse ratée est affichée.
+  const viePerdue =
+    mode === 'rogue' && p.phase === 'reponse' && p.selection !== p.questionAffichage.bonne;
   // '--couleur' est une propriété CSS custom : csstype ne la connaît pas, d'où le cast.
   const themeChipStyle = {
     background: currentTheme.couleur,
@@ -65,7 +68,7 @@ export default function TopBar({ p }: TopBarProps): ReactElement {
         )}
         {mode === 'rogue' && (
           <span
-            className="chip manche rogue-chip"
+            className={viePerdue ? 'chip manche rogue-chip perte' : 'chip manche rogue-chip'}
             title={`Vies : ${p.vies} restante(s) sur ${p.viesMax} max (certaines reliques en ajoutent)`}
           >
             {Array.from({ length: Math.max(0, p.vies) }).map((_, i) => (
@@ -95,17 +98,21 @@ export default function TopBar({ p }: TopBarProps): ReactElement {
         </span>
         {mode === 'duel' ? (
           players.slice(0, nbJoueurs).map((j, i) => (
-            <span key={j} className={i === currentPlayer ? 'chip score actif' : 'chip score'}>
+            // key liée au score : la puce est re-montée et rebondit à chaque gain
+            <span
+              key={`${j}-${scores[i]}`}
+              className={i === currentPlayer ? 'chip score actif' : 'chip score'}
+            >
               {j} : {scores[i]}
             </span>
           ))
         ) : (
-          <span className="chip score">
+          <span key={scores[0]} className="chip score">
             <Icon nom="star" taille={14} /> {scores[0]}
           </span>
         )}
         {streaks[currentPlayer] >= 2 && (
-          <span className="chip streak-chip">
+          <span key={streaks[currentPlayer]} className="chip streak-chip">
             <Icon nom="flame" taille={13} /> Série ×{streaks[currentPlayer]} · +
             {Math.min(10, streaks[currentPlayer] - 1)}
           </span>

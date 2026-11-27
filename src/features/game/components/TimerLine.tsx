@@ -1,5 +1,6 @@
 // MinuteurLigne.tsx — barre de temps dynamique : couleur selon les points encore
-// en jeu (vert/jaune/rouge), pastille « X pts » et pulsation dans les 3 dernières s.
+// en jeu (vert/jaune/rouge), pastille « X pts », pulsation dans les 3 dernières s
+// et tremblement quand le temps est écoulé.
 import type { ReactElement } from 'react';
 
 /** Props de la barre de temps : pourcentage restant, couleur, points restants et danger (3 dernières s). */
@@ -8,6 +9,8 @@ interface TimerLineProps {
   barColor: string;
   remainingPoints: number;
   danger: boolean;
+  /** Temps écoulé sans réponse : la barre tremble. */
+  expire?: boolean;
 }
 
 export default function TimerLine({
@@ -15,9 +18,10 @@ export default function TimerLine({
   barColor,
   remainingPoints,
   danger,
+  expire = false,
 }: TimerLineProps): ReactElement {
   return (
-    <div className={danger ? 'minuteur-ligne danger' : 'minuteur-ligne'}>
+    <div className={`minuteur-ligne${danger ? ' danger' : ''}${expire ? ' expire' : ''}`}>
       <div className="minuteur">
         <div
           className="minuteur-rempli"

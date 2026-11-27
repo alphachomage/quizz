@@ -5,6 +5,13 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage s
 
 ## Non publié
 
+### Ajouté (animations de feedback)
+- **Corrigé : l'animation d'apparition `pop` était écrasée** par une autre animation du même nom dans `modes.css` (simple battement) : cartes, résultat, feedback et fenêtres n'apparaissaient plus en fondu. Celle de `modes.css` s'appelle désormais `pulse-bonne`.
+- Nouveau fichier `src/styles/feedback.css` : transition d'entrée à chaque changement d'écran ; question et réponses qui rejouent leur apparition à chaque question ; flash rouge autour de l'écran sur une erreur ; bonne réponse ratée qui clignote ; barre du minuteur qui tremble et message « Temps écoulé » quand le temps est fini ; puces score et série qui rebondissent à chaque gain ; puce des vies (Rogue Quizz) qui tremble en rouge sur une vie perdue ; boutons qui s'enfoncent au toucher ; barre d'XP qui se remplit en fin de partie.
+- Score final qui défile jusqu'au total (`src/shared/hooks/useCountUp.ts`), désactivé si les animations sont coupées ou si le système demande moins de mouvement.
+- `prefers-reduced-motion` annule aussi les délais d'animation.
+- Doc agents : section « Animations et feedback » dans `docs/design.md` (chaque action doit avoir un retour visuel), item dans la checklist de merge, pointeur dans `AGENTS.md` ; `scripts/check-repo.mjs` refuse deux `@keyframes` du même nom.
+
 ### Corrigé (corpus, étape 3c : youtube-streaming retiré, réponses annotées nettoyées, relecture partielle)
 - **youtube-streaming retiré du jeu** (`actif:false`) : 42 % de questions fausses ou ambiguës à l'audit, le thème est absent du manifeste et du corpus servi (16 thèmes actifs, 23 032 questions jouables). Ses questions restent dans `content/` pour une future relecture.
 - **2 280 réponses annotées nettoyées** (commentaires entre parenthèses retirés par script, type « Squeezie (plus gros aujourd'hui) ») : dette `reponse-annotee` ramenée de ~4 100 à 1 457. 2 003 corrections écartées car le nettoyage révélait un défaut masqué (surtout `reponse-dans-question` : la bonne réponse figure dans l'énoncé) ; ces questions restent en dette.

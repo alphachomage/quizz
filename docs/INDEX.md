@@ -8,7 +8,7 @@ Chiffres du corpus : toujours `npm run count:questions`, jamais un nombre en dur
 |---|---|---|---|
 | Stack & archi | `docs/stack.md` | toucher à la structure src/ | arborescence réelle, règles R1-R10, alias `@*` |
 | Règles du jeu | `docs/jeu.md` | modifier scoring/modes/tirage | `lib/scoring.ts`, `lib/draw.ts`, `features/game/` |
-| Design | `docs/design.md` | toucher au CSS/UI | palette 60-30-10 sobre (`styles/tokens.css`), 14 couleurs de thèmes, a11y |
+| Design | `docs/design.md` | toucher au CSS/UI, ajouter une interaction | palette 60-30-10 sobre (`styles/tokens.css`), 14 couleurs de thèmes, a11y, animations et feedback |
 | Questions | `docs/questions.md` | ajouter/modifier des questions | format JSON (clés FR), `content/` (JSON, ids stables), IndexedDB + repli chunks lazy, similarité, admin, `npm run count:questions` |
 | Ajouter questions/thèmes | `docs/ajouter-questions.md` | enrichir le corpus | guide pas à pas : dépôt dans `content/inbox/`, `npm run questions:import`, règles qualité, dette (`content/qualite-dette.json`, `npm run questions:lint`), couleurs/icônes autorisées, checklist |
 | Comptes | `docs/comptes.md` | connexion, invité, modération | `lib/accounts.ts`, hash SHA-256 salé, reset URL |

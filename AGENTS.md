@@ -137,6 +137,7 @@ npx wrangler deploy --dry-run   # valide worker.ts + wrangler.toml sans déploye
 | Règles du jeu, scoring, modes                                   | `docs/jeu.md`            |
 | Architecture (app/, features/, lib/, shared/)                   | `docs/stack.md`          |
 | Design, palettes, refonte CSS en profondeur                     | `docs/design.md`         |
+| Animations et feedback visuel (chaque action doit répondre)     | `docs/design.md`         |
 | Questions (format, ajout, similarité, corpus)                   | `docs/questions.md`      |
 | Comptes, invité, modération, reset                              | `docs/comptes.md`        |
 | XP, badges, titres, classement, stats                           | `docs/progression.md`    |

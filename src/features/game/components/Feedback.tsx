@@ -13,6 +13,7 @@ export default function Feedback({ p }: FeedbackProps): ReactElement | null {
   const { phase, selection, question, mode, lastGain, lastBonus, streaks, currentPlayer, vies } = p;
   if (phase !== 'reponse') return null;
   const bonne = selection !== null && selection === question.bonne;
+  const prefixe = selection === null ? 'Temps écoulé' : 'Raté';
   return (
     <>
       <div className="feedback">
@@ -24,13 +25,16 @@ export default function Feedback({ p }: FeedbackProps): ReactElement | null {
           <div className="rate">
             {mode === 'rogue' ? (
               vies > 0 ? (
-                <>Raté — il te reste {vies} vie{vies > 1 ? 's' : ''} !</>
+                <>
+                  {prefixe} — il te reste {vies} vie{vies > 1 ? 's' : ''} !
+                </>
               ) : (
-                "Raté — la run s'arrête là !"
+                `${prefixe} — la run s'arrête là !`
               )
             ) : (
               <>
-                Raté. La bonne réponse était : <strong>{question.reponses[question.bonne]}</strong>
+                {prefixe}. La bonne réponse était :{' '}
+                <strong>{question.reponses[question.bonne]}</strong>
               </>
             )}
           </div>
@@ -38,6 +42,8 @@ export default function Feedback({ p }: FeedbackProps): ReactElement | null {
         {question.info && <p className="info">{question.info}</p>}
         <p className="suite-auto">Question suivante dans un instant…</p>
       </div>
+
+      {!bonne && <div className="flash-erreur" aria-hidden="true" />}
 
       {bonne && (
         <div className="gain-centre" aria-hidden="true">

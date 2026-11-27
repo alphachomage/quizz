@@ -107,6 +107,9 @@ describe('partie solo (flux complet)', () => {
     const wrong = `R${currentQuestion()}-1`;
     fireEvent.click(screen.getByText(wrong));
     expect(document.querySelector('.rate')).toBeTruthy();
+    // Feedback visuel de l'erreur : flash rouge + la bonne réponse ratée est mise en avant.
+    expect(document.querySelector('.flash-erreur')).toBeTruthy();
+    expect(document.querySelector('.reponse.bonne.manquee')).toBeTruthy();
     avancer();
 
     // Puis 9 bonnes réponses.
@@ -123,5 +126,22 @@ describe('partie solo (flux complet)', () => {
     expect(res.bonnes).toEqual([9]);
     expect(res.details![0].correct).toBe(false);
     expect(res.details![0].gain).toBe(0);
+  });
+  it('temps écoulé : message dédié, la barre tremble, la bonne réponse est mise en avant', () => {
+    const theme = makeTheme({ id: 'test', perLevel: 10 });
+    render(
+      <Game
+        config={{ mode: 'solo', niveau: 'facile', theme, players: ['testeur'] }}
+        prefs={TEST_PREFS}
+        onFinish={vi.fn()}
+        onQuit={vi.fn()}
+      />
+    );
+    act(() => {
+      vi.advanceTimersByTime(31_000); // au-delà de la durée d'une question
+    });
+    expect(document.querySelector('.rate')!.textContent).toMatch(/^Temps écoulé\./);
+    expect(document.querySelector('.minuteur-ligne.expire')).toBeTruthy();
+    expect(document.querySelector('.reponse.bonne.manquee')).toBeTruthy();
   });
 });
