@@ -133,10 +133,15 @@ export default function Game({ config, prefs, onFinish, onQuit }: GameProps): Re
         barColor={barColor}
         remainingPoints={remainingPoints}
         danger={time <= 3 && phase === 'question'}
+        expire={phase === 'reponse' && p.selection === null}
       />
 
       {/* Question très longue (≈ 1 % du corpus) : texte réduit, la partie tient sur un écran */}
-      <h1 className={question.q.length > LONG_QUESTION ? 'question longue' : 'question'}>
+      {/* key liée à l'index (préfixes distincts entre frères) : re-monté à chaque question, l'animation d'apparition rejoue */}
+      <h1
+        key={`q-${index}`}
+        className={question.q.length > LONG_QUESTION ? 'question longue' : 'question'}
+      >
         {question.q}
       </h1>
 
@@ -146,6 +151,7 @@ export default function Game({ config, prefs, onFinish, onQuit }: GameProps): Re
       )}
 
       <Answers
+        key={`r-${index}`}
         question={p.questionAffichage}
         phase={phase}
         selection={p.selection}

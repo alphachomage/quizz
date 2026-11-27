@@ -13,6 +13,7 @@ import { useShare } from './useShare.js';
 import ShareModal from './components/ShareModal.jsx';
 import ResultTiles from './components/ResultTiles.jsx';
 import ResultXp from './components/ResultXp.jsx';
+import { useCountUp } from '@shared/hooks/useCountUp.js';
 
 /** Props de l'écran de résultats (déléguées par app/Screens.tsx). */
 export interface ResultsProps {
@@ -21,6 +22,8 @@ export interface ResultsProps {
   isGuest: boolean;
   onReplay: () => void;
   onHome: () => void;
+  /** Score qui défile jusqu'au total (faux : affichage direct, ex. animations coupées). */
+  animated?: boolean;
 }
 
 export default function Results({
@@ -29,6 +32,7 @@ export default function Results({
   isGuest,
   onReplay,
   onHome,
+  animated = false,
 }: ResultsProps): ReactElement {
   const { mode, niveau, theme, players, scores, bonnes, total, details, relics } = result;
   // persistance est toujours posée par App.terminer ; les défauts restent défensifs
@@ -48,6 +52,7 @@ export default function Results({
   } = persistance;
 
   // Stats de cette partie : temps moyen par question + meilleure série (streak)
+  const scoreAffiche = useCountUp(scores[0], animated && mode !== 'duel');
   const gameStats = useMemo(() => computeGameStats(details), [details]);
   const share = useShare({
     result,
@@ -94,7 +99,7 @@ export default function Results({
             {/* Score et « Nouveau record » forment une seule section */}
             <div className="bloc-score">
               <div className="gros-score">
-                {scores[0]} <span>pts</span>
+                {scoreAffiche} <span>pts</span>
               </div>
               {nouveauRecord && (
                 <div className="record">

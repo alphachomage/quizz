@@ -64,12 +64,12 @@ export default function Answers({
   // Brouillard : réponses cachées (floutées) les `brouillardS` premières secondes.
   const cachees = brouillardS > 0 && phase === 'question' && ecoulees < brouillardS;
   return (
-    <div className="reponses">
+    <div className="reponses entree">
       {question.reponses.map((r, i) => {
         // Réponse très longue : texte plus petit pour que la partie tienne sur un écran
         let classe = r.length > LONG_ANSWER ? 'reponse longue' : 'reponse';
         if (phase === 'reponse') {
-          if (i === question.bonne) classe += ' bonne';
+          if (i === question.bonne) classe += selection === i ? ' bonne' : ' bonne manquee';
           else if (i === selection) classe += ' mauvaise';
           else classe += ' estompee';
         } else {
@@ -82,8 +82,7 @@ export default function Answers({
         }
         // '--couleur' est une propriété CSS custom : csstype ne la connaît pas, d'où le cast.
         const style = { '--couleur': answerColor(r, i) } as CSSProperties;
-        const desactivee =
-          phase !== 'question' || barree === i || disparues.has(i);
+        const desactivee = phase !== 'question' || barree === i || disparues.has(i);
         return (
           <button
             key={i}
@@ -94,9 +93,7 @@ export default function Answers({
           >
             <span className="lettre">{LETTERS[i] || String.fromCharCode(65 + i)}</span>
             <span className="texte">{r}</span>
-            {votePcts && phase === 'question' && (
-              <span className="vote-pct">{votePcts[i]} %</span>
-            )}
+            {votePcts && phase === 'question' && <span className="vote-pct">{votePcts[i]} %</span>}
             {phase === 'reponse' && i === question.bonne && (
               <Icon nom="check" taille={20} className="coche" />
             )}

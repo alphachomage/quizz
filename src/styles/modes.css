@@ -154,11 +154,13 @@
   }
 }
 
+/* Nom distinct de `pop` (apparition, animations.css) : un même nom de keyframes
+   écraserait l'autre dans la cascade. */
 .reponse.bonne {
-  animation: pop var(--dur-standard) ease;
+  animation: pulse-bonne var(--dur-standard) ease;
 }
 
-@keyframes pop {
+@keyframes pulse-bonne {
   0% {
     transform: scale(1);
   }
